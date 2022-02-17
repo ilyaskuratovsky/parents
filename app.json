@@ -1,11 +1,41 @@
 {
   "expo": {
-    "name": "parents",
-    "slug": "parents",
-    "version": "1.0.0",
+    "name": "flag-football-play-caller",
+    "slug": "flag-football-play-caller",
+    "version": "1.0.1",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.jpg",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.skuratovsky.flagfootballplaycaller"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
   },
-  "name": "parents"
+    "extra": {
+      "apiKey": "AIzaSyD7sAZY_oPEoAhPLbLST23DAAmAPiOh8V8",
+      "authDomain": "parents-749dd.firebaseapp.com",
+      "projectId": "parents-749dd",
+      "storageBucket": "parents-749dd.appspot.com",
+      "messagingSenderId": "202897799240",
+      "appId": "1:202897799240:web:6e7181665de58029cfc07d"
+    }
 }
