@@ -42,7 +42,7 @@ export default function ProfileScreen({ navigation }) {
   const [section, setSection] = useState("school");
   const [schoolSelection, setSchoolSelection] = useState({});
 
-  if (userInfo == null || locationInfo == null) {
+  if (userInfo == null) {
     return <Text>Loading Data...</Text>;
   }
 

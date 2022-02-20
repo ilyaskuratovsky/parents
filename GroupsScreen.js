@@ -33,9 +33,14 @@ import { auth, database } from "./config/firebase";
 export default function ProfileScreen({ navigation }) {
   //const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const locationInfo = useSelector((state) => state.main.locationInfo);
+  const { schoolList, schoolMap } = useSelector((state) => {
+    return {
+      schoolList: state.main.schoolList,
+      schoolMap: state.main.schoolMap,
+    };
+  });
 
-  if (userInfo == null || locationInfo == null) {
+  if (userInfo == null) {
     return <Text>Loading Data...</Text>;
   }
 
