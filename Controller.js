@@ -2,6 +2,9 @@ import * as Actions from "./Actions";
 import { firebaseConfig } from "./config/firebase";
 import * as FirebaseAuth from "firebase/auth";
 import * as FirebaseConfig from "./config/firebase";
+import * as firebase from "firebase/app";
+
+//import { FieldValue } from "firebase-admin/firestore";
 import {
   collection,
   doc,
@@ -11,6 +14,13 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import * as Loation from "./Location";
+/*
+const {
+  getFirestore,
+  Timestamp,
+  FieldValue,
+} = require("firebase-admin/firestore");
+*/
 
 export async function initializeApp(dispatch) {
   const schoolsSnapshot = await getDocs(
@@ -87,47 +97,6 @@ export async function loggedIn(dispatch, authenticatedUser) {
       console.log(`Encountered error: ${err}`);
     }
   );
-  //var schoolQuery = db.collection("schools");
-  /*
-  const schools = snapshot.docs.map((doc) => doc.data());
-  */
-  /*
-  const collectionRef = database.collection("schools");
-  const schoolObserver = Firestore.collection("schools").onSnapshot(
-    (snapshot) => {
-      for (schoolDoc of snapshot) {
-        console.log(schoolDoc);
-      }
-    },
-    (err) => {
-      console.log(`Encountered error: ${err}`);
-    }
-  );
-    */
-  /*
-  const snapshot = await schoolsRef.get();
-  if (snapshot.empty) {
-    console.log("No matching documents.");
-    return;
-  }
-
-  snapshot.forEach((doc) => {
-    console.log(doc.id, "=>", doc.data());
-  });
-  */
-  /*
-  const schoolsObserver = onSnapshot(
-    doc(database, "schools"),
-    (doc) => {
-      const data = doc.data();
-      console.log(data);
-    },
-    (err) => {
-      console.log("encountered error");
-    }
-  );
-  */
-
   dispatch(Actions.goToScreen({ screen: "USER" }));
 }
 
@@ -149,4 +118,36 @@ export async function saveUserProfileSchools(dispatch, userInfo, schools) {
     merge: true,
   });
   dispatch(Actions.goToUserScreen({ screen: "GROUPS" }));
+}
+
+export async function joinGroup(dispatch, userInfo, groupId) {
+  /*
+  const res = await cityRef.set({
+  capital: true
+  }, { merge: true });
+  */
+
+  const userRef = doc(collection(FirebaseConfig.db, "users"), userInfo.uid);
+  const newGroups = [...userInfo.groups];
+  newGroups.push(groupId);
+  const update = {
+    groups: newGroups,
+  };
+  await setDoc(doc(FirebaseConfig.db, "users", userInfo.uid), update, {
+    merge: true,
+  });
+
+  /*
+
+// Atomically add a new region to the "regions" array field.
+*/
+  /*
+  const newUserInfo = { ...userInfo, profile: { schools } };
+  dispatch(Actions.userInfo(newUserInfo));
+
+  await setDoc(doc(database, "users", userInfo.uid), newUserInfo, {
+    merge: true,
+  });
+  dispatch(Actions.goToUserScreen({ screen: "GROUPS" }));
+  */
 }

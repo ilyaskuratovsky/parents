@@ -63,4 +63,18 @@ const PaperDialogButton = React.memo(({ text, icon, onPress }) => {
   );
 });
 
-export { MenuButton, DialogButton, PaperDialogButton };
+const FormButton = React.memo(({ text, icon, onPress }) => {
+  return (
+    <Paper.Button
+      icon={icon}
+      labelStyle={{ color: "black", fontSize: 12 }}
+      uppercase={false}
+      onPress={onPress}
+      mode="contained"
+    >
+      {text}
+    </Paper.Button>
+  );
+});
+
+export { MenuButton, DialogButton, PaperDialogButton, FormButton };

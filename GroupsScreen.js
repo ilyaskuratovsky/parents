@@ -15,7 +15,8 @@ import {
 import { GiftedChat } from "react-native-gifted-chat";
 import { useDispatch, useSelector } from "react-redux";
 import { SearchBar } from "react-native-elements";
-
+import * as MyButtons from "./MyButtons";
+import * as Controller from "./Controller";
 /*
 import {
   collection,
@@ -31,14 +32,18 @@ import { signOut } from "firebase/auth";
 import { auth, database } from "./config/firebase";
 
 export default function ProfileScreen({ navigation }) {
-  //const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const { schoolList, schoolMap } = useSelector((state) => {
-    return {
-      schoolList: state.main.schoolList,
-      schoolMap: state.main.schoolMap,
-    };
-  });
+  const { schoolList, schoolMap, groupList, groupMap } = useSelector(
+    (state) => {
+      return {
+        schoolList: state.main.schoolList,
+        schoolMap: state.main.schoolMap,
+        groupList: state.main.groupList,
+        groupMap: state.main.groupMap,
+      };
+    }
+  );
 
   if (userInfo == null) {
     return <Text>Loading Data...</Text>;
@@ -68,21 +73,45 @@ export default function ProfileScreen({ navigation }) {
   if (userSchools.length > 0) {
     schoolsComponent = userSchools.map((school_id) => {
       const school = schoolMap[school_id];
+      const schoolGroups = groupList.filter(
+        (group) => group.school == school.id
+      );
+      const joinGroupComponents = schoolGroups.map((group) => {
+        return (
+          <View key={school.id} style={{ flexDirection: "row" }}>
+            <Text>
+              {group.name} ({group.id})
+            </Text>
+            <MyButtons.FormButton
+              text="Join"
+              onPress={() => {
+                Controller.joinGroup(dispatch, userInfo, group.id);
+              }}
+            />
+          </View>
+        );
+      });
+
       return (
         <View key={school.id} style={{ flex: 1 }}>
           <Text>{school.name}</Text>
+          {/* list all the groups in scroll view here */}
+          <ScrollView>{joinGroupComponents}</ScrollView>
         </View>
       );
     });
   } else {
     schoolsComponent = (
-      <Text>No Schools Set Up [link here to set up schools]</Text>
+      <Text key="noschool">
+        No Schools Set Up [link here to set up schools]
+      </Text>
     );
   }
 
   return (
     <View style={{ flex: 1 }}>
       <SearchBar
+        key="search"
         round
         searchIcon={{ size: 24 }}
         onChangeText={(text) => {}}
@@ -90,7 +119,7 @@ export default function ProfileScreen({ navigation }) {
         placeholder="Search..."
         value={""}
       />
-      <Text>Groups Screen {JSON.stringify(userInfo)}</Text>
+      <Text key="group">Groups Screen {JSON.stringify(userInfo)}</Text>
       {schoolsComponent}
     </View>
   );
