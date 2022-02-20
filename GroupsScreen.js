@@ -76,7 +76,32 @@ export default function ProfileScreen({ navigation }) {
       const schoolGroups = groupList.filter(
         (group) => group.school == school.id
       );
-      const joinGroupComponents = schoolGroups.map((group) => {
+
+      const userSchoolGroups = schoolGroups.filter((schoolGroup) => {
+        return userInfo.groups.includes(schoolGroup.id);
+      });
+
+      const schoolGroupComponents = userSchoolGroups.map((group) => {
+        return (
+          <View key={school.id} style={{ flexDirection: "row" }}>
+            <Text>
+              {group.name} ({group.id})
+            </Text>
+            <MyButtons.FormButton
+              text="Go To Group"
+              onPress={() => {
+                Controller.joinGroup(dispatch, userInfo, group.id);
+              }}
+            />
+          </View>
+        );
+      });
+
+      const joinSchoolGroups = schoolGroups.filter((schoolGroup) => {
+        return !userInfo.groups.includes(schoolGroup.id);
+      });
+
+      const joinGroupComponents = joinSchoolGroups.map((group) => {
         return (
           <View key={school.id} style={{ flexDirection: "row" }}>
             <Text>
@@ -95,6 +120,7 @@ export default function ProfileScreen({ navigation }) {
       return (
         <View key={school.id} style={{ flex: 1 }}>
           <Text>{school.name}</Text>
+          <ScrollView>{schoolGroupComponents}</ScrollView>
           {/* list all the groups in scroll view here */}
           <ScrollView>{joinGroupComponents}</ScrollView>
         </View>
