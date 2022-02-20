@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, Button, TextInput } from "react-native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../config/firebase";
+import { auth } from "./config/firebase";
 
 export default function Signup({ navigation }) {
   const [email, setEmail] = useState("");
@@ -10,7 +10,9 @@ export default function Signup({ navigation }) {
   const onHandleSignup = () => {
     if (email !== "" && password !== "") {
       createUserWithEmailAndPassword(auth, email, password)
-        .then(() => console.log("Signup success"))
+        .then(() => {
+          console.log("signed up");
+        })
         .catch((err) => console.log(`Login err: ${err}`));
     }
   };

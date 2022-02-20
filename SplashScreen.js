@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Image, SafeAreaView } from "react-native";
+import { Image, SafeAreaView, Text } from "react-native";
 import { useSelector } from "react-redux";
 
 function SplashScreen({ appInitializedCallback, refresh }) {
@@ -31,10 +31,7 @@ function SplashScreen({ appInitializedCallback, refresh }) {
         justifyContent: "center",
       }}
     >
-      <Image
-        style={{ width: 300, height: 200 }}
-        source={require("./assets/cover.jpg")}
-      />
+      <Text>Parents</Text>
     </SafeAreaView>
   );
 }

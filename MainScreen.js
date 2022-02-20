@@ -1,22 +1,7 @@
-import React, { useState } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import React from "react";
+import { StyleSheet, Text } from "react-native";
 import * as Paper from "react-native-paper";
-import { Button as PaperButton, Dialog } from "react-native-paper";
-import { renderers } from "react-native-popup-menu";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
-import * as Actions from "./Actions";
-import BottomBar from "./BottomBar";
-import * as Controller from "./Controller";
-import * as MyButtons from "./MyButtons";
 import Portal from "./Portal";
 import TopBar from "./TopBar";
 import * as UIConstants from "./UIConstants";

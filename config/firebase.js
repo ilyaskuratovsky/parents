@@ -2,10 +2,13 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import Constants from "expo-constants";
+import * as FirebaseApp from "firebase/app";
+import * as FirebaseAuth from "firebase/auth";
+import * as Firestore from "firebase/firestore";
 
 console.log("extra: " + JSON.stringify(Constants.manifest));
 // Firebase config
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyD7sAZY_oPEoAhPLbLST23DAAmAPiOh8V8",
   authDomain: "parents-749dd.firebaseapp.com",
   projectId: "parents-749dd",
@@ -16,7 +19,6 @@ const firebaseConfig = {
 };
 
 // initialize firebase
-initializeApp(firebaseConfig);
-
-export const auth = getAuth();
-export const database = getFirestore();
+FirebaseApp.initializeApp(firebaseConfig);
+export const auth = FirebaseAuth.getAuth();
+export const db = Firestore.getFirestore();

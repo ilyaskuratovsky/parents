@@ -18,7 +18,7 @@ import {
 import * as Firestore from "firebase/firestore";
 import { signOut } from "firebase/auth";
 
-import { auth, database } from "../config/firebase";
+import { auth, database } from "./config/firebase";
 export default function Chat({ navigation }) {
   const [messages, setMessages] = useState([]);
 

@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, Button, TextInput } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../config/firebase";
+import { auth } from "./config/firebase";
+import { useDispatch, useSelector } from "react-redux";
+import * as Controller from "./Controller";
 
 export default function Login({ navigation }) {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const onHandleLogin = () => {
     if (email !== "" && password !== "") {
       signInWithEmailAndPassword(auth, email, password)
-        .then(() => console.log("Login success"))
+        .then((userCredential) => {})
         .catch((err) => console.log(`Login err: ${err}`));
     }
   };
@@ -54,7 +57,7 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingHorizontal: 12,
   },
-  
+
   title: {
     fontSize: 24,
     fontWeight: "600",
