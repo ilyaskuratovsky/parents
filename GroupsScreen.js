@@ -35,16 +35,16 @@ import { auth, database } from "./config/firebase";
 export default function GroupsScreen({ navigation }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const { schoolList, schoolMap, groupList, groupMap } = useSelector(
-    (state) => {
+  const { schoolList, schoolMap, groupList, groupMap, groupMemberships } =
+    useSelector((state) => {
       return {
         schoolList: state.main.schoolList,
         schoolMap: state.main.schoolMap,
         groupList: state.main.groupList,
         groupMap: state.main.groupMap,
+        groupMemberships: state.main.groupMemberships,
       };
-    }
-  );
+    });
 
   if (userInfo == null) {
     return <Text>Loading Data...</Text>;
@@ -69,7 +69,9 @@ export default function GroupsScreen({ navigation }) {
     if you don't belong to any schools just say - you don't have any groups and only the search is enabled.
   */
   const userSchools = userInfo.profile.schools ?? [];
-
+  const userGroups = groupMemberships.map(
+    (groupMembership) => groupMembership.groupId
+  );
   let schoolsComponent = null;
   if (userSchools.length > 0) {
     schoolsComponent = userSchools.map((school_id) => {
@@ -79,7 +81,7 @@ export default function GroupsScreen({ navigation }) {
       );
 
       const userSchoolGroups = schoolGroups.filter((schoolGroup) => {
-        return userInfo.groups.includes(schoolGroup.id);
+        return userGroups.includes(schoolGroup.id);
       });
 
       const schoolGroupComponents = userSchoolGroups.map((group) => {
@@ -88,6 +90,7 @@ export default function GroupsScreen({ navigation }) {
             <Text>
               {group.name} ({group.id})
             </Text>
+
             <MyButtons.FormButton
               text="Go To Group"
               onPress={() => {
@@ -101,7 +104,7 @@ export default function GroupsScreen({ navigation }) {
       });
 
       const joinSchoolGroups = schoolGroups.filter((schoolGroup) => {
-        return !userInfo.groups.includes(schoolGroup.id);
+        return !userGroups.includes(schoolGroup.id);
       });
 
       const joinGroupComponents = joinSchoolGroups.map((group) => {
@@ -148,6 +151,7 @@ export default function GroupsScreen({ navigation }) {
         placeholder="Search..."
         value={""}
       />
+      <Text>Group Memberships: {JSON.stringify(groupMemberships)}</Text>
       <Text key="group">Groups Screen {JSON.stringify(userInfo)}</Text>
       {schoolsComponent}
     </View>

@@ -7,8 +7,10 @@ import {
   getDocs,
   getDoc,
   doc,
+  where,
   setDoc,
   onSnapshot,
+  query,
   //} from "firebase/firestore/lite";
 } from "firebase/firestore";
 
@@ -77,6 +79,28 @@ export async function loggedIn(dispatch, authenticatedUser) {
     }
   );
 
+  //observe group membership changes
+  const groupMembershipsQuery = query(
+    collection(db, "group_memberships"),
+    where("uid", "==", uid)
+  );
+  const groupMemberships = await getDocs(groupMembershipsQuery);
+  const groupMembershipDocs = groupMemberships.docs.map((doc) => doc.data());
+  dispatch(Actions.groupMemberships(groupMembershipDocs));
+
+  /*
+  onSnapshot(
+    groupMemberships,
+    (snapshot) => {
+      const groupMemberships = snapshot.docs.map((doc) => doc.data());
+      dispatch(Actions.groupMemberships(groupMemberships));
+    },
+    (err) => {
+      console.log(`Encountered error: ${err}`);
+    }
+  );
+  */
+
   //observe schools changes
   var schoolQuery = onSnapshot(
     collection(db, "schools"),
@@ -113,13 +137,16 @@ export async function saveUserProfileSchools(dispatch, userInfo, schools) {
 }
 
 export async function joinGroup(dispatch, userInfo, groupId) {
+  const groupMembershipCollectionRef = collection(db, "group_membership");
+  const existingGroupMembership = await groupMembershipCollectionRef
+    .where("uid", "==", userInfo.uid)
+    .where("groupId", "==", groupId)
+    .get();
+  if (!existingGroupMembership.exists()) {
+    const membership = { uid: userInfo.uid, groupId: groupId };
+    await addDoc(groupMembershipCollectionRef, membership);
+  }
   /*
-  const res = await cityRef.set({
-  capital: true
-  }, { merge: true });
-  */
-
-  const userRef = doc(collection(db, "users"), userInfo.uid);
   const newGroups = [...userInfo.groups];
   newGroups.push(groupId);
   const update = {
@@ -128,18 +155,5 @@ export async function joinGroup(dispatch, userInfo, groupId) {
   await setDoc(doc(db, "users", userInfo.uid), update, {
     merge: true,
   });
-
-  /*
-
-// Atomically add a new region to the "regions" array field.
-*/
-  /*
-  const newUserInfo = { ...userInfo, profile: { schools } };
-  dispatch(Actions.userInfo(newUserInfo));
-
-  await setDoc(doc(database, "users", userInfo.uid), newUserInfo, {
-    merge: true,
-  });
-  dispatch(Actions.goToUserScreen({ screen: "GROUPS" }));
   */
 }

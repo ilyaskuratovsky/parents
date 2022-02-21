@@ -37,6 +37,7 @@ export const mainSlice = createSlice({
     locationMap: null,
     groupIds: null,
     groupMap: null,
+    groupMemberships: null,
   },
   reducers: {
     appInitialized: (state, obj) => {
@@ -82,6 +83,14 @@ export const mainSlice = createSlice({
       };
       return newState;
     },
+    groupMemberships: (state, obj) => {
+      const groupMemberships = obj.payload;
+      const newState = {
+        ...state,
+        groupMemberships,
+      };
+      return newState;
+    },
     schoolsUpdated: (state, obj) => {
       const schools = obj.payload;
       const newState = {
@@ -93,8 +102,13 @@ export const mainSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { appInitialized, userInfo, locationDataInit, schoolsUpdated } =
-  mainSlice.actions;
+export const {
+  appInitialized,
+  userInfo,
+  locationDataInit,
+  schoolsUpdated,
+  groupMemberships,
+} = mainSlice.actions;
 export const { goToScreen, goToUserScreen } = screenSlice.actions;
 
 export default configureStore({

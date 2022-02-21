@@ -55,6 +55,9 @@ export default function GroupScreen({ groupId, navigation }) {
       <Text key="group">
         Group Screen {groupId} {group.name}
       </Text>
+      <View style={{ width: "80%", height: "80%" }}>
+        <GiftedChat style={{ border: 1, borderColor: "black" }}></GiftedChat>
+      </View>
     </View>
   );
 }
