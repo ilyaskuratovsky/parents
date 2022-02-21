@@ -34,27 +34,29 @@ import { auth, database } from "./config/firebase";
 export default function GroupScreen({ groupId, navigation }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const { schoolList, schoolMap, groupList, groupMap, messages } = useSelector(
-    (state) => {
+  const { schoolList, schoolMap, groupList, groupMap, messages, userMap } =
+    useSelector((state) => {
       return {
         schoolList: state.main.schoolList,
         schoolMap: state.main.schoolMap,
         groupList: state.main.groupList,
         groupMap: state.main.groupMap,
+        userMap: state.main.userMap,
         messages: state.main.groupMessages[groupId],
       };
-    }
-  );
+    });
   const group = groupMap[groupId];
   const giftedChatMessages = messages.map((message) => {
+    const user = userMap[message.uid];
+
     return {
       _id: message.id,
       text: message.text,
       createdAt: new Date(message.timestamp),
       user: {
-        _id: 2,
-        name: "React Native",
-        avatar: "https://placeimg.com/140/140/any",
+        _id: message.uid,
+        name: user.displayName ?? user.email,
+        //avatar: "https://placeimg.com/140/140/any",
       },
     };
   });

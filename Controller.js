@@ -17,21 +17,29 @@ import {
 } from "firebase/firestore";
 
 export async function initializeApp(dispatch) {
+  // store all schools
   const schoolsSnapshot = await getDocs(collection(db, "schools"));
   const schools = [];
   schoolsSnapshot.forEach((doc) => {
     schools.push(doc.data());
   });
 
+  // store all groups
   const groupsSnapshot = await getDocs(collection(db, "groups"));
   const groups = [];
   groupsSnapshot.forEach((doc) => {
     groups.push(doc.data());
   });
-  dispatch(Actions.locationDataInit({ schools, groups }));
 
-  console.log("here");
+  // store all people
+  const usersSnapshot = await getDocs(collection(db, "users"));
+  const users = [];
+  usersSnapshot.forEach((doc) => {
+    users.push({ id: doc.id, ...doc.data() });
+  });
+  dispatch(Actions.locationDataInit({ schools, groups, users }));
 
+  // subscribe to auth changes
   const unsubscribeAuth = onAuthStateChanged(
     auth,
     async (authenticatedUser) => {
@@ -43,6 +51,8 @@ export async function initializeApp(dispatch) {
       }
     }
   );
+
+  //Go to login page by default
   dispatch(Actions.goToScreen({ screen: "LOGIN" }));
 }
 
@@ -113,6 +123,7 @@ export async function loggedIn(dispatch, authenticatedUser) {
         messageDocs.push({
           id: message.id,
           text: data.text,
+          uid: data.uid,
           timestamp: data.timestamp.toMillis(),
         });
       });
@@ -197,6 +208,7 @@ export async function joinGroup(dispatch, userInfo, groupId) {
 
 export async function sendMessage(dispatch, userInfo, groupId, text) {
   const message = {
+    uid: userInfo.uid,
     groupId,
     text,
     //timestamp: Date.now(),

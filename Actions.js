@@ -41,6 +41,8 @@ export const mainSlice = createSlice({
     locationMap: null,
     groupIds: null,
     groupMap: null,
+    userMap: null,
+    userList: null,
     groupMemberships: null,
     groupMessages: {},
   },
@@ -61,7 +63,15 @@ export const mainSlice = createSlice({
       return newState;
     },
     locationDataInit: (state, obj) => {
-      const { schools, groups } = obj.payload;
+      const { schools, groups, users } = obj.payload;
+
+      //users
+      const userList = [];
+      const userMap = {};
+      for (const user of users) {
+        userList.push(user);
+        userMap[user.id] = user;
+      }
 
       //groups
       const groupList = [];
@@ -81,6 +91,8 @@ export const mainSlice = createSlice({
 
       const newState = {
         ...state,
+        userList,
+        userMap,
         groupList,
         groupMap,
         schoolList,
