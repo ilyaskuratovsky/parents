@@ -12,6 +12,7 @@ export default function Login({ navigation }) {
 
   const onHandleLogin = () => {
     if (email !== "" && password !== "") {
+      console.log("signing in with " + email + ", " + password);
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {})
         .catch((err) => console.log(`Login err: ${err}`));

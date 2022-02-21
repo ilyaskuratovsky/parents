@@ -1,37 +1,25 @@
 import * as Actions from "./Actions";
-import { firebaseConfig } from "./config/firebase";
-import * as FirebaseAuth from "firebase/auth";
-import * as FirebaseConfig from "./config/firebase";
-import * as firebase from "firebase/app";
-
-//import { FieldValue } from "firebase-admin/firestore";
+import { db, auth } from "./config/firebase";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import {
+  getFirestore,
   collection,
+  getDocs,
+  getDoc,
   doc,
   setDoc,
-  getDoc,
-  getDocs,
   onSnapshot,
+  //} from "firebase/firestore/lite";
 } from "firebase/firestore";
-import * as Loation from "./Location";
-/*
-const {
-  getFirestore,
-  Timestamp,
-  FieldValue,
-} = require("firebase-admin/firestore");
-*/
 
 export async function initializeApp(dispatch) {
-  const schoolsSnapshot = await getDocs(
-    collection(FirebaseConfig.db, "schools")
-  );
+  const schoolsSnapshot = await getDocs(collection(db, "schools"));
   const schools = [];
   schoolsSnapshot.forEach((doc) => {
     schools.push(doc.data());
   });
 
-  const groupsSnapshot = await getDocs(collection(FirebaseConfig.db, "groups"));
+  const groupsSnapshot = await getDocs(collection(db, "groups"));
   const groups = [];
   groupsSnapshot.forEach((doc) => {
     groups.push(doc.data());
@@ -40,9 +28,10 @@ export async function initializeApp(dispatch) {
 
   console.log("here");
 
-  const unsubscribeAuth = FirebaseAuth.onAuthStateChanged(
-    FirebaseConfig.auth,
+  const unsubscribeAuth = onAuthStateChanged(
+    auth,
     async (authenticatedUser) => {
+      console.log("auth state change: " + JSON.stringify(authenticatedUser));
       if (authenticatedUser != null) {
         loggedIn(dispatch, authenticatedUser);
       } else {
@@ -54,14 +43,15 @@ export async function initializeApp(dispatch) {
 }
 
 export async function loggedIn(dispatch, authenticatedUser) {
+  console.log("logged in");
   const uid = authenticatedUser.uid;
-  const docRef = doc(FirebaseConfig.db, "users", uid);
+  const docRef = doc(db, "users", uid);
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
     //const user = docSnap;
   } else {
-    await setDoc(doc(FirebaseConfig.db, "users", uid), {
+    await setDoc(doc(db, "users", uid), {
       uid: uid,
       displayName: authenticatedUser.displayName,
       photoURL: authenticatedUser.photoURL,
@@ -70,8 +60,9 @@ export async function loggedIn(dispatch, authenticatedUser) {
   }
 
   //observe user changes
+  const userDocRef = doc(db, "users", uid);
   onSnapshot(
-    doc(FirebaseConfig.db, "users", uid),
+    userDocRef,
     (doc) => {
       const data = doc.data();
       dispatch(Actions.userInfo(data));
@@ -88,7 +79,7 @@ export async function loggedIn(dispatch, authenticatedUser) {
 
   //observe schools changes
   var schoolQuery = onSnapshot(
-    collection(FirebaseConfig.db, "schools"),
+    collection(db, "schools"),
     (docsSnapshot) => {
       const schools = docsSnapshot.docs.map((doc) => doc.data());
       dispatch(Actions.schoolsUpdated(schools));
@@ -97,6 +88,7 @@ export async function loggedIn(dispatch, authenticatedUser) {
       console.log(`Encountered error: ${err}`);
     }
   );
+
   dispatch(Actions.goToScreen({ screen: "USER" }));
 }
 
@@ -127,13 +119,13 @@ export async function joinGroup(dispatch, userInfo, groupId) {
   }, { merge: true });
   */
 
-  const userRef = doc(collection(FirebaseConfig.db, "users"), userInfo.uid);
+  const userRef = doc(collection(db, "users"), userInfo.uid);
   const newGroups = [...userInfo.groups];
   newGroups.push(groupId);
   const update = {
     groups: newGroups,
   };
-  await setDoc(doc(FirebaseConfig.db, "users", userInfo.uid), update, {
+  await setDoc(doc(db, "users", userInfo.uid), update, {
     merge: true,
   });
 

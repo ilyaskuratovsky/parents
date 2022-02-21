@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ErrorScreen from "./ErrorScreen";
 import ProfileScreen from "./ProfileScreen";
 import GroupsScreen from "./GroupsScreen";
+import GroupScreen from "./GroupScreen";
 /*
 import {
   collection,
@@ -33,11 +34,12 @@ export default function UserScreen({ navigation }) {
   } else if (screen == null) {
     return <Text>error (no screen)</Text>;
   } else {
-    
     if (screen == "PROFILE") {
       return <ProfileScreen />;
     } else if (screen == "GROUPS") {
       return <GroupsScreen />;
+    } else if (screen == "GROUP") {
+      return <GroupScreen groupId={screenWithParams.groupId} />;
     }
     return <ErrorScreen />;
   }

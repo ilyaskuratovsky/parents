@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { SearchBar } from "react-native-elements";
 import * as MyButtons from "./MyButtons";
 import * as Controller from "./Controller";
+import * as Actions from "./Actions";
 /*
 import {
   collection,
@@ -31,7 +32,7 @@ import { signOut } from "firebase/auth";
 
 import { auth, database } from "./config/firebase";
 
-export default function ProfileScreen({ navigation }) {
+export default function GroupsScreen({ navigation }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
   const { schoolList, schoolMap, groupList, groupMap } = useSelector(
@@ -90,7 +91,9 @@ export default function ProfileScreen({ navigation }) {
             <MyButtons.FormButton
               text="Go To Group"
               onPress={() => {
-                Controller.joinGroup(dispatch, userInfo, group.id);
+                dispatch(
+                  Actions.goToUserScreen({ screen: "GROUP", groupId: group.id })
+                );
               }}
             />
           </View>

@@ -1,12 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+//import { getFirestore } from "firebase/firestore/lite";
 import { getFirestore } from "firebase/firestore";
-import Constants from "expo-constants";
-import * as FirebaseApp from "firebase/app";
-import * as FirebaseAuth from "firebase/auth";
-import * as Firestore from "firebase/firestore";
 
-console.log("extra: " + JSON.stringify(Constants.manifest));
 // Firebase config
 export const firebaseConfig = {
   apiKey: "AIzaSyD7sAZY_oPEoAhPLbLST23DAAmAPiOh8V8",
@@ -19,6 +15,6 @@ export const firebaseConfig = {
 };
 
 // initialize firebase
-FirebaseApp.initializeApp(firebaseConfig);
-export const auth = FirebaseAuth.getAuth();
-export const db = Firestore.getFirestore();
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth();
+export const db = getFirestore(app);
