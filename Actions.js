@@ -38,6 +38,7 @@ export const mainSlice = createSlice({
     groupIds: null,
     groupMap: null,
     groupMemberships: null,
+    groupMessages: {},
   },
   reducers: {
     appInitialized: (state, obj) => {
@@ -91,6 +92,17 @@ export const mainSlice = createSlice({
       };
       return newState;
     },
+    groupMessages: (state, obj) => {
+      const { groupId, messages } = obj.payload;
+      const groupMessages = { ...state.groupMessages };
+      groupMessages[groupId] = messages;
+
+      const newState = {
+        ...state,
+        groupMessages,
+      };
+      return newState;
+    },
     schoolsUpdated: (state, obj) => {
       const schools = obj.payload;
       const newState = {
@@ -108,6 +120,7 @@ export const {
   locationDataInit,
   schoolsUpdated,
   groupMemberships,
+  groupMessages,
 } = mainSlice.actions;
 export const { goToScreen, goToUserScreen } = screenSlice.actions;
 

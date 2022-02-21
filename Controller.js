@@ -88,6 +88,26 @@ export async function loggedIn(dispatch, authenticatedUser) {
   const groupMembershipDocs = groupMemberships.docs.map((doc) => doc.data());
   dispatch(Actions.groupMemberships(groupMembershipDocs));
 
+  groupMembershipDocs.forEach(async (groupMembership) => {
+    const messagesCollectionRef = collection(
+      doc(collection(db, "groups"), groupMembership.groupId),
+      "messages"
+    );
+
+    const messages = await getDocs(messagesCollectionRef);
+    const messageDocs = messages.docs.map((doc) => doc.data());
+    dispatch(
+      Actions.groupMessages({
+        groupId: groupMembership.groupId,
+        messages: messageDocs,
+      })
+    );
+    onSnapshot(messagesCollectionRef, (message) => {
+      // TODO:
+      console.log("got messages");
+    });
+  });
+
   /*
   onSnapshot(
     groupMemberships,

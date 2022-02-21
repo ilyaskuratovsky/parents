@@ -34,17 +34,29 @@ import { auth, database } from "./config/firebase";
 export default function GroupScreen({ groupId, navigation }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const { schoolList, schoolMap, groupList, groupMap } = useSelector(
+  const { schoolList, schoolMap, groupList, groupMap, messages } = useSelector(
     (state) => {
       return {
         schoolList: state.main.schoolList,
         schoolMap: state.main.schoolMap,
         groupList: state.main.groupList,
         groupMap: state.main.groupMap,
+        messages: state.main.groupMessages[groupId],
       };
     }
   );
   const group = groupMap[groupId];
+  const giftedChatMessages = messages.map((message) => {
+    return {
+      text: message.text,
+      createdAt: new Date(),
+      user: {
+        _id: 2,
+        name: "React Native",
+        avatar: "https://placeimg.com/140/140/any",
+      },
+    };
+  });
 
   if (userInfo == null) {
     return <Text>Loading Data...</Text>;
@@ -56,7 +68,10 @@ export default function GroupScreen({ groupId, navigation }) {
         Group Screen {groupId} {group.name}
       </Text>
       <View style={{ width: "80%", height: "80%" }}>
-        <GiftedChat style={{ border: 1, borderColor: "black" }}></GiftedChat>
+        <GiftedChat
+          messages={giftedChatMessages}
+          style={{ border: 1, borderColor: "black" }}
+        ></GiftedChat>
       </View>
     </View>
   );
