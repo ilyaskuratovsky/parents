@@ -109,7 +109,12 @@ export async function loggedIn(dispatch, authenticatedUser) {
     onSnapshot(messagesCollectionRef, (messagesSnapshot) => {
       const messageDocs = [];
       messagesSnapshot.forEach((message) => {
-        messageDocs.push(message.data());
+        const data = message.data();
+        messageDocs.push({
+          id: message.id,
+          text: data.text,
+          timestamp: data.timestamp.toMillis(),
+        });
       });
       dispatch(
         Actions.groupMessages({
@@ -197,7 +202,7 @@ export async function sendMessage(dispatch, userInfo, groupId, text) {
     //timestamp: Date.now(),
     //timestamp: db.firestore.FieldValue.serverTimestamp(), doesn't work
     //timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    timestamp: Timestamp.now().toDate().toString(),
+    timestamp: Timestamp.now().toDate(),
   };
   const messagesRef = collection(
     doc(collection(db, "groups"), groupId),

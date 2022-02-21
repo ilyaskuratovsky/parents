@@ -48,8 +48,9 @@ export default function GroupScreen({ groupId, navigation }) {
   const group = groupMap[groupId];
   const giftedChatMessages = messages.map((message) => {
     return {
+      _id: message.id,
       text: message.text,
-      createdAt: new Date(),
+      createdAt: new Date(message.timestamp),
       user: {
         _id: 2,
         name: "React Native",

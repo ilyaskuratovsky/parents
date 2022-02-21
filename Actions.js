@@ -1,5 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
+import {
+  Timestamp,
+  //} from "firebase/firestore/lite";
+} from "firebase/firestore";
 
 export const screenSlice = createSlice({
   name: "screen",
@@ -94,8 +98,11 @@ export const mainSlice = createSlice({
     },
     groupMessages: (state, obj) => {
       const { groupId, messages } = obj.payload;
+      const orderedMessages = messages.sort((message1, message2) => {
+        return message2.timestamp - message1.timestamp;
+      });
       const groupMessages = { ...state.groupMessages };
-      groupMessages[groupId] = messages;
+      groupMessages[groupId] = orderedMessages;
 
       const newState = {
         ...state,
