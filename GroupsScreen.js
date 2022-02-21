@@ -35,14 +35,14 @@ import { auth, database } from "./config/firebase";
 export default function GroupsScreen({ navigation }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const { schoolList, schoolMap, groupList, groupMap, groupMemberships } =
+  const { schoolList, schoolMap, groupList, groupMap, userGroupMemberships } =
     useSelector((state) => {
       return {
         schoolList: state.main.schoolList,
         schoolMap: state.main.schoolMap,
         groupList: state.main.groupList,
         groupMap: state.main.groupMap,
-        groupMemberships: state.main.groupMemberships,
+        userGroupMemberships: state.main.userGroupMemberships,
       };
     });
 
@@ -69,7 +69,7 @@ export default function GroupsScreen({ navigation }) {
     if you don't belong to any schools just say - you don't have any groups and only the search is enabled.
   */
   const userSchools = userInfo.profile.schools ?? [];
-  const userGroups = groupMemberships.map(
+  const userGroups = userGroupMemberships.map(
     (groupMembership) => groupMembership.groupId
   );
   let schoolsComponent = null;
@@ -151,7 +151,7 @@ export default function GroupsScreen({ navigation }) {
         placeholder="Search..."
         value={""}
       />
-      <Text>Group Memberships: {JSON.stringify(groupMemberships)}</Text>
+      <Text>Group Memberships: {JSON.stringify(userGroupMemberships)}</Text>
       <Text key="group">Groups Screen {JSON.stringify(userInfo)}</Text>
       {schoolsComponent}
     </View>

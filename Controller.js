@@ -37,7 +37,19 @@ export async function initializeApp(dispatch) {
   usersSnapshot.forEach((doc) => {
     users.push({ id: doc.id, ...doc.data() });
   });
-  dispatch(Actions.locationDataInit({ schools, groups, users }));
+
+  //all group memberships
+  const groupMembershipsSnapshot = await getDocs(
+    collection(db, "group_memberships")
+  );
+  const groupMemberships = [];
+  groupMembershipsSnapshot.forEach((doc) => {
+    groupMemberships.push({ id: doc.id, ...doc.data() });
+  });
+
+  dispatch(
+    Actions.locationDataInit({ schools, groups, users, groupMemberships })
+  );
 
   // subscribe to auth changes
   const unsubscribeAuth = onAuthStateChanged(
@@ -92,15 +104,17 @@ export async function loggedIn(dispatch, authenticatedUser) {
   );
 
   //observe group membership changes
-  const groupMembershipsQuery = query(
+  const userGroupMembershipsQuery = query(
     collection(db, "group_memberships"),
     where("uid", "==", uid)
   );
-  const groupMemberships = await getDocs(groupMembershipsQuery);
-  const groupMembershipDocs = groupMemberships.docs.map((doc) => doc.data());
-  dispatch(Actions.groupMemberships(groupMembershipDocs));
+  const userGroupMemberships = await getDocs(userGroupMembershipsQuery);
+  const userGroupMembershipDocs = userGroupMemberships.docs.map((doc) =>
+    doc.data()
+  );
+  dispatch(Actions.userGroupMemberships(userGroupMembershipDocs));
 
-  groupMembershipDocs.forEach(async (groupMembership) => {
+  userGroupMembershipDocs.forEach(async (groupMembership) => {
     const messagesCollectionRef = collection(
       doc(collection(db, "groups"), groupMembership.groupId),
       "messages"

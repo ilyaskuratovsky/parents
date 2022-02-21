@@ -34,17 +34,25 @@ import { auth, database } from "./config/firebase";
 export default function GroupScreen({ groupId, navigation }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const { schoolList, schoolMap, groupList, groupMap, messages, userMap } =
-    useSelector((state) => {
-      return {
-        schoolList: state.main.schoolList,
-        schoolMap: state.main.schoolMap,
-        groupList: state.main.groupList,
-        groupMap: state.main.groupMap,
-        userMap: state.main.userMap,
-        messages: state.main.groupMessages[groupId],
-      };
-    });
+  const {
+    schoolList,
+    schoolMap,
+    groupList,
+    groupMap,
+    messages,
+    userMap,
+    members,
+  } = useSelector((state) => {
+    return {
+      schoolList: state.main.schoolList,
+      schoolMap: state.main.schoolMap,
+      groupList: state.main.groupList,
+      groupMap: state.main.groupMap,
+      userMap: state.main.userMap,
+      messages: state.main.groupMessages[groupId],
+      members: state.main.groupMembershipMap[groupId],
+    };
+  });
   const group = groupMap[groupId];
   const giftedChatMessages = messages.map((message) => {
     const user = userMap[message.uid];
@@ -74,6 +82,7 @@ export default function GroupScreen({ groupId, navigation }) {
       <Text key="group">
         Group Screen {groupId} {group.name}
       </Text>
+      <Text key="group">Members: {JSON.stringify(members)}</Text>
       <View style={{ width: "80%", height: "80%" }}>
         <GiftedChat
           messages={giftedChatMessages}

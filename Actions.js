@@ -41,9 +41,10 @@ export const mainSlice = createSlice({
     locationMap: null,
     groupIds: null,
     groupMap: null,
+    groupMembershipMap: null,
     userMap: null,
     userList: null,
-    groupMemberships: null,
+    userGroupMemberships: null,
     groupMessages: {},
   },
   reducers: {
@@ -63,7 +64,7 @@ export const mainSlice = createSlice({
       return newState;
     },
     locationDataInit: (state, obj) => {
-      const { schools, groups, users } = obj.payload;
+      const { schools, groups, users, groupMemberships } = obj.payload;
 
       //users
       const userList = [];
@@ -79,6 +80,12 @@ export const mainSlice = createSlice({
       for (const group of groups) {
         groupList.push(group);
         groupMap[group.id] = group;
+      }
+
+      //groupMemberships
+      const groupMembershipMap = {};
+      for (const groupMembership of groupMemberships) {
+        groupMembershipMap[groupMembership.groupId] = groupMembership;
       }
 
       //schools
@@ -97,14 +104,15 @@ export const mainSlice = createSlice({
         groupMap,
         schoolList,
         schoolMap,
+        groupMembershipMap,
       };
       return newState;
     },
-    groupMemberships: (state, obj) => {
-      const groupMemberships = obj.payload;
+    userGroupMemberships: (state, obj) => {
+      const userGroupMemberships = obj.payload;
       const newState = {
         ...state,
-        groupMemberships,
+        userGroupMemberships,
       };
       return newState;
     },
@@ -138,7 +146,7 @@ export const {
   userInfo,
   locationDataInit,
   schoolsUpdated,
-  groupMemberships,
+  userGroupMemberships,
   groupMessages,
 } = mainSlice.actions;
 export const { goToScreen, goToUserScreen } = screenSlice.actions;
