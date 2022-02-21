@@ -62,6 +62,10 @@ export default function GroupScreen({ groupId, navigation }) {
     return <Text>Loading Data...</Text>;
   }
 
+  const onSend = useCallback((messages = []) => {
+    Controller.sendMessage(dispatch, userInfo, groupId, messages[0].text);
+  }, []);
+
   return (
     <View style={{ flex: 1, flexDirection: "column" }}>
       <Text key="group">
@@ -70,6 +74,7 @@ export default function GroupScreen({ groupId, navigation }) {
       <View style={{ width: "80%", height: "80%" }}>
         <GiftedChat
           messages={giftedChatMessages}
+          onSend={onSend}
           style={{ border: 1, borderColor: "black" }}
         ></GiftedChat>
       </View>

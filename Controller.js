@@ -4,6 +4,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import {
   getFirestore,
   collection,
+  addDoc,
   getDocs,
   getDoc,
   doc,
@@ -11,6 +12,7 @@ import {
   setDoc,
   onSnapshot,
   query,
+  Timestamp,
   //} from "firebase/firestore/lite";
 } from "firebase/firestore";
 
@@ -94,6 +96,7 @@ export async function loggedIn(dispatch, authenticatedUser) {
       "messages"
     );
 
+    /*
     const messages = await getDocs(messagesCollectionRef);
     const messageDocs = messages.docs.map((doc) => doc.data());
     dispatch(
@@ -102,9 +105,18 @@ export async function loggedIn(dispatch, authenticatedUser) {
         messages: messageDocs,
       })
     );
-    onSnapshot(messagesCollectionRef, (message) => {
-      // TODO:
-      console.log("got messages");
+    */
+    onSnapshot(messagesCollectionRef, (messagesSnapshot) => {
+      const messageDocs = [];
+      messagesSnapshot.forEach((message) => {
+        messageDocs.push(message.data());
+      });
+      dispatch(
+        Actions.groupMessages({
+          groupId: groupMembership.groupId,
+          messages: messageDocs,
+        })
+      );
     });
   });
 
@@ -176,4 +188,20 @@ export async function joinGroup(dispatch, userInfo, groupId) {
     merge: true,
   });
   */
+}
+
+export async function sendMessage(dispatch, userInfo, groupId, text) {
+  const message = {
+    groupId,
+    text,
+    //timestamp: Date.now(),
+    //timestamp: db.firestore.FieldValue.serverTimestamp(), doesn't work
+    //timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    timestamp: Timestamp.now().toDate().toString(),
+  };
+  const messagesRef = collection(
+    doc(collection(db, "groups"), groupId),
+    "messages"
+  );
+  await addDoc(messagesRef, message);
 }
