@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { StyleSheet, Text, View, Button, TextInput } from "react-native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./config/firebase";
+import * as Actions from "./Actions";
 
-export default function SignupScreen({ navigation }) {
+export default function Signup() {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -19,7 +22,7 @@ export default function SignupScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Create new account</Text>
+      <Text style={styles.title}>Sign Up</Text>
       <TextInput
         style={styles.input}
         placeholder="Enter email"
@@ -41,7 +44,9 @@ export default function SignupScreen({ navigation }) {
       />
       <Button onPress={onHandleSignup} color="#f57c00" title="Signup" />
       <Button
-        onPress={() => navigation.navigate("Login")}
+        onPress={() => {
+          dispatch(Actions.goToScreen({ screen: "LOGIN" }));
+        }}
         title="Go to Login"
       />
     </View>

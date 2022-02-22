@@ -196,19 +196,28 @@ export async function saveUserProfileSchools(dispatch, userInfo, schools) {
   const newUserInfo = { ...userInfo, profile: { schools } };
   dispatch(Actions.userInfo(newUserInfo));
 
-  await setDoc(doc(database, "users", userInfo.uid), newUserInfo, {
+  await setDoc(doc(db, "users", userInfo.uid), newUserInfo, {
     merge: true,
   });
   dispatch(Actions.goToUserScreen({ screen: "GROUPS" }));
 }
 
 export async function joinGroup(dispatch, userInfo, groupId) {
-  const groupMembershipCollectionRef = collection(db, "group_membership");
-  const existingGroupMembership = await groupMembershipCollectionRef
-    .where("uid", "==", userInfo.uid)
-    .where("groupId", "==", groupId)
-    .get();
-  if (!existingGroupMembership.exists()) {
+  const groupMembershipCollectionRef = collection(db, "group_memberships");
+  const existingGroupMembershipQuery = query(
+    groupMembershipCollectionRef,
+    where("uid", "==", userInfo.uid),
+    where("groupId", "==", groupId)
+  );
+
+  const existingGroupMembershipSnapshot = await getDocs(
+    existingGroupMembershipQuery
+  );
+
+  console.log(
+    "existing memberships: " + existingGroupMembershipSnapshot.docs.length
+  );
+  if (existingGroupMembershipSnapshot.docs.length == 0) {
     const membership = { uid: userInfo.uid, groupId: groupId };
     await addDoc(groupMembershipCollectionRef, membership);
   }

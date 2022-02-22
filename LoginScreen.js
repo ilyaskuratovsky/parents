@@ -1,17 +1,17 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-import { useDispatch } from "react-redux";
-import Actions from "./Actions";
+import { StyleSheet, Text, View, Button, TextInput } from "react-native";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./config/firebase";
+import { useDispatch, useSelector } from "react-redux";
+import * as Actions from "./Actions";
 
-export default function LoginScreen({ dispatch }) {
+export default function Login({ navigation }) {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const onHandleLogin = () => {
     if (email !== "" && password !== "") {
-      console.log("signing in with " + email + ", " + password);
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {})
         .catch((err) => console.log(`Login err: ${err}`));
@@ -19,9 +19,10 @@ export default function LoginScreen({ dispatch }) {
   };
 
   return (
-    <View style={{ padding: 40 }}>
+    <View style={styles.container}>
+      <Text style={styles.title}>Log In</Text>
       <TextInput
-        style={{ fontSize: 20, padding: 10 }}
+        style={styles.input}
         placeholder="Enter email"
         autoCapitalize="none"
         keyboardType="email-address"
@@ -31,7 +32,7 @@ export default function LoginScreen({ dispatch }) {
         onChangeText={(text) => setEmail(text)}
       />
       <TextInput
-        style={{ fontSize: 20, padding: 10 }}
+        style={styles.input}
         placeholder="Enter password"
         autoCapitalize="none"
         autoCorrect={false}
@@ -43,10 +44,36 @@ export default function LoginScreen({ dispatch }) {
       <Button onPress={onHandleLogin} color="#f57c00" title="Login" />
       <Button
         onPress={() => {
-          dispatch(Actions.goToScreen("SIGNUP"));
+          dispatch(Actions.goToScreen({ screen: "SIGNUP" }));
         }}
         title="Go to Signup"
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    paddingTop: 50,
+    paddingHorizontal: 12,
+  },
+
+  title: {
+    fontSize: 24,
+    fontWeight: "600",
+    color: "#444",
+    alignSelf: "center",
+    paddingBottom: 24,
+  },
+  input: {
+    backgroundColor: "#fff",
+    marginBottom: 20,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: "#333",
+    borderRadius: 8,
+    padding: 12,
+  },
+});

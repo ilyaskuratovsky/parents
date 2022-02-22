@@ -47,11 +47,11 @@ export default function ProfileScreen({ navigation }) {
   }
 
   const schoolSection = (
-    <View style={{ flex: 1 }}>
+    <View key="school_section" style={{ flex: 1 }}>
       <ScrollView>
         {schoolList.map((school) => {
           return (
-            <View style={{ flex: 1, flexDirection: "row" }}>
+            <View key={school.id} style={{ flex: 1, flexDirection: "row" }}>
               <CheckBox
                 value={schoolSelection[school.id]}
                 onValueChange={(val) => {
@@ -80,8 +80,7 @@ export default function ProfileScreen({ navigation }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Text>Profile Screenx {JSON.stringify(userInfo)}</Text>
-      <Text>Location Info {JSON.stringify(locationInfo)}</Text>
+      <Text key="profile">Profile Screenx {JSON.stringify(userInfo)}</Text>
       {section == "school" && schoolSection}
     </View>
   );
