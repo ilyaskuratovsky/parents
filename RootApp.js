@@ -6,6 +6,7 @@ import ProfileScreen from "./ProfileScreen";
 import SplashScreen from "./SplashScreen";
 import LoginScreen from "./LoginScreen";
 import UserScreen from "./UserScreen";
+import SignupScreen from "./SignupScreen";
 
 function RootApp(props, state) {
   const dispatch = useDispatch();
@@ -23,7 +24,9 @@ function RootApp(props, state) {
   if (screen == "SPLASH") {
     return <SplashScreen appInitializedCallback={() => {}} refresh={2200} />;
   } else if (screen === "LOGIN") {
-    return <LoginScreen />;
+    return <LoginScreen dispatch={dispatch} />;
+  } else if (screen === "SIGNUP") {
+    return <SignupScreen />;
   } else if (screen === "USER") {
     return <UserScreen />;
   } else {

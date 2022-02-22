@@ -1,6 +1,6 @@
 import * as Actions from "./Actions";
 import { db, auth } from "./config/firebase";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import {
   getFirestore,
   collection,
@@ -66,6 +66,10 @@ export async function initializeApp(dispatch) {
 
   //Go to login page by default
   dispatch(Actions.goToScreen({ screen: "LOGIN" }));
+}
+
+function goToSignup(dispatch) {
+  dispatch(Actions.goToScreen({ screen: "SIGNUP" }));
 }
 
 export async function loggedIn(dispatch, authenticatedUser) {
@@ -235,4 +239,8 @@ export async function sendMessage(dispatch, userInfo, groupId, text) {
     "messages"
   );
   await addDoc(messagesRef, message);
+}
+
+export async function logout(dispatch) {
+  await signOut(auth);
 }

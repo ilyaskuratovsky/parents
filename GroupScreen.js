@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { SearchBar } from "react-native-elements";
 import * as MyButtons from "./MyButtons";
 import * as Controller from "./Controller";
+import * as Actions from "./Actions";
 /*
 import {
   collection,
@@ -83,6 +84,12 @@ export default function GroupScreen({ groupId, navigation }) {
         Group Screen {groupId} {group.name}
       </Text>
       <Text key="group">Members: {JSON.stringify(members)}</Text>
+      <MyButtons.FormButton
+        text="Groups"
+        onPress={() => {
+          dispatch(Actions.goToUserScreen({ screen: "GROUPS" }));
+        }}
+      />
       <View style={{ width: "80%", height: "80%" }}>
         <GiftedChat
           messages={giftedChatMessages}

@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View, Button, TextInput } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import React, { useState } from "react";
+import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { useDispatch } from "react-redux";
+import Actions from "./Actions";
 import { auth } from "./config/firebase";
-import { useDispatch, useSelector } from "react-redux";
-import * as Controller from "./Controller";
 
-export default function Login({ navigation }) {
-  const dispatch = useDispatch();
+export default function LoginScreen({ dispatch }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -20,10 +19,9 @@ export default function Login({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome back!</Text>
+    <View style={{ padding: 40 }}>
       <TextInput
-        style={styles.input}
+        style={{ fontSize: 20, padding: 10 }}
         placeholder="Enter email"
         autoCapitalize="none"
         keyboardType="email-address"
@@ -33,7 +31,7 @@ export default function Login({ navigation }) {
         onChangeText={(text) => setEmail(text)}
       />
       <TextInput
-        style={styles.input}
+        style={{ fontSize: 20, padding: 10 }}
         placeholder="Enter password"
         autoCapitalize="none"
         autoCorrect={false}
@@ -44,35 +42,11 @@ export default function Login({ navigation }) {
       />
       <Button onPress={onHandleLogin} color="#f57c00" title="Login" />
       <Button
-        onPress={() => navigation.navigate("Signup")}
+        onPress={() => {
+          dispatch(Actions.goToScreen("SIGNUP"));
+        }}
         title="Go to Signup"
       />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    paddingTop: 50,
-    paddingHorizontal: 12,
-  },
-
-  title: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#444",
-    alignSelf: "center",
-    paddingBottom: 24,
-  },
-  input: {
-    backgroundColor: "#fff",
-    marginBottom: 20,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: "#333",
-    borderRadius: 8,
-    padding: 12,
-  },
-});

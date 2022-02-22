@@ -154,6 +154,12 @@ export default function GroupsScreen({ navigation }) {
       <Text>Group Memberships: {JSON.stringify(userGroupMemberships)}</Text>
       <Text key="group">Groups Screen {JSON.stringify(userInfo)}</Text>
       {schoolsComponent}
+      <MyButtons.FormButton
+        text="Logout"
+        onPress={() => {
+          Controller.logout();
+        }}
+      />
     </View>
   );
 }
