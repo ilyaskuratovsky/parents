@@ -2,7 +2,7 @@ import { Provider } from "react-redux";
 
 import { collection, doc, setDoc } from "firebase/firestore/lite";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Text } from "react-native";
 import { db } from "./config/firebase";
 import {

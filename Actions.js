@@ -46,6 +46,7 @@ export const mainSlice = createSlice({
     userList: null,
     userGroupMemberships: null,
     groupMessages: {},
+    pushToken: null,
   },
   reducers: {
     appInitialized: (state, obj) => {
@@ -108,6 +109,15 @@ export const mainSlice = createSlice({
       };
       return newState;
     },
+    pushToken: (state, obj) => {
+      const { token } = obj.payload;
+
+      const newState = {
+        ...state,
+        pushToken: token,
+      };
+      return newState;
+    },
     userGroupMemberships: (state, obj) => {
       const userGroupMemberships = obj.payload;
       const newState = {
@@ -143,6 +153,7 @@ export const mainSlice = createSlice({
 // Action creators are generated for each case reducer function
 export const {
   appInitialized,
+  pushToken,
   userInfo,
   locationDataInit,
   schoolsUpdated,

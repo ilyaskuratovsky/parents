@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as Controller from "./Controller";
 import ErrorScreen from "./ErrorScreen";
@@ -10,9 +10,11 @@ import SignupScreen from "./SignupScreen";
 
 function RootApp(props, state) {
   const dispatch = useDispatch();
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
   useEffect(() => {
-    Controller.initializeApp(dispatch);
+    Controller.initializeApp(dispatch, notificationListener, responseListener);
   }, []);
 
   const screenWithParams = useSelector((state) => state.screen.screen);
