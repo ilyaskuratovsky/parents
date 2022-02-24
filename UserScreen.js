@@ -5,7 +5,8 @@ import DebugScreen from "./DebugScreen";
 import ErrorScreen from "./ErrorScreen";
 import GroupScreen from "./GroupScreen";
 import GroupsScreen from "./GroupsScreen";
-import ProfileScreen from "./ProfileScreen";
+import InitialChooseSchoolsWizard from "./InitialChooseSchoolsWizard";
+import InitialJoinSchoolGroupsScreen from "./InitialJoinSchoolGroupsScreen";
 
 export default function UserScreen({ navigation }) {
   const userInfo = useSelector((state) => state.main.userInfo);
@@ -18,7 +19,9 @@ export default function UserScreen({ navigation }) {
     return <Text>error (no screen)</Text>;
   } else {
     if (screen == "PROFILE") {
-      return <ProfileScreen />;
+      return <InitialChooseSchoolsWizard />;
+    } else if (screen == "INITIAL_SELECT_SCHOOL_GROUPS") {
+      return <InitialJoinSchoolGroupsScreen />;
     } else if (screen == "GROUPS") {
       return <GroupsScreen />;
     } else if (screen == "GROUP") {

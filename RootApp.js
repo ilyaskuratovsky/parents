@@ -2,11 +2,12 @@ import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as Controller from "./Controller";
 import ErrorScreen from "./ErrorScreen";
-import ProfileScreen from "./ProfileScreen";
+import ProfileScreen from "./InitialChooseSchoolsWizard";
 import SplashScreen from "./SplashScreen";
 import LoginScreen from "./LoginScreen";
 import UserScreen from "./UserScreen";
 import SignupScreen from "./SignupScreen";
+import InitialJoinSchoolGroupsScreen from "./InitialJoinSchoolGroupsScreen";
 
 function RootApp(props, state) {
   const dispatch = useDispatch();
@@ -31,6 +32,16 @@ function RootApp(props, state) {
     return <SignupScreen />;
   } else if (screen === "USER") {
     return <UserScreen />;
+  } else if (screen == "INITIAL_SELECT_SCHOOLS") {
+    return <InitialChooseSchoolsWizard />;
+  } else if (screen == "INITIAL_SELECT_SCHOOL_GROUPS") {
+    return <InitialJoinSchoolGroupsScreen />;
+  } else if (screen == "GROUPS") {
+    return <GroupsScreen />;
+  } else if (screen == "GROUP") {
+    return <GroupScreen groupId={screenWithParams.groupId} />;
+  } else if (screen == "DEBUG") {
+    return <DebugScreen backAction={screenWithParams.backAction} />;
   } else {
     return <ErrorScreen />;
   }

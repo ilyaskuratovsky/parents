@@ -17,8 +17,8 @@ const BottomBar = ({ style, children }) => {
         },
       ]}
     >
-      {children.map((child) => {
-        return <View>{child}</View>;
+      {children.map((child, index) => {
+        return <View key={index}>{child}</View>;
       })}
     </View>
   );

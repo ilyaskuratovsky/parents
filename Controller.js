@@ -147,11 +147,13 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
   const uid = authenticatedUser.uid;
   const docRef = doc(db, "users", uid);
   const docSnap = await getDoc(docRef);
-
+  let userDoc = null;
+  let userInfo = null;
   if (docSnap.exists()) {
     //update with latest push token
     const userRef = doc(collection(db, "users"), uid);
-    await setDoc(
+    userInfo = { id: docSnap.id, ...docSnap.data() };
+    userDoc = await setDoc(
       userRef,
       {
         pushToken: pushToken == undefined ? null : pushToken,
@@ -159,13 +161,15 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
       { merge: true }
     );
   } else {
-    await setDoc(doc(db, "users", uid), {
+    const userData = {
       uid: uid,
       displayName: authenticatedUser.displayName,
       photoURL: authenticatedUser.photoURL,
       email: authenticatedUser.email,
       pushToken: pushToken == undefined ? null : pushToken,
-    });
+    };
+    userDoc = await setDoc(doc(db, "users", uid), userData);
+    userInfo = userData;
   }
 
   //observe user changes
@@ -174,12 +178,8 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
     userDocRef,
     (doc) => {
       const data = doc.data();
-      dispatch(Actions.userInfo(data));
-      if (data.profile == null) {
-        dispatch(Actions.goToUserScreen({ screen: "PROFILE" }));
-      } else {
-        dispatch(Actions.goToUserScreen({ screen: "GROUPS" }));
-      }
+      userInfo = { id: doc.id, ...data };
+      dispatch(Actions.userInfo(userInfo));
     },
     (err) => {
       console.log("encountered error");
@@ -248,15 +248,22 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
       console.log(`Encountered error: ${err}`);
     }
   );
-
-  dispatch(Actions.goToScreen({ screen: "USER" }));
+  if (userInfo.profile == null) {
+    dispatch(Actions.goToScreen({ screen: "INITIAL_SELECT_SCHOOLS" }));
+  } else {
+    if (userInfo.schools == null || userInfo.schools.length == 0) {
+      dispatch(Actions.goToScreen({ screen: "INITIAL_SELECT_SCHOOL_GROUPS" }));
+    } else {
+      dispatch(Actions.goToScreen({ screen: "GROUPS" }));
+    }
+  }
 }
 
 export async function loggedOut(dispatch) {
   dispatch(Actions.goToScreen({ screen: "LOGIN" }));
 }
 
-export async function saveUserProfileSchools(dispatch, userInfo, schools) {
+export async function initialUserProfileSchools(dispatch, userInfo, schools) {
   /*
   const res = await cityRef.set({
   capital: true
@@ -269,7 +276,7 @@ export async function saveUserProfileSchools(dispatch, userInfo, schools) {
   await setDoc(doc(db, "users", userInfo.uid), newUserInfo, {
     merge: true,
   });
-  dispatch(Actions.goToUserScreen({ screen: "GROUPS" }));
+  dispatch(Actions.goToUserScreen({ screen: "INITIAL_SELECT_SCHOOL_GROUPS" }));
 }
 
 export async function joinGroup(dispatch, userInfo, groupId) {
