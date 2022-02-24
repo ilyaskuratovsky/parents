@@ -50,9 +50,8 @@ export async function initializeApp(
   });
 
   //all group memberships
-  const groupMembershipsSnapshot = await getDocs(
-    collection(db, "group_memberships")
-  );
+  const groupMembershipsRef = collection(db, "group_memberships");
+  const groupMembershipsSnapshot = await getDocs(groupMembershipsRef);
   const groupMemberships = [];
   groupMembershipsSnapshot.forEach((doc) => {
     groupMemberships.push({ id: doc.id, ...doc.data() });
@@ -61,6 +60,19 @@ export async function initializeApp(
   dispatch(
     Actions.locationDataInit({ schools, groups, users, groupMemberships })
   );
+
+  //observe group_membership_changes
+  onSnapshot(groupMembershipsRef, (groupMembershipsSnapshot) => {
+    const groupMembershipDocs = [];
+    groupMembershipsSnapshot.forEach((groupMembership) => {
+      const data = groupMembership.data();
+      groupMembershipDocs.push({
+        id: groupMembership.id,
+        ...data,
+      });
+    });
+    dispatch(Actions.groupMemberships(groupMembershipDocs));
+  });
 
   //push notification token
 
@@ -174,7 +186,7 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
     }
   );
 
-  //observe group membership changes
+  //observe user group membership changes
   const userGroupMembershipsQuery = query(
     collection(db, "group_memberships"),
     where("uid", "==", uid)
@@ -185,7 +197,7 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
   );
   dispatch(Actions.userGroupMemberships(userGroupMembershipDocs));
 
-  //group membership subscription
+  //user group membership subscription
   onSnapshot(userGroupMembershipsQuery, (userGroupMembershipsSnapshot) => {
     const userGroupMembershipDocs = userGroupMembershipsSnapshot.docs.map(
       (doc) => doc.data()

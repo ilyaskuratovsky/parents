@@ -12,6 +12,7 @@ import {
   CheckBox,
   Button,
 } from "react-native";
+import JSONTree from "react-native-json-tree";
 import { GiftedChat } from "react-native-gifted-chat";
 import { useDispatch, useSelector } from "react-redux";
 import { SearchBar } from "react-native-elements";
@@ -83,7 +84,10 @@ export default function GroupScreen({ groupId, navigation }) {
       <Text key="label">
         Group Screen {groupId} {group.name}
       </Text>
-      <Text key="group">Members: {JSON.stringify(members)}</Text>
+
+      <Text key="group">
+        Members: <JSONTree data={members} />
+      </Text>
       <MyButtons.FormButton
         text="Groups"
         onPress={() => {

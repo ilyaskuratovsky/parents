@@ -113,7 +113,10 @@ export default function GroupsScreen({ navigation }) {
 
       const joinGroupComponents = joinSchoolGroups.map((group) => {
         return (
-          <View key={"join_" + school.id} style={{ flexDirection: "row" }}>
+          <View
+            key={"join_" + school.id + "_" + group.id}
+            style={{ flexDirection: "row" }}
+          >
             <Text>
               {group.name} ({group.id})
             </Text>
