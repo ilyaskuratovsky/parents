@@ -82,12 +82,9 @@ export default function GroupScreen({ groupId, navigation }) {
   return (
     <View style={{ flex: 1, flexDirection: "column" }}>
       <Text key="label">
-        Group Screen {groupId} {group.name}
+        Group Screen:s {groupId} {group.name}
       </Text>
 
-      <Text key="group">
-        Members: <JSONTree data={members} />
-      </Text>
       <MyButtons.FormButton
         text="Groups"
         onPress={() => {

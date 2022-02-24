@@ -1,37 +1,11 @@
-import React, {
-  useState,
-  useEffect,
-  useLayoutEffect,
-  useCallback,
-} from "react";
-import {
-  TouchableOpacity,
-  Text,
-  View,
-  ScrollView,
-  CheckBox,
-  Button,
-} from "react-native";
-import { GiftedChat } from "react-native-gifted-chat";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
+import { ScrollView, Text, View } from "react-native";
 import { SearchBar } from "react-native-elements";
-import * as MyButtons from "./MyButtons";
-import * as Controller from "./Controller";
+import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "./Actions";
+import * as Controller from "./Controller";
+import * as MyButtons from "./MyButtons";
 import NewSchoolGroupModal from "./NewSchoolGroupModal";
-/*
-import {
-  collection,
-  addDoc,
-  orderBy,
-  query,
-  onSnapshot,
-} from "firebase/firestore";
-*/
-import * as Firestore from "firebase/firestore";
-import { signOut } from "firebase/auth";
-
-import { auth, database } from "./config/firebase";
 
 export default function GroupsScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -188,10 +162,18 @@ export default function GroupsScreen({ navigation }) {
         placeholder="Search..."
         value={""}
       />
-      <Text>Groups: {JSON.stringify(groupList)}</Text>
-      <Text>Group Memberships: {JSON.stringify(userGroupMemberships)}</Text>
-      <Text key="group">Groups Screen {JSON.stringify(userInfo)}</Text>
       {schoolsComponent}
+      <MyButtons.FormButton
+        text="Debug"
+        onPress={() => {
+          dispatch(
+            Actions.goToUserScreen({
+              screen: "DEBUG",
+              backAction: () => Actions.goToUserScreen({ screen: "GROUPS" }),
+            })
+          );
+        }}
+      />
       <MyButtons.FormButton
         text="Logout"
         onPress={() => {
