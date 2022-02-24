@@ -1,37 +1,13 @@
-import React, {
-  useState,
-  useEffect,
-  useLayoutEffect,
-  useCallback,
-} from "react";
-import {
-  TouchableOpacity,
-  Text,
-  View,
-  ScrollView,
-  CheckBox,
-  Button,
-} from "react-native";
-import JSONTree from "react-native-json-tree";
+import React, { useCallback } from "react";
+import { Text, View } from "react-native";
 import { GiftedChat } from "react-native-gifted-chat";
 import { useDispatch, useSelector } from "react-redux";
-import { SearchBar } from "react-native-elements";
-import * as MyButtons from "./MyButtons";
-import * as Controller from "./Controller";
 import * as Actions from "./Actions";
-/*
-import {
-  collection,
-  addDoc,
-  orderBy,
-  query,
-  onSnapshot,
-} from "firebase/firestore";
-*/
-import * as Firestore from "firebase/firestore";
-import { signOut } from "firebase/auth";
-
-import { auth, database } from "./config/firebase";
+import * as Controller from "./Controller";
+import * as MyButtons from "./MyButtons";
+import * as UIConstants from "./UIConstants";
+import TopBar from "./TopBar";
+import Portal from "./Portal";
 
 export default function GroupScreen({ groupId, navigation }) {
   const dispatch = useDispatch();
@@ -80,24 +56,32 @@ export default function GroupScreen({ groupId, navigation }) {
   }, []);
 
   return (
-    <View style={{ flex: 1, flexDirection: "column" }}>
-      <Text key="label">
-        Group Screen:s {groupId} {group.name}
-      </Text>
-
-      <MyButtons.FormButton
-        text="Groups"
-        onPress={() => {
-          dispatch(Actions.goToUserScreen({ screen: "GROUPS" }));
-        }}
+    <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
+      <TopBar
+        style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}
+        left={
+          <MyButtons.MenuButton
+            icon="arrow-left"
+            text="Groups"
+            onPress={() => {
+              dispatch(Actions.goToUserScreen({ screen: "GROUPS" }));
+            }}
+          />
+        }
+        center={<Text>Groups</Text>}
+        right={null}
       />
-      <View style={{ width: "80%", height: "80%" }}>
-        <GiftedChat
-          messages={giftedChatMessages}
-          onSend={onSend}
-          style={{ border: 1, borderColor: "black" }}
-        ></GiftedChat>
+      <View style={{ flex: 1, flexDirection: "column" }}>
+        <Text key="label">{group.name}</Text>
+
+        <View style={{ flex: 1 }}>
+          <GiftedChat
+            messages={giftedChatMessages}
+            onSend={onSend}
+            style={{ border: 1, borderColor: "black" }}
+          ></GiftedChat>
+        </View>
       </View>
-    </View>
+    </Portal>
   );
 }

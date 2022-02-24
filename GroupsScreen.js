@@ -6,6 +6,10 @@ import * as Actions from "./Actions";
 import * as Controller from "./Controller";
 import * as MyButtons from "./MyButtons";
 import NewSchoolGroupModal from "./NewSchoolGroupModal";
+import Portal from "./Portal";
+import * as UIConstants from "./UIConstants";
+import TopBar from "./TopBar";
+import BottomBar from "./BottomBar";
 
 export default function GroupsScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -152,34 +156,47 @@ export default function GroupsScreen({ navigation }) {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <SearchBar
-        key="search"
-        round
-        searchIcon={{ size: 24 }}
-        onChangeText={(text) => {}}
-        onClear={(text) => {}}
-        placeholder="Search..."
-        value={""}
+    <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
+      <TopBar
+        style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}
+        left={null}
+        center={<Text>Groups</Text>}
+        right={null}
       />
-      {schoolsComponent}
-      <MyButtons.FormButton
-        text="Debug"
-        onPress={() => {
-          dispatch(
-            Actions.goToUserScreen({
-              screen: "DEBUG",
-              backAction: () => Actions.goToUserScreen({ screen: "GROUPS" }),
-            })
-          );
-        }}
-      />
-      <MyButtons.FormButton
-        text="Logout"
-        onPress={() => {
-          Controller.logout();
-        }}
-      />
-    </View>
+      <View style={{ flex: 1 }}>
+        <SearchBar
+          key="search"
+          round
+          searchIcon={{ size: 24 }}
+          onChangeText={(text) => {}}
+          onClear={(text) => {}}
+          placeholder="Search..."
+          value={""}
+        />
+        {schoolsComponent}
+        <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
+          <MyButtons.FormButton text="Schools/Orgs" onPress={() => {}} />
+          <MyButtons.FormButton text="My Profile" onPress={() => {}} />
+          <MyButtons.FormButton
+            text="Logout"
+            onPress={() => {
+              Controller.logout();
+            }}
+          />
+          <MyButtons.FormButton
+            text="Debug"
+            onPress={() => {
+              dispatch(
+                Actions.goToUserScreen({
+                  screen: "DEBUG",
+                  backAction: () =>
+                    Actions.goToUserScreen({ screen: "GROUPS" }),
+                })
+              );
+            }}
+          />
+        </BottomBar>
+      </View>
+    </Portal>
   );
 }
