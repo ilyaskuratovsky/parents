@@ -80,7 +80,7 @@ export default function GroupScreen({ groupId, navigation }) {
 
   return (
     <View style={{ flex: 1, flexDirection: "column" }}>
-      <Text key="group">
+      <Text key="label">
         Group Screen {groupId} {group.name}
       </Text>
       <Text key="group">Members: {JSON.stringify(members)}</Text>

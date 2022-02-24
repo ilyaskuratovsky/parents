@@ -140,6 +140,21 @@ export const mainSlice = createSlice({
       };
       return newState;
     },
+    groups: (state, obj) => {
+      const groups = obj.payload;
+      const groupList = [];
+      const groupMap = {};
+      for (const group of groups) {
+        groupList.push(group);
+        groupMap[group.id] = group;
+      }
+      const newState = {
+        ...state,
+        groupList,
+        groupMap,
+      };
+      return newState;
+    },
     schoolsUpdated: (state, obj) => {
       const schools = obj.payload;
       const newState = {
@@ -159,6 +174,7 @@ export const {
   schoolsUpdated,
   userGroupMemberships,
   groupMessages,
+  groups,
 } = mainSlice.actions;
 export const { goToScreen, goToUserScreen } = screenSlice.actions;
 

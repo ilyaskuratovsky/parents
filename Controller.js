@@ -21,6 +21,8 @@ import {
   //} from "firebase/firestore/lite";
 } from "firebase/firestore";
 
+const groupMessageSubscriptions = {};
+
 export async function initializeApp(
   dispatch,
   notificationListener,
@@ -30,7 +32,7 @@ export async function initializeApp(
   const schoolsSnapshot = await getDocs(collection(db, "schools"));
   const schools = [];
   schoolsSnapshot.forEach((doc) => {
-    schools.push(doc.data());
+    schools.push({ id: doc.id, ...doc.data() });
   });
 
   // store all groups
@@ -105,6 +107,21 @@ export async function initializeApp(
     }
   );
 
+  //observe to group changes
+  const groupsCollectionRef = collection(db, "groups");
+  onSnapshot(groupsCollectionRef, (groupsSnapshot) => {
+    const groupDocs = [];
+    groupsSnapshot.forEach((group) => {
+      const data = group.data();
+      groupDocs.push({
+        id: group.id,
+        name: data.name,
+        schoolId: data.schoolId,
+      });
+    });
+    dispatch(Actions.groups(groupDocs));
+  });
+
   //Go to login page by default
   dispatch(Actions.goToScreen({ screen: "LOGIN" }));
 }
@@ -168,54 +185,45 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
   );
   dispatch(Actions.userGroupMemberships(userGroupMembershipDocs));
 
-  userGroupMembershipDocs.forEach(async (groupMembership) => {
-    const messagesCollectionRef = collection(
-      doc(collection(db, "groups"), groupMembership.groupId),
-      "messages"
+  //group membership subscription
+  onSnapshot(userGroupMembershipsQuery, (userGroupMembershipsSnapshot) => {
+    const userGroupMembershipDocs = userGroupMembershipsSnapshot.docs.map(
+      (doc) => doc.data()
     );
 
-    /*
-    const messages = await getDocs(messagesCollectionRef);
-    const messageDocs = messages.docs.map((doc) => doc.data());
-    dispatch(
-      Actions.groupMessages({
-        groupId: groupMembership.groupId,
-        messages: messageDocs,
-      })
-    );
-    */
-    onSnapshot(messagesCollectionRef, (messagesSnapshot) => {
-      const messageDocs = [];
-      messagesSnapshot.forEach((message) => {
-        const data = message.data();
-        messageDocs.push({
-          id: message.id,
-          text: data.text,
-          uid: data.uid,
-          timestamp: data.timestamp.toMillis(),
-        });
-      });
-      dispatch(
-        Actions.groupMessages({
-          groupId: groupMembership.groupId,
-          messages: messageDocs,
-        })
+    // messages for each group
+    userGroupMembershipDocs.forEach(async (groupMembership) => {
+      const messagesCollectionRef = collection(
+        doc(collection(db, "groups"), groupMembership.groupId),
+        "messages"
       );
+      if (!(groupMembership.groupId in groupMessageSubscriptions)) {
+        const unsubscribe = onSnapshot(
+          messagesCollectionRef,
+          (messagesSnapshot) => {
+            const messageDocs = [];
+            messagesSnapshot.forEach((message) => {
+              const data = message.data();
+              messageDocs.push({
+                id: message.id,
+                text: data.text,
+                uid: data.uid,
+                timestamp: data.timestamp.toMillis(),
+              });
+            });
+            dispatch(
+              Actions.groupMessages({
+                groupId: groupMembership.groupId,
+                messages: messageDocs,
+              })
+            );
+          }
+        );
+        groupMessageSubscriptions[groupMembership.groupId] = unsubscribe;
+      }
+      dispatch(Actions.userGroupMemberships(userGroupMembershipDocs));
     });
   });
-
-  /*
-  onSnapshot(
-    groupMemberships,
-    (snapshot) => {
-      const groupMemberships = snapshot.docs.map((doc) => doc.data());
-      dispatch(Actions.groupMemberships(groupMemberships));
-    },
-    (err) => {
-      console.log(`Encountered error: ${err}`);
-    }
-  );
-  */
 
   //observe schools changes
   var schoolQuery = onSnapshot(
@@ -281,6 +289,24 @@ export async function joinGroup(dispatch, userInfo, groupId) {
     merge: true,
   });
   */
+}
+
+export async function createSchoolGroupAndJoin(
+  dispatch,
+  userInfo,
+  schoolId,
+  groupName,
+  grade,
+  year
+) {
+  const groupsRef = collection(db, "groups");
+  const group = await addDoc(groupsRef, {
+    name: groupName,
+    schoolId: schoolId,
+    grade,
+    year,
+  });
+  await joinGroup(dispatch, userInfo, group.id);
 }
 
 export async function sendMessage(dispatch, userInfo, groupId, text) {

@@ -18,6 +18,7 @@ import { SearchBar } from "react-native-elements";
 import * as MyButtons from "./MyButtons";
 import * as Controller from "./Controller";
 import * as Actions from "./Actions";
+import NewSchoolGroupModal from "./NewSchoolGroupModal";
 /*
 import {
   collection,
@@ -45,7 +46,7 @@ export default function GroupsScreen({ navigation }) {
         userGroupMemberships: state.main.userGroupMemberships,
       };
     });
-
+  const [visibleSchoolGroupModal, setVisibleSchoolGroupModal] = useState(null);
   if (userInfo == null) {
     return <Text>Loading Data...</Text>;
   }
@@ -77,7 +78,7 @@ export default function GroupsScreen({ navigation }) {
     schoolsComponent = userSchools.map((school_id) => {
       const school = schoolMap[school_id];
       const schoolGroups = groupList.filter(
-        (group) => group.school == school.id
+        (group) => group.schoolId == school.id
       );
 
       const userSchoolGroups = schoolGroups.filter((schoolGroup) => {
@@ -86,7 +87,10 @@ export default function GroupsScreen({ navigation }) {
 
       const schoolGroupComponents = userSchoolGroups.map((group) => {
         return (
-          <View key={school.id} style={{ flexDirection: "row" }}>
+          <View
+            key={"x" + school.id + "_" + group.id}
+            style={{ flexDirection: "row" }}
+          >
             <Text>
               {group.name} ({group.id})
             </Text>
@@ -109,7 +113,7 @@ export default function GroupsScreen({ navigation }) {
 
       const joinGroupComponents = joinSchoolGroups.map((group) => {
         return (
-          <View key={school.id} style={{ flexDirection: "row" }}>
+          <View key={"join_" + school.id} style={{ flexDirection: "row" }}>
             <Text>
               {group.name} ({group.id})
             </Text>
@@ -122,13 +126,43 @@ export default function GroupsScreen({ navigation }) {
           </View>
         );
       });
+      joinGroupComponents.push(
+        <View key="new">
+          <MyButtons.FormButton
+            text="Create New Group"
+            onPress={() => {
+              setVisibleSchoolGroupModal(school.id);
+            }}
+          />
+        </View>
+      );
+
+      const createSchoolGroup = async function (groupName, grade, year) {
+        return Controller.createSchoolGroupAndJoin(
+          dispatch,
+          userInfo,
+          school.id,
+          groupName,
+          grade,
+          year
+        );
+      };
 
       return (
-        <View key={school.id} style={{ flex: 1 }}>
-          <Text>{school.name}</Text>
-          <ScrollView>{schoolGroupComponents}</ScrollView>
+        <View key={"school_" + school.id} style={{ flex: 1 }}>
+          <Text key="name">{school.name}</Text>
+          <ScrollView key="scroll_open">{schoolGroupComponents}</ScrollView>
           {/* list all the groups in scroll view here */}
-          <ScrollView>{joinGroupComponents}</ScrollView>
+          <ScrollView key="scroll_join">{joinGroupComponents}</ScrollView>
+          <NewSchoolGroupModal
+            key="newgroupmodal"
+            visible={visibleSchoolGroupModal == school.id}
+            onCreateGroup={createSchoolGroup}
+            closeModal={() => {
+              console.log("close modal called");
+              setVisibleSchoolGroupModal(null);
+            }}
+          />
         </View>
       );
     });
@@ -151,6 +185,7 @@ export default function GroupsScreen({ navigation }) {
         placeholder="Search..."
         value={""}
       />
+      <Text>Groups: {JSON.stringify(groupList)}</Text>
       <Text>Group Memberships: {JSON.stringify(userGroupMemberships)}</Text>
       <Text key="group">Groups Screen {JSON.stringify(userInfo)}</Text>
       {schoolsComponent}
