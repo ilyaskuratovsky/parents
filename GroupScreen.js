@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { Text, View } from "react-native";
+import React, { useCallback, useState } from "react";
+import { Text, View, TouchableOpacity } from "react-native";
 import { GiftedChat } from "react-native-gifted-chat";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "./Actions";
@@ -8,6 +8,7 @@ import * as MyButtons from "./MyButtons";
 import * as UIConstants from "./UIConstants";
 import TopBar from "./TopBar";
 import Portal from "./Portal";
+import GroupInviteModal from "./GroupInviteModal";
 
 export default function GroupScreen({ groupId, navigation }) {
   const dispatch = useDispatch();
@@ -32,6 +33,7 @@ export default function GroupScreen({ groupId, navigation }) {
       members: state.main.groupMembershipMap[groupId],
     };
   });
+  const [inviteModalVisible, setInviteModalVisible] = useState(false);
   const group = groupMap[groupId];
   const giftedChatMessages = messages.map((message) => {
     const user = userMap[message.uid];
@@ -92,6 +94,32 @@ export default function GroupScreen({ groupId, navigation }) {
               </Text>
             );
           })}
+          <TouchableOpacity
+            onPress={() => {
+              setInviteModalVisible(true);
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 12,
+                textDecorationLine: "underline",
+                color: "blue",
+                fontWeight: "bold",
+                textAlign: "center",
+              }}
+            >
+              Invite
+            </Text>
+            <GroupInviteModal
+              key="newgroupmodal"
+              groupId={group.id}
+              visible={inviteModalVisible}
+              closeModal={() => {
+                console.log("close modal called");
+                setInviteModalVisible(false);
+              }}
+            />
+          </TouchableOpacity>
         </View>
         <View style={{ flex: 1 }}>
           <GiftedChat
