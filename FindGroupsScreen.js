@@ -11,7 +11,7 @@ import * as UIConstants from "./UIConstants";
 import TopBar from "./TopBar";
 import BottomBar from "./BottomBar";
 
-export default function GroupsScreen({ navigation }) {
+export default function FindGroupsScreens({ navigation }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
   const { schoolList, schoolMap, groupList, groupMap, userGroupMemberships } =
@@ -60,7 +60,16 @@ Activities
         <Text>Schools</Text>
         {schoolList.map((school) => {
           return (
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                dispatch(
+                  Actions.goToScreen({
+                    screen: "SCHOOL",
+                    schoolId: school.id,
+                  })
+                );
+              }}
+            >
               <Text
                 style={{
                   fontSize: 12,
