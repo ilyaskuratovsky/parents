@@ -47,112 +47,52 @@ export default function GroupsScreen({ navigation }) {
 
     if you don't belong to any schools just say - you don't have any groups and only the search is enabled.
   */
-  const userSchools = userInfo.profile.schools ?? [];
+  //const userSchools = userInfo.profile.schools ?? [];
   const userGroups = userGroupMemberships.map(
     (groupMembership) => groupMembership.groupId
   );
-  let schoolsComponent = null;
-  if (userSchools.length > 0) {
-    schoolsComponent = userSchools.map((school_id) => {
-      const school = schoolMap[school_id];
-      const schoolGroups = groupList.filter(
-        (group) => group.schoolId == school.id
-      );
-
-      const userSchoolGroups = schoolGroups.filter((schoolGroup) => {
-        return userGroups.includes(schoolGroup.id);
-      });
-
-      const schoolGroupComponents = userSchoolGroups.map((group) => {
-        return (
-          <View
-            key={"x" + school.id + "_" + group.id}
-            style={{ flexDirection: "row" }}
+  let groupsComponents = null;
+  if (userGroups.length > 0) {
+    groupsComponents = userGroups.map((groupId, index) => {
+      const group = groupMap[groupId];
+      return (
+        <View
+          key={group.id}
+          style={{
+            flexDirection: "row",
+            height: 60,
+            alignItems: "center",
+            paddingLeft: 10,
+          }}
+        >
+          <Text
+            style={{
+              flexGrow: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
           >
-            <Text>
-              {group.name} ({group.id})
-            </Text>
-
+            {group.name}
+          </Text>
+          <View
+            style={{
+              flexBasis: 100,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <MyButtons.FormButton
-              text="Go To Group"
+              text="Open"
               onPress={() => {
                 dispatch(
-                  Actions.goToUserScreen({ screen: "GROUP", groupId: group.id })
+                  Actions.goToScreen({ screen: "GROUP", groupId: group.id })
                 );
               }}
             />
           </View>
-        );
-      });
-
-      const joinSchoolGroups = schoolGroups.filter((schoolGroup) => {
-        return !userGroups.includes(schoolGroup.id);
-      });
-
-      const joinGroupComponents = joinSchoolGroups.map((group) => {
-        return (
-          <View
-            key={"join_" + school.id + "_" + group.id}
-            style={{ flexDirection: "row" }}
-          >
-            <Text>
-              {group.name} ({group.id})
-            </Text>
-            <MyButtons.FormButton
-              text="Join"
-              onPress={() => {
-                Controller.joinGroup(dispatch, userInfo, group.id);
-              }}
-            />
-          </View>
-        );
-      });
-      joinGroupComponents.push(
-        <View key="new">
-          <MyButtons.FormButton
-            text="Create New Group"
-            onPress={() => {
-              setVisibleSchoolGroupModal(school.id);
-            }}
-          />
-        </View>
-      );
-
-      const createSchoolGroup = async function (groupName, grade, year) {
-        return Controller.createSchoolGroupAndJoin(
-          dispatch,
-          userInfo,
-          school.id,
-          groupName,
-          grade,
-          year
-        );
-      };
-
-      return (
-        <View key={"school_" + school.id} style={{ flex: 1 }}>
-          <Text key="name">{school.name}</Text>
-          <ScrollView key="scroll_open">{schoolGroupComponents}</ScrollView>
-          {/* list all the groups in scroll view here */}
-          <ScrollView key="scroll_join">{joinGroupComponents}</ScrollView>
-          <NewSchoolGroupModal
-            key="newgroupmodal"
-            visible={visibleSchoolGroupModal == school.id}
-            onCreateGroup={createSchoolGroup}
-            closeModal={() => {
-              console.log("close modal called");
-              setVisibleSchoolGroupModal(null);
-            }}
-          />
         </View>
       );
     });
-  } else {
-    schoolsComponent = (
-      <Text key="noschool">
-        No Schools Set Up [link here to set up schools]
-      </Text>
-    );
   }
 
   return (
@@ -164,6 +104,7 @@ export default function GroupsScreen({ navigation }) {
         right={null}
       />
       <View style={{ flex: 1 }}>
+        {/*
         <SearchBar
           key="search"
           round
@@ -173,7 +114,8 @@ export default function GroupsScreen({ navigation }) {
           placeholder="Search..."
           value={""}
         />
-        {schoolsComponent}
+        */}
+        <ScrollView>{groupsComponents}</ScrollView>
         <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
           <MyButtons.FormButton text="Schools/Orgs" onPress={() => {}} />
           <MyButtons.FormButton text="My Profile" onPress={() => {}} />

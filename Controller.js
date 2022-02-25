@@ -138,10 +138,6 @@ export async function initializeApp(
   dispatch(Actions.goToScreen({ screen: "LOGIN" }));
 }
 
-function goToSignup(dispatch) {
-  dispatch(Actions.goToScreen({ screen: "SIGNUP" }));
-}
-
 export async function loggedIn(dispatch, authenticatedUser, pushToken) {
   console.log("logged in");
   const uid = authenticatedUser.uid;
@@ -149,6 +145,8 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
   const docSnap = await getDoc(docRef);
   let userDoc = null;
   let userInfo = null;
+
+  // get or create the user info objet
   if (docSnap.exists()) {
     //update with latest push token
     const userRef = doc(collection(db, "users"), uid);
@@ -251,7 +249,11 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
   if (userInfo.profile == null) {
     dispatch(Actions.goToScreen({ screen: "INITIAL_SELECT_SCHOOLS" }));
   } else {
-    if (userInfo.schools == null || userInfo.schools.length == 0) {
+    if (
+      userInfo.profile.schools != null &&
+      userInfo.profile.schools.length > 0 &&
+      userGroupMembershipDocs == 0
+    ) {
       dispatch(Actions.goToScreen({ screen: "INITIAL_SELECT_SCHOOL_GROUPS" }));
     } else {
       dispatch(Actions.goToScreen({ screen: "GROUPS" }));
@@ -276,7 +278,7 @@ export async function initialUserProfileSchools(dispatch, userInfo, schools) {
   await setDoc(doc(db, "users", userInfo.uid), newUserInfo, {
     merge: true,
   });
-  dispatch(Actions.goToUserScreen({ screen: "INITIAL_SELECT_SCHOOL_GROUPS" }));
+  dispatch(Actions.goToScreen({ screen: "INITIAL_SELECT_SCHOOL_GROUPS" }));
 }
 
 export async function joinGroup(dispatch, userInfo, groupId) {

@@ -72,7 +72,7 @@ export default function InitialJoinSchoolGroupsScreen() {
               alignItems: "center",
             }}
           >
-            {group.name} ({group.id})
+            {group.name}
           </Text>
           <View
             style={{

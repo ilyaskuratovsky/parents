@@ -22,6 +22,7 @@ export default function GroupScreen({ groupId, navigation }) {
     members,
   } = useSelector((state) => {
     return {
+      userinfo: state.main.userInfo,
       schoolList: state.main.schoolList,
       schoolMap: state.main.schoolMap,
       groupList: state.main.groupList,
@@ -62,18 +63,36 @@ export default function GroupScreen({ groupId, navigation }) {
         left={
           <MyButtons.MenuButton
             icon="arrow-left"
-            text="Groups"
+            text=""
             onPress={() => {
-              dispatch(Actions.goToUserScreen({ screen: "GROUPS" }));
+              dispatch(Actions.goToScreen({ screen: "GROUPS" }));
             }}
           />
         }
-        center={<Text>Groups</Text>}
+        center={<Text>{group.name}</Text>}
         right={null}
       />
       <View style={{ flex: 1, flexDirection: "column" }}>
-        <Text key="label">{group.name}</Text>
-
+        <View style={{ height: 50, grow: 0, flexDirection: "row" }}>
+          {members.map(({ uid }, index) => {
+            const user = userMap[uid];
+            const name =
+              user.displayName != null
+                ? user.displayName
+                : user.email.substring(0, user.email.lastIndexOf("@"));
+            return (
+              <Text
+                style={{
+                  marginRight: 8,
+                  fontWeight: userInfo.uid == user.uid ? "bold" : "normal",
+                }}
+              >
+                {name}
+                {index < members.length - 1 ? "," : ""}
+              </Text>
+            );
+          })}
+        </View>
         <View style={{ flex: 1 }}>
           <GiftedChat
             messages={giftedChatMessages}

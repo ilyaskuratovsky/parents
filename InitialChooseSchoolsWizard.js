@@ -63,10 +63,7 @@ export default function InitialChooseSchoolsWizard({ navigation }) {
                 uncheckedIcon="circle-o"
                 onPress={() => {
                   const newSchoolSelection = { ...schoolSelection };
-                  console.log(
-                    "newSchoolSelection: " + JSON.stringify(newSchoolSelection)
-                  );
-                  const checked = true;
+                  const checked = !(newSchoolSelection[school.id] ?? false);
 
                   newSchoolSelection[school.id] = checked;
                   console.log(

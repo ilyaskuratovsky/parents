@@ -2,13 +2,14 @@ import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as Controller from "./Controller";
 import ErrorScreen from "./ErrorScreen";
-import ProfileScreen from "./InitialChooseSchoolsWizard";
+import InitialChooseSchoolsWizard from "./InitialChooseSchoolsWizard";
 import SplashScreen from "./SplashScreen";
 import LoginScreen from "./LoginScreen";
 import UserScreen from "./UserScreen";
 import SignupScreen from "./SignupScreen";
 import InitialJoinSchoolGroupsScreen from "./InitialJoinSchoolGroupsScreen";
 import GroupsScreen from "./GroupsScreen";
+import GroupScreen from "./GroupScreen";
 
 function RootApp(props, state) {
   const dispatch = useDispatch();

@@ -58,9 +58,12 @@ export const mainSlice = createSlice({
     },
     userInfo: (state, obj) => {
       const userInfo = obj.payload;
+      const newUserMap = { ...state.userMap };
+      newUserMap[userInfo.uid] = userInfo;
       const newState = {
         ...state,
         userInfo,
+        userMap: newUserMap,
       };
       return newState;
     },
