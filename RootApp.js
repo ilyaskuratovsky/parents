@@ -8,6 +8,7 @@ import LoginScreen from "./LoginScreen";
 import UserScreen from "./UserScreen";
 import SignupScreen from "./SignupScreen";
 import InitialJoinSchoolGroupsScreen from "./InitialJoinSchoolGroupsScreen";
+import GroupsScreen from "./GroupsScreen";
 
 function RootApp(props, state) {
   const dispatch = useDispatch();

@@ -63,9 +63,10 @@ const PaperDialogButton = React.memo(({ text, icon, onPress }) => {
   );
 });
 
-const FormButton = React.memo(({ text, icon, onPress }) => {
+const FormButton = React.memo(({ text, icon, onPress, style }) => {
   return (
     <Paper.Button
+      style={style}
       icon={icon}
       labelStyle={{ color: "black", fontSize: 12 }}
       uppercase={false}
