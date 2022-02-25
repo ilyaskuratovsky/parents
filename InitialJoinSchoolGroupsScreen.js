@@ -107,17 +107,6 @@ export default function InitialJoinSchoolGroupsScreen() {
       </View>
     );
 
-    const createSchoolGroup = async function (groupName, grade, year) {
-      return Controller.createSchoolGroupAndJoin(
-        dispatch,
-        userInfo,
-        school.id,
-        groupName,
-        grade,
-        year
-      );
-    };
-
     return (
       <View key={"school_" + school.id} style={{ flex: 1 }}>
         <View

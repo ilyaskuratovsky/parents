@@ -33,6 +33,18 @@ export default function SchoolScreen({ schoolId }) {
   const userGroupMembershipList = userGroupMemberships.map(
     (groupMembership) => groupMembership.groupId
   );
+  const [visibleSchoolGroupModal, setVisibleSchoolGroupModal] = useState(null);
+
+  const createSchoolGroup = async function (groupName, grade, year) {
+    return Controller.createSchoolGroupAndJoin(
+      dispatch,
+      userInfo,
+      school.id,
+      groupName,
+      grade,
+      year
+    );
+  };
 
   /* search bar at the top */
   /* School Screen - 
@@ -86,9 +98,16 @@ export default function SchoolScreen({ schoolId }) {
                 }}
               >
                 {userGroupMembershipList.includes(group.id) && (
-                  <Icon
-                    name={"check"}
-                    style={{ color: "black", fontSize: 16 }}
+                  <MyButtons.FormButton
+                    text="Open"
+                    onPress={() => {
+                      dispatch(
+                        Actions.goToScreen({
+                          screen: "GROUP",
+                          groupId: group.id,
+                        })
+                      );
+                    }}
                   />
                 )}
                 {!userGroupMembershipList.includes(group.id) && (
@@ -104,7 +123,43 @@ export default function SchoolScreen({ schoolId }) {
           );
         })}
       </View>
-
+      <View
+        key={"school_" + school.id}
+        style={{
+          height: 50,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "flex-start",
+        }}
+      >
+        <Text>Don't see your group?</Text>
+        <TouchableOpacity
+          onPress={() => {
+            setVisibleSchoolGroupModal(school.id);
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 12,
+              textDecorationLine: "underline",
+              color: "blue",
+              fontWeight: "bold",
+              textAlign: "center",
+            }}
+          >
+            Create a new one
+          </Text>
+        </TouchableOpacity>
+        <NewSchoolGroupModal
+          key="newgroupmodal"
+          visible={visibleSchoolGroupModal == school.id}
+          onCreateGroup={createSchoolGroup}
+          closeModal={() => {
+            console.log("close modal called");
+            setVisibleSchoolGroupModal(null);
+          }}
+        />
+      </View>
       <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
         <MyButtons.FormButton
           text="Groups"
