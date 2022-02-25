@@ -10,6 +10,7 @@ import SignupScreen from "./SignupScreen";
 import InitialJoinSchoolGroupsScreen from "./InitialJoinSchoolGroupsScreen";
 import GroupsScreen from "./GroupsScreen";
 import GroupScreen from "./GroupScreen";
+import FindGroupsScreen from "./FindGroupsScreen";
 
 function RootApp(props, state) {
   const dispatch = useDispatch();
@@ -42,6 +43,8 @@ function RootApp(props, state) {
     return <GroupsScreen />;
   } else if (screen == "GROUP") {
     return <GroupScreen groupId={screenWithParams.groupId} />;
+  } else if (screen == "FIND_GROUPS") {
+    return <FindGroupsScreen />;
   } else if (screen == "DEBUG") {
     return <DebugScreen backAction={screenWithParams.backAction} />;
   } else {
