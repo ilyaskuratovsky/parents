@@ -1,3 +1,4 @@
+import { getDatabase } from "firebase/database";
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 //import { getFirestore } from "firebase/firestore/lite";
@@ -7,6 +8,7 @@ import { getFirestore } from "firebase/firestore";
 export const firebaseConfig = {
   apiKey: "AIzaSyD7sAZY_oPEoAhPLbLST23DAAmAPiOh8V8",
   authDomain: "parents-749dd.firebaseapp.com",
+  databaseURL: "https://parents-749dd-default-rtdb.firebaseio.com",
   projectId: "parents-749dd",
   storageBucket: "parents-749dd.appspot.com",
   messagingSenderId: "202897799240",
@@ -18,3 +20,4 @@ export const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth();
 export const db = getFirestore(app);
+export const rdb = getDatabase(app);

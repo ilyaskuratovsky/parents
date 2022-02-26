@@ -55,6 +55,9 @@ export default function GroupsScreen({ navigation }) {
   if (userGroups.length > 0) {
     groupsComponents = userGroups.map((groupId, index) => {
       const group = groupMap[groupId];
+      if (group == null) {
+        return <Text>null</Text>;
+      }
       return (
         <View
           key={group.id}

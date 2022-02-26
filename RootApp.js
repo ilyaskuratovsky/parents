@@ -12,12 +12,14 @@ import GroupsScreen from "./GroupsScreen";
 import GroupScreen from "./GroupScreen";
 import FindGroupsScreen from "./FindGroupsScreen";
 import SchoolScreen from "./SchoolScreen";
+import RDBTest from "./RDBTest";
 
 function RootApp(props, state) {
   const dispatch = useDispatch();
   const notificationListener = useRef();
   const responseListener = useRef();
 
+  //return <RDBTest />;
   useEffect(() => {
     Controller.initializeApp(dispatch, notificationListener, responseListener);
   }, []);
