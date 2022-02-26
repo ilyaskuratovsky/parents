@@ -38,7 +38,12 @@ export default function NewOrgModal({
     );
   }
 
-  const types = ["School", "Activities: Sports", "Activities: Other", "Other"];
+  const types = [
+    { type: "school", label: "School" },
+    { type: "activities_spors", label: "Activities: Sports" },
+    { type: "activities_other", label: "Activities: Other" },
+    { type: "other", label: "Other" },
+  ];
   return (
     <Modal visible={visible} animationType={"slide"}>
       <Text key="type">Type</Text>
@@ -47,13 +52,13 @@ export default function NewOrgModal({
           return (
             <Paper.Button
               key={"type"}
-              mode={typeSelection == type ? "contained" : "outlined"}
+              mode={typeSelection == type.type ? "contained" : "outlined"}
               compact="true"
               onPress={() => {
-                setTypeSelection(type);
+                setTypeSelection(type.type);
               }}
             >
-              {type}
+              {type.label}
             </Paper.Button>
           );
         })}

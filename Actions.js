@@ -175,10 +175,18 @@ export const mainSlice = createSlice({
       return newState;
     },
     orgsUpdated: (state, obj) => {
-      // TODO:
       const orgs = obj.payload;
+      const orgsList = [];
+      const orgsMap = {};
+      for (const org of orgs) {
+        orgsList.push(org);
+        orgsMap[org.id] = org;
+      }
+
       const newState = {
         ...state,
+        orgsList,
+        orgsMap,
       };
       return newState;
     },
