@@ -13,17 +13,16 @@ export default function NewSchoolGroupModal({
 }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const { schoolList, schoolMap, groupList, groupMap, userGroupMemberships } =
+  const { orgsList, orgsMap, groupList, groupMap, userGroupMemberships } =
     useSelector((state) => {
       return {
-        schoolList: state.main.schoolList,
-        schoolMap: state.main.schoolMap,
+        orgsList: state.main.orgsList,
+        orgsMap: state.main.orgsMap,
         groupList: state.main.groupList,
         groupMap: state.main.groupMap,
         userGroupMemberships: state.main.userGroupMemberships,
       };
     });
-  const school = schoolMap[schoolId];
   const [gradeSelection, setGradeSelection] = useState(null);
   const [yearSelection, setYearSelection] = useState(null);
   const [groupName, setGroupName] = useState(null);

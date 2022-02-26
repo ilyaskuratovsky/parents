@@ -15,18 +15,18 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 export default function SchoolScreen({ schoolId }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const { schoolList, schoolMap, groupList, groupMap, userGroupMemberships } =
+  const { orgsList, orgsMap, groupList, groupMap, userGroupMemberships } =
     useSelector((state) => {
       return {
-        schoolList: state.main.schoolList,
-        schoolMap: state.main.schoolMap,
+        orgsList: state.main.orgsList,
+        orgsMap: state.main.orgsMap,
         groupList: state.main.groupList,
         groupMap: state.main.groupMap,
         userGroupMemberships: state.main.userGroupMemberships,
       };
     });
 
-  const school = schoolMap[schoolId];
+  const school = orgsMap[schoolId];
   const schoolGroups = groupList.filter((group) => {
     return group.schoolId == schoolId;
   });
