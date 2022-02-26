@@ -13,6 +13,10 @@ export async function updateOrCreateUser(uid, data) {
   return DatabaseRDB.updateOrCreateUser(uid, data);
 }
 
+export async function updateUserAddToArrayField(uid, fieldName, value) {
+  return DatabaseRDB.updateUserAddToArrayField(uid, fieldName, value);
+}
+
 export function observeUserChanges(uid, callback) {
   return DatabaseRDB.observeUserChanges(uid, callback);
 }
@@ -59,4 +63,8 @@ export async function createGroup(data) {
 
 export async function sendMessage(groupId, uid, text) {
   return DatabaseFS.sendMessage(groupId, uid, text);
+}
+
+export async function createOrg(name, type) {
+  return DatabaseRDB.createOrg(name, type);
 }

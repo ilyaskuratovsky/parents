@@ -19,6 +19,9 @@ function RootApp(props, state) {
   const dispatch = useDispatch();
   const notificationListener = useRef();
   const responseListener = useRef();
+  const appState = useSelector((state) => {
+    return state;
+  });
 
   //return <RDBTest />;
   useEffect(() => {
@@ -26,11 +29,15 @@ function RootApp(props, state) {
   }, []);
 
   const screenWithParams = useSelector((state) => state.screen.screen);
-  const screen = screenWithParams.screen;
+  let screen = screenWithParams.screen;
   //return <CanvasLineTestWorkingMultilineCircle startX={100} startY={100} />;
   //return <SplashScreen />;
   //return <SlideModalTest />;
   console.log("SCREEN: " + screen);
+  if (screen == "LOGGED_IN_SCREEN_ROUTER") {
+    screen = Controller.getInitializationScreen(appState).screen;
+  }
+
   if (screen == "SPLASH") {
     return <SplashScreen appInitializedCallback={() => {}} refresh={2200} />;
   } else if (screen === "LOGIN") {
@@ -39,8 +46,6 @@ function RootApp(props, state) {
     return <SignupScreen />;
   } else if (screen === "USER") {
     return <UserScreen />;
-  } else if (screen == "LOGGED_IN_SCREEN_ROUTER") {
-    return <LoggedInScreenRouter />;
   } else if (screen == "INITIAL_SELECT_SCHOOLS") {
     return <InitialChooseSchoolsWizard />;
   } else if (screen == "INITIAL_SELECT_SCHOOL_GROUPS") {

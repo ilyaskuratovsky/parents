@@ -10,6 +10,7 @@ import Portal from "./Portal";
 import * as UIConstants from "./UIConstants";
 import TopBar from "./TopBar";
 import BottomBar from "./BottomBar";
+import NewOrgModal from "./NewOrgModal";
 
 export default function FindGroupsScreens({ navigation }) {
   const dispatch = useDispatch();
@@ -36,7 +37,11 @@ Activities
  - Greenwich Dance Studio
 
  */
+  const createOrg = async function (name, type) {
+    return Controller.createOrgAndAssignToUser(dispatch, userInfo, name, type);
+  };
 
+  const [visibleNewOrgModal, setVisibleNewOrgModal] = useState(false);
   return (
     <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
       <TopBar
@@ -86,6 +91,44 @@ Activities
         })}
 
         <Text>Activities</Text>
+
+        <View
+          key={"new"}
+          style={{
+            height: 50,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "flex-start",
+          }}
+        >
+          <Text>Can't find your organization or school?</Text>
+          <TouchableOpacity
+            onPress={() => {
+              setVisibleNewOrgModal(true);
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 12,
+                textDecorationLine: "underline",
+                color: "blue",
+                fontWeight: "bold",
+                textAlign: "center",
+              }}
+            >
+              Create a new one
+            </Text>
+          </TouchableOpacity>
+          <NewOrgModal
+            key="newgroupmodal"
+            visible={visibleNewOrgModal}
+            onCreateOrg={createOrg}
+            closeModal={() => {
+              console.log("close modal called");
+              setVisibleNewOrgModal(null);
+            }}
+          />
+        </View>
 
         <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
           <MyButtons.FormButton

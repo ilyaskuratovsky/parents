@@ -37,6 +37,17 @@ export async function updateOrCreateUser(uid, data) {
   return userInfo;
 }
 
+export async function updateUserAddToArrayField(uid, fieldName, value) {
+  const dbRef = RDB.ref(rdb);
+  const userRef = RDB.child(dbRef, "users/" + uid);
+  const userSnapshot = await RDB.get(userRef);
+  const currentArray = userSnapshot.val()[fieldName] ?? [];
+  const newArray = currentArray.concat(value);
+  const update = {};
+  update[fieldName] = newArray;
+  await RDB.update(userRef, update);
+}
+
 export function observeUserChanges(uid, callback) {
   //realtime-database
   const userRef = RDB.ref(rdb, "users/" + uid);
@@ -140,9 +151,14 @@ export async function createGroup(data) {
 }
 
 export async function joinGroup(userInfo, groupId) {
-  //realtime database
   const newReference = await RDB.push(RDB.ref(rdb, "/group_memberships"));
   await RDB.set(newReference, { uid: userInfo.uid, groupId });
+  return newReference.key;
+}
+
+export async function createOrg(name, type) {
+  const newReference = await RDB.push(RDB.ref(rdb, "/orgs"));
+  await RDB.set(newReference, { name, type });
   return newReference.key;
 }
 

@@ -106,6 +106,10 @@ export async function initializeApp(
   dispatch(Actions.goToScreen({ screen: "LOGIN" }));
 }
 
+export function getInitializationScreen(state) {
+  return { screen: "GROUPS" };
+}
+
 export async function loggedIn(dispatch, authenticatedUser, pushToken) {
   console.log("logged in");
   const uid = authenticatedUser.uid;
@@ -251,4 +255,16 @@ async function registerForPushNotificationsAsync() {
   }
 
   return token;
+}
+
+export async function inviteToGroup(
+  dispatch,
+  fromUserInfo,
+  touserInfo,
+  groupId
+) {}
+
+export async function createOrgAndAssignToUser(dispatch, userInfo, name, type) {
+  const orgId = await Database.createOrg(name, type);
+  await Database.updateUserAddToArrayField(userInfo.uid, "orgs", orgId);
 }

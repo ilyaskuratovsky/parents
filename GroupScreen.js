@@ -9,6 +9,7 @@ import * as UIConstants from "./UIConstants";
 import TopBar from "./TopBar";
 import Portal from "./Portal";
 import GroupInviteModal from "./GroupInviteModal";
+import BottomBar from "./BottomBar";
 
 export default function GroupScreen({ groupId, navigation }) {
   const dispatch = useDispatch();
@@ -129,6 +130,36 @@ export default function GroupScreen({ groupId, navigation }) {
           ></GiftedChat>
         </View>
       </View>
+      <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
+        <MyButtons.FormButton
+          text="Groups"
+          onPress={() => {
+            dispatch(
+              Actions.goToScreen({
+                screen: "FIND_GROUPS",
+              })
+            );
+          }}
+        />
+        <MyButtons.FormButton text="My Profile" onPress={() => {}} />
+        <MyButtons.FormButton
+          text="Logout"
+          onPress={() => {
+            Controller.logout();
+          }}
+        />
+        <MyButtons.FormButton
+          text="Debug"
+          onPress={() => {
+            dispatch(
+              Actions.goToScreen({
+                screen: "DEBUG",
+                backAction: () => Actions.goToScreen({ screen: "GROUPS" }),
+              })
+            );
+          }}
+        />
+      </BottomBar>
     </Portal>
   );
 }
