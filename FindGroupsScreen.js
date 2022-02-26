@@ -104,7 +104,7 @@ Activities
                 dispatch(
                   Actions.goToScreen({
                     screen: "ORG",
-                    schoolId: org.id,
+                    orgId: org.id,
                   })
                 );
               }}

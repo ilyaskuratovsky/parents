@@ -14,6 +14,7 @@ import FindGroupsScreen from "./FindGroupsScreen";
 import SchoolScreen from "./SchoolScreen";
 import RDBTest from "./RDBTest";
 import LoggedInScreenRouter from "./LoggedInScreenRouter";
+import OrgScreen from "./OrgScreen";
 
 function RootApp(props, state) {
   const dispatch = useDispatch();
@@ -58,6 +59,8 @@ function RootApp(props, state) {
     return <FindGroupsScreen />;
   } else if (screen == "SCHOOL") {
     return <SchoolScreen schoolId={screenWithParams.schoolId} />;
+  } else if (screen == "ORG") {
+    return <OrgScreen orgId={screenWithParams.orgId} />;
   } else if (screen == "DEBUG") {
     return <DebugScreen backAction={screenWithParams.backAction} />;
   } else {

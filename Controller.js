@@ -196,6 +196,19 @@ export async function createSchoolGroupAndJoin(
   await Database.joinGroup(userInfo, groupId);
 }
 
+export async function createOrgGroupAndJoin(
+  dispatch,
+  userInfo,
+  orgId,
+  groupName
+) {
+  const groupId = await Database.createGroup({
+    name: groupName,
+    orgId: orgId,
+  });
+  await Database.joinGroup(userInfo, groupId);
+}
+
 export async function sendMessage(dispatch, userInfo, groupId, text) {
   await Database.sendMessage(groupId, userInfo.uid, text);
 }
