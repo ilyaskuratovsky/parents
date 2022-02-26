@@ -13,17 +13,16 @@ export default function NewOrgModal({
 }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const { schoolList, schoolMap, groupList, groupMap, userGroupMemberships } =
+  const { orgsList, orgsMap, groupList, groupMap, userGroupMemberships } =
     useSelector((state) => {
       return {
-        schoolList: state.main.schoolList,
-        schoolMap: state.main.schoolMap,
+        orgsList: state.main.schoolList,
+        orgsMap: state.main.schoolMap,
         groupList: state.main.groupList,
         groupMap: state.main.groupMap,
         userGroupMemberships: state.main.userGroupMemberships,
       };
     });
-  const school = schoolMap[schoolId];
   const [typeSelection, setTypeSelection] = useState(null);
   const [name, setName] = useState(null);
   const [processing, setProcessing] = useState(false);

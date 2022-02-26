@@ -12,8 +12,8 @@ export default function InitialChooseSchoolsWizard({ navigation }) {
   const userInfo = useSelector((state) => state.main.userInfo);
   const { schoolList, schoolMap } = useSelector((state) => {
     return {
-      schoolList: state.main.schoolList,
-      schoolMap: state.main.schoolMap,
+      schoolList: state.main.orgsList.filter((org) => org.type == "school"),
+      schoolMap: state.main.orgsMap,
     };
   });
 

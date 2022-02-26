@@ -15,11 +15,11 @@ import NewOrgModal from "./NewOrgModal";
 export default function FindGroupsScreens({ navigation }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const { schoolList, schoolMap, groupList, groupMap, userGroupMemberships } =
+  const { orgsList, orgsMap, groupList, groupMap, userGroupMemberships } =
     useSelector((state) => {
       return {
-        schoolList: state.main.schoolList,
-        schoolMap: state.main.schoolMap,
+        orgsList: state.main.orgsList,
+        orgsMap: state.main.orgsMap,
         groupList: state.main.groupList,
         groupMap: state.main.groupMap,
         userGroupMemberships: state.main.userGroupMemberships,
@@ -40,6 +40,12 @@ Activities
   const createOrg = async function (name, type) {
     return Controller.createOrgAndAssignToUser(dispatch, userInfo, name, type);
   };
+  const schoolList = orgsList.filter((org) => {
+    return org.type == "school";
+  });
+  const otherOrgsList = orgsList.filter((org) => {
+    return org.type != "school";
+  });
 
   const [visibleNewOrgModal, setVisibleNewOrgModal] = useState(false);
   return (
@@ -91,6 +97,32 @@ Activities
         })}
 
         <Text>Activities</Text>
+        {otherOrgsList.map((org) => {
+          return (
+            <TouchableOpacity
+              onPress={() => {
+                dispatch(
+                  Actions.goToScreen({
+                    screen: "ORG",
+                    schoolId: org.id,
+                  })
+                );
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  textDecorationLine: "underline",
+                  color: "blue",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+              >
+                {org.name}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
 
         <View
           key={"new"}

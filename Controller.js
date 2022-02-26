@@ -30,7 +30,7 @@ export async function initializeApp(
   notificationListener,
   responseListener
 ) {
-  const schools = await Database.getAllSchools();
+  const orgs = await Database.getAllOrgs();
 
   // store all groups
   const groups = await Database.getAllGroups();
@@ -42,7 +42,7 @@ export async function initializeApp(
   const groupMemberships = await Database.getAllGroupMemberships();
   dispatch(
     Actions.locationDataInit({
-      schools,
+      orgs,
       groups,
       users,
       groupMemberships,
@@ -156,8 +156,8 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
     });
   });
 
-  Database.observeSchoolChanges((schools) => {
-    dispatch(Actions.schoolsUpdated(schools));
+  Database.observeOrgChanges((orgs) => {
+    dispatch(Actions.orgsUpdated(orgs));
   });
   dispatch(Actions.goToScreen({ screen: "LOGGED_IN_SCREEN_ROUTER" }));
 }

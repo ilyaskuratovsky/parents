@@ -3,18 +3,18 @@ import { rdb } from "./config/firebase";
 
 const observers = {};
 
-export async function getAllSchools() {
+export async function getAllOrgs() {
   /*real-time database */
   const dbRef = RDB.ref(rdb);
-  const schoolsRDB = await RDB.get(RDB.child(dbRef, "schools"));
+  const orgsRDB = await RDB.get(RDB.child(dbRef, "orgs"));
 
-  const ret = toArray(schoolsRDB.val());
+  const ret = toArray(orgsRDB.val());
   return ret;
 }
 
-export function observeSchoolChanges(callback) {
+export function observeOrgChanges(callback) {
   //rdb
-  const schoolsRef = RDB.ref(rdb, "schools");
+  const schoolsRef = RDB.ref(rdb, "orgs");
   RDB.onValue(schoolsRef, (snapshot) => {
     const data = snapshot.val();
     const ret = toArray(data);

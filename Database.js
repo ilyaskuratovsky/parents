@@ -1,12 +1,12 @@
 import * as DatabaseRDB from "./DatabaseRDB";
 import * as DatabaseFS from "./DatabaseFS";
 
-export async function getAllSchools() {
-  return DatabaseRDB.getAllSchools();
+export async function getAllOrgs() {
+  return DatabaseRDB.getAllOrgs();
 }
 
-export function observeSchoolChanges(callback) {
-  return DatabaseRDB.observeSchoolChanges(callback);
+export function observeOrgChanges(callback) {
+  return DatabaseRDB.observeOrgChanges(callback);
 }
 
 export async function updateOrCreateUser(uid, data) {
