@@ -28,8 +28,10 @@ export async function updateOrCreateUser(uid, data) {
   const userSnapshot = await RDB.get(userRef);
   if (userSnapshot.exists()) {
     await RDB.update(userRef, data);
+    return { ...userSnapshot.val(), ...data };
   } else {
     await RDB.set(userRef, data);
+    return data;
   }
   const userInfo = data;
   return userInfo;

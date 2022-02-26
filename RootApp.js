@@ -13,6 +13,7 @@ import GroupScreen from "./GroupScreen";
 import FindGroupsScreen from "./FindGroupsScreen";
 import SchoolScreen from "./SchoolScreen";
 import RDBTest from "./RDBTest";
+import LoggedInScreenRouter from "./LoggedInScreenRouter";
 
 function RootApp(props, state) {
   const dispatch = useDispatch();
@@ -38,6 +39,8 @@ function RootApp(props, state) {
     return <SignupScreen />;
   } else if (screen === "USER") {
     return <UserScreen />;
+  } else if (screen == "LOGGED_IN_SCREEN_ROUTER") {
+    return <LoggedInScreenRouter />;
   } else if (screen == "INITIAL_SELECT_SCHOOLS") {
     return <InitialChooseSchoolsWizard />;
   } else if (screen == "INITIAL_SELECT_SCHOOL_GROUPS") {

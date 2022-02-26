@@ -40,7 +40,6 @@ export async function initializeApp(
 
   //all group memberships
   const groupMemberships = await Database.getAllGroupMemberships();
-
   dispatch(
     Actions.locationDataInit({
       schools,
@@ -156,19 +155,7 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
   Database.observeSchoolChanges((schools) => {
     dispatch(Actions.schoolsUpdated(schools));
   });
-  if (userInfo.profile == null) {
-    dispatch(Actions.goToScreen({ screen: "INITIAL_SELECT_SCHOOLS" }));
-  } else {
-    if (
-      userInfo.profile.schools != null &&
-      userInfo.profile.schools.length > 0 &&
-      userGroupMembershipDocs == 0
-    ) {
-      dispatch(Actions.goToScreen({ screen: "INITIAL_SELECT_SCHOOL_GROUPS" }));
-    } else {
-      dispatch(Actions.goToScreen({ screen: "GROUPS" }));
-    }
-  }
+  dispatch(Actions.goToScreen({ screen: "LOGGED_IN_SCREEN_ROUTER" }));
 }
 
 export async function loggedOut(dispatch) {
