@@ -1,26 +1,12 @@
-import * as Actions from "./Actions";
-import { db, auth } from "./config/firebase";
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { Platform } from "react-native";
+import * as Actions from "./Actions";
+import { auth } from "./config/firebase";
 import * as Database from "./Database";
+import store from "./Actions";
 
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  getDoc,
-  doc,
-  where,
-  setDoc,
-  onSnapshot,
-  query,
-  Timestamp,
-  //} from "firebase/firestore/lite";
-} from "firebase/firestore";
 //import { Database } from "firebase-firestore-lite";
 
 const groupMessageSubscriptions = {};
@@ -104,6 +90,7 @@ export async function initializeApp(
 
   //Go to login page by default
   dispatch(Actions.goToScreen({ screen: "LOGIN" }));
+  console.log(JSON.stringify(store.getState()));
 }
 
 export function getInitializationScreen(state) {
@@ -159,7 +146,9 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
   Database.observeOrgChanges((orgs) => {
     dispatch(Actions.orgsUpdated(orgs));
   });
-  dispatch(Actions.goToScreen({ screen: "LOGGED_IN_SCREEN_ROUTER" }));
+
+  const screen = getInitializationScreen(store.getState());
+  dispatch(Actions.goToScreen(screen));
 }
 
 export async function loggedOut(dispatch) {

@@ -34,10 +34,6 @@ function RootApp(props, state) {
   //return <CanvasLineTestWorkingMultilineCircle startX={100} startY={100} />;
   //return <SplashScreen />;
   //return <SlideModalTest />;
-  console.log("SCREEN: " + screen);
-  if (screen == "LOGGED_IN_SCREEN_ROUTER") {
-    screen = Controller.getInitializationScreen(appState).screen;
-  }
 
   if (screen == "SPLASH") {
     return <SplashScreen appInitializedCallback={() => {}} refresh={2200} />;

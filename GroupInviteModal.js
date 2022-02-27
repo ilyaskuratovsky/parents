@@ -73,7 +73,7 @@ export default function GroupInviteModal({ groupId, visible, closeModal }) {
         >
           <MyButtons.FormButton
             text="Invite"
-            onPress={() => {
+            onPress={async () => {
               await Controller.sendGroupInviteToUser(
                 userInfo,
                 groupId,
@@ -112,7 +112,7 @@ export default function GroupInviteModal({ groupId, visible, closeModal }) {
         </View>
         <MyButtons.FormButton
           text="Invite"
-          onPress={() => {
+          onPress={async () => {
             await Controller.sendGroupInviteToEmail(userInfo, groupId, email);
             closeModal();
           }}
