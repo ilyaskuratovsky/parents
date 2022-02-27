@@ -30,7 +30,7 @@ export default function GroupInviteModal({ groupId, visible, closeModal }) {
   const [yearSelection, setYearSelection] = useState(null);
   const [groupName, setGroupName] = useState(null);
   const [processing, setProcessing] = useState(false);
-
+  const [email, setEmail] = useState(null);
   if (userInfo == null) {
     return <Text>Loading Data...</Text>;
   }
@@ -71,7 +71,17 @@ export default function GroupInviteModal({ groupId, visible, closeModal }) {
             alignItems: "center",
           }}
         >
-          <MyButtons.FormButton text="Invite" onPress={() => {}} />
+          <MyButtons.FormButton
+            text="Invite"
+            onPress={() => {
+              await Controller.sendGroupInviteToUser(
+                userInfo,
+                groupId,
+                user.uid
+              );
+              closeModal();
+            }}
+          />
         </View>
       </View>
     );
@@ -79,6 +89,37 @@ export default function GroupInviteModal({ groupId, visible, closeModal }) {
 
   return (
     <Modal visible={visible} animationType={"slide"}>
+      <Text>Email</Text>
+      <View
+        style={{
+          flexDirection: "row",
+          height: 60,
+          alignItems: "center",
+          paddingLeft: 10,
+        }}
+      >
+        <View style={{ flexDirection: "column" }}>
+          <TextInput
+            key="email"
+            style={{ borderWidth: 1, width: "100%", fontSize: 16 }}
+            onChangeText={(value) => {
+              setEmail(value);
+            }}
+            value={email ?? ""}
+            selectTextOnFocus={true}
+          />
+          <Text>Enter emails separated by ','</Text>
+        </View>
+        <MyButtons.FormButton
+          text="Invite"
+          onPress={() => {
+            await Controller.sendGroupInviteToEmail(userInfo, groupId, email);
+            closeModal();
+          }}
+        />
+      </View>
+
+      <Text>Find People</Text>
       <ScrollView>{inviteeComponents}</ScrollView>
       <MyButtons.MenuButton
         icon="arrow-right"

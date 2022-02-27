@@ -281,3 +281,7 @@ export async function createOrgAndAssignToUser(dispatch, userInfo, name, type) {
   const orgId = await Database.createOrg(name, type);
   await Database.updateUserAddToArrayField(userInfo.uid, "orgs", orgId);
 }
+
+export async function sendGroupInviteToEmail(userInfo, groupId, email) {}
+
+export async function sendGroupInviteToUser(userInfo, groupId, uid) {}
