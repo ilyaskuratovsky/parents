@@ -177,8 +177,10 @@ export default function GroupsScreen({}) {
         */}
         <ScrollView>{groupsComponents}</ScrollView>
         <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
-          <MyButtons.FormButton
-            text="Groups"
+          <MyButtons.MenuButton
+            icon="account-group"
+            color="mediumblue"
+            text="My Groups"
             onPress={() => {
               dispatch(
                 Actions.goToScreen({
@@ -187,7 +189,9 @@ export default function GroupsScreen({}) {
               );
             }}
           />
-          <MyButtons.FormButton
+
+          <MyButtons.MenuButton
+            icon="magnify"
             text="Find"
             onPress={() => {
               dispatch(
@@ -197,14 +201,21 @@ export default function GroupsScreen({}) {
               );
             }}
           />
-          <MyButtons.FormButton text="My Profile" onPress={() => {}} />
-          <MyButtons.FormButton
+
+          <MyButtons.MenuButton
+            icon="account-circle"
+            text="My Profile"
+            onPress={() => {}}
+          />
+          <MyButtons.MenuButton
+            icon="logout"
             text="Logout"
             onPress={() => {
               Controller.logout();
             }}
           />
-          <MyButtons.FormButton
+          <MyButtons.MenuButton
+            icon="checkbox-blank-circle"
             text="Debug"
             onPress={() => {
               dispatch(

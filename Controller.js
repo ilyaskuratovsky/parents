@@ -300,3 +300,7 @@ export async function joinGroupFromInvite(
 export async function dismissInvite(dispatch, userInfo, inviteId) {
   await Database.updateInvite(inviteId, { status: "dismissed" });
 }
+
+async function buildSearchIndex(orgsList, groupsList) {
+  const searchIndex = {};
+}
