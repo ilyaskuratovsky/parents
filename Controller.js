@@ -282,3 +282,17 @@ export async function sendGroupInviteToEmail(userInfo, groupId, email) {
 export async function sendGroupInviteToUser(userInfo, groupId, uid) {
   await Database.createInvite(userInfo.uid, groupId, uid, null);
 }
+
+export async function joinGroupFromInvite(
+  dispatch,
+  userInfo,
+  groupId,
+  inviteId
+) {
+  await Database.joinGroup(userInfo, groupId);
+  await Database.updateInvite(inviteId, { status: "dismissed" });
+}
+
+export async function dismissInvite(dispatch, userInfo, inviteId) {
+  await Database.updateInvite(inviteId, { status: "dismissed" });
+}

@@ -76,3 +76,7 @@ export async function createInvite(fromUid, groupId, uid, email) {
 export async function observeToUserInvites(toUid, toEmail, callback) {
   return DatabaseFS.observeToUserInvites(toUid, toEmail, callback);
 }
+
+export async function updateInvite(inviteId, update) {
+  DatabaseFS.updateInvite(inviteId, update);
+}

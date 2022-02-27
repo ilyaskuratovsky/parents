@@ -177,13 +177,14 @@ export function observeUserGroupMemberships(uid, callback) {
 export function observeToUserInvites(toUid, toEmail, callback) {
   const snapshotQuery = query(
     collection(db, "invites"),
-    where("id", "in", ["_uid_" + toUid, "_email_" + toEmail]),
+    where("toUid", "in", ["_uid_" + toUid, "_email_" + toEmail]),
     where("status", "==", "new")
   );
 
   onSnapshot(snapshotQuery, (snapshot) => {
     const list = snapshot.docs.map((doc) => {
-      return { id: doc.id, ...doc.data() };
+      const data = doc.data();
+      return { id: doc.id, ...data };
     });
     callback(list);
   });
@@ -251,7 +252,12 @@ export async function createInvite(fromUid, groupId, uid, email) {
   const group = await addDoc(invitesRef, {
     fromUid,
     groupId,
-    id: uid != null ? "_uid_" + uid : "_email_" + email,
+    toUid: uid != null ? "_uid_" + uid : "_email_" + email,
     status: "new",
   });
+}
+
+export async function updateInvite(inviteId, update) {
+  const docRef = doc(collection(db, "invites"), inviteId);
+  await setDoc(docRef, update, { merge: true });
 }
