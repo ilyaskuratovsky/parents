@@ -72,3 +72,7 @@ export async function createOrg(name, type) {
 export async function createInvite(fromUid, groupId, uid, email) {
   return DatabaseFS.createInvite(fromUid, groupId, uid, email);
 }
+
+export async function observeToUserInvites(toUid, toEmail, callback) {
+  return DatabaseFS.observeToUserInvites(toUid, toEmail, callback);
+}

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { View } from "react-native";
 import * as Controller from "./Controller";
 import ErrorScreen from "./ErrorScreen";
 import InitialChooseSchoolsWizard from "./InitialChooseSchoolsWizard";
@@ -15,6 +16,7 @@ import SchoolScreen from "./SchoolScreen";
 import RDBTest from "./RDBTest";
 import LoggedInScreenRouter from "./LoggedInScreenRouter";
 import OrgScreen from "./OrgScreen";
+import Messages from "./Messages";
 
 function RootApp(props, state) {
   const dispatch = useDispatch();
@@ -35,33 +37,42 @@ function RootApp(props, state) {
   //return <SplashScreen />;
   //return <SlideModalTest />;
 
+  let render = null;
+
   if (screen == "SPLASH") {
-    return <SplashScreen appInitializedCallback={() => {}} refresh={2200} />;
+    render = <SplashScreen appInitializedCallback={() => {}} refresh={2200} />;
   } else if (screen === "LOGIN") {
-    return <LoginScreen dispatch={dispatch} />;
+    render = <LoginScreen dispatch={dispatch} />;
   } else if (screen === "SIGNUP") {
-    return <SignupScreen />;
+    render = <SignupScreen />;
   } else if (screen === "USER") {
-    return <UserScreen />;
+    render = <UserScreen />;
   } else if (screen == "INITIAL_SELECT_SCHOOLS") {
-    return <InitialChooseSchoolsWizard />;
+    render = <InitialChooseSchoolsWizard />;
   } else if (screen == "INITIAL_SELECT_SCHOOL_GROUPS") {
-    return <InitialJoinSchoolGroupsScreen />;
+    render = <InitialJoinSchoolGroupsScreen />;
   } else if (screen == "GROUPS") {
-    return <GroupsScreen />;
+    render = <GroupsScreen />;
   } else if (screen == "GROUP") {
-    return <GroupScreen groupId={screenWithParams.groupId} />;
+    render = <GroupScreen groupId={screenWithParams.groupId} />;
   } else if (screen == "FIND_GROUPS") {
-    return <FindGroupsScreen />;
+    render = <FindGroupsScreen />;
   } else if (screen == "SCHOOL") {
-    return <SchoolScreen schoolId={screenWithParams.schoolId} />;
+    render = <SchoolScreen schoolId={screenWithParams.schoolId} />;
   } else if (screen == "ORG") {
-    return <OrgScreen orgId={screenWithParams.orgId} />;
+    render = <OrgScreen orgId={screenWithParams.orgId} />;
   } else if (screen == "DEBUG") {
-    return <DebugScreen backAction={screenWithParams.backAction} />;
+    render = <DebugScreen backAction={screenWithParams.backAction} />;
   } else {
-    return <ErrorScreen />;
+    render = <ErrorScreen />;
   }
+
+  return (
+    <View style={{ flex: 1 }}>
+      {render}
+      <Messages key="messages" />
+    </View>
+  );
 }
 
 export default RootApp;

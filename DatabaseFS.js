@@ -174,6 +174,21 @@ export function observeUserGroupMemberships(uid, callback) {
   });
 }
 
+export function observeToUserInvites(toUid, toEmail, callback) {
+  const snapshotQuery = query(
+    collection(db, "invites"),
+    where("id", "in", ["_uid_" + toUid, "_email_" + toEmail]),
+    where("status", "==", "new")
+  );
+
+  onSnapshot(snapshotQuery, (snapshot) => {
+    const list = snapshot.docs.map((doc) => {
+      return { id: doc.id, ...doc.data() };
+    });
+    callback(list);
+  });
+}
+
 export function observeGroupMessages(groupId, callback) {
   const ref = collection(doc(collection(db, "groups"), groupId), "messages");
   return onSnapshot(ref, (snapshot) => {
@@ -233,5 +248,10 @@ export async function sendMessage(groupId, uid, text) {
 
 export async function createInvite(fromUid, groupId, uid, email) {
   const invitesRef = collection(db, "invites");
-  const group = await addDoc(invitesRef, { fromUid, groupId, uid, email });
+  const group = await addDoc(invitesRef, {
+    fromUid,
+    groupId,
+    id: uid != null ? "_uid_" + uid : "_email_" + email,
+    status: "new",
+  });
 }

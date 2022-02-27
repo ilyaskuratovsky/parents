@@ -47,6 +47,7 @@ export const mainSlice = createSlice({
     userGroupMemberships: null,
     groupMessages: {},
     pushToken: null,
+    toUserInvites: null,
   },
   reducers: {
     appInitialized: (state, obj) => {
@@ -190,6 +191,14 @@ export const mainSlice = createSlice({
       };
       return newState;
     },
+    toUserInvites: (state, obj) => {
+      const toUserInvites = obj.payload;
+      const newState = {
+        ...state,
+        toUserInvites,
+      };
+      return newState;
+    },
   },
 });
 
@@ -204,6 +213,7 @@ export const {
   groupMessages,
   groups,
   groupMemberships,
+  toUserInvites,
 } = mainSlice.actions;
 export const { goToScreen, goToUserScreen } = screenSlice.actions;
 

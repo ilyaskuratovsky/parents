@@ -147,6 +147,10 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
     dispatch(Actions.orgsUpdated(orgs));
   });
 
+  Database.observeToUserInvites(userInfo.uid, userInfo.email, (invites) => {
+    dispatch(Actions.toUserInvites(invites));
+  });
+
   const screen = getInitializationScreen(store.getState());
   dispatch(Actions.goToScreen(screen));
 }
