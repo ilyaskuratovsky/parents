@@ -43,10 +43,14 @@ export async function initializeApp(
   //push notification token
   let pushToken = null;
 
-  await registerForPushNotificationsAsync().then((token) => {
-    console.log("Got push notificaiton token: " + token);
-    pushToken = token;
-  });
+  await registerForPushNotificationsAsync()
+    .then((token) => {
+      console.log("Got push notificaiton token: " + token);
+      pushToken = token;
+    })
+    .catch((error) => {
+      console.log("ERROR REtRieving PUSH TOKEN _ INVESTIGATE!!!\n" + error);
+    });
 
   //foreground notifications settings
   Notifications.setNotificationHandler({
@@ -182,7 +186,7 @@ export async function createSchoolGroupAndJoin(
 ) {
   const groupId = await Database.createGroup({
     name: groupName,
-    schoolId: schoolId,
+    orgId: schoolId,
     grade,
     year,
   });

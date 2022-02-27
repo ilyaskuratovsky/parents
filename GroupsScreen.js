@@ -10,20 +10,29 @@ import Portal from "./Portal";
 import * as UIConstants from "./UIConstants";
 import TopBar from "./TopBar";
 import BottomBar from "./BottomBar";
+import { Avatar, Divider } from "react-native-elements";
+import { IconButton } from "react-native-paper";
 
-export default function GroupsScreen({ navigation }) {
+export default function GroupsScreen({}) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const { schoolList, schoolMap, groupList, groupMap, userGroupMemberships } =
-    useSelector((state) => {
-      return {
-        schoolList: state.main.schoolList,
-        schoolMap: state.main.schoolMap,
-        groupList: state.main.groupList,
-        groupMap: state.main.groupMap,
-        userGroupMemberships: state.main.userGroupMemberships,
-      };
-    });
+  const {
+    schoolList,
+    schoolMap,
+    groupList,
+    groupMap,
+    userGroupMemberships,
+    orgsMap,
+  } = useSelector((state) => {
+    return {
+      schoolList: state.main.schoolList,
+      schoolMap: state.main.schoolMap,
+      groupList: state.main.groupList,
+      groupMap: state.main.groupMap,
+      userGroupMemberships: state.main.userGroupMemberships,
+      orgsMap: state.main.orgsMap,
+    };
+  });
   const [visibleSchoolGroupModal, setVisibleSchoolGroupModal] = useState(null);
   if (userInfo == null) {
     return <Text>Loading Data...</Text>;
@@ -55,45 +64,83 @@ export default function GroupsScreen({ navigation }) {
   if (userGroups.length > 0) {
     groupsComponents = userGroups.map((groupId, index) => {
       const group = groupMap[groupId];
+      const org = orgsMap[group.orgId];
       if (group == null) {
         return <Text>null</Text>;
       }
       return (
-        <View
-          key={group.id}
-          style={{
-            flexDirection: "row",
-            height: 60,
-            alignItems: "center",
-            paddingLeft: 10,
-          }}
-        >
-          <Text
-            style={{
-              flexGrow: 1,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {group.name}
-          </Text>
+        <>
           <View
+            key={group.id}
             style={{
-              flexBasis: 100,
-              justifyContent: "center",
+              flexDirection: "row",
+              height: 60,
               alignItems: "center",
+              paddingLeft: 10,
             }}
           >
-            <MyButtons.FormButton
-              text="Open"
-              onPress={() => {
-                dispatch(
-                  Actions.goToScreen({ screen: "GROUP", groupId: group.id })
-                );
+            <View
+              style={{
+                flexGrow: 1,
               }}
-            />
+            >
+              <Text
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                }}
+              >
+                {group.name}
+              </Text>
+              {org != null && (
+                <Text
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    fontSize: 14,
+                  }}
+                >
+                  {org.name ?? "[No organization]"}
+                </Text>
+              )}
+            </View>
+            <View
+              style={{
+                flexBasis: 100,
+                justifyContent: "center",
+                alignItems: "flex-end",
+              }}
+            >
+              <IconButton
+                icon="chevron-right"
+                color={"darkgrey"}
+                size={32}
+                onPress={() => {
+                  dispatch(
+                    Actions.goToScreen({ screen: "GROUP", groupId: group.id })
+                  );
+                }}
+              />
+              {/*
+              <MyButtons.FormButton
+                text="Open"
+                onPress={() => {
+                  dispatch(
+                    Actions.goToScreen({ screen: "GROUP", groupId: group.id })
+                  );
+                }}
+              />
+              */}
+            </View>
           </View>
-        </View>
+          <Divider
+            style={{ marginTop: 10, marginBottom: 10 }}
+            width={1}
+            color="lightgrey"
+          />
+        </>
       );
     });
   }
@@ -101,12 +148,22 @@ export default function GroupsScreen({ navigation }) {
   return (
     <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
       <TopBar
-        style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}
-        left={null}
-        center={<Text>Groups</Text>}
+        style={{}}
+        left={
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Avatar
+              size={48}
+              rounded
+              title="I"
+              containerStyle={{ backgroundColor: "coral", marginRight: 10 }}
+            />
+            <Text style={{ fontWeight: "bold", fontSize: 20 }}>My Groups</Text>
+          </View>
+        }
+        center={null}
         right={null}
       />
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: "white", paddingTop: 20 }}>
         {/*
         <SearchBar
           key="search"
@@ -122,6 +179,16 @@ export default function GroupsScreen({ navigation }) {
         <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
           <MyButtons.FormButton
             text="Groups"
+            onPress={() => {
+              dispatch(
+                Actions.goToScreen({
+                  screen: "GROUPS",
+                })
+              );
+            }}
+          />
+          <MyButtons.FormButton
+            text="Find"
             onPress={() => {
               dispatch(
                 Actions.goToScreen({
