@@ -4,6 +4,7 @@ import { ToggleButton } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import * as Paper from "react-native-paper";
 import * as MyButtons from "./MyButtons";
+import * as Controller from "./Controller";
 
 export default function GroupInviteModal({ groupId, visible, closeModal }) {
   const dispatch = useDispatch();
@@ -77,7 +78,7 @@ export default function GroupInviteModal({ groupId, visible, closeModal }) {
               await Controller.sendGroupInviteToUser(
                 userInfo,
                 groupId,
-                user.uid
+                user.id
               );
               closeModal();
             }}

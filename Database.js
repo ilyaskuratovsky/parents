@@ -68,3 +68,7 @@ export async function sendMessage(groupId, uid, text) {
 export async function createOrg(name, type) {
   return DatabaseRDB.createOrg(name, type);
 }
+
+export async function createInvite(fromUid, groupId, uid, email) {
+  return DatabaseFS.createInvite(fromUid, groupId, uid, email);
+}

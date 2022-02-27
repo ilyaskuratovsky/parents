@@ -230,3 +230,8 @@ export async function sendMessage(groupId, uid, text) {
   );
   await addDoc(messagesRef, message);
 }
+
+export async function createInvite(fromUid, groupId, uid, email) {
+  const invitesRef = collection(db, "invites");
+  const group = await addDoc(invitesRef, { fromUid, groupId, uid, email });
+}
