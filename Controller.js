@@ -6,6 +6,7 @@ import * as Actions from "./Actions";
 import { auth } from "./config/firebase";
 import * as Database from "./Database";
 import store from "./Actions";
+import * as Search from "./Search";
 
 //import { Database } from "firebase-firestore-lite";
 
@@ -91,6 +92,12 @@ export async function initializeApp(
   Database.observeAllGroupChanges((groups) => {
     dispatch(Actions.groups(groups));
   });
+
+  //build the search index
+  const searchIndex = Search.buildSearchIndex(
+    store.getState().main.orgsMap,
+    store.getState().main.groupMap
+  );
 
   //Go to login page by default
   dispatch(Actions.goToScreen({ screen: "LOGIN" }));
@@ -301,6 +308,4 @@ export async function dismissInvite(dispatch, userInfo, inviteId) {
   await Database.updateInvite(inviteId, { status: "dismissed" });
 }
 
-async function buildSearchIndex(orgsList, groupsList) {
-  const searchIndex = {};
-}
+export function searchGroupsAndOrgs(text) {}
