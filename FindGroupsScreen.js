@@ -87,8 +87,9 @@ Activities
           />
         </View>
         {searchResults != null &&
-          searchResultsSection(searchResults, orgsMap, groupMap)}
-        {searchResults == null && directorySection(schoolList, otherOrgsList)}
+          searchResultsSection(dispatch, searchResults, orgsMap, groupMap)}
+        {searchResults == null &&
+          directorySection(dispatch, schoolList, otherOrgsList)}
       </View>
       <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
         <MyButtons.MenuButton
@@ -145,7 +146,7 @@ Activities
   );
 }
 
-function searchResultsSection(searchResults, orgsMap, groupMap) {
+function searchResultsSection(dispatch, searchResults, orgsMap, groupMap) {
   if (searchResults == null) {
     return <Text>No Results</Text>;
   }
@@ -155,100 +156,140 @@ function searchResultsSection(searchResults, orgsMap, groupMap) {
       {searchResults.map((entity) => {
         if (entity.type == "org") {
           const org = orgsMap[entity.entity];
-          return <Text>{org.name}</Text>;
+          return (
+            <View style={{ flexDirection: "column" }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  paddingTop: 5,
+                  paddingBottom: 10,
+                  textDecorationLine: "underline",
+                  color: "blue",
+                  fontWeight: "bold",
+                  textAlign: "start",
+                  //backgroundColor: "cyan",
+                }}
+              >
+                {org.name}
+              </Text>
+              <Text style={{ fontSize: 12 }}>
+                {org.type == "school" ? "School" : "Activities"}
+              </Text>
+            </View>
+          );
         } else if (entity.type == "group") {
           const group = groupMap[entity.entity];
-          return <Text>{group.name}</Text>;
+          return (
+            <View style={{ flexDirection: "column" }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  paddingTop: 5,
+                  paddingBottom: 10,
+                  textDecorationLine: "underline",
+                  color: "blue",
+                  fontWeight: "normal",
+                  textAlign: "start",
+                  //backgroundColor: "cyan",
+                }}
+              >
+                {group.name}
+              </Text>
+              <Text style={{ fontSize: 12 }}>Group</Text>
+            </View>
+          );
         }
       })}
     </View>
   );
 }
 
-function directorySection(schoolList, otherOrgsList) {
-  <View
-    style={{
-      paddingLeft: 10,
-      flexGrow: 1,
-      flexDirection: "column",
-    }}
-  >
-    <Text style={{ fontSize: 20, fontWeight: "bold" }}>Schools</Text>
-    <Divider
-      style={{ marginTop: 10, marginBottom: 10 }}
-      width={1}
-      color="lightgrey"
-    />
-    {schoolList.map((school) => {
-      return (
-        <TouchableOpacity
-          onPress={() => {
-            dispatch(
-              Actions.goToScreen({
-                screen: "SCHOOL",
-                schoolId: school.id,
-              })
-            );
-          }}
-          style={
-            {
-              /*backgroundColor: "green"*/
+function directorySection(dispatch, schoolList, otherOrgsList) {
+  return (
+    <View
+      style={{
+        paddingLeft: 10,
+        flexGrow: 1,
+        flexDirection: "column",
+      }}
+    >
+      <Text style={{ fontSize: 20, fontWeight: "bold" }}>Schools</Text>
+      <Divider
+        style={{ marginTop: 10, marginBottom: 10 }}
+        width={1}
+        color="lightgrey"
+      />
+      {schoolList.map((school) => {
+        return (
+          <TouchableOpacity
+            onPress={() => {
+              dispatch(
+                Actions.goToScreen({
+                  screen: "SCHOOL",
+                  schoolId: school.id,
+                })
+              );
+            }}
+            style={
+              {
+                /*backgroundColor: "green"*/
+              }
             }
-          }
-        >
-          <Text
-            style={{
-              fontSize: 16,
-              paddingTop: 5,
-              paddingBottom: 10,
-              textDecorationLine: "underline",
-              color: "blue",
-              fontWeight: "bold",
-              textAlign: "start",
-              //backgroundColor: "cyan",
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                paddingTop: 5,
+                paddingBottom: 10,
+                textDecorationLine: "underline",
+                color: "blue",
+                fontWeight: "bold",
+                textAlign: "start",
+                //backgroundColor: "cyan",
+              }}
+            >
+              {school.name}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+      <Text style={{ marginTop: 20, fontSize: 20, fontWeight: "bold" }}>
+        Activities
+      </Text>
+      <Divider
+        style={{ marginTop: 10, marginBottom: 10 }}
+        width={1}
+        color="lightgrey"
+      />
+      {otherOrgsList.map((org) => {
+        return (
+          <TouchableOpacity
+            onPress={() => {
+              dispatch(
+                Actions.goToScreen({
+                  screen: "ORG",
+                  orgId: org.id,
+                })
+              );
             }}
           >
-            {school.name}
-          </Text>
-        </TouchableOpacity>
-      );
-    })}
-    <Text style={{ marginTop: 20, fontSize: 20, fontWeight: "bold" }}>
-      Activities
-    </Text>
-    <Divider
-      style={{ marginTop: 10, marginBottom: 10 }}
-      width={1}
-      color="lightgrey"
-    />
-    {otherOrgsList.map((org) => {
-      return (
-        <TouchableOpacity
-          onPress={() => {
-            dispatch(
-              Actions.goToScreen({
-                screen: "ORG",
-                orgId: org.id,
-              })
-            );
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 16,
-              paddingTop: 5,
-              paddingBottom: 10,
-              textDecorationLine: "underline",
-              color: "blue",
-              fontWeight: "bold",
-              textAlign: "start",
-              //backgroundColor: "cyan",
-            }}
-          >
-            {org.name}
-          </Text>
-        </TouchableOpacity>
-      );
-    })}
-  </View>;
+            <Text
+              style={{
+                fontSize: 16,
+                paddingTop: 5,
+                paddingBottom: 10,
+                textDecorationLine: "underline",
+                color: "blue",
+                fontWeight: "bold",
+                textAlign: "start",
+                //backgroundColor: "cyan",
+              }}
+            >
+              {org.name}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
 }
