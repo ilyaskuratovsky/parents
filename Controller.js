@@ -99,6 +99,8 @@ export async function initializeApp(
     store.getState().main.groupMap
   );
 
+  dispatch(Actions.searchIndex(searchIndex));
+
   //Go to login page by default
   dispatch(Actions.goToScreen({ screen: "LOGIN" }));
   console.log(JSON.stringify(store.getState()));
@@ -308,4 +310,8 @@ export async function dismissInvite(dispatch, userInfo, inviteId) {
   await Database.updateInvite(inviteId, { status: "dismissed" });
 }
 
-export function searchGroupsAndOrgs(text) {}
+export function searchGroupsAndOrgs(text) {
+  const searchIndex = store.getState().main.searchIndex;
+  const results = Search.search(searchIndex, text);
+  return results;
+}

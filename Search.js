@@ -54,13 +54,13 @@ function splitIntoWords(str) {
       current = current == null ? c : current + c;
     } else {
       if (current != null) {
-        split.push(current);
+        split.push(current.toUpperCase());
         current = null;
       }
     }
   }
   if (current != null) {
-    split.push(current);
+    split.push(current.toUpperCase());
   }
   return split;
 }
@@ -84,4 +84,48 @@ function addIntoMap(map, key, val) {
     map[key] = [];
   }
   map[key].push(val);
+}
+
+export function search(index, text) {
+  const words = splitIntoWords(text);
+  let results = [];
+  for (let word of words) {
+    const wordResults = findInIndex(index, word);
+    results = results.concat(wordResults);
+  }
+
+  const entityMap = {};
+  for (const entity of results) {
+    entityMap[entity.entity] = entity;
+  }
+
+  const occurrences = results.reduce(function (acc, result) {
+    return (
+      acc[result.entity] ? ++acc[result.entity] : (acc[result.entity] = 1), acc
+    );
+  }, {});
+
+  let maxCountResults = [];
+  let maxCount = 0;
+  for (let [entityId, count] of Object.entries(occurrences)) {
+    if (count == maxCount) {
+      maxCountResults.push(entityId);
+    } else if (count > maxCount) {
+      maxCount = count;
+      maxCountResults = [entityId];
+    }
+  }
+
+  return maxCountResults.map((entityId) => entityMap[entityId]);
+}
+
+export function findInIndex(index, word) {
+  let current = index;
+  for (let ch of word) {
+    current = current.subTree[ch];
+  }
+
+  if (current != null) {
+    return current.entities;
+  }
 }

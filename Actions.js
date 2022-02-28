@@ -199,6 +199,14 @@ export const mainSlice = createSlice({
       };
       return newState;
     },
+    searchIndex: (state, obj) => {
+      const searchIndex = obj.payload;
+      const newState = {
+        ...state,
+        searchIndex,
+      };
+      return newState;
+    },
   },
 });
 
@@ -214,6 +222,7 @@ export const {
   groups,
   groupMemberships,
   toUserInvites,
+  searchIndex,
 } = mainSlice.actions;
 export const { goToScreen, goToUserScreen } = screenSlice.actions;
 

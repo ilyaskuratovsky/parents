@@ -47,7 +47,7 @@ Activities
   const otherOrgsList = orgsList.filter((org) => {
     return org.type != "school";
   });
-
+  const [searchText, setSearchText] = useState("");
   const [visibleNewOrgModal, setVisibleNewOrgModal] = useState(false);
   return (
     <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
@@ -75,98 +75,20 @@ Activities
                 const results = Controller.searchGroupsAndOrgs(text);
                 setSearchResults(results);
               }
+              setSearchText(text);
             }}
-            onClear={(text) => {}}
+            onClear={(text) => {
+              setSearchText("");
+              setSearchResults(null);
+            }}
             placeholder="Search..."
-            value={""}
+            value={searchText}
             containerStyle={{ backgroundColor: "white" }}
           />
         </View>
-        <View
-          style={{
-            paddingLeft: 10,
-            flexGrow: 1,
-            flexDirection: "column",
-          }}
-        >
-          <Text style={{ fontSize: 20, fontWeight: "bold" }}>Schools</Text>
-          <Divider
-            style={{ marginTop: 10, marginBottom: 10 }}
-            width={1}
-            color="lightgrey"
-          />
-          {schoolList.map((school) => {
-            return (
-              <TouchableOpacity
-                onPress={() => {
-                  dispatch(
-                    Actions.goToScreen({
-                      screen: "SCHOOL",
-                      schoolId: school.id,
-                    })
-                  );
-                }}
-                style={
-                  {
-                    /*backgroundColor: "green"*/
-                  }
-                }
-              >
-                <Text
-                  style={{
-                    fontSize: 16,
-                    paddingTop: 5,
-                    paddingBottom: 10,
-                    textDecorationLine: "underline",
-                    color: "blue",
-                    fontWeight: "bold",
-                    textAlign: "start",
-                    //backgroundColor: "cyan",
-                  }}
-                >
-                  {school.name}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-          <Text style={{ marginTop: 20, fontSize: 20, fontWeight: "bold" }}>
-            Activities
-          </Text>
-          <Divider
-            style={{ marginTop: 10, marginBottom: 10 }}
-            width={1}
-            color="lightgrey"
-          />
-          {otherOrgsList.map((org) => {
-            return (
-              <TouchableOpacity
-                onPress={() => {
-                  dispatch(
-                    Actions.goToScreen({
-                      screen: "ORG",
-                      orgId: org.id,
-                    })
-                  );
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 16,
-                    paddingTop: 5,
-                    paddingBottom: 10,
-                    textDecorationLine: "underline",
-                    color: "blue",
-                    fontWeight: "bold",
-                    textAlign: "start",
-                    //backgroundColor: "cyan",
-                  }}
-                >
-                  {org.name}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+        {searchResults != null &&
+          searchResultsSection(searchResults, orgsMap, groupMap)}
+        {searchResults == null && directorySection(schoolList, otherOrgsList)}
       </View>
       <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
         <MyButtons.MenuButton
@@ -221,160 +143,112 @@ Activities
       </BottomBar>
     </Portal>
   );
+}
+
+function searchResultsSection(searchResults, orgsMap, groupMap) {
+  if (searchResults == null) {
+    return <Text>No Results</Text>;
+  }
+
   return (
-    <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
-      <TopBar
-        style={{ backgroundColor: "yellow" }}
-        left={null}
-        center={<Text>Groups</Text>}
-        right={null}
-      />
-      <View
-        style={{
-          backgroundColor: "red",
-          flex: 1,
-          flexDirection: "column",
-          alignItems: "flex-start",
-        }}
-      >
-        <SearchBar
-          key="search"
-          style={{ width: 500 }}
-          round
-          searchIcon={{ size: 12 }}
-          onChangeText={(text) => {}}
-          onClear={(text) => {}}
-          placeholder="Search..."
-          value={""}
-        />
-        <Text>Schools</Text>
-        {schoolList.map((school) => {
-          return (
-            <TouchableOpacity
-              onPress={() => {
-                dispatch(
-                  Actions.goToScreen({
-                    screen: "SCHOOL",
-                    schoolId: school.id,
-                  })
-                );
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 12,
-                  textDecorationLine: "underline",
-                  color: "blue",
-                  fontWeight: "bold",
-                  textAlign: "center",
-                }}
-              >
-                {school.name}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
+    <View>
+      {searchResults.map((entity) => {
+        if (entity.type == "org") {
+          const org = orgsMap[entity.entity];
+          return <Text>{org.name}</Text>;
+        } else if (entity.type == "group") {
+          const group = groupMap[entity.entity];
+          return <Text>{group.name}</Text>;
+        }
+      })}
+    </View>
+  );
+}
 
-        <Text>Activities</Text>
-        {otherOrgsList.map((org) => {
-          return (
-            <TouchableOpacity
-              onPress={() => {
-                dispatch(
-                  Actions.goToScreen({
-                    screen: "ORG",
-                    orgId: org.id,
-                  })
-                );
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 12,
-                  textDecorationLine: "underline",
-                  color: "blue",
-                  fontWeight: "bold",
-                  textAlign: "center",
-                }}
-              >
-                {org.name}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-
-        <View
-          key={"new"}
-          style={{
-            height: 50,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "flex-start",
+function directorySection(schoolList, otherOrgsList) {
+  <View
+    style={{
+      paddingLeft: 10,
+      flexGrow: 1,
+      flexDirection: "column",
+    }}
+  >
+    <Text style={{ fontSize: 20, fontWeight: "bold" }}>Schools</Text>
+    <Divider
+      style={{ marginTop: 10, marginBottom: 10 }}
+      width={1}
+      color="lightgrey"
+    />
+    {schoolList.map((school) => {
+      return (
+        <TouchableOpacity
+          onPress={() => {
+            dispatch(
+              Actions.goToScreen({
+                screen: "SCHOOL",
+                schoolId: school.id,
+              })
+            );
           }}
+          style={
+            {
+              /*backgroundColor: "green"*/
+            }
+          }
         >
-          <Text>Can't find your organization or school?</Text>
-          <TouchableOpacity
-            onPress={() => {
-              setVisibleNewOrgModal(true);
+          <Text
+            style={{
+              fontSize: 16,
+              paddingTop: 5,
+              paddingBottom: 10,
+              textDecorationLine: "underline",
+              color: "blue",
+              fontWeight: "bold",
+              textAlign: "start",
+              //backgroundColor: "cyan",
             }}
           >
-            <Text
-              style={{
-                fontSize: 12,
-                textDecorationLine: "underline",
-                color: "blue",
-                fontWeight: "bold",
-                textAlign: "center",
-              }}
-            >
-              Create a new one
-            </Text>
-          </TouchableOpacity>
-          <NewOrgModal
-            key="newgroupmodal"
-            visible={visibleNewOrgModal}
-            onCreateOrg={createOrg}
-            closeModal={() => {
-              console.log("close modal called");
-              setVisibleNewOrgModal(null);
+            {school.name}
+          </Text>
+        </TouchableOpacity>
+      );
+    })}
+    <Text style={{ marginTop: 20, fontSize: 20, fontWeight: "bold" }}>
+      Activities
+    </Text>
+    <Divider
+      style={{ marginTop: 10, marginBottom: 10 }}
+      width={1}
+      color="lightgrey"
+    />
+    {otherOrgsList.map((org) => {
+      return (
+        <TouchableOpacity
+          onPress={() => {
+            dispatch(
+              Actions.goToScreen({
+                screen: "ORG",
+                orgId: org.id,
+              })
+            );
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 16,
+              paddingTop: 5,
+              paddingBottom: 10,
+              textDecorationLine: "underline",
+              color: "blue",
+              fontWeight: "bold",
+              textAlign: "start",
+              //backgroundColor: "cyan",
             }}
-          />
-        </View>
-
-        <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
-          <MyButtons.FormButton
-            text="Groups"
-            onPress={() => {
-              dispatch(
-                Actions.goToUserScreen({
-                  screen: "DEBUG",
-                  backAction: () =>
-                    Actions.goToUserScreen({ screen: "FIND_GROUPS" }),
-                })
-              );
-            }}
-          />
-          <MyButtons.FormButton text="My Profile" onPress={() => {}} />
-          <MyButtons.FormButton
-            text="Logout"
-            onPress={() => {
-              Controller.logout();
-            }}
-          />
-          <MyButtons.FormButton
-            text="Debug"
-            onPress={() => {
-              dispatch(
-                Actions.goToUserScreen({
-                  screen: "DEBUG",
-                  backAction: () =>
-                    Actions.goToUserScreen({ screen: "GROUPS" }),
-                })
-              );
-            }}
-          />
-        </BottomBar>
-      </View>
-    </Portal>
-  );
+          >
+            {org.name}
+          </Text>
+        </TouchableOpacity>
+      );
+    })}
+  </View>;
 }
