@@ -35,7 +35,7 @@ function RootApp(props, state) {
   let screen = screenWithParams.screen;
   //return <CanvasLineTestWorkingMultilineCircle startX={100} startY={100} />;
   //return <SplashScreen />;
-  //return <SlideModalTest />;
+  //return <TestChat />;
 
   let render = null;
 
