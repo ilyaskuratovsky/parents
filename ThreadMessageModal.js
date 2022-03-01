@@ -14,6 +14,7 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { IconButton } from "react-native-paper";
+import * as MyButtons from "./MyButtons";
 
 import { Avatar, Divider } from "react-native-elements";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -35,8 +36,23 @@ export default function ThreadMessageModal({ visible, closeModal }) {
         <View style={{ top: 0, height: 44 }} />
         <View
           style={{
-            height: 60,
-            backgroundColor: "green",
+            height: 30,
+            paddingLeft: 8,
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => {
+              closeModal();
+            }}
+          >
+            <Text style={{ fontSize: 20, color: "blue" }}>Close</Text>
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
+            height: 50,
             flexDirection: "column",
           }}
         >
@@ -44,7 +60,7 @@ export default function ThreadMessageModal({ visible, closeModal }) {
             style={{
               //height: 100,
               flex: 1,
-              paddingLeft: 4,
+              paddingLeft: 8,
               paddingRight: 4,
               paddingTop: 8,
               paddingBottom: 8,
@@ -54,44 +70,36 @@ export default function ThreadMessageModal({ visible, closeModal }) {
           >
             <View
               style={{
-                width: 20,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <IconButton icon="chevron-right" color={"darkgrey"} size={32} />
-            </View>
-            <View
-              style={{
                 flexGrow: 1,
-                alignItems: "center",
+                alignItems: "flex-start",
                 justifyContent: "center",
               }}
             >
-              <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+              <Text style={{ fontSize: 20, fontWeight: "bold" }}>
                 Mrs.Legio Class 4th Grade
               </Text>
             </View>
             <View
               style={{
-                width: 20,
+                width: 80,
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <IconButton icon="chevron-right" color={"darkgrey"} size={32} />
+              <MyButtons.FormButton text="POST" onPress={() => {}} />
             </View>
           </View>
         </View>
+        <Divider style={{}} width={1} color="darkgrey" />
         <View style={{ flexGrow: 1 }}>
           <View
             style={{
-              height: 80,
+              height: 40,
               justifyContent: "flex-start",
               flexDirection: "row",
               alignItems: "center",
-              paddingBottom: 5,
-              backgroundColor: "white",
+              paddingBottom: 0,
+              //backgroundColor: "green",
             }}
           >
             <Avatar
@@ -127,7 +135,7 @@ export default function ThreadMessageModal({ visible, closeModal }) {
             style={{
               flex: 1,
               backgroundColor: "blue",
-              margin: 10,
+              margin: 0,
               paddingTop: 10,
               paddingBottom: 0,
               paddingLeft: 10,
@@ -137,14 +145,6 @@ export default function ThreadMessageModal({ visible, closeModal }) {
             }}
             multiline={true}
             autoFocus={true}
-          />
-        </View>
-        <View style={{ height: 50 }}>
-          <Button
-            title="Close"
-            onPress={() => {
-              closeModal();
-            }}
           />
         </View>
       </KeyboardAvoidingView>

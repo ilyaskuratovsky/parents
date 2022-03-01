@@ -72,6 +72,8 @@ const FormButton = React.memo(({ text, icon, onPress, style }) => {
       uppercase={false}
       onPress={onPress}
       mode="contained"
+      color="blue"
+      labelStyle={{ fontSize: 16, color: "white" }}
     >
       {text}
     </Paper.Button>
