@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View, TouchableOpacity } from "react-native";
 import { SearchBar } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "./Actions";
@@ -12,6 +12,7 @@ import TopBar from "./TopBar";
 import BottomBar from "./BottomBar";
 import { Avatar, Divider } from "react-native-elements";
 import { IconButton } from "react-native-paper";
+import Toolbar from "./Toolbar";
 
 export default function GroupsScreen({}) {
   const dispatch = useDispatch();
@@ -70,13 +71,18 @@ export default function GroupsScreen({}) {
       }
       return (
         <>
-          <View
+          <TouchableOpacity
             key={group.id}
             style={{
               flexDirection: "row",
               height: 60,
               alignItems: "center",
               paddingLeft: 10,
+            }}
+            onPress={() => {
+              dispatch(
+                Actions.goToScreen({ screen: "GROUP", groupId: group.id })
+              );
             }}
           >
             <View
@@ -113,16 +119,7 @@ export default function GroupsScreen({}) {
                 alignItems: "flex-end",
               }}
             >
-              <IconButton
-                icon="chevron-right"
-                color={"darkgrey"}
-                size={32}
-                onPress={() => {
-                  dispatch(
-                    Actions.goToScreen({ screen: "GROUP", groupId: group.id })
-                  );
-                }}
-              />
+              <IconButton icon="chevron-right" color={"darkgrey"} size={32} />
               {/*
               <MyButtons.FormButton
                 text="Open"
@@ -134,7 +131,7 @@ export default function GroupsScreen({}) {
               />
               */}
             </View>
-          </View>
+          </TouchableOpacity>
           <Divider
             style={{ marginTop: 10, marginBottom: 10 }}
             width={1}
@@ -176,6 +173,7 @@ export default function GroupsScreen({}) {
         />
         */}
         <ScrollView>{groupsComponents}</ScrollView>
+        {/*
         <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
           <MyButtons.MenuButton
             icon="account-group"
@@ -227,6 +225,8 @@ export default function GroupsScreen({}) {
             }}
           />
         </BottomBar>
+          */}
+        <Toolbar />
       </View>
     </Portal>
   );

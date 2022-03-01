@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Text, View, TouchableOpacity } from "react-native";
+import { Text, View, TouchableOpacity, StatusBar } from "react-native";
 import { GiftedChat } from "react-native-gifted-chat";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "./Actions";
@@ -10,8 +10,12 @@ import TopBar from "./TopBar";
 import Portal from "./Portal";
 import GroupInviteModal from "./GroupInviteModal";
 import BottomBar from "./BottomBar";
+import { Avatar, Divider } from "react-native-elements";
+import Toolbar from "./Toolbar";
+import ThreadView from "./ThreadView";
 
-export default function GroupScreen({ groupId, navigation }) {
+export default function GroupScreen({ groupId }) {
+  console.log("groupId: " + groupId);
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
   const {
@@ -19,6 +23,7 @@ export default function GroupScreen({ groupId, navigation }) {
     schoolMap,
     groupList,
     groupMap,
+    orgsMap,
     messages,
     userMap,
     members,
@@ -29,6 +34,7 @@ export default function GroupScreen({ groupId, navigation }) {
       schoolMap: state.main.schoolMap,
       groupList: state.main.groupList,
       groupMap: state.main.groupMap,
+      orgsMap: state.main.orgsMap,
       userMap: state.main.userMap,
       messages: state.main.groupMessages[groupId],
       members: state.main.groupMembershipMap[groupId],
@@ -36,6 +42,7 @@ export default function GroupScreen({ groupId, navigation }) {
   });
   const [inviteModalVisible, setInviteModalVisible] = useState(false);
   const group = groupMap[groupId];
+  const org = orgsMap[group.orgId];
   const giftedChatMessages = messages.map((message) => {
     const user = userMap[message.uid];
 
@@ -60,41 +67,125 @@ export default function GroupScreen({ groupId, navigation }) {
   }, []);
 
   return (
-    <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
-      <TopBar
-        style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}
-        left={
-          <MyButtons.MenuButton
-            icon="arrow-left"
-            text=""
-            onPress={() => {
-              dispatch(Actions.goToScreen({ screen: "GROUPS" }));
+    <Portal backgroundColor={/*UIConstants.DEFAULT_BACKGROUND*/ "white"}>
+      <View style={{ backgroundColor: "whitesmoke", flexDirection: "column" }}>
+        <View
+          style={[
+            {
+              //height: 100,
+              paddingLeft: 4,
+              paddingRight: 4,
+              paddingTop: 8,
+              paddingBottom: 8,
+              flexDirection: "row",
+              //zIndex: Number.MAX_VALUE,
+            },
+          ]}
+        >
+          <View
+            style={{
+              flexGrow: 1,
+              alignItems: "flex-start",
+              justifyContent: "flex-end",
             }}
-          />
-        }
-        center={<Text>{group.name}</Text>}
-        right={null}
-      />
-      <View style={{ flex: 1, flexDirection: "column" }}>
-        <View style={{ height: 50, grow: 0, flexDirection: "row" }}>
-          {members.map(({ uid }, index) => {
-            const user = userMap[uid];
-            const name =
-              user.displayName != null
-                ? user.displayName
-                : user.email.substring(0, user.email.lastIndexOf("@"));
-            return (
-              <Text
-                style={{
-                  marginRight: 8,
-                  fontWeight: userInfo.uid == user.uid ? "bold" : "normal",
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={{ flexDirection: "column" }}>
+                <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+                  {group.name}
+                </Text>
+                {org != null && (
+                  <Text style={{ fontWeight: "normal", fontSize: 14 }}>
+                    {org.name}
+                  </Text>
+                )}
+              </View>
+            </View>
+          </View>
+          <View
+            style={{
+              width: 80,
+              flexGrow: 0,
+              marginRight: 4,
+              alignItems: "flex-end",
+              justifyContent: "center",
+              flexDirection: "column",
+            }}
+          >
+            <MyButtons.MenuButton
+              icon="account-supervisor"
+              text="9 members"
+              onPress={() => {
+                closeModal();
+              }}
+            />
+            {/*
+            <View style={{ flexDirection: "row" }}>   
+              <View style={{ flexDirection: "column" }}>
+                {members.length <= 4 ? (
+                  <View style={{ flexDirection: "row" }}>
+                    {members.map(({ uid }, index) => {
+                      const user = userMap[uid];
+                      const name =
+                        user.displayName != null
+                          ? user.displayName
+                          : user.email.substring(
+                              0,
+                              user.email.lastIndexOf("@")
+                            );
+                      return (
+                        <Text
+                          style={{
+                            marginRight: 8,
+                            fontWeight:
+                              userInfo.uid == user.uid ? "bold" : "normal",
+                          }}
+                        >
+                          <Avatar
+                            size={24}
+                            rounded
+                            title="I"
+                            containerStyle={{
+                              backgroundColor: "coral",
+                              marginRight: 1,
+                            }}
+                          />
+                        </Text>
+                      );
+                    })}
+                  </View>
+                ) : (
+                  <View style={{ flexDirection: "column" }}>
+                    <Text style={{ fontSize: 11 }}>9 Members</Text>
+                    <Avatar
+                      size={24}
+                      rounded
+                      title="I"
+                      containerStyle={{
+                        backgroundColor: "coral",
+                        marginRight: 1,
+                      }}
+                    />
+                  </View>
+                )}
+              </View>
+              <MyButtons.MenuButton
+                icon="account-supervisor"
+                text=""
+                onPress={() => {
+                  closeModal();
                 }}
-              >
-                {name}
-                {index < members.length - 1 ? "," : ""}
-              </Text>
-            );
-          })}
+              />
+            </View>
+              */}
+          </View>
+        </View>
+        <Divider style={{}} width={1} color="darkgrey" />
+      </View>
+
+      <View style={{ flex: 1, flexDirection: "column" }}>
+        {/*
+        <View style={{ height: 20, grow: 0, flexDirection: "row" }}>
           <TouchableOpacity
             onPress={() => {
               setInviteModalVisible(true);
@@ -122,44 +213,19 @@ export default function GroupScreen({ groupId, navigation }) {
             />
           </TouchableOpacity>
         </View>
+            */}
         <View style={{ flex: 1 }}>
+          {/*
           <GiftedChat
             messages={giftedChatMessages}
             onSend={onSend}
             style={{ border: 1, borderColor: "black" }}
           ></GiftedChat>
+          */}
+          <ThreadView messages={messages} />
         </View>
       </View>
-      <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
-        <MyButtons.FormButton
-          text="Groups"
-          onPress={() => {
-            dispatch(
-              Actions.goToScreen({
-                screen: "FIND_GROUPS",
-              })
-            );
-          }}
-        />
-        <MyButtons.FormButton text="My Profile" onPress={() => {}} />
-        <MyButtons.FormButton
-          text="Logout"
-          onPress={() => {
-            Controller.logout();
-          }}
-        />
-        <MyButtons.FormButton
-          text="Debug"
-          onPress={() => {
-            dispatch(
-              Actions.goToScreen({
-                screen: "DEBUG",
-                backAction: () => Actions.goToScreen({ screen: "GROUPS" }),
-              })
-            );
-          }}
-        />
-      </BottomBar>
+      <Toolbar />
     </Portal>
   );
 }

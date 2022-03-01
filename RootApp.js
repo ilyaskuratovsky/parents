@@ -17,7 +17,7 @@ import RDBTest from "./RDBTest";
 import LoggedInScreenRouter from "./LoggedInScreenRouter";
 import OrgScreen from "./OrgScreen";
 import Messages from "./Messages";
-
+import TestThreadView from "./TestThreadView";
 function RootApp(props, state) {
   const dispatch = useDispatch();
   const notificationListener = useRef();
@@ -26,7 +26,7 @@ function RootApp(props, state) {
     return state;
   });
 
-  //return <RDBTest />;
+  //return <TestThreadView />;
   useEffect(() => {
     Controller.initializeApp(dispatch, notificationListener, responseListener);
   }, []);
