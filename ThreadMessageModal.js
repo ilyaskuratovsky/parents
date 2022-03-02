@@ -24,9 +24,15 @@ import {
 } from "react-native-safe-area-context";
 import TopBar from "./TopBar";
 
-export default function ThreadMessageModal({ visible, closeModal }) {
+export default function ThreadMessageModal({
+  visible,
+  sendMessage,
+  closeModal,
+}) {
   const insets = useSafeAreaInsets();
-  console.log("top: " + insets.top);
+  const [text, setText] = useState(null);
+  console.log("text: " + text);
+
   return (
     <Modal visible={visible} animationType={"slide"}>
       <KeyboardAvoidingView
@@ -86,7 +92,14 @@ export default function ThreadMessageModal({ visible, closeModal }) {
                 justifyContent: "center",
               }}
             >
-              <MyButtons.FormButton text="POST" onPress={() => {}} />
+              <MyButtons.FormButton
+                text="POST"
+                onPress={async () => {
+                  sendMessage(text).then(() => {
+                    closeModal();
+                  });
+                }}
+              />
             </View>
           </View>
         </View>
@@ -145,6 +158,9 @@ export default function ThreadMessageModal({ visible, closeModal }) {
             }}
             multiline={true}
             autoFocus={true}
+            onChangeText={(text) => {
+              setText(text);
+            }}
           />
         </View>
       </KeyboardAvoidingView>

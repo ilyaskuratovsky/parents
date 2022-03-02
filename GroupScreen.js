@@ -13,6 +13,7 @@ import BottomBar from "./BottomBar";
 import { Avatar, Divider } from "react-native-elements";
 import Toolbar from "./Toolbar";
 import ThreadView from "./ThreadView";
+import * as UserInfo from "./UserInfo";
 
 export default function GroupScreen({ groupId }) {
   console.log("groupId: " + groupId);
@@ -43,7 +44,7 @@ export default function GroupScreen({ groupId }) {
   const [inviteModalVisible, setInviteModalVisible] = useState(false);
   const group = groupMap[groupId];
   const org = orgsMap[group.orgId];
-  const giftedChatMessages = messages.map((message) => {
+  const threadMessages = messages.map((message) => {
     const user = userMap[message.uid];
 
     return {
@@ -52,7 +53,7 @@ export default function GroupScreen({ groupId }) {
       createdAt: new Date(message.timestamp),
       user: {
         _id: message.uid,
-        name: user.displayName ?? user.email,
+        name: UserInfo.chatDisplayName(user),
         //avatar: "https://placeimg.com/140/140/any",
       },
     };
@@ -62,8 +63,8 @@ export default function GroupScreen({ groupId }) {
     return <Text>Loading Data...</Text>;
   }
 
-  const onSend = useCallback((messages = []) => {
-    Controller.sendMessage(dispatch, userInfo, groupId, messages[0].text);
+  const sendMessage = useCallback(async (text) => {
+    return await Controller.sendMessage(dispatch, userInfo, groupId, text);
   }, []);
 
   return (
@@ -119,110 +120,14 @@ export default function GroupScreen({ groupId }) {
                 closeModal();
               }}
             />
-            {/*
-            <View style={{ flexDirection: "row" }}>   
-              <View style={{ flexDirection: "column" }}>
-                {members.length <= 4 ? (
-                  <View style={{ flexDirection: "row" }}>
-                    {members.map(({ uid }, index) => {
-                      const user = userMap[uid];
-                      const name =
-                        user.displayName != null
-                          ? user.displayName
-                          : user.email.substring(
-                              0,
-                              user.email.lastIndexOf("@")
-                            );
-                      return (
-                        <Text
-                          style={{
-                            marginRight: 8,
-                            fontWeight:
-                              userInfo.uid == user.uid ? "bold" : "normal",
-                          }}
-                        >
-                          <Avatar
-                            size={24}
-                            rounded
-                            title="I"
-                            containerStyle={{
-                              backgroundColor: "coral",
-                              marginRight: 1,
-                            }}
-                          />
-                        </Text>
-                      );
-                    })}
-                  </View>
-                ) : (
-                  <View style={{ flexDirection: "column" }}>
-                    <Text style={{ fontSize: 11 }}>9 Members</Text>
-                    <Avatar
-                      size={24}
-                      rounded
-                      title="I"
-                      containerStyle={{
-                        backgroundColor: "coral",
-                        marginRight: 1,
-                      }}
-                    />
-                  </View>
-                )}
-              </View>
-              <MyButtons.MenuButton
-                icon="account-supervisor"
-                text=""
-                onPress={() => {
-                  closeModal();
-                }}
-              />
-            </View>
-              */}
           </View>
         </View>
         <Divider style={{}} width={1} color="darkgrey" />
       </View>
 
       <View style={{ flex: 1, flexDirection: "column" }}>
-        {/*
-        <View style={{ height: 20, grow: 0, flexDirection: "row" }}>
-          <TouchableOpacity
-            onPress={() => {
-              setInviteModalVisible(true);
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 12,
-                textDecorationLine: "underline",
-                color: "blue",
-                fontWeight: "bold",
-                textAlign: "center",
-              }}
-            >
-              Invite
-            </Text>
-            <GroupInviteModal
-              key="newgroupmodal"
-              groupId={group.id}
-              visible={inviteModalVisible}
-              closeModal={() => {
-                console.log("close modal called");
-                setInviteModalVisible(false);
-              }}
-            />
-          </TouchableOpacity>
-        </View>
-            */}
         <View style={{ flex: 1 }}>
-          {/*
-          <GiftedChat
-            messages={giftedChatMessages}
-            onSend={onSend}
-            style={{ border: 1, borderColor: "black" }}
-          ></GiftedChat>
-          */}
-          <ThreadView messages={messages} />
+          <ThreadView messages={threadMessages} sendMessage={sendMessage} />
         </View>
       </View>
       <Toolbar />

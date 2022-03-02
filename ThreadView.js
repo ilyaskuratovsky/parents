@@ -11,7 +11,9 @@ import {
 import { Avatar } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import ThreadMessageModal from "./ThreadMessageModal";
-export default function ThreadView({ messages }) {
+import TimeAgo from "react-timeago";
+
+export default function ThreadView({ messages, sendMessage }) {
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const FlatListItemSeparator = () => {
     return (
@@ -83,7 +85,32 @@ export default function ThreadView({ messages }) {
       sender: "Inga Skuratovsky",
     },
   ];
+
+  /*
+      _id: message.id,
+      text: message.text,
+      createdAt: new Date(message.timestamp),
+      user: {
+        _id: message.uid,
+        name: user.displayName ?? user.email,
+        //avatar: "https://placeimg.com/140/140/any",
+      },
+*/
+
   const renderItem = ({ item }) => {
+    const timeAgo = ({ children }) => {
+      return (
+        <Text
+          style={{
+            marginLeft: 5,
+            fontWeight: "normal",
+            fontSize: 14,
+          }}
+        >
+          {children}
+        </Text>
+      );
+    };
     return (
       <View
         style={{
@@ -139,7 +166,7 @@ export default function ThreadView({ messages }) {
           <Avatar
             size={28}
             rounded
-            title="I"
+            title={item.user.name.charAt(0).toUpperCase()}
             containerStyle={{
               backgroundColor: "coral",
               marginRight: 1,
@@ -161,17 +188,25 @@ export default function ThreadView({ messages }) {
                 fontSize: 16,
               }}
             >
-              {item.sender}
+              {item.user.name}
             </Text>
-            <Text
+            <View
               style={{
                 marginLeft: 5,
                 fontWeight: "normal",
                 fontSize: 14,
               }}
             >
-              {item.ago}
-            </Text>
+              <TimeAgo
+                date={item.createdAt}
+                style={{
+                  marginLeft: 5,
+                  fontWeight: "normal",
+                  fontSize: 14,
+                }}
+                component={timeAgo}
+              />
+            </View>
           </View>
         </View>
         <View
@@ -191,7 +226,7 @@ export default function ThreadView({ messages }) {
               width: windowWidth - 20,
             }}
           >
-            {item.message}
+            {item.text}
           </Text>
         </View>
         <View
@@ -219,15 +254,19 @@ export default function ThreadView({ messages }) {
     <View style={{ flexDirection: "column", flex: 1 }}>
       <ThreadMessageModal
         visible={showNewMessageModal}
+        sendMessage={sendMessage}
         closeModal={() => {
           setShowNewMessageModal(false);
         }}
       />
       <FlatList
         style={{ flex: 1 }}
-        data={DATA}
+        data={
+          //DATA
+          messages
+        }
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         inverted
         contentContainerStyle={{
           width: windowWidth,
@@ -246,26 +285,6 @@ export default function ThreadView({ messages }) {
           //backgroundColor: "orange",
         }}
       >
-        {/*
-        <Button
-          buttonStyle={{ width: 150 }}
-          containerStyle={{ margin: 2 }}
-          disabledStyle={{
-            borderWidth: 2,
-            borderColor: "#00F",
-          }}
-          disabledTitleStyle={{ color: "#00F" }}
-          linearGradientProps={null}
-          icon={<Icon name="react" size={15} color="#0FF" />}
-          iconContainerStyle={{ background: "#000" }}
-          loadingProps={{ animating: true }}
-          loadingStyle={{}}
-          onPress={() => alert("click")}
-          title="Hello"
-          titleProps={{}}
-          titleStyle={{ marginHorizontal: 5 }}
-        />
-        */}
         <TouchableOpacity
           style={{
             borderWidth: 1,
@@ -291,62 +310,7 @@ export default function ThreadView({ messages }) {
             New Message...
           </Text>
         </TouchableOpacity>
-        {/*
-        <Input
-          containerStyle={{}}
-          disabledInputStyle={{ background: "#ddd" }}
-          inputContainerStyle={{}}
-          errorStyle={{}}
-          errorProps={{}}
-          inputStyle={{}}
-          labelStyle={{}}
-          labelProps={{}}
-          leftIconContainerStyle={{}}
-          rightIconContainerStyle={{}}
-          placeholder="Type message"
-        />
-        */}
-        {/*
-        <TextInput
-          style={{
-            borderWidth: 1,
-            borderColor: "#ccc",
-            fontSize: 16,
-            padding: 10,
-            height: 50,
-            width: "100%",
-            borderRadius: 12,
-          }}
-          value={""}
-          onSubmitEditing={() => {}}
-          placeholder="New Message..."
-          returnKeyType="send"
-          //ref="newMessage"
-          onFocus={() => {}}
-          onBlur={() => {
-            //this.refs.scrollView.scrollTo(0, 0);
-          }}
-          onChangeText={() => {
-            //this.updateMessageState
-          }}
-        />
-        */}
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: StatusBar.currentHeight || 0,
-  },
-  item: {
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-  },
-  title: {
-    fontSize: 32,
-  },
-});

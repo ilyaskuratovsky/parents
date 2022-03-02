@@ -244,7 +244,7 @@ export async function sendMessage(groupId, uid, text) {
     doc(collection(db, "groups"), groupId),
     "messages"
   );
-  await addDoc(messagesRef, message);
+  return await addDoc(messagesRef, message);
 }
 
 export async function createInvite(fromUid, groupId, uid, email) {
