@@ -10,6 +10,7 @@ import Portal from "./Portal";
 import * as UIConstants from "./UIConstants";
 import TopBar from "./TopBar";
 import BottomBar from "./BottomBar";
+import Toolbar from "./Toolbar";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export default function SchoolScreen({ schoolId }) {
@@ -28,7 +29,7 @@ export default function SchoolScreen({ schoolId }) {
 
   const school = orgsMap[schoolId];
   const schoolGroups = groupList.filter((group) => {
-    return group.schoolId == schoolId;
+    return group.orgId == schoolId;
   });
   const userGroupMembershipList = userGroupMemberships.map(
     (groupMembership) => groupMembership.groupId
@@ -62,11 +63,10 @@ export default function SchoolScreen({ schoolId }) {
         right={null}
       />
 
-      <View
+      <ScrollView
         style={{
           flex: 1,
           flexDirection: "column",
-          alignItems: "flex-start",
         }}
       >
         {schoolGroups.map((group) => {
@@ -122,7 +122,7 @@ export default function SchoolScreen({ schoolId }) {
             </View>
           );
         })}
-      </View>
+      </ScrollView>
       <View
         key={"school_" + school.id}
         style={{
@@ -160,38 +160,7 @@ export default function SchoolScreen({ schoolId }) {
           }}
         />
       </View>
-      <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
-        <MyButtons.FormButton
-          text="Groups"
-          onPress={() => {
-            dispatch(
-              Actions.goToUserScreen({
-                screen: "DEBUG",
-                backAction: () =>
-                  Actions.goToUserScreen({ screen: "FIND_GROUPS" }),
-              })
-            );
-          }}
-        />
-        <MyButtons.FormButton text="My Profile" onPress={() => {}} />
-        <MyButtons.FormButton
-          text="Logout"
-          onPress={() => {
-            Controller.logout();
-          }}
-        />
-        <MyButtons.FormButton
-          text="Debug"
-          onPress={() => {
-            dispatch(
-              Actions.goToUserScreen({
-                screen: "DEBUG",
-                backAction: () => Actions.goToUserScreen({ screen: "GROUPS" }),
-              })
-            );
-          }}
-        />
-      </BottomBar>
+      <Toolbar />
     </Portal>
   );
 }
