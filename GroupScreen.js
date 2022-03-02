@@ -54,6 +54,7 @@ export default function GroupScreen({ groupId }) {
       user: {
         _id: message.uid,
         name: UserInfo.chatDisplayName(user),
+        avatarColor: UserInfo.avatarColor(user),
         //avatar: "https://placeimg.com/140/140/any",
       },
     };

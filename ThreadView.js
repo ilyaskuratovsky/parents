@@ -168,7 +168,7 @@ export default function ThreadView({ messages, sendMessage }) {
             rounded
             title={item.user.name.charAt(0).toUpperCase()}
             containerStyle={{
-              backgroundColor: "coral",
+              backgroundColor: item.user.avatarColor,
               marginRight: 1,
             }}
           />
