@@ -1,28 +1,15 @@
 import React, { useState } from "react";
 import {
-  FlatList,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  useWindowDimensions,
-  View,
-  Modal,
-  SafeAreaView,
-  TextInput,
-  Button,
   KeyboardAvoidingView,
+  Modal,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { IconButton } from "react-native-paper";
-import * as MyButtons from "./MyButtons";
-
 import { Avatar, Divider } from "react-native-elements";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
-import TopBar from "./TopBar";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as MyButtons from "./MyButtons";
 
 export default function ThreadMessageModal({
   visible,

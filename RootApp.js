@@ -18,6 +18,9 @@ import LoggedInScreenRouter from "./LoggedInScreenRouter";
 import OrgScreen from "./OrgScreen";
 import Messages from "./Messages";
 import TestThreadView from "./TestThreadView";
+import MyProfileScreen from "./MyProfileScreen";
+import DebugScreen from "./DebugScreen";
+
 function RootApp(props, state) {
   const dispatch = useDispatch();
   const notificationListener = useRef();
@@ -61,6 +64,8 @@ function RootApp(props, state) {
     render = <SchoolScreen schoolId={screenWithParams.schoolId} />;
   } else if (screen == "ORG") {
     render = <OrgScreen orgId={screenWithParams.orgId} />;
+  } else if (screen == "MY_PROFILE") {
+    render = <MyProfileScreen />;
   } else if (screen == "DEBUG") {
     render = <DebugScreen backAction={screenWithParams.backAction} />;
   } else {

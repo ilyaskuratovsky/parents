@@ -10,6 +10,7 @@ import Portal from "./Portal";
 import * as UIConstants from "./UIConstants";
 import TopBar from "./TopBar";
 import BottomBar from "./BottomBar";
+import Toolbar from "./Toolbar";
 import NewOrgModal from "./NewOrgModal";
 
 export default function FindGroupsScreens({ navigation }) {
@@ -54,7 +55,9 @@ Activities
       <TopBar
         style={{}}
         left={
-          <Text style={{ fontWeight: "bold", fontSize: 20 }}>Find Groups</Text>
+          <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+            Find Parent Groups
+          </Text>
         }
         center={null}
         right={null}
@@ -91,57 +94,7 @@ Activities
         {searchResults == null &&
           directorySection(dispatch, schoolList, otherOrgsList)}
       </View>
-      <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
-        <MyButtons.MenuButton
-          icon="account-group"
-          text="My Groups"
-          onPress={() => {
-            dispatch(
-              Actions.goToScreen({
-                screen: "GROUPS",
-              })
-            );
-          }}
-        />
-
-        <MyButtons.MenuButton
-          icon="magnify"
-          color="mediumblue"
-          text="Find"
-          onPress={() => {
-            dispatch(
-              Actions.goToScreen({
-                screen: "FIND_GROUPS",
-              })
-            );
-          }}
-        />
-
-        <MyButtons.MenuButton
-          icon="account-circle"
-          text="My Profile"
-          onPress={() => {}}
-        />
-        <MyButtons.MenuButton
-          icon="logout"
-          text="Logout"
-          onPress={() => {
-            Controller.logout();
-          }}
-        />
-        <MyButtons.MenuButton
-          icon="checkbox-blank-circle"
-          text="Debug"
-          onPress={() => {
-            dispatch(
-              Actions.goToScreen({
-                screen: "DEBUG",
-                backAction: () => Actions.goToScreen({ screen: "GROUPS" }),
-              })
-            );
-          }}
-        />
-      </BottomBar>
+      <Toolbar />
     </Portal>
   );
 }
@@ -206,7 +159,7 @@ function searchResultsSection(dispatch, searchResults, orgsMap, groupMap) {
 
 function directorySection(dispatch, schoolList, otherOrgsList) {
   return (
-    <View
+    <ScrollView
       style={{
         paddingLeft: 10,
         flexGrow: 1,
@@ -219,40 +172,44 @@ function directorySection(dispatch, schoolList, otherOrgsList) {
         width={1}
         color="lightgrey"
       />
-      {schoolList.map((school) => {
-        return (
-          <TouchableOpacity
-            onPress={() => {
-              dispatch(
-                Actions.goToScreen({
-                  screen: "SCHOOL",
-                  schoolId: school.id,
-                })
-              );
-            }}
-            style={
-              {
-                /*backgroundColor: "green"*/
-              }
-            }
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                paddingTop: 5,
-                paddingBottom: 10,
-                textDecorationLine: "underline",
-                color: "blue",
-                fontWeight: "bold",
-                textAlign: "start",
-                //backgroundColor: "cyan",
+      {schoolList
+        .sort(function (a, b) {
+          return a.name.toUpperCase().localeCompare(b.name.toUpperCase());
+        })
+        .map((school) => {
+          return (
+            <TouchableOpacity
+              onPress={() => {
+                dispatch(
+                  Actions.goToScreen({
+                    screen: "SCHOOL",
+                    schoolId: school.id,
+                  })
+                );
               }}
+              style={
+                {
+                  /*backgroundColor: "green"*/
+                }
+              }
             >
-              {school.name}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
+              <Text
+                style={{
+                  fontSize: 16,
+                  paddingTop: 5,
+                  paddingBottom: 10,
+                  textDecorationLine: "underline",
+                  color: "blue",
+                  fontWeight: "bold",
+                  textAlign: "start",
+                  //backgroundColor: "cyan",
+                }}
+              >
+                {school.name}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       <Text style={{ marginTop: 20, fontSize: 20, fontWeight: "bold" }}>
         Activities
       </Text>
@@ -290,6 +247,6 @@ function directorySection(dispatch, schoolList, otherOrgsList) {
           </TouchableOpacity>
         );
       })}
-    </View>
+    </ScrollView>
   );
 }

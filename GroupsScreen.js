@@ -1,18 +1,13 @@
 import React, { useState } from "react";
-import { ScrollView, Text, View, TouchableOpacity } from "react-native";
-import { SearchBar } from "react-native-elements";
-import { useDispatch, useSelector } from "react-redux";
-import * as Actions from "./Actions";
-import * as Controller from "./Controller";
-import * as MyButtons from "./MyButtons";
-import NewSchoolGroupModal from "./NewSchoolGroupModal";
-import Portal from "./Portal";
-import * as UIConstants from "./UIConstants";
-import TopBar from "./TopBar";
-import BottomBar from "./BottomBar";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { Avatar, Divider } from "react-native-elements";
 import { IconButton } from "react-native-paper";
+import { useDispatch, useSelector } from "react-redux";
+import * as Actions from "./Actions";
+import Portal from "./Portal";
 import Toolbar from "./Toolbar";
+import TopBar from "./TopBar";
+import * as UIConstants from "./UIConstants";
 
 export default function GroupsScreen({}) {
   const dispatch = useDispatch();
@@ -161,71 +156,7 @@ export default function GroupsScreen({}) {
         right={null}
       />
       <View style={{ flex: 1, backgroundColor: "white", paddingTop: 20 }}>
-        {/*
-        <SearchBar
-          key="search"
-          round
-          searchIcon={{ size: 24 }}
-          onChangeText={(text) => {}}
-          onClear={(text) => {}}
-          placeholder="Search..."
-          value={""}
-        />
-        */}
         <ScrollView>{groupsComponents}</ScrollView>
-        {/*
-        <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
-          <MyButtons.MenuButton
-            icon="account-group"
-            color="mediumblue"
-            text="My Groups"
-            onPress={() => {
-              dispatch(
-                Actions.goToScreen({
-                  screen: "GROUPS",
-                })
-              );
-            }}
-          />
-
-          <MyButtons.MenuButton
-            icon="magnify"
-            text="Find"
-            onPress={() => {
-              dispatch(
-                Actions.goToScreen({
-                  screen: "FIND_GROUPS",
-                })
-              );
-            }}
-          />
-
-          <MyButtons.MenuButton
-            icon="account-circle"
-            text="My Profile"
-            onPress={() => {}}
-          />
-          <MyButtons.MenuButton
-            icon="logout"
-            text="Logout"
-            onPress={() => {
-              Controller.logout();
-            }}
-          />
-          <MyButtons.MenuButton
-            icon="checkbox-blank-circle"
-            text="Debug"
-            onPress={() => {
-              dispatch(
-                Actions.goToScreen({
-                  screen: "DEBUG",
-                  backAction: () => Actions.goToScreen({ screen: "GROUPS" }),
-                })
-              );
-            }}
-          />
-        </BottomBar>
-          */}
         <Toolbar />
       </View>
     </Portal>

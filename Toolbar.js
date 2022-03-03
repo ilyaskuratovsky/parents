@@ -25,7 +25,7 @@ const Toolbar = ({ selected }) => {
 
       <MyButtons.MenuButton
         icon="magnify"
-        text="Find"
+        text="Find Groups"
         color={selected == "find_groups" ? "mediumblue" : "black"}
         onPress={() => {
           dispatch(
@@ -39,7 +39,13 @@ const Toolbar = ({ selected }) => {
       <MyButtons.MenuButton
         icon="account-circle"
         text="My Profile"
-        onPress={() => {}}
+        onPress={() => {
+          dispatch(
+            Actions.goToScreen({
+              screen: "MY_PROFILE",
+            })
+          );
+        }}
       />
       <MyButtons.MenuButton
         icon="logout"
