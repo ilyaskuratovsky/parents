@@ -7,6 +7,7 @@ import Toolbar from "./Toolbar";
 import * as UIConstants from "./UIConstants";
 import * as UserInfo from "./UserInfo";
 import * as MyButtons from "./MyButtons";
+import * as Controller from "./Controller";
 
 export default function MyProfileScreen({}) {
   const dispatch = useDispatch();
@@ -88,6 +89,12 @@ export default function MyProfileScreen({}) {
             >
               {UserInfo.chatDisplayName(userInfo)}
             </Text>
+            <MyButtons.LinkButton
+              text="Log Out"
+              onPress={async () => {
+                await Controller.logout();
+              }}
+            />
           </View>
         </View>
         {/* Main grow view */}

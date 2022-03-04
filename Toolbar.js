@@ -47,6 +47,7 @@ const Toolbar = ({ selected }) => {
           );
         }}
       />
+      {/*
       <MyButtons.MenuButton
         icon="logout"
         text="Logout"
@@ -54,6 +55,7 @@ const Toolbar = ({ selected }) => {
           Controller.logout();
         }}
       />
+      */}
       <MyButtons.MenuButton
         icon="checkbox-blank-circle"
         text="Debug"

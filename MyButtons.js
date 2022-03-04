@@ -80,4 +80,19 @@ const FormButton = React.memo(({ text, icon, onPress, style }) => {
   );
 });
 
-export { MenuButton, DialogButton, PaperDialogButton, FormButton };
+const LinkButton = React.memo(({ text, onPress, style }) => {
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <Text
+        style={[
+          style,
+          { fontSize: 16, textDecorationLine: "underline", color: "blue" },
+        ]}
+      >
+        {text}
+      </Text>
+    </TouchableOpacity>
+  );
+});
+
+export { MenuButton, DialogButton, PaperDialogButton, FormButton, LinkButton };

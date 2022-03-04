@@ -4,6 +4,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./config/firebase";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "./Actions";
+import FacebookSignin from "./FacebookSignin";
 
 export default function Login({ navigation }) {
   const dispatch = useDispatch();
@@ -48,6 +49,8 @@ export default function Login({ navigation }) {
         }}
         title="Go to Signup"
       />
+
+      <FacebookSignin />
     </View>
   );
 }
