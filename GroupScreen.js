@@ -14,6 +14,7 @@ import { Avatar, Divider } from "react-native-elements";
 import Toolbar from "./Toolbar";
 import ThreadView from "./ThreadView";
 import * as UserInfo from "./UserInfo";
+import GroupMembersModal from "./GroupMembersModal";
 
 export default function GroupScreen({ groupId }) {
   console.log("groupId: " + groupId);
@@ -42,6 +43,7 @@ export default function GroupScreen({ groupId }) {
     };
   });
   const [inviteModalVisible, setInviteModalVisible] = useState(false);
+  const [membersModalVisible, setMembersModalVisible] = useState(false);
   const group = groupMap[groupId];
   const org = orgsMap[group.orgId];
   const threadMessages = messages.map((message) => {
@@ -67,7 +69,10 @@ export default function GroupScreen({ groupId }) {
   const sendMessage = useCallback(async (text) => {
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(userInfo);
-    return await Controller.sendMessage(dispatch, userInfo, groupId, text, {groupName, fromName});
+    return await Controller.sendMessage(dispatch, userInfo, groupId, text, {
+      groupName,
+      fromName,
+    });
   }, []);
 
   return (
@@ -120,7 +125,14 @@ export default function GroupScreen({ groupId }) {
               icon="account-supervisor"
               text="9 members"
               onPress={() => {
-                closeModal();
+                setMembersModalVisible(true);
+              }}
+            />
+            <GroupMembersModal
+              groupId={groupId}
+              visible={membersModalVisible}
+              closeModal={() => {
+                setMembersModalVisible(false);
               }}
             />
           </View>
