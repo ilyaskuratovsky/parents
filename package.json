@@ -58,7 +58,8 @@
     "undefined": "firebase/app"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9"
+    "@babel/core": "^7.12.9",
+    "eslint": "^8.10.0"
   },
   "private": true
 }

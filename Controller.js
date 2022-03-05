@@ -215,8 +215,8 @@ export async function createOrgGroupAndJoin(
   await Database.joinGroup(userInfo, groupId);
 }
 
-export async function sendMessage(dispatch, userInfo, groupId, text) {
-  return await Database.sendMessage(groupId, userInfo.uid, text);
+export async function sendMessage(dispatch, userInfo, groupId, text, notificationInfo) {
+  return await Database.sendMessage(groupId, userInfo.uid, text, notificationInfo);
 }
 
 export async function logout(dispatch) {

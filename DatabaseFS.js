@@ -233,12 +233,13 @@ export async function createGroup(data) {
   const group = await addDoc(groupsRef, data);
 }
 
-export async function sendMessage(groupId, uid, text) {
+export async function sendMessage(groupId, uid, text, notificationInfo) {
   const message = {
     uid: uid,
     groupId,
     text,
     timestamp: Timestamp.now().toDate(),
+    notificationInfo,
   };
   const messagesRef = collection(
     doc(collection(db, "groups"), groupId),

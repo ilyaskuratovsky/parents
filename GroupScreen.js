@@ -65,7 +65,9 @@ export default function GroupScreen({ groupId }) {
   }
 
   const sendMessage = useCallback(async (text) => {
-    return await Controller.sendMessage(dispatch, userInfo, groupId, text);
+    const groupName = group.name;
+    const fromName = UserInfo.chatDisplayName(userInfo);
+    return await Controller.sendMessage(dispatch, userInfo, groupId, text, {groupName, fromName});
   }, []);
 
   return (
