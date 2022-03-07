@@ -33,7 +33,11 @@ function RootApp(props, state) {
 
   //return <TestThreadView />;
   useEffect(() => {
-    Controller.initializeApp(dispatch, notificationListener, responseListener);
+    return Controller.initializeApp(
+      dispatch,
+      notificationListener,
+      responseListener
+    );
   }, []);
 
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
@@ -44,9 +48,9 @@ function RootApp(props, state) {
       );
       dispatch(Actions.goToScreen({ screen: "GROUP", groupId: group.id }));
     } else {
-      alert("lastNotificationResponse: " + JSON.stringify(null));
+      console.log("lastNotificationResponse: " + JSON.stringify(null));
     }
-  }, []);
+  }, [lastNotificationResponse]);
 
   const screenWithParams = useSelector((state) => state.screen.screen);
   let screen = screenWithParams.screen;

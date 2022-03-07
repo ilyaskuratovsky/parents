@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as UserInfo from "./UserInfo";
 import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as MyButtons from "./MyButtons";
+import GroupInviteModal from "./GroupInviteModal";
 
 export default function GroupMembersModal({ groupId, visible, closeModal }) {
   const dispatch = useDispatch();
@@ -28,11 +29,8 @@ export default function GroupMembersModal({ groupId, visible, closeModal }) {
     };
   });
 
-  const [gradeSelection, setGradeSelection] = useState(null);
-  const [yearSelection, setYearSelection] = useState(null);
-  const [groupName, setGroupName] = useState(null);
+  const [inviteModalVisible, setInviteModalVisible] = useState(false);
   const [processing, setProcessing] = useState(false);
-  const [email, setEmail] = useState(null);
   if (userInfo == null) {
     return <Text>Loading Data...</Text>;
   }
@@ -116,6 +114,20 @@ export default function GroupMembersModal({ groupId, visible, closeModal }) {
       >
         {memberComponents}
       </View>
+      <MyButtons.FormButton
+        text="Invite"
+        onPress={async () => {
+          setInviteModalVisible(true);
+        }}
+      />
+      <GroupInviteModal
+        groupId={groupId}
+        visible={inviteModalVisible}
+        closeModal={() => {
+          setInviteModalVisible(false);
+        }}
+        onInvite={async () => {}}
+      />
     </Modal>
   );
 }

@@ -6,7 +6,12 @@ import * as Paper from "react-native-paper";
 import * as MyButtons from "./MyButtons";
 import * as Controller from "./Controller";
 
-export default function GroupInviteModal({ groupId, visible, closeModal }) {
+export default function GroupInviteModal({
+  groupId,
+  visible,
+  onInvite,
+  closeModal,
+}) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
   const {
@@ -27,9 +32,6 @@ export default function GroupInviteModal({ groupId, visible, closeModal }) {
     };
   });
 
-  const [gradeSelection, setGradeSelection] = useState(null);
-  const [yearSelection, setYearSelection] = useState(null);
-  const [groupName, setGroupName] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [email, setEmail] = useState(null);
   if (userInfo == null) {
@@ -43,8 +45,8 @@ export default function GroupInviteModal({ groupId, visible, closeModal }) {
     );
   }
 
+  /*
   const invitees = userList;
-
   const inviteeComponents = invitees.map((user) => {
     return (
       <View
@@ -87,6 +89,7 @@ export default function GroupInviteModal({ groupId, visible, closeModal }) {
       </View>
     );
   });
+  */
 
   return (
     <Modal visible={visible} animationType={"slide"}>
@@ -119,7 +122,7 @@ export default function GroupInviteModal({ groupId, visible, closeModal }) {
           }}
         />
       </View>
-
+      {/*
       <Text>Find People</Text>
       <ScrollView>{inviteeComponents}</ScrollView>
       <MyButtons.MenuButton
@@ -129,6 +132,7 @@ export default function GroupInviteModal({ groupId, visible, closeModal }) {
           closeModal();
         }}
       />
+      */}
     </Modal>
   );
 }

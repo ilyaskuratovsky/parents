@@ -1,20 +1,14 @@
 import React, { useCallback, useState } from "react";
-import { Text, View, TouchableOpacity, StatusBar } from "react-native";
-import { GiftedChat } from "react-native-gifted-chat";
+import { Text, View } from "react-native";
+import { Divider } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
-import * as Actions from "./Actions";
 import * as Controller from "./Controller";
-import * as MyButtons from "./MyButtons";
-import * as UIConstants from "./UIConstants";
-import TopBar from "./TopBar";
-import Portal from "./Portal";
-import GroupInviteModal from "./GroupInviteModal";
-import BottomBar from "./BottomBar";
-import { Avatar, Divider } from "react-native-elements";
-import Toolbar from "./Toolbar";
-import ThreadView from "./ThreadView";
-import * as UserInfo from "./UserInfo";
 import GroupMembersModal from "./GroupMembersModal";
+import * as MyButtons from "./MyButtons";
+import Portal from "./Portal";
+import ThreadView from "./ThreadView";
+import Toolbar from "./Toolbar";
+import * as UserInfo from "./UserInfo";
 
 export default function GroupScreen({ groupId }) {
   console.log("groupId: " + groupId);
