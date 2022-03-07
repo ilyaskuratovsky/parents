@@ -43,12 +43,37 @@ function RootApp(props, state) {
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
   useEffect(() => {
     if (lastNotificationResponse) {
-      alert(
-        "lastNotificationResponse: " + JSON.stringify(lastNotificationResponse)
-      );
-      dispatch(Actions.goToScreen({ screen: "GROUP", groupId: group.id }));
+      // alert(
+      //   "lastNotificationResponse.notification: " +
+      //     JSON.stringify(lastNotificationResponse.notification)
+      // );
+      const groupId = lastNotificationResponse.notification?.request?.content?.data?.groupId;
+      // alert('going to group: ' + groupId);
+      /*
+        const x = {
+          actionIdentifier: "_",
+          notification: {
+            date: "_",
+            request: {
+              content: {
+                "summaryArgument-Count": "0",
+                data: { groupId: "_", message: {} },
+                title:"a",
+                body:"New message from invitetest1"
+              },
+              trigger:{
+                "payload":{
+                  "body":{
+                    "message":{"groupId":"_"}
+                  }
+                }
+              }
+            },
+          },
+        };
+      */
+      dispatch(Actions.goToScreen({ screen: "GROUP", groupId }));
     } else {
-      console.log("lastNotificationResponse: " + JSON.stringify(null));
     }
   }, [lastNotificationResponse]);
 

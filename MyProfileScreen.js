@@ -80,15 +80,26 @@ export default function MyProfileScreen({}) {
               paddingRight: 20,
             }}
           >
-            <Text
-              style={{
-                marginLeft: 5,
-                fontWeight: "bold",
-                fontSize: 16,
-              }}
-            >
-              {UserInfo.chatDisplayName(userInfo)}
-            </Text>
+            <View style={{ flexDirection: "column" }}>
+              <Text
+                style={{
+                  marginLeft: 5,
+                  fontWeight: "bold",
+                  fontSize: 16,
+                }}
+              >
+                {UserInfo.chatDisplayName(userInfo)}
+              </Text>
+              <Text
+                style={{
+                  marginLeft: 5,
+                  fontWeight: "normal",
+                  fontSize: 12,
+                }}
+              >
+                {userInfo.email}
+              </Text>
+            </View>
             <MyButtons.LinkButton
               text="Log Out"
               onPress={async () => {

@@ -67,18 +67,18 @@ export async function initializeApp(
   //in app handler for notifications
   const notificationReceivedListener =
     Notifications.addNotificationReceivedListener((notification) => {
-      alert(
-        "notification received while app is running: " +
-          JSON.stringify(notification)
-      );
+      // alert(
+      //   "notification received while app is running: " +
+      //     JSON.stringify(notification)
+      // );
     });
 
   // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
   const notificationResponseReceivedListener =
     Notifications.addNotificationResponseReceivedListener((response) => {
-      alert(
-        "notification response received listener: " + JSON.stringify(response)
-      );
+      // alert(
+      //   "notification response received listener: " + JSON.stringify(response)
+      // );
     });
 
   // subscribe to auth changes

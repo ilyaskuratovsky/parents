@@ -58,7 +58,7 @@ exports.messagePushNotifications = functions.firestore
                 body: (fromName == null ?
                     "" :
                     "New message from " + fromName),
-                data: {someData: "goes here"},
+                data: {groupId, message},
               };
               console.log("ilya calling fetch: " + JSON.stringify(pushMessage));
               fetch("https://exp.host/--/api/v2/push/send", {
