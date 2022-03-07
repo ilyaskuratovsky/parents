@@ -12,6 +12,8 @@ import TopBar from "./TopBar";
 import BottomBar from "./BottomBar";
 import Toolbar from "./Toolbar";
 import NewOrgModal from "./NewOrgModal";
+import TopBarLeftContentSideButton from "./TopBarLeftContentSideButton";
+import NewPrivateGroupModal from "./NewPrivateGroupModal";
 
 export default function FindGroupsScreens({ navigation }) {
   const dispatch = useDispatch();
@@ -50,17 +52,39 @@ Activities
   });
   const [searchText, setSearchText] = useState("");
   const [visibleNewOrgModal, setVisibleNewOrgModal] = useState(false);
+  const [newPrivateGroupModalVisible, setNewPrivateGroupModalVisible] =
+    useState(false);
+  const createPrivateGroup = async (groupName) => {
+    const groupId = await Controller.createPrivateGroupAndJoin(
+      dispatch,
+      userInfo,
+      groupName
+    );
+    dispatch(Actions.goToScreen({ screen: "GROUP", groupId: groupId }));
+  };
   return (
     <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
-      <TopBar
+      <TopBarLeftContentSideButton
         style={{}}
-        left={
+        content={
           <Text style={{ fontWeight: "bold", fontSize: 20 }}>
             Find Parent Groups
           </Text>
         }
-        center={null}
-        right={null}
+        side={
+          <MyButtons.MenuButton
+            icon="plus"
+            text="Create Private Group"
+            onPress={() => {
+              setNewPrivateGroupModalVisible(true);
+            }}
+          />
+        }
+      />
+      <NewPrivateGroupModal
+        visible={newPrivateGroupModalVisible}
+        createGroup={createPrivateGroup}
+        closeModal={() => setNewPrivateGroupModalVisible(false)}
       />
       <View
         style={{ flex: 1, flexDirection: "column", backgroundColor: "white" }}

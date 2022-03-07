@@ -44,13 +44,20 @@ exports.messagePushNotifications = functions.firestore
               // Do the push notification here
               const user = userSnapshot.val();
               const pushToken = user["pushToken"];
+              const groupName = message.notificationInfo != null ?
+                message.notificationInfo.groupName : null;
+              const fromName =
+                message.notificationInfo != null ?
+                    message.notificationInfo.fromName:
+                    null;
               const pushMessage = {
                 to: pushToken,
                 sound: "default",
-                title: (message.groupName == null ?
-                    "New message" : message.groupName),
-                body: (message.fromName == null ?
-                    "" : "New message from " + message.fromName),
+                title: (groupName == null ?
+                    "New message" : groupName),
+                body: (fromName == null ?
+                    "" :
+                    "New message from " + fromName),
                 data: {someData: "goes here"},
               };
               console.log("ilya calling fetch: " + JSON.stringify(pushMessage));

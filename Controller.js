@@ -44,6 +44,8 @@ export async function initializeApp(
   //push notification token
   let pushToken = null;
 
+  // register for push notifications - receive a token that you can use
+  // to push notifications to this particular device
   await registerForPushNotificationsAsync()
     .then((token) => {
       console.log("Got push notificaiton token: " + token);
@@ -57,21 +59,26 @@ export async function initializeApp(
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
-      shouldPlaySound: false,
-      shouldSetBadge: false,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
     }),
   });
 
-  notificationListener.current = Notifications.addNotificationReceivedListener(
-    (notification) => {
-      console.log("received notification: " + JSON.stringify(notification));
-    }
-  );
+  //in app handler for notifications
+  const notificationReceivedListener =
+    Notifications.addNotificationReceivedListener((notification) => {
+      alert(
+        "notification received while app is running: " +
+          JSON.stringify(notification)
+      );
+    });
 
   // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
-  responseListener.current =
+  const notificationResponseReceivedListener =
     Notifications.addNotificationResponseReceivedListener((response) => {
-      console.log(response);
+      alert(
+        "notification response received listener: " + JSON.stringify(response)
+      );
     });
 
   // subscribe to auth changes
@@ -103,7 +110,12 @@ export async function initializeApp(
 
   //Go to login page by default
   dispatch(Actions.goToScreen({ screen: "LOGIN" }));
-  console.log(JSON.stringify(store.getState()));
+
+  return () => {
+    notificationReceivedListener.remove();
+    notificationResponseReceivedListener.remove();
+    unsubscribeAuth();
+  };
 }
 
 export function getInitializationScreen(state) {
@@ -202,6 +214,15 @@ export async function createSchoolGroupAndJoin(
   await Database.joinGroup(userInfo, groupId);
 }
 
+export async function createPrivateGroupAndJoin(dispatch, userInfo, groupName) {
+  const groupId = await Database.createGroup({
+    name: groupName,
+    orgId: null,
+  });
+  await Database.joinGroup(userInfo, groupId);
+  return groupId;
+}
+
 export async function createOrgGroupAndJoin(
   dispatch,
   userInfo,
@@ -215,8 +236,19 @@ export async function createOrgGroupAndJoin(
   await Database.joinGroup(userInfo, groupId);
 }
 
-export async function sendMessage(dispatch, userInfo, groupId, text, notificationInfo) {
-  return await Database.sendMessage(groupId, userInfo.uid, text, notificationInfo);
+export async function sendMessage(
+  dispatch,
+  userInfo,
+  groupId,
+  text,
+  notificationInfo
+) {
+  return await Database.sendMessage(
+    groupId,
+    userInfo.uid,
+    text,
+    notificationInfo
+  );
 }
 
 export async function logout(dispatch) {

@@ -20,6 +20,8 @@ import Messages from "./Messages";
 import TestThreadView from "./TestThreadView";
 import MyProfileScreen from "./MyProfileScreen";
 import DebugScreen from "./DebugScreen";
+import * as Notifications from "expo-notifications";
+import * as Actions from "./Actions";
 
 function RootApp(props, state) {
   const dispatch = useDispatch();
@@ -32,6 +34,18 @@ function RootApp(props, state) {
   //return <TestThreadView />;
   useEffect(() => {
     Controller.initializeApp(dispatch, notificationListener, responseListener);
+  }, []);
+
+  const lastNotificationResponse = Notifications.useLastNotificationResponse();
+  useEffect(() => {
+    if (lastNotificationResponse) {
+      alert(
+        "lastNotificationResponse: " + JSON.stringify(lastNotificationResponse)
+      );
+      dispatch(Actions.goToScreen({ screen: "GROUP", groupId: group.id }));
+    } else {
+      alert("lastNotificationResponse: " + JSON.stringify(null));
+    }
   }, []);
 
   const screenWithParams = useSelector((state) => state.screen.screen);

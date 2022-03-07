@@ -45,8 +45,12 @@ export default function GroupScreen({ groupId }) {
   const [inviteModalVisible, setInviteModalVisible] = useState(false);
   const [membersModalVisible, setMembersModalVisible] = useState(false);
   const group = groupMap[groupId];
-  const org = orgsMap[group.orgId];
-  const threadMessages = messages.map((message) => {
+
+  if (userInfo == null || group == null) {
+    return <Text>Loading Data...</Text>;
+  }
+
+  const threadMessages = (messages ?? []).map((message) => {
     const user = userMap[message.uid];
 
     return {
@@ -62,9 +66,7 @@ export default function GroupScreen({ groupId }) {
     };
   });
 
-  if (userInfo == null) {
-    return <Text>Loading Data...</Text>;
-  }
+  const org = orgsMap[group.orgId];
 
   const sendMessage = useCallback(async (text) => {
     const groupName = group.name;
