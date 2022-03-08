@@ -80,3 +80,7 @@ export async function observeToUserInvites(toUid, toEmail, callback) {
 export async function updateInvite(inviteId, update) {
   DatabaseFS.updateInvite(inviteId, update);
 }
+
+export async function updateUserGroupMembership(userGroupMembershipId, update) {
+  DatabaseRDB.updateUserGroupMembership(userGroupMembershipId, update);
+}

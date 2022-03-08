@@ -71,6 +71,17 @@ export default function GroupScreen({ groupId }) {
     });
   }, []);
 
+  const updateGroupLastViewed = useCallback(async () => {
+    const maxTimestampMessage = messages.reduce((prev, current) =>
+      prev.timestamp > current.timestamp ? prev : current
+    );
+    await Controller.setUserGroupLastViewedTimestamp(
+      userInfo,
+      group.id,
+      maxTimestampMessage.timestamp
+    );
+  }, [messages]);
+
   return (
     <Portal backgroundColor={/*UIConstants.DEFAULT_BACKGROUND*/ "white"}>
       <View style={{ backgroundColor: "whitesmoke", flexDirection: "column" }}>
@@ -138,7 +149,11 @@ export default function GroupScreen({ groupId }) {
 
       <View style={{ flex: 1, flexDirection: "column" }}>
         <View style={{ flex: 1 }}>
-          <ThreadView messages={threadMessages} sendMessage={sendMessage} />
+          <ThreadView
+            messages={threadMessages}
+            sendMessage={sendMessage}
+            onView={updateGroupLastViewed}
+          />
         </View>
       </View>
       <Toolbar />

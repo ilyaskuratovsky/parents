@@ -162,6 +162,14 @@ export async function createOrg(name, type) {
   return newReference.key;
 }
 
+export async function updateUserGroupMembership(
+  userGroupMembershipId,
+  updateObj
+) {
+  const docRef = RDB.ref(rdb, "/group_memberships/" + userGroupMembershipId);
+  await RDB.update(docRef, updateObj);
+}
+
 function toArray(obj) {
   const array = [];
   for (const [key, value] of Object.entries(obj)) {

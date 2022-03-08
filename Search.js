@@ -11,9 +11,12 @@ export function buildSearchIndex(orgsMap, groupsMap) {
   const searchWordIndex = {};
   for (const orgId of Object.keys(orgsMap)) {
     const org = orgsMap[orgId];
-    const words = splitIntoWords(org.name);
-    for (const word of words) {
-      addIntoMap(searchWordIndex, word, { type: "org", entity: org.id });
+    const orgName = org.name;
+    if (orgName != null) {
+      const words = splitIntoWords(org.name);
+      for (const word of words) {
+        addIntoMap(searchWordIndex, word, { type: "org", entity: org.id });
+      }
     }
   }
 

@@ -347,3 +347,27 @@ export function searchGroupsAndOrgs(text) {
   const results = Search.search(searchIndex, text);
   return results;
 }
+
+export async function setUserGroupLastViewedTimestamp(
+  userInfo,
+  groupId,
+  lastViewedMessageTimestamp
+) {
+  const userGroupMemberships = store
+    .getState()
+    .main.groupMembershipMap[groupId].filter((gm) => gm.uid == userInfo.uid);
+
+  const userGroupMembership =
+    userGroupMemberships.length > 0 ? userGroupMemberships[0] : null;
+  if (userGroupMembership != null) {
+    console.log(
+      "found usergroupmembership: " +
+        userGroupMembership.id +
+        ", updating timestamp: " +
+        lastViewedMessageTimestamp
+    );
+    Database.updateUserGroupMembership(userGroupMembership.id, {
+      lastViewedMessageTimestamp,
+    });
+  }
+}
