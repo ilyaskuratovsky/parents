@@ -38,42 +38,51 @@ exports.messagePushNotifications = functions.firestore
           for (const groupMembership
             of Object.values(groupMemberships)) {
             const uid = groupMembership["uid"];
-            console.log("ilya listening for user: " + uid);
-            const userRef = db.ref("users/" + uid);
-            userRef.once("value").then((userSnapshot) => {
-              // Do the push notification here
-              const user = userSnapshot.val();
-              const pushToken = user["pushToken"];
-              const groupName = message.notificationInfo != null ?
-                message.notificationInfo.groupName : null;
-              const fromName =
-                message.notificationInfo != null ?
-                    message.notificationInfo.fromName:
+            const lastViewedMessageTimestamp =
+              groupMembership["lastViewedMessageTimestamp"];
+
+            // TODO: this timestamp is not in the right format so convert
+            if (message.timestamp > lastViewedMessageTimestamp) {
+              console.log("ilya listening for user: " + uid);
+              const userRef = db.ref("users/" + uid);
+              userRef.once("value").then((userSnapshot) => {
+                // Do the push notification here
+                const user = userSnapshot.val();
+                const pushToken = user["pushToken"];
+                const groupName =
+                  message.notificationInfo != null ?
+                    message.notificationInfo.groupName :
                     null;
-              const pushMessage = {
-                to: pushToken,
-                sound: "default",
-                title: (groupName == null ?
-                    "New message" : groupName),
-                body: (fromName == null ?
-                    "" :
-                    "New message from " + fromName),
-                data: {groupId, message},
-              };
-              console.log("ilya calling fetch: " + JSON.stringify(pushMessage));
-              fetch("https://exp.host/--/api/v2/push/send", {
-                method: "POST",
-                headers: {
-                  "Accept": "application/json",
-                  "Accept-encoding": "gzip, deflate",
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(pushMessage),
-              }).then((response) => {
-                console.log("ilya done calling fetch: response: " +
-                JSON.stringify(response));
+                const fromName =
+                  message.notificationInfo != null ?
+                    message.notificationInfo.fromName :
+                    null;
+                const pushMessage = {
+                  to: pushToken,
+                  sound: "default",
+                  title: groupName == null ? "New message" : groupName,
+                  body: fromName == null ? "" : "New message from " + fromName,
+                  data: {groupId, message},
+                };
+                console.log(
+                    "ilya calling fetch: " + JSON.stringify(pushMessage)
+                );
+                fetch("https://exp.host/--/api/v2/push/send", {
+                  method: "POST",
+                  headers: {
+                    "Accept": "application/json",
+                    "Accept-encoding": "gzip, deflate",
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(pushMessage),
+                }).then((response) => {
+                  console.log(
+                      "ilya done calling fetch: response: " +
+                      JSON.stringify(response)
+                  );
+                });
               });
-            });
+            }
           }
         } else {
           console.log("ilyagroupsnapshot2: No data available");
