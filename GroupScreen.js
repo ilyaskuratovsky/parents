@@ -130,7 +130,9 @@ export default function GroupScreen({ groupId }) {
           >
             <MyButtons.MenuButton
               icon="account-supervisor"
-              text="9 members"
+              text={
+                members.length + " member" + (members.length > 1 ? "s" : "")
+              }
               onPress={() => {
                 setMembersModalVisible(true);
               }}
