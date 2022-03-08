@@ -10,8 +10,11 @@ import {
 import { Avatar, Divider } from "react-native-elements";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as MyButtons from "./MyButtons";
+import * as UserInfo from "./UserInfo";
 
 export default function ThreadMessageModal({
+  userInfo,
+  group,
   visible,
   sendMessage,
   closeModal,
@@ -69,7 +72,7 @@ export default function ThreadMessageModal({
               }}
             >
               <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-                Mrs.Legio Class 4th Grade
+                {group.name}
               </Text>
             </View>
             <View
@@ -102,15 +105,7 @@ export default function ThreadMessageModal({
               //backgroundColor: "green",
             }}
           >
-            <Avatar
-              size={28}
-              rounded
-              title="I"
-              containerStyle={{
-                backgroundColor: "coral",
-                marginRight: 1,
-              }}
-            />
+            {UserInfo.avatarComponent(userInfo)}
             <View
               style={{
                 flex: 1,
@@ -127,7 +122,7 @@ export default function ThreadMessageModal({
                   fontSize: 16,
                 }}
               >
-                Ilya Skuratovsky
+                {UserInfo.chatDisplayName(userInfo)}
               </Text>
             </View>
           </View>

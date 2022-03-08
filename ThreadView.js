@@ -13,7 +13,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import ThreadMessageModal from "./ThreadMessageModal";
 import TimeAgo from "react-timeago";
 
-export default function ThreadView({ messages, sendMessage, onView }) {
+export default function ThreadView({ userInfo, group, messages, sendMessage, onView }) {
   useEffect(() => {
     if (onView != null) {
       onView();
@@ -191,6 +191,8 @@ export default function ThreadView({ messages, sendMessage, onView }) {
   return (
     <View style={{ flexDirection: "column", flex: 1 }}>
       <ThreadMessageModal
+        userInfo={userInfo}
+        group={group}
         visible={showNewMessageModal}
         sendMessage={sendMessage}
         closeModal={() => {

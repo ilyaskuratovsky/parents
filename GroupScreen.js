@@ -150,6 +150,8 @@ export default function GroupScreen({ groupId }) {
       <View style={{ flex: 1, flexDirection: "column" }}>
         <View style={{ flex: 1 }}>
           <ThreadView
+            userInfo={userInfo}
+            group={group}
             messages={threadMessages}
             sendMessage={sendMessage}
             onView={updateGroupLastViewed}
