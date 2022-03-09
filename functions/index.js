@@ -38,11 +38,34 @@ exports.messagePushNotifications = functions.firestore
           for (const groupMembership
             of Object.values(groupMemberships)) {
             const uid = groupMembership["uid"];
+            console.log("processing group membership: " +
+              JSON.stringify(groupMembership));
+            const lastViewedMessageTimestampStr =
+               groupMembership["lastViewedMessageTimestamp"];
+            // console.log(
+            //     "lastViewedMessageTimestamp: " + lastViewedMessageTimestamp
+            // );
             const lastViewedMessageTimestamp =
-              groupMembership["lastViewedMessageTimestamp"];
+            lastViewedMessageTimestampStr != null ?
+              admin.firestore.Timestamp.fromMillis(
+                  lastViewedMessageTimestampStr
+              ) : null;
+            console.log(
+                "lastViewedMessageTimestamp: " +
+                (lastViewedMessageTimestamp != null ?
+                  lastViewedMessageTimestamp.toDate() : "xnullx")
+            );
+            const messageTimestamp = message.timestamp;
+            // const messageTimestamp = message.timestamp.ToString();
+            console.log("message.timestamp2" + messageTimestamp.toDate());
+            // const messageTimestamp = 0;
 
             // TODO: this timestamp is not in the right format so convert
-            if (message.timestamp > lastViewedMessageTimestamp) {
+            if (
+              lastViewedMessageTimestamp == null ||
+              (messageTimestamp.toDate().getTime() >
+              lastViewedMessageTimestamp.toDate().getTime())
+            ) {
               console.log("ilya listening for user: " + uid);
               const userRef = db.ref("users/" + uid);
               userRef.once("value").then((userSnapshot) => {
