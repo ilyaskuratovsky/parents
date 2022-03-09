@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Paper from "react-native-paper";
 import * as MyButtons from "./MyButtons";
 import * as Controller from "./Controller";
+import Portal from "./Portal";
+import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 
 export default function GroupInviteModal({
   groupId,
@@ -93,36 +95,54 @@ export default function GroupInviteModal({
 
   return (
     <Modal visible={visible} animationType={"slide"}>
-      <Text>Email</Text>
-      <View
-        style={{
-          flexDirection: "row",
-          height: 60,
-          alignItems: "center",
-          paddingLeft: 10,
-        }}
-      >
-        <View style={{ flexDirection: "column" }}>
-          <TextInput
-            key="email"
-            style={{ borderWidth: 1, width: "100%", fontSize: 16 }}
-            onChangeText={(value) => {
-              setEmail(value);
-            }}
-            value={email ?? ""}
-            selectTextOnFocus={true}
-          />
-          <Text>Enter emails separated by ','</Text>
-        </View>
-        <MyButtons.FormButton
-          text="Invite"
-          onPress={async () => {
-            await Controller.sendGroupInviteToEmail(userInfo, groupId, email);
-            closeModal();
-          }}
+      <Portal>
+        <TopBarMiddleContentSideButtons
+          style={{}}
+          left={
+            <MyButtons.MenuButton
+              icon="arrow-left"
+              text="Back"
+              onPress={() => {
+                closeModal();
+              }}
+              color="black"
+            />
+          }
+          center={
+            <Text style={{ fontWeight: "bold", fontSize: 16 }}>Invite</Text>
+          }
+          right={null}
         />
-      </View>
-      {/*
+        <Text>Email</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            height: 60,
+            alignItems: "center",
+            paddingLeft: 10,
+          }}
+        >
+          <View style={{ flexDirection: "column" }}>
+            <TextInput
+              key="email"
+              style={{ borderWidth: 1, width: "100%", fontSize: 16 }}
+              onChangeText={(value) => {
+                setEmail(value);
+              }}
+              value={email ?? ""}
+              selectTextOnFocus={true}
+            />
+            <Text>Enter emails separated by ','</Text>
+          </View>
+          <MyButtons.FormButton
+            text="Invite"
+            onPress={async () => {
+              await Controller.sendGroupInviteToEmail(userInfo, groupId, email);
+              closeModal();
+            }}
+          />
+        </View>
+        {/*
       <Text>Find People</Text>
       <ScrollView>{inviteeComponents}</ScrollView>
       <MyButtons.MenuButton
@@ -133,6 +153,7 @@ export default function GroupInviteModal({
         }}
       />
       */}
+      </Portal>
     </Modal>
   );
 }

@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Modal, Text, View } from "react-native";
+import { Modal, Text, View, SafeAreaView } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as UserInfo from "./UserInfo";
 import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as MyButtons from "./MyButtons";
 import GroupInviteModal from "./GroupInviteModal";
+import Portal from "./Portal";
 
 export default function GroupMembersModal({ groupId, visible, closeModal }) {
   const dispatch = useDispatch();
@@ -84,50 +85,52 @@ export default function GroupMembersModal({ groupId, visible, closeModal }) {
 
   return (
     <Modal visible={visible} animationType={"slide"}>
-      <TopBarMiddleContentSideButtons
-        style={{}}
-        left={
-          <MyButtons.MenuButton
-            icon="arrow-left"
-            text="Back"
-            onPress={() => {
-              closeModal();
-            }}
-            color="black"
-          />
-        }
-        center={
-          <Text style={{ fontWeight: "bold", fontSize: 16 }}>
-            Group Members
-          </Text>
-        }
-        right={null}
-      />
-      <View
-        style={{
-          flexDirection: "column",
-          alignItems: "flex-start",
-          paddingLeft: 10,
-          paddingTop: 10,
-          flexGrow: 1,
-        }}
-      >
-        {memberComponents}
-      </View>
-      <MyButtons.FormButton
-        text="Invite"
-        onPress={async () => {
-          setInviteModalVisible(true);
-        }}
-      />
-      <GroupInviteModal
-        groupId={groupId}
-        visible={inviteModalVisible}
-        closeModal={() => {
-          setInviteModalVisible(false);
-        }}
-        onInvite={async () => {}}
-      />
+      <Portal>
+        <TopBarMiddleContentSideButtons
+          style={{}}
+          left={
+            <MyButtons.MenuButton
+              icon="arrow-left"
+              text="Back"
+              onPress={() => {
+                closeModal();
+              }}
+              color="black"
+            />
+          }
+          center={
+            <Text style={{ fontWeight: "bold", fontSize: 16 }}>
+              Group Members
+            </Text>
+          }
+          right={null}
+        />
+        <View
+          style={{
+            flexDirection: "column",
+            alignItems: "flex-start",
+            paddingLeft: 10,
+            paddingTop: 10,
+            flexGrow: 1,
+          }}
+        >
+          {memberComponents}
+        </View>
+        <MyButtons.FormButton
+          text="Invite"
+          onPress={async () => {
+            setInviteModalVisible(true);
+          }}
+        />
+        <GroupInviteModal
+          groupId={groupId}
+          visible={inviteModalVisible}
+          closeModal={() => {
+            setInviteModalVisible(false);
+          }}
+          onInvite={async () => {}}
+        />
+      </Portal>
     </Modal>
   );
 }
