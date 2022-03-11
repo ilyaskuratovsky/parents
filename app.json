@@ -1,12 +1,19 @@
 {
   "expo": {
     "name": "parents",
-    "slug": "parents",
+    "icon": "./assets/icon.png",
     "version": "1.0.0",
+    "slug": "parents",
     "assetBundlePatterns": [
       "**/*"
     ],
-    "plugins": ["react-native-fbsdk-next"]
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.skuratovsky.parents"
+    },
   },
-  "name": "parents"  
+  "name": "parents",
+  "facebookScheme":"fb7185965598112053",
+  "facebookAppId":"7185965598112053",
+  "facebookDisplayName":"parent_app"
 }

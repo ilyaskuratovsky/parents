@@ -16,4 +16,7 @@ export default {
     messagingSenderId: "202897799240",
     appId: "1:202897799240:web:6e7181665de58029cfc07d",
   },
+  facebookScheme: "fb7185965598112053",
+  facebookAppId: "7185965598112053",
+  facebookDisplayName: "parent_app",
 };

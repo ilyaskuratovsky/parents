@@ -4,7 +4,9 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./config/firebase";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "./Actions";
-import FacebookSignin from "./FacebookSignin";
+//import * as Facebook from "expo-facebook";
+//import FacebookSignin from "./FacebookSignin";
+//import { LoginButton } from "react-native-fbsdk";
 
 export default function Login({ navigation }) {
   const dispatch = useDispatch();
@@ -18,6 +20,36 @@ export default function Login({ navigation }) {
         .catch((err) => console.log(`Login err: ${err}`));
     }
   };
+
+  /*
+  async function loginWithFacebook() {
+    let type = null;
+    let token = null;
+    try {
+      await Facebook.initializeAsync({
+        appId: "7185965598112053",
+      });
+
+      const { type, token } = await Facebook.logInWithReadPermissionsAsync(
+        "7185965598112053",
+        { permissions: ["public_profile"] }
+      );
+
+      alert("type: " + type + ", " + token);
+    } catch (error) {
+      alert("error: " + error);
+    }
+    if (type == "success") {
+      const credential = firebase.auth.FacebookAuthProvider.credential(token);
+      firebase
+        .auth()
+        .signInWithCredential(credential)
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }
+  */
 
   return (
     <View style={styles.container}>
@@ -43,14 +75,24 @@ export default function Login({ navigation }) {
         onChangeText={(text) => setPassword(text)}
       />
       <Button onPress={onHandleLogin} color="#f57c00" title="Login" />
+      {/*
+      <Button
+        onPress={async () => {
+          loginWithFacebook();
+        }}
+        color="#f57c00"
+        title="Login With Facebook"
+      />
       <Button
         onPress={() => {
           dispatch(Actions.goToScreen({ screen: "SIGNUP" }));
         }}
         title="Go to Signup"
       />
-
-      <FacebookSignin />
+      */}
+      {/*
+      <LoginButton />
+      */}
     </View>
   );
 }
