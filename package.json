@@ -55,8 +55,7 @@
     "react-redux": "^7.2.6",
     "react-time-ago": "^7.1.9",
     "react-timeago": "^6.2.1",
-    "react-timer-mixin": "^0.13.4",
-    "undefined": "firebase/app"
+    "react-timer-mixin": "^0.13.4"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
