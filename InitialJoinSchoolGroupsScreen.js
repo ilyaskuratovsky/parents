@@ -1,24 +1,15 @@
 import React, { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { SearchBar } from "react-native-elements";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "./Actions";
+import BottomBar from "./BottomBar";
 import * as Controller from "./Controller";
 import * as MyButtons from "./MyButtons";
 import NewSchoolGroupModal from "./NewSchoolGroupModal";
 import Portal from "./Portal";
-import * as UIConstants from "./UIConstants";
-import * as Paper from "react-native-paper";
 import TopBar from "./TopBar";
-import BottomBar from "./BottomBar";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-
-import {
-  Collapse,
-  CollapseHeader,
-  CollapseBody,
-  AccordionList,
-} from "accordion-collapse-react-native";
+import * as UIConstants from "./UIConstants";
 
 export default function InitialJoinSchoolGroupsScreen() {
   const dispatch = useDispatch();

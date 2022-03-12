@@ -1,4 +1,5 @@
 import { Avatar } from "react-native-elements";
+import React from "react";
 
 export function chatDisplayName(userInfo) {
   if (userInfo.displayName != null) {
@@ -21,15 +22,14 @@ export function avatarColor(userInfo) {
 export function avatarComponent(userInfo) {
   const displayName = chatDisplayName(userInfo);
   return (
-          <Avatar
-            size={28}
-            rounded
-            title={displayName.charAt(0).toUpperCase()}
-            containerStyle={{
-              backgroundColor: avatarColor(userInfo),
-              marginRight: 1,
-            }}
-          />
-
+    <Avatar
+      size={28}
+      rounded
+      title={displayName.charAt(0).toUpperCase()}
+      containerStyle={{
+        backgroundColor: avatarColor(userInfo),
+        marginRight: 1,
+      }}
+    />
   );
 }

@@ -5,15 +5,22 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "ios": {
+        "cocoapods": "1.11.2"
+      }
     },
     "preview": {
       "distribution": "internal",
       "ios": {
-        "simulator": true
+        "cocoapods": "1.11.2"
       }
     },
-    "production": {}
+    "production": {
+      "ios": {
+        "cocoapods": "1.11.2"
+      }
+    }
   },
   "submit": {
     "production": {}

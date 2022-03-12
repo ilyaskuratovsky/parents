@@ -8,8 +8,8 @@ npm-debug.*
 *.key
 *.mobileprovision
 *.orig.*
+~$*
 web-build/
-plan.xlsx
-~$plan.xlsx
+
 # macOS
 .DS_Store
