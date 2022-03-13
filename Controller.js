@@ -168,10 +168,12 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
     });
   });
 
+  //observe org changes
   Database.observeOrgChanges((orgs) => {
     dispatch(Actions.orgsUpdated(orgs));
   });
 
+  // observe invites
   Database.observeToUserInvites(userInfo.uid, userInfo.email, (invites) => {
     dispatch(Actions.toUserInvites(invites));
   });

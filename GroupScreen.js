@@ -9,42 +9,35 @@ import Portal from "./Portal";
 import ThreadView from "./ThreadView";
 import Toolbar from "./Toolbar";
 import * as UserInfo from "./UserInfo";
+import * as Actions from "./Actions";
 
 export default function GroupScreen({ groupId }) {
-  console.log("groupId: " + groupId);
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const {
-    schoolList,
-    schoolMap,
-    groupList,
-    groupMap,
-    orgsMap,
-    messages,
-    userMap,
-    members,
-  } = useSelector((state) => {
-    return {
-      userinfo: state.main.userInfo,
-      schoolList: state.main.schoolList,
-      schoolMap: state.main.schoolMap,
-      groupList: state.main.groupList,
-      groupMap: state.main.groupMap,
-      orgsMap: state.main.orgsMap,
-      userMap: state.main.userMap,
-      messages: state.main.groupMessages[groupId],
-      members: state.main.groupMembershipMap[groupId],
-    };
-  });
-  const [inviteModalVisible, setInviteModalVisible] = useState(false);
+  const { groupMap, orgsMap, messages, userMap, members } = useSelector(
+    (state) => {
+      return {
+        userinfo: state.main.userInfo,
+        schoolList: state.main.schoolList,
+        schoolMap: state.main.schoolMap,
+        groupList: state.main.groupList,
+        groupMap: state.main.groupMap,
+        orgsMap: state.main.orgsMap,
+        userMap: state.main.userMap,
+        messages: state.main.groupMessages[groupId],
+        members: state.main.groupMembershipMap[groupId],
+      };
+    }
+  );
   const [membersModalVisible, setMembersModalVisible] = useState(false);
   const group = groupMap[groupId];
 
-  if (userInfo == null || group == null) {
-    return <Text>Loading Data...</Text>;
-  }
-
-  const threadMessages = (messages ?? []).map((message) => {
+  const sortedMessages = [...messages] ?? [];
+  sortedMessages.sort((m1, m2) => {
+    return m2.timestamp - m1.timestamp;
+    //return 0;
+  });
+  const threadMessages = sortedMessages.map((message) => {
     const user = userMap[message.uid];
 
     return {
@@ -55,13 +48,12 @@ export default function GroupScreen({ groupId }) {
         _id: message.uid,
         name: UserInfo.chatDisplayName(user),
         avatarColor: UserInfo.avatarColor(user),
-        //avatar: "https://placeimg.com/140/140/any",
       },
     };
   });
 
   const org = orgsMap[group.orgId];
-
+  // send message callback function
   const sendMessage = useCallback(async (text) => {
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(userInfo);
@@ -71,6 +63,7 @@ export default function GroupScreen({ groupId }) {
     });
   }, []);
 
+  // update last viewed callback function
   const updateGroupLastViewed = useCallback(async () => {
     const maxTimestampMessage = messages.reduce((prev, current) =>
       prev.timestamp > current.timestamp ? prev : current

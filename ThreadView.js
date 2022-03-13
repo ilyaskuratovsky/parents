@@ -12,8 +12,17 @@ import { Avatar } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import ThreadMessageModal from "./ThreadMessageModal";
 import TimeAgo from "react-timeago";
+import { useDispatch, useSelector } from "react-redux";
+import * as Actions from "./Actions";
 
-export default function ThreadView({ userInfo, group, messages, sendMessage, onView }) {
+export default function ThreadView({
+  userInfo,
+  group,
+  messages,
+  sendMessage,
+  onView,
+}) {
+  const dispatch = useDispatch();
   useEffect(() => {
     if (onView != null) {
       onView();
@@ -60,37 +69,6 @@ export default function ThreadView({ userInfo, group, messages, sendMessage, onV
           paddingBottom: 14,
         }}
       >
-        {item.replyingTo && (
-          <View
-            style={{
-              paddingLeft: 10,
-              paddingTop: 5,
-              borderRadius: 10,
-              backgroundColor: "gainsboro",
-              marginBottom: 10,
-            }}
-          >
-            <Text
-              style={{
-                paddingBottom: 10,
-                fontSize: 14,
-                width: windowWidth - 20,
-              }}
-            >
-              Replying to {item.replyingTo}
-            </Text>
-            <Text
-              style={{
-                paddingBottom: 10,
-                fontSize: 14,
-                width: windowWidth - 20,
-              }}
-              numberOfLines={2}
-            >
-              {item.replyingToMessage}
-            </Text>
-          </View>
-        )}
         <View
           style={{
             width: windowWidth,
@@ -156,16 +134,27 @@ export default function ThreadView({ userInfo, group, messages, sendMessage, onV
             backgroundColor: "white",
           }}
         >
-          <Text
-            numberOfLines={showMore[item.id] ? null : 4}
-            style={{
-              paddingLeft: 8,
-              fontSize: 16,
-              width: windowWidth - 20,
+          <TouchableOpacity
+            onPress={() => {
+              dispatch(
+                Actions.goToScreen({
+                  screen: "POST",
+                  messageId: item._id,
+                })
+              );
             }}
           >
-            {item.text}
-          </Text>
+            <Text
+              numberOfLines={showMore[item.id] ? null : 4}
+              style={{
+                paddingLeft: 8,
+                fontSize: 16,
+                width: windowWidth - 20,
+              }}
+            >
+              {item.text}
+            </Text>
+          </TouchableOpacity>
         </View>
         <View
           style={{
@@ -174,13 +163,7 @@ export default function ThreadView({ userInfo, group, messages, sendMessage, onV
             justifyContent: "flex-end",
           }}
         >
-          <TouchableOpacity
-            onPress={() => {
-              const newShowMore = { ...showMore };
-              newShowMore[item.id] = true;
-              setShowMore(newShowMore);
-            }}
-          >
+          <TouchableOpacity onPress={() => {}}>
             <Icon name="reply" style={{ color: "lightgrey", fontSize: 20 }} />
           </TouchableOpacity>
         </View>
@@ -207,7 +190,6 @@ export default function ThreadView({ userInfo, group, messages, sendMessage, onV
         }
         renderItem={renderItem}
         keyExtractor={(item) => item._id}
-        inverted
         contentContainerStyle={{
           width: windowWidth,
         }}

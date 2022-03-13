@@ -22,6 +22,7 @@ import MyProfileScreen from "./MyProfileScreen";
 import DebugScreen from "./DebugScreen";
 import * as Notifications from "expo-notifications";
 import * as Actions from "./Actions";
+import PostScreen from "./PostScreen";
 
 function RootApp(props, state) {
   const dispatch = useDispatch();
@@ -47,7 +48,8 @@ function RootApp(props, state) {
       //   "lastNotificationResponse.notification: " +
       //     JSON.stringify(lastNotificationResponse.notification)
       // );
-      const groupId = lastNotificationResponse.notification?.request?.content?.data?.groupId;
+      const groupId =
+        lastNotificationResponse.notification?.request?.content?.data?.groupId;
       // alert('going to group: ' + groupId);
       /*
         const x = {
@@ -105,6 +107,8 @@ function RootApp(props, state) {
     render = <FindGroupsScreen />;
   } else if (screen == "SCHOOL") {
     render = <SchoolScreen schoolId={screenWithParams.schoolId} />;
+  } else if (screen == "POST") {
+    render = <PostScreen messageId={screenWithParams.messageId} />;
   } else if (screen == "ORG") {
     render = <OrgScreen orgId={screenWithParams.orgId} />;
   } else if (screen == "MY_PROFILE") {
