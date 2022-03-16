@@ -2,6 +2,9 @@ import { Avatar } from "react-native-elements";
 import React from "react";
 
 export function chatDisplayName(userInfo) {
+  if (userInfo == null) {
+    return "[Unknown User]";
+  }
   if (userInfo.displayName != null) {
     return displayName;
   }

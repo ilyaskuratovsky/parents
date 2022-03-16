@@ -200,6 +200,7 @@ export function observeGroupMessages(groupId, callback) {
         text: data.text,
         uid: data.uid,
         timestamp: data.timestamp.toMillis(),
+        papaId: data.papaId,
       };
       return message;
     });
@@ -233,11 +234,18 @@ export async function createGroup(data) {
   const group = await addDoc(groupsRef, data);
 }
 
-export async function sendMessage(groupId, uid, text, notificationInfo) {
+export async function sendMessage(
+  groupId,
+  uid,
+  text,
+  papaId,
+  notificationInfo
+) {
   const message = {
     uid: uid,
     groupId,
     text,
+    papaId,
     timestamp: Timestamp.now().toDate(),
     notificationInfo,
   };

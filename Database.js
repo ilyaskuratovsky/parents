@@ -61,8 +61,14 @@ export async function createGroup(data) {
   return DatabaseRDB.createGroup(data);
 }
 
-export async function sendMessage(groupId, uid, text, notificationInfo) {
-  return DatabaseFS.sendMessage(groupId, uid, text, notificationInfo);
+export async function sendMessage(
+  groupId,
+  uid,
+  text,
+  papaId,
+  notificationInfo
+) {
+  return DatabaseFS.sendMessage(groupId, uid, text, papaId, notificationInfo);
 }
 
 export async function createOrg(name, type) {

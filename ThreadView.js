@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   View,
+  TextInput,
 } from "react-native";
 import { Avatar } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -14,6 +15,8 @@ import ThreadMessageModal from "./ThreadMessageModal";
 import TimeAgo from "react-timeago";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "./Actions";
+import * as MyButtons from "./MyButtons";
+import MessageTextInput from "./MessageTextInput";
 
 export default function ThreadView({
   userInfo,
@@ -29,6 +32,7 @@ export default function ThreadView({
     }
   }, [messages]);
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
+  const [messageReplyText, setMessageReplyText] = useState({});
   const FlatListItemSeparator = () => {
     return (
       <View
@@ -75,7 +79,7 @@ export default function ThreadView({
             justifyContent: "flex-start",
             flexDirection: "row",
             alignItems: "center",
-            paddingBottom: 5,
+            paddingBottom: 0,
             backgroundColor: "white",
           }}
         >
@@ -129,33 +133,61 @@ export default function ThreadView({
           style={{
             width: windowWidth - 20,
             paddingLeft: 0,
-            paddingTop: 10,
+            paddingTop: 0,
             borderRadius: 0,
             backgroundColor: "white",
           }}
         >
-          <TouchableOpacity
-            onPress={() => {
-              dispatch(
-                Actions.goToScreen({
-                  screen: "POST",
-                  messageId: item._id,
-                })
-              );
+          <Text
+            numberOfLines={showMore[item.id] ? null : 4}
+            style={{
+              paddingLeft: 8,
+              fontSize: 16,
+              width: windowWidth - 20,
             }}
           >
-            <Text
-              numberOfLines={showMore[item.id] ? null : 4}
+            {item.text}
+          </Text>
+        </View>
+        {item.children.map((comment) => {
+          return (
+            <View
               style={{
-                paddingLeft: 8,
-                fontSize: 16,
-                width: windowWidth - 20,
+                paddingTop: 4,
+                paddingLeft: 10,
+                flex: 1,
+                flexDirection: "row",
               }}
             >
-              {item.text}
-            </Text>
-          </TouchableOpacity>
-        </View>
+              <Avatar
+                size={20}
+                rounded
+                title={comment.user.name.charAt(0).toUpperCase()}
+                containerStyle={{
+                  backgroundColor: comment.user.avatarColor,
+                  marginRight: 1,
+                  paddingTop: 2,
+                }}
+              />
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: "lightgrey",
+                  flexDirection: "column",
+                  borderRadius: 5,
+                  paddingLeft: 10,
+                  paddingTop: 2,
+                  paddingRight: 10,
+                  paddingBottom: 2,
+                }}
+              >
+                <Text style={{ fontWeight: "bold" }}>{comment.user.name}</Text>
+                <Text>{comment.text}</Text>
+              </View>
+            </View>
+          );
+        })}
+        {/*
         <View
           style={{
             flexDirection: "row",
@@ -166,6 +198,14 @@ export default function ThreadView({
           <TouchableOpacity onPress={() => {}}>
             <Icon name="reply" style={{ color: "lightgrey", fontSize: 20 }} />
           </TouchableOpacity>
+        </View>
+        */}
+        <View style={{ flexDirection: "row", paddingTop: 10 }}>
+          <MessageTextInput
+            onPressSend={async (text) => {
+              return sendMessage(text, item._id);
+            }}
+          />
         </View>
       </View>
     );
@@ -178,8 +218,8 @@ export default function ThreadView({
         group={group}
         visible={showNewMessageModal}
         sendMessage={sendMessage}
-        closeModal={() => {
-          setShowNewMessageModal(false);
+        showModal={(flag) => {
+          setShowNewMessageModal(flag);
         }}
       />
       <FlatList

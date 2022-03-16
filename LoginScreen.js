@@ -83,13 +83,13 @@ export default function Login({ navigation }) {
         color="#f57c00"
         title="Login With Facebook"
       />
+      */}
       <Button
         onPress={() => {
           dispatch(Actions.goToScreen({ screen: "SIGNUP" }));
         }}
         title="Go to Signup"
       />
-      */}
       {/*
       <LoginButton />
       */}

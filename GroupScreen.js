@@ -24,7 +24,7 @@ export default function GroupScreen({ groupId }) {
         groupMap: state.main.groupMap,
         orgsMap: state.main.orgsMap,
         userMap: state.main.userMap,
-        messages: state.main.groupMessages[groupId],
+        messages: state.main.groupMessages[groupId] ?? [],
         members: state.main.groupMembershipMap[groupId],
       };
     }
@@ -32,13 +32,48 @@ export default function GroupScreen({ groupId }) {
   const [membersModalVisible, setMembersModalVisible] = useState(false);
   const group = groupMap[groupId];
 
-  const sortedMessages = [...messages] ?? [];
+  const messageMap = messages.reduce(function (acc, message) {
+    acc[message.id] = { ...message };
+    return acc;
+  }, {});
+
+  for (const m of Object.values(messageMap)) {
+    if (m.papaId != null) {
+      const papaMessage = messageMap[m.papaId];
+      if (papaMessage.children == null) {
+        papaMessage["children"] = [];
+      }
+      papaMessage.children.push(m);
+    }
+  }
+
+  const rootMessages = Object.values(messageMap).filter(
+    (m) => m.papaId == null
+  );
+  const sortedMessages = [...rootMessages] ?? [];
   sortedMessages.sort((m1, m2) => {
     return m2.timestamp - m1.timestamp;
     //return 0;
   });
   const threadMessages = sortedMessages.map((message) => {
     const user = userMap[message.uid];
+    const children = message.children;
+    const childrenThreadMessages =
+      children == null
+        ? []
+        : children.map((message) => {
+            return {
+              _id: message.id,
+              text: message.text,
+              createdAt: new Date(message.timestamp),
+              user: {
+                _id: message.uid,
+                name: UserInfo.chatDisplayName(user),
+                avatarColor: UserInfo.avatarColor(user),
+              },
+              children,
+            };
+          });
 
     return {
       _id: message.id,
@@ -49,30 +84,40 @@ export default function GroupScreen({ groupId }) {
         name: UserInfo.chatDisplayName(user),
         avatarColor: UserInfo.avatarColor(user),
       },
+      children: childrenThreadMessages,
     };
   });
 
   const org = orgsMap[group.orgId];
   // send message callback function
-  const sendMessage = useCallback(async (text) => {
+  const sendMessage = useCallback(async (text, papaId) => {
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(userInfo);
-    return await Controller.sendMessage(dispatch, userInfo, groupId, text, {
-      groupName,
-      fromName,
-    });
+    return await Controller.sendMessage(
+      dispatch,
+      userInfo,
+      groupId,
+      text,
+      papaId,
+      {
+        groupName,
+        fromName,
+      }
+    );
   }, []);
 
   // update last viewed callback function
   const updateGroupLastViewed = useCallback(async () => {
-    const maxTimestampMessage = messages.reduce((prev, current) =>
-      prev.timestamp > current.timestamp ? prev : current
-    );
-    await Controller.setUserGroupLastViewedTimestamp(
-      userInfo,
-      group.id,
-      maxTimestampMessage.timestamp
-    );
+    if (messages.length > 0) {
+      const maxTimestampMessage = messages.reduce((prev, current) =>
+        prev.timestamp > current.timestamp ? prev : current
+      );
+      await Controller.setUserGroupLastViewedTimestamp(
+        userInfo,
+        group.id,
+        maxTimestampMessage.timestamp
+      );
+    }
   }, [messages]);
 
   return (
@@ -127,6 +172,7 @@ export default function GroupScreen({ groupId }) {
                 members.length + " member" + (members.length > 1 ? "s" : "")
               }
               onPress={() => {
+                console.log("members pressed");
                 setMembersModalVisible(true);
               }}
             />

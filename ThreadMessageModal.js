@@ -17,11 +17,10 @@ export default function ThreadMessageModal({
   group,
   visible,
   sendMessage,
-  closeModal,
+  showModal,
 }) {
   const insets = useSafeAreaInsets();
   const [text, setText] = useState(null);
-  console.log("text: " + text);
 
   return (
     <Modal visible={visible} animationType={"slide"}>
@@ -40,7 +39,7 @@ export default function ThreadMessageModal({
         >
           <TouchableOpacity
             onPress={() => {
-              closeModal();
+              showModal(false);
             }}
           >
             <Text style={{ fontSize: 20, color: "blue" }}>Close</Text>
@@ -86,7 +85,7 @@ export default function ThreadMessageModal({
                 text="POST"
                 onPress={async () => {
                   sendMessage(text).then(() => {
-                    closeModal();
+                    showModal(false);
                   });
                 }}
               />

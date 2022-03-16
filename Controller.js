@@ -243,12 +243,14 @@ export async function sendMessage(
   userInfo,
   groupId,
   text,
+  papaId,
   notificationInfo
 ) {
   return await Database.sendMessage(
     groupId,
     userInfo.uid,
     text,
+    papaId == undefined ? null : papaId,
     notificationInfo
   );
 }

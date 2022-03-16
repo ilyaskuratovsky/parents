@@ -23,8 +23,11 @@ import DebugScreen from "./DebugScreen";
 import * as Notifications from "expo-notifications";
 import * as Actions from "./Actions";
 import PostScreen from "./PostScreen";
+import TestErrorHandler from "./TestErrorHandler";
 
 function RootApp(props, state) {
+  //const x = { a: "b" };
+  //x.b.c = "z";
   const dispatch = useDispatch();
   const notificationListener = useRef();
   const responseListener = useRef();
@@ -32,13 +35,17 @@ function RootApp(props, state) {
     return state;
   });
 
-  //return <TestThreadView />;
-  useEffect(() => {
-    return Controller.initializeApp(
-      dispatch,
-      notificationListener,
-      responseListener
-    );
+  //return <TestErrorHandler />;
+  useEffect(async () => {
+    try {
+      return await Controller.initializeApp(
+        dispatch,
+        notificationListener,
+        responseListener
+      );
+    } catch (error) {
+      dispatch(Actions.goToScreen({ screen: "ERROR", error }));
+    }
   }, []);
 
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
@@ -115,8 +122,10 @@ function RootApp(props, state) {
     render = <MyProfileScreen />;
   } else if (screen == "DEBUG") {
     render = <DebugScreen backAction={screenWithParams.backAction} />;
+  } else if (screen == "ERROR") {
+    render = <ErrorScreen error={screenWithParams.error} />;
   } else {
-    render = <ErrorScreen />;
+    render = <ErrorScreen error={{ message: "No screen" }} />;
   }
 
   return (

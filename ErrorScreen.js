@@ -1,12 +1,23 @@
-import React from 'react';
-import { Text, View } from 'react-native';
+import React from "react";
+import { Text, View, Button } from "react-native";
+import Actions from "./Actions";
 
-function ErrorScreen(props) {
-    return (
-        <View>
-            <Text>ErrorScreen</Text>
-        </View>
-    );
+function ErrorScreen({ error, resetErrorBoundary }) {
+  return (
+    <View>
+      <Text>ErrorScreen</Text>
+      <Text>{error.message}</Text>
+      <Text>{error.stack}</Text>
+      <Button
+        title="Reset error boundary"
+        onPress={() => {
+          if (resetErrorBoundary) {
+            resetErrorBoundary();
+          }
+        }}
+      />
+    </View>
+  );
 }
 
-export default ErrorScreen
+export default ErrorScreen;

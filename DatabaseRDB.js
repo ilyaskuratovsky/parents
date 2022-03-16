@@ -81,7 +81,8 @@ export async function getAllUsers() {
   const dbRef = RDB.ref(rdb);
   const users = await RDB.get(RDB.child(dbRef, "users"));
 
-  const ret = toArray(users.val());
+  const ret = toArray(users.val() ?? []);
+  //const ret = toArray(null);
   return ret;
 }
 

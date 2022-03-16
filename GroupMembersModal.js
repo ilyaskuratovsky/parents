@@ -49,7 +49,7 @@ export default function GroupMembersModal({ groupId, visible, closeModal }) {
     const user = userMap[groupMembership.uid];
     return (
       <View
-        key={user.uid}
+        key={user.uid ?? groupMembership.uid}
         style={{
           flexDirection: "row",
           height: 60,
