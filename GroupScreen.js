@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from "react";
-import { Text, View } from "react-native";
 import { Divider } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
 import * as Controller from "./Controller";
@@ -10,6 +9,17 @@ import ThreadView from "./ThreadView";
 import Toolbar from "./Toolbar";
 import * as UserInfo from "./UserInfo";
 import * as Actions from "./Actions";
+import MessageView from "./MessageView";
+import {
+  FlatList,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+  TextInput,
+} from "react-native";
 
 export default function GroupScreen({ groupId }) {
   const dispatch = useDispatch();
@@ -29,12 +39,29 @@ export default function GroupScreen({ groupId }) {
       };
     }
   );
+  const { height, width } = useWindowDimensions();
+  const windowWidth = width ?? 0;
   const [membersModalVisible, setMembersModalVisible] = useState(false);
   const group = groupMap[groupId];
 
   const messagesRead = (messages) => {
-    Controller.markMessagesRead(userInfo, messages.map(m => m._id));
-  }
+    Controller.markMessagesRead(
+      userInfo,
+      messages.map((m) => m._id)
+    );
+  };
+
+  const FlatListItemSeparator = () => {
+    return (
+      <View
+        style={{
+          height: 6,
+          width: "100%",
+          backgroundColor: "lightgrey",
+        }}
+      />
+    );
+  };
 
   const messageMap = messages.reduce(function (acc, message) {
     acc[message.id] = { ...message };
@@ -59,6 +86,7 @@ export default function GroupScreen({ groupId }) {
     return m2.timestamp - m1.timestamp;
     //return 0;
   });
+
   const threadMessages = sortedMessages.map((message) => {
     const user = userMap[message.uid];
     const children = message.children;
@@ -124,6 +152,9 @@ export default function GroupScreen({ groupId }) {
     }
   }, [messages]);
 
+  const renderMessage = ({ item }) => {
+    return <MessageView item={item} width={windowWidth} />;
+  };
   return (
     <Portal backgroundColor={/*UIConstants.DEFAULT_BACKGROUND*/ "white"}>
       <View style={{ backgroundColor: "whitesmoke", flexDirection: "column" }}>
@@ -194,6 +225,7 @@ export default function GroupScreen({ groupId }) {
 
       <View style={{ flex: 1, flexDirection: "column" }}>
         <View style={{ flex: 1 }}>
+          {/*
           <ThreadView
             userInfo={userInfo}
             group={group}
@@ -202,6 +234,60 @@ export default function GroupScreen({ groupId }) {
             onView={updateGroupLastViewed}
             messagesRead={messagesRead}
           />
+            */}
+          <View style={{ flexDirection: "column", flex: 1 }}>
+            <FlatList
+              style={{ flex: 1 }}
+              data={
+                //DATA
+                threadMessages
+              }
+              renderItem={renderMessage}
+              keyExtractor={(item) => item._id}
+              contentContainerStyle={{
+                width: windowWidth,
+              }}
+              ItemSeparatorComponent={FlatListItemSeparator}
+            />
+            <View
+              style={{
+                height: 50,
+                alignItems: "center",
+                justifyContent: "center",
+                paddingLeft: 10,
+                paddingRight: 10,
+                paddingBottom: 10,
+                width: windowWidth,
+                //backgroundColor: "orange",
+              }}
+            >
+              <TouchableOpacity
+                style={{
+                  borderWidth: 1,
+                  borderColor: "darkgrey",
+                  borderRadius: 14,
+                  width: "100%",
+                  height: "100%",
+                  justifyContent: "center",
+                  alignItems: "flex-start",
+                }}
+                onPress={() => {
+                  setShowNewMessageModal(true);
+                }}
+              >
+                <Text
+                  style={{
+                    paddingLeft: 10,
+                    //backgroundColor: "green",
+                    fontSize: 14,
+                    color: "lightgrey",
+                  }}
+                >
+                  New Message...
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       </View>
       <Toolbar />
