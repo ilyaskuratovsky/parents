@@ -181,9 +181,17 @@ export async function updateUserGroupMembership(
 }
 
 export async function updateUserMessage(uid, messageId, update) {
-  console.log("updating user message, uid: " + uid + ", messageId: " + messageId);
+  console.log(
+    "updating user message, uid: " + uid + ", messageId: " + messageId
+  );
   const docRef = RDB.ref(rdb, "/user_messages/" + uid + "/" + messageId);
   await RDB.update(docRef, update);
+}
+
+export async function logError(error, info) {
+  const newReference = await RDB.push(RDB.ref(rdb, "/errors"));
+  await RDB.set(newReference, { error: error.message, stack: error.stack });
+  return newReference.key;
 }
 
 function toArray(obj) {

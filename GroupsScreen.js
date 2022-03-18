@@ -11,6 +11,8 @@ import * as UIConstants from "./UIConstants";
 
 export default function GroupsScreen({}) {
   const dispatch = useDispatch();
+  // const x = null;
+  // const a = x.foo;
   const userInfo = useSelector((state) => state.main.userInfo);
   const {
     schoolList,
@@ -93,7 +95,7 @@ export default function GroupsScreen({}) {
                   fontWeight: "bold",
                 }}
               >
-                {group.name}
+                {group.name} {/**/ group.id /**/}
               </Text>
               {org != null && (
                 <Text

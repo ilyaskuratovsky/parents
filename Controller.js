@@ -72,20 +72,24 @@ export async function initializeApp(
   //FOREGROUND app handler
   const notificationReceivedListener =
     Notifications.addNotificationReceivedListener((notification) => {
+      /*
       alert(
         "FOREGROUND notification received while app is running: " +
           JSON.stringify(notification)
       );
-
+      */
     });
 
-  // This listener is fired whenever a user taps on or interacts with a 
+  // This listener is fired whenever a user taps on or interacts with a
   // notification (works when app is foregrounded, backgrounded, or killed)
   const notificationResponseReceivedListener =
     Notifications.addNotificationResponseReceivedListener((response) => {
+      /*
       alert(
-        "FOREGROUND/BACKGROUND/KILLED notification response received listener: " + JSON.stringify(response)
+        "FOREGROUND/BACKGROUND/KILLED notification response received listener: " +
+          JSON.stringify(response)
       );
+      */
     });
 
   // subscribe to auth changes
@@ -115,9 +119,6 @@ export async function initializeApp(
 
   dispatch(Actions.searchIndex(searchIndex));
 
-  //Go to login page by default
-  dispatch(Actions.goToScreen({ screen: "LOGIN" }));
-
   return () => {
     notificationReceivedListener.remove();
     notificationResponseReceivedListener.remove();
@@ -125,7 +126,10 @@ export async function initializeApp(
   };
 }
 
-export function getInitializationScreen(state) {
+export function getLoggedInScreen(state) {
+  if (state.screen.postLoginScreen != null) {
+    return state.screen.postLoginScreen;
+  }
   return { screen: "GROUPS" };
 }
 
@@ -177,7 +181,7 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
 
   //observe user messages
   Database.observeUserMessages(uid, (userMessages) => {
-    dispatch(Actions.userMessages(userMessages))
+    dispatch(Actions.userMessages(userMessages));
   });
 
   //observe org changes
@@ -189,9 +193,6 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
   Database.observeToUserInvites(userInfo.uid, userInfo.email, (invites) => {
     dispatch(Actions.toUserInvites(invites));
   });
-
-  const screen = getInitializationScreen(store.getState());
-  dispatch(Actions.goToScreen(screen));
 }
 
 export async function loggedOut(dispatch) {
@@ -229,11 +230,10 @@ export async function createSchoolGroupAndJoin(
 }
 
 export async function markMessagesRead(userInfo, messageIds) {
-  for(const messageId of messageIds) {
-    Database.updateUserMessage(userInfo.uid, messageId, {status:'read'});
+  for (const messageId of messageIds) {
+    Database.updateUserMessage(userInfo.uid, messageId, { status: "read" });
   }
 }
-
 
 export async function createPrivateGroupAndJoin(dispatch, userInfo, groupName) {
   const groupId = await Database.createGroup({

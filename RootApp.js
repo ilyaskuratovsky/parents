@@ -50,63 +50,53 @@ function RootApp(props, state) {
 
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
   useEffect(() => {
+    /*
+    dispatch(
+      Actions.goToScreen({
+        screen: "GROUP",
+        groupId: "-MyFOw8ypHPOmvARbHAa",
+      })
+    );
+    */
     if (lastNotificationResponse) {
-      // alert(
-      //   "lastNotificationResponse.notification: " +
-      //     JSON.stringify(lastNotificationResponse.notification)
-      // );
+      /*
+      alert(
+        "lastNotificationResponse.notification: " +
+          JSON.stringify(lastNotificationResponse.notification)
+      );
+      */
       const groupId =
         lastNotificationResponse.notification?.request?.content?.data?.groupId;
-      // alert('going to group: ' + groupId);
-      /*
-        const x = {
-          actionIdentifier: "_",
-          notification: {
-            date: "_",
-            request: {
-              content: {
-                "summaryArgument-Count": "0",
-                data: { groupId: "_", message: {} },
-                title:"a",
-                body:"New message from invitetest1"
-              },
-              trigger:{
-                "payload":{
-                  "body":{
-                    "message":{"groupId":"_"}
-                  }
-                }
-              }
-            },
-          },
-        };
-      */
       dispatch(Actions.goToScreen({ screen: "GROUP", groupId }));
     } else {
     }
   }, [lastNotificationResponse]);
 
+  if (!appState.main.appInitialized == "SPLASH") {
+    return <SplashScreen appInitializedCallback={() => {}} refresh={2200} />;
+  }
+
   const screenWithParams = useSelector((state) => state.screen.screen);
-  let screen = screenWithParams.screen;
-  //return <CanvasLineTestWorkingMultilineCircle startX={100} startY={100} />;
-  //return <SplashScreen />;
-  //return <TestChat />;
+  let screen = screenWithParams?.screen;
+
+  if (screen === "LOGIN") {
+    return <LoginScreen dispatch={dispatch} />;
+  } else if (screen === "SIGNUP") {
+    return <SignupScreen />;
+  }
+
+  if (appState.main.userInfo == null) {
+    return <LoginScreen />;
+  }
 
   let render = null;
-
-  if (screen == "SPLASH") {
-    render = <SplashScreen appInitializedCallback={() => {}} refresh={2200} />;
-  } else if (screen === "LOGIN") {
-    render = <LoginScreen dispatch={dispatch} />;
-  } else if (screen === "SIGNUP") {
-    render = <SignupScreen />;
-  } else if (screen === "USER") {
+  if (screen === "USER") {
     render = <UserScreen />;
   } else if (screen == "INITIAL_SELECT_SCHOOLS") {
     render = <InitialChooseSchoolsWizard />;
   } else if (screen == "INITIAL_SELECT_SCHOOL_GROUPS") {
     render = <InitialJoinSchoolGroupsScreen />;
-  } else if (screen == "GROUPS") {
+  } else if (screen == "GROUPS" || screen == null) {
     render = <GroupsScreen />;
   } else if (screen == "GROUP") {
     render = <GroupScreen groupId={screenWithParams.groupId} />;
@@ -137,96 +127,3 @@ function RootApp(props, state) {
 }
 
 export default RootApp;
-
-/*
-import React, { useState, createContext, useContext, useEffect } from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import { View, ActivityIndicator } from "react-native";
-import * as FirebaseAuth from "firebase/auth";
-import * as Controller from "./Controller";
-import { auth } from "./config/firebase";
-import { useDispatch, useSelector } from "react-redux";
-
-import {
-  AuthenticatedUserProvider,
-  AuthenticatedUserContext,
-} from "./AuthenticatedUserContext";
-
-import Login from "./Login";
-import Signup from "./Signup";
-import Chat from "./Chat";
-import ProfileScreen from "./ProfileScreen";
-import { Provider } from "react-redux";
-import store from "./Actions";
-
-const Stack = createStackNavigator();
-
-function ChatStack() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Chat" component={Chat} />
-      <Stack.Screen name="Profile" component={ProfileScreen} />
-    </Stack.Navigator>
-  );
-}
-
-function AuthStack() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="Signup" component={Signup} />
-    </Stack.Navigator>
-  );
-}
-
-function RootNavigator() {
-  const dispatch = useDispatch();
-  const { user, setUser } = useContext(AuthenticatedUserContext);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // onAuthStateChanged returns an unsubscriber
-    const unsubscribeAuth = FirebaseAuth.onAuthStateChanged(
-      auth,
-      async (authenticatedUser) => {
-        if (authenticatedUser != null) {
-          Controller.loggedIn(dispatch, navigation, authenticatedUser);
-          setUser(authenticatedUser);
-        } else {
-          setUser(null);
-        }
-        setIsLoading(false);
-      }
-    );
-
-    // unsubscribe auth listener on unmount
-    return unsubscribeAuth;
-  }, [user]);
-
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
-  return (
-    <NavigationContainer>
-      {user ? <ChatStack /> : <AuthStack />}
-    </NavigationContainer>
-  );
-}
-
-export default function App() {
-  return (
-    <Provider store={store}>
-      <AuthenticatedUserProvider>
-        <RootNavigator />
-      </AuthenticatedUserProvider>
-    </Provider>
-  );
-}
-
-*/

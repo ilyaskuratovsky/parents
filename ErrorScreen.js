@@ -1,10 +1,10 @@
 import React from "react";
-import { Text, View, Button } from "react-native";
+import { Text, View, Button, SafeAreaView } from "react-native";
 import Actions from "./Actions";
 
 function ErrorScreen({ error, resetErrorBoundary }) {
   return (
-    <View>
+    <SafeAreaView>
       <Text>ErrorScreen</Text>
       <Text>{error.message}</Text>
       <Text>{error.stack}</Text>
@@ -16,7 +16,7 @@ function ErrorScreen({ error, resetErrorBoundary }) {
           }
         }}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

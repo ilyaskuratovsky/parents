@@ -24,6 +24,7 @@ import {
 } from "react-native-exception-handler";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorScreen from "./ErrorScreen";
+import * as Database from "./Database";
 
 /*
 setNativeExceptionHandler((errorString) => {
@@ -36,38 +37,21 @@ setNativeExceptionHandler((errorString) => {
 */
 
 const myErrorHandler = (error, info) => {
-  alert(
-    "Unexpected error occurred: " +
-      `Error: ${error.name} ${error.message}
-        We will need to restart the app. ${JSON.stringify(
-          error
-        )} || ${JSON.stringify(info)}
-        `,
-    [
-      {
-        text: "Restart",
-        onPress: () => {
-          RNRestart.Restart();
-        },
-      },
-    ]
-  );
-  console.log("erorr handosijdfojsodf ij");
+  Database.logError(error, info);
+  console.log("error: " + error + ", info: " + JSON.stringify(info));
 };
 
-  //foreground notifications settings
-  //alert('setting notification handler');
-  Notifications.setNotificationHandler({
-    handleNotification: async (notification) => {
-      alert('handle notification');
-      return {
+//foreground notifications settings
+//alert('setting notification handler');
+Notifications.setNotificationHandler({
+  handleNotification: async (notification) => {
+    return {
       shouldShowAlert: false,
       shouldPlaySound: false,
       shouldSetBadge: false,
     };
-  }
-  });
-
+  },
+});
 
 export default function App() {
   return (

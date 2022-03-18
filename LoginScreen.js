@@ -8,7 +8,7 @@ import * as Actions from "./Actions";
 //import FacebookSignin from "./FacebookSignin";
 //import { LoginButton } from "react-native-fbsdk";
 
-export default function Login({ navigation }) {
+export default function Login({ afterLoginScreen }) {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,8 +16,13 @@ export default function Login({ navigation }) {
   const onHandleLogin = () => {
     if (email !== "" && password !== "") {
       signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {})
-        .catch((err) => console.log(`Login err: ${err}`));
+        .then((userCredential) => {
+          console.log("got user credential: " + JSON.stringify(userCredential));
+          dispatch(Actions.goToScreen(afterLoginScreen));
+        })
+        .catch((err) => {
+          console.log(`Login err: ${err}`);
+        });
     }
   };
 

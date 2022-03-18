@@ -98,3 +98,7 @@ export async function updateUserGroupMembership(userGroupMembershipId, update) {
 export async function updateUserMessage(uid, messageId, update) {
   DatabaseRDB.updateUserMessage(uid, messageId, update);
 }
+
+export async function logError(error, info) {
+  DatabaseRDB.logError(error, info);
+}

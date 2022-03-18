@@ -9,10 +9,10 @@ export const screenSlice = createSlice({
   name: "screen",
   initialState: {
     screen: {
-      screen: "SPLASH",
+      screen: null,
     },
     userScreen: {
-      screen: "LOADING",
+      screen: null,
     },
   },
   reducers: {
@@ -20,6 +20,7 @@ export const screenSlice = createSlice({
       const newState = {
         ...state,
         screen: screen.payload,
+        postLoginScreen: null,
       };
       return newState;
     },
@@ -49,6 +50,7 @@ export const mainSlice = createSlice({
     pushToken: null,
     toUserInvites: null,
     userMessagesMap: null,
+    unreadMessages: [],
   },
   reducers: {
     appInitialized: (state, obj) => {
@@ -149,14 +151,14 @@ export const mainSlice = createSlice({
     },
     userMessages: (state, obj) => {
       const messages = obj.payload;
-      const userMessagesMap = { ...state.userMessagesMap}
+      const userMessagesMap = { ...state.userMessagesMap };
       for (const message of messages) {
         userMessagesMap[message.id] = message;
       }
       return {
         ...state,
         userMessagesMap,
-      }
+      };
     },
     groups: (state, obj) => {
       const groups = obj.payload;
@@ -237,7 +239,8 @@ export const {
   searchIndex,
   userMessages,
 } = mainSlice.actions;
-export const { goToScreen, goToUserScreen } = screenSlice.actions;
+export const { goToScreen, goToUserScreen, goToScreenAfterLogin } =
+  screenSlice.actions;
 
 export default configureStore({
   reducer: {
