@@ -48,6 +48,7 @@ export const mainSlice = createSlice({
     groupMessages: {},
     pushToken: null,
     toUserInvites: null,
+    userMessagesMap: null,
   },
   reducers: {
     appInitialized: (state, obj) => {
@@ -146,6 +147,17 @@ export const mainSlice = createSlice({
       };
       return newState;
     },
+    userMessages: (state, obj) => {
+      const messages = obj.payload;
+      const userMessagesMap = { ...state.userMessagesMap}
+      for (const message of messages) {
+        userMessagesMap[message.id] = message;
+      }
+      return {
+        ...state,
+        userMessagesMap,
+      }
+    },
     groups: (state, obj) => {
       const groups = obj.payload;
       const groupList = [];
@@ -223,6 +235,7 @@ export const {
   groupMemberships,
   toUserInvites,
   searchIndex,
+  userMessages,
 } = mainSlice.actions;
 export const { goToScreen, goToUserScreen } = screenSlice.actions;
 

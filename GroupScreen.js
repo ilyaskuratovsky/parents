@@ -32,6 +32,10 @@ export default function GroupScreen({ groupId }) {
   const [membersModalVisible, setMembersModalVisible] = useState(false);
   const group = groupMap[groupId];
 
+  const messagesRead = (messages) => {
+    Controller.markMessagesRead(userInfo, messages.map(m => m._id));
+  }
+
   const messageMap = messages.reduce(function (acc, message) {
     acc[message.id] = { ...message };
     return acc;
@@ -196,6 +200,7 @@ export default function GroupScreen({ groupId }) {
             messages={threadMessages}
             sendMessage={sendMessage}
             onView={updateGroupLastViewed}
+            messagesRead={messagesRead}
           />
         </View>
       </View>

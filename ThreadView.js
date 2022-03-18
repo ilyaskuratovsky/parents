@@ -24,12 +24,14 @@ export default function ThreadView({
   messages,
   sendMessage,
   onView,
+  messagesRead,
 }) {
   const dispatch = useDispatch();
   useEffect(() => {
     if (onView != null) {
       onView();
     }
+    messagesRead(messages);
   }, [messages]);
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [messageReplyText, setMessageReplyText] = useState({});

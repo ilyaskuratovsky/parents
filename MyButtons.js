@@ -1,25 +1,29 @@
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import * as Paper from "react-native-paper";
+import { Badge } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-const MenuButton = React.memo(({ icon, text, onPress, color = "black" }) => {
-  return (
-    <TouchableOpacity onPress={onPress}>
-      <View
-        style={{
-          flexDirection: "column",
-          alignItems: "center",
-          marginLeft: 8,
-          marginRight: 8,
-        }}
-      >
-        <Icon name={icon} style={{ color: color, fontSize: 24 }} />
-        <Text style={{ color: color, fontSize: 12 }}>{text}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-});
+const MenuButton = React.memo(
+  ({ icon, text, onPress, color = "black", badge }) => {
+    return (
+      <TouchableOpacity onPress={onPress}>
+        <View
+          style={{
+            flexDirection: "column",
+            alignItems: "center",
+            marginLeft: 8,
+            marginRight: 8,
+          }}
+        >
+          <Icon name={icon} style={{ color: color, fontSize: 24 }} />
+          {badge}
+          <Text style={{ color: color, fontSize: 12 }}>{text}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  }
+);
 
 const DialogButton = React.memo(({ text, onPress, icon, style }) => {
   return (
@@ -73,7 +77,7 @@ const FormButton = React.memo(({ text, icon, onPress, style }) => {
       onPress={onPress}
       mode="contained"
       color="blue"
-      labelStyle={{ fontSize: 16, color: "white" }}
+      //labelStyle={{ fontSize: 16, color: "white" }}
     >
       {text}
     </Paper.Button>

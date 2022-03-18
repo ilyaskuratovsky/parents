@@ -9,6 +9,10 @@ export function observeOrgChanges(callback) {
   return DatabaseRDB.observeOrgChanges(callback);
 }
 
+export function observeUserMessages(uid, callback) {
+  return DatabaseRDB.observeUserMessages(uid, callback);
+}
+
 export async function updateOrCreateUser(uid, data) {
   return DatabaseRDB.updateOrCreateUser(uid, data);
 }
@@ -89,4 +93,8 @@ export async function updateInvite(inviteId, update) {
 
 export async function updateUserGroupMembership(userGroupMembershipId, update) {
   DatabaseRDB.updateUserGroupMembership(userGroupMembershipId, update);
+}
+
+export async function updateUserMessage(uid, messageId, update) {
+  DatabaseRDB.updateUserMessage(uid, messageId, update);
 }

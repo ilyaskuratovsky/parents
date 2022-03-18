@@ -27,6 +27,7 @@ export async function initializeApp(
 
   //all group memberships
   const groupMemberships = await Database.getAllGroupMemberships();
+
   dispatch(
     Actions.locationDataInit({
       orgs,
@@ -56,28 +57,34 @@ export async function initializeApp(
     });
 
   //foreground notifications settings
+  /*
   Notifications.setNotificationHandler({
-    handleNotification: async () => ({
+    handleNotification: async (notification) => {
+      console.log('handle notification');
+      return {
       shouldShowAlert: true,
       shouldPlaySound: true,
       shouldSetBadge: true,
-    }),
+    };
+  }
   });
-
-  //in app handler for notifications
+  */
+  //FOREGROUND app handler
   const notificationReceivedListener =
     Notifications.addNotificationReceivedListener((notification) => {
       alert(
-        "notification received while app is running: " +
+        "FOREGROUND notification received while app is running: " +
           JSON.stringify(notification)
       );
+
     });
 
-  // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+  // This listener is fired whenever a user taps on or interacts with a 
+  // notification (works when app is foregrounded, backgrounded, or killed)
   const notificationResponseReceivedListener =
     Notifications.addNotificationResponseReceivedListener((response) => {
       alert(
-        "notification response received listener: " + JSON.stringify(response)
+        "FOREGROUND/BACKGROUND/KILLED notification response received listener: " + JSON.stringify(response)
       );
     });
 
@@ -168,6 +175,11 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
     });
   });
 
+  //observe user messages
+  Database.observeUserMessages(uid, (userMessages) => {
+    dispatch(Actions.userMessages(userMessages))
+  });
+
   //observe org changes
   Database.observeOrgChanges((orgs) => {
     dispatch(Actions.orgsUpdated(orgs));
@@ -215,6 +227,13 @@ export async function createSchoolGroupAndJoin(
   });
   await Database.joinGroup(userInfo, groupId);
 }
+
+export async function markMessagesRead(userInfo, messageIds) {
+  for(const messageId of messageIds) {
+    Database.updateUserMessage(userInfo.uid, messageId, {status:'read'});
+  }
+}
+
 
 export async function createPrivateGroupAndJoin(dispatch, userInfo, groupName) {
   const groupId = await Database.createGroup({

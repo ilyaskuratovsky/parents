@@ -55,6 +55,20 @@ const myErrorHandler = (error, info) => {
   console.log("erorr handosijdfojsodf ij");
 };
 
+  //foreground notifications settings
+  //alert('setting notification handler');
+  Notifications.setNotificationHandler({
+    handleNotification: async (notification) => {
+      alert('handle notification');
+      return {
+      shouldShowAlert: false,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+    };
+  }
+  });
+
+
 export default function App() {
   return (
     <ErrorBoundary

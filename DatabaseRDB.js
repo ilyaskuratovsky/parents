@@ -22,6 +22,15 @@ export function observeOrgChanges(callback) {
   });
 }
 
+export function observeUserMessages(uid, callback) {
+  const userMessagesRef = RDB.ref(rdb, "user_messages/" + uid);
+  RDB.onValue(userMessagesRef, (snapshot) => {
+    const data = snapshot.val();
+    const ret = toArray(data);
+    callback(ret);
+  });
+}
+
 export async function updateOrCreateUser(uid, data) {
   const dbRef = RDB.ref(rdb);
   const userRef = RDB.child(dbRef, "users/" + uid);
@@ -171,7 +180,16 @@ export async function updateUserGroupMembership(
   await RDB.update(docRef, updateObj);
 }
 
+export async function updateUserMessage(uid, messageId, update) {
+  console.log("updating user message, uid: " + uid + ", messageId: " + messageId);
+  const docRef = RDB.ref(rdb, "/user_messages/" + uid + "/" + messageId);
+  await RDB.update(docRef, update);
+}
+
 function toArray(obj) {
+  if (obj == null) {
+    return [];
+  }
   const array = [];
   for (const [key, value] of Object.entries(obj)) {
     array.push({ id: key, ...value });
