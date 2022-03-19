@@ -43,6 +43,7 @@ export default function MessageView({ item, width, onPress }) {
         //backgroundColor: "white",
       }}
     >
+      {/* user avatar and name section */}
       <View
         style={{
           width: width,
@@ -100,6 +101,7 @@ export default function MessageView({ item, width, onPress }) {
           </View>
         </View>
       </View>
+      {/* title */}
       <View
         style={{
           width: width - 20,
@@ -110,7 +112,30 @@ export default function MessageView({ item, width, onPress }) {
         }}
       >
         <Text
-          //numberOfLines={showMore[item.id] ? null : 4}
+          style={{
+            paddingLeft: 0,
+            fontSize: 20,
+            fontWeight: "bold",
+            width: width - 20,
+          }}
+        >
+          {item.title}
+        </Text>
+      </View>
+
+      {/* message text */}
+      <View
+        style={{
+          width: width - 20,
+          paddingLeft: 0,
+          paddingTop: 0,
+          borderRadius: 0,
+          //backgroundColor: "white",
+        }}
+      >
+        <Text
+          numberOfLines={2}
+          ellipsizeMode="head"
           style={{
             paddingLeft: 0,
             fontSize: 18,

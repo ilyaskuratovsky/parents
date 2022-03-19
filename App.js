@@ -6,10 +6,7 @@ import React, { useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { Text } from "react-native";
 import { db } from "./config/firebase";
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import store from "./Actions";
 import RootApp from "./RootApp";
 import * as Notifications from "expo-notifications";
@@ -18,10 +15,7 @@ import * as Actions from "./Actions";
 
 import { Alert } from "react-native";
 import RNRestart from "react-native-restart";
-import {
-  setJSExceptionHandler,
-  setNativeExceptionHandler,
-} from "react-native-exception-handler";
+import { setJSExceptionHandler, setNativeExceptionHandler } from "react-native-exception-handler";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorScreen from "./ErrorScreen";
 import * as Database from "./Database";
@@ -37,7 +31,7 @@ setNativeExceptionHandler((errorString) => {
 */
 
 const myErrorHandler = (error, info) => {
-  Database.logError(error, info);
+  //Database.logError(error, info);
   console.log("error: " + error + ", info: " + JSON.stringify(info));
 };
 
@@ -57,9 +51,7 @@ export default function App() {
   return (
     <ErrorBoundary
       fallbackRender={({ error, resetErrorBoundary }) => {
-        return (
-          <ErrorScreen error={error} resetErrorBoundary={resetErrorBoundary} />
-        );
+        return <ErrorScreen error={error} resetErrorBoundary={resetErrorBoundary} />;
       }}
       onError={myErrorHandler}
     >

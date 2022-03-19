@@ -94,6 +94,7 @@ export default function GroupScreen({ groupId }) {
 
     return {
       _id: message.id,
+      title: message.title ?? "[No title]",
       text: message.text,
       createdAt: new Date(message.timestamp),
       user: {
@@ -107,10 +108,10 @@ export default function GroupScreen({ groupId }) {
 
   const org = orgsMap[group.orgId];
   // send message callback function
-  const sendMessage = useCallback(async (text, papaId) => {
+  const sendMessage = useCallback(async (title, text, papaId) => {
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(userInfo);
-    return await Controller.sendMessage(dispatch, userInfo, groupId, text, papaId, {
+    return await Controller.sendMessage(dispatch, userInfo, groupId, title, text, papaId, {
       groupName,
       fromName,
     });

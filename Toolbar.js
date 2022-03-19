@@ -44,7 +44,7 @@ const Toolbar = ({ selected }) => {
 
       <MyButtons.MenuButton
         icon="magnify"
-        text="Public Groups"
+        text="Publici Groups"
         color={selected == "find_groups" ? "mediumblue" : "black"}
         onPress={() => {
           dispatch(

@@ -134,9 +134,7 @@ export function observeAllUserChanges(callback) {
 }
 
 export async function getAllGroupMemberships() {
-  const groupMembershipsSnapshot = await getDocs(
-    collection(db, "group_memberships")
-  );
+  const groupMembershipsSnapshot = await getDocs(collection(db, "group_memberships"));
   const group_memberships = [];
   groupMembershipsSnapshot.forEach((doc) => {
     group_memberships.push({ id: doc.id, ...doc.data() });
@@ -161,10 +159,7 @@ export function observeAllGroupMembershipChanges(callback) {
 }
 
 export function observeUserGroupMemberships(uid, callback) {
-  const snapshotQuery = query(
-    collection(db, "group_memberships"),
-    where("uid", "==", uid)
-  );
+  const snapshotQuery = query(collection(db, "group_memberships"), where("uid", "==", uid));
 
   onSnapshot(snapshotQuery, (snapshot) => {
     const list = snapshot.docs.map((doc) => {
@@ -197,6 +192,7 @@ export function observeGroupMessages(groupId, callback) {
       const data = doc.data();
       const message = {
         id: doc.id,
+        title: data.title,
         text: data.text,
         uid: data.uid,
         timestamp: data.timestamp.toMillis(),
@@ -216,13 +212,9 @@ export async function joinGroup(userInfo, groupId) {
     where("groupId", "==", groupId)
   );
 
-  const existingGroupMembershipSnapshot = await getDocs(
-    existingGroupMembershipQuery
-  );
+  const existingGroupMembershipSnapshot = await getDocs(existingGroupMembershipQuery);
 
-  console.log(
-    "existing memberships: " + existingGroupMembershipSnapshot.docs.length
-  );
+  console.log("existing memberships: " + existingGroupMembershipSnapshot.docs.length);
   if (existingGroupMembershipSnapshot.docs.length == 0) {
     const membership = { uid: userInfo.uid, groupId: groupId };
     await addDoc(groupMembershipCollectionRef, membership);
@@ -234,25 +226,17 @@ export async function createGroup(data) {
   const group = await addDoc(groupsRef, data);
 }
 
-export async function sendMessage(
-  groupId,
-  uid,
-  text,
-  papaId,
-  notificationInfo
-) {
+export async function sendMessage(groupId, uid, title, text, papaId, notificationInfo) {
   const message = {
     uid: uid,
     groupId,
+    title,
     text,
     papaId,
     timestamp: Timestamp.now().toDate(),
     notificationInfo,
   };
-  const messagesRef = collection(
-    doc(collection(db, "groups"), groupId),
-    "messages"
-  );
+  const messagesRef = collection(doc(collection(db, "groups"), groupId), "messages");
   return await addDoc(messagesRef, message);
 }
 
