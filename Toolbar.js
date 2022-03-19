@@ -17,10 +17,7 @@ const Toolbar = ({ selected }) => {
     };
   });
 
-  const unreadMessages = MessageUtils.calculateUnreadMessages(
-    groupMessagesMap,
-    userMessagesMap
-  );
+  const unreadMessages = MessageUtils.calculateUnreadMessages(groupMessagesMap, userMessagesMap);
   return (
     <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
       <MyButtons.MenuButton
@@ -47,7 +44,7 @@ const Toolbar = ({ selected }) => {
 
       <MyButtons.MenuButton
         icon="magnify"
-        text="Join Groups"
+        text="Public Groups"
         color={selected == "find_groups" ? "mediumblue" : "black"}
         onPress={() => {
           dispatch(

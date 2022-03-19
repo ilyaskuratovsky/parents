@@ -16,6 +16,7 @@ import TimeAgo from "react-timeago";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "./Actions";
 import * as MyButtons from "./MyButtons";
+import * as Random from "./Random";
 
 export default function CommentView({ item, onPress }) {
   const timeAgo = ({ children }) => {
@@ -36,11 +37,12 @@ export default function CommentView({ item, onPress }) {
     <View
       style={{
         flexDirection: "row",
+        flex: 1,
         paddingTop: 10,
         paddingLeft: 10,
-        paddingRight: 10,
         paddingBottom: 14,
-        //backgroundColor: "white",
+        paddingRight: 10,
+        //backgroundColor: Random.randomColor(),
       }}
     >
       {/* avatar view */}
@@ -67,6 +69,7 @@ export default function CommentView({ item, onPress }) {
       {/* user name + text */}
       <View
         style={{
+          flex: 1,
           paddingLeft: 10,
           paddingRight: 10,
           paddingTop: 5,

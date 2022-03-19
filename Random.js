@@ -11,3 +11,8 @@ export function randomId() {
   }
   return result;
 }
+
+export function randomColor() {
+  const colors = ["cyan", "purple", "green", "aqua", "maroon"];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
