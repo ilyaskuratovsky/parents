@@ -13,7 +13,7 @@ function FlexTest({}) {
       <View style={{ backgroundColor: "orange", height: 100 }}>
         <Text>window height: {windowHeight}</Text>
       </View>
-      <View style={{ backgroundColor: "blue", height: windowHeight - 220 }}>
+      <View style={{ flex: 1 }}>
         <FlatList
           style={{ flex: 1 }}
           data={

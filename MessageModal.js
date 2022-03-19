@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from "react";
-import { Modal, Text, View, SafeAreaView, ScrollView, TextInput, Dimensions } from "react-native";
+import { Modal, Text, View, SafeAreaView, ScrollView, TextInput, Dimensions, KeyboardAvoidingView } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as UserInfo from "./UserInfo";
 import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
@@ -66,6 +66,7 @@ export default function MessageModal({ groupId, messageId, visible, closeModal }
   const renderMessage = ({ item }) => {
     return <CommentView item={item} width={windowWidth} />;
   };
+        <KeyboardAvoidingView behavior="padding" style={{ height: replyBarHeight, flex: 1, backgroundColor: "white" }}>
   */
   const [text, setText] = useState("");
   const scrollViewRef = useRef();
@@ -95,13 +96,18 @@ export default function MessageModal({ groupId, messageId, visible, closeModal }
         />
 
         {/* main content */}
-        <View
+        <KeyboardAvoidingView
           style={{
-            height: windowHeight - topBarHeight - replyBarHeight,
+            flex: 1,
+            //backgroundColor: "green",
           }}
+          behavior="padding"
+          keyboardVerticalOffset={40}
+          enabled
         >
           <ScrollView
             ref={scrollViewRef}
+            style={{ flex: 1 }}
             //onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
           >
             {/* parent message */}
@@ -131,7 +137,7 @@ export default function MessageModal({ groupId, messageId, visible, closeModal }
                     justifyContent: "space-between",
                     alignItems: "center",
                     paddingRight: 20,
-                    backgroundColor: "white",
+                    //backgroundColor: "white",
                   }}
                 >
                   <Text
@@ -171,59 +177,60 @@ export default function MessageModal({ groupId, messageId, visible, closeModal }
               })}
             </View>
           </ScrollView>
-        </View>
-        {/* reply text input section */}
-        <View
-          style={{
-            height: replyBarHeight,
-            alignItems: "center",
-            justifyContent: "center",
-            paddingLeft: 10,
-            paddingRight: 10,
-            paddingBottom: 0,
-            //backgroundColor: "cyan",
-            flexDirection: "row",
-          }}
-        >
-          <TextInput
-            value={text}
+          {/* reply text input section */}
+          <View
             style={{
-              flex: 1,
-              backgroundColor: "blue",
-              margin: 0,
-              paddingTop: 10,
-              paddingBottom: 10,
+              //height: replyBarHeight,
+              height: replyBarHeight,
+              alignItems: "center",
+              justifyContent: "center",
               paddingLeft: 10,
-              textAlign: "left",
-              fontSize: 16,
-              backgroundColor: "white",
-              borderLeftWidth: 1,
-              borderTopWidth: 1,
-              borderRightWidth: 1,
-              borderBottomWidth: 1,
-              borderTopLeftRadius: 5,
-              borderTopRightRadius: 5,
-              borderBottomRightRadius: 5,
-              borderBottomLeftRadius: 5,
+              paddingRight: 10,
+              paddingBottom: 0,
+              //backgroundColor: "cyan",
+              flexDirection: "row",
             }}
-            placeholder={"Reply..."}
-            multiline={true}
-            autoFocus={false}
-            onChangeText={(text) => {
-              setText(text);
-            }}
-          />
-          {text != null && text.length > 0 && (
-            <IconButton
-              icon="arrow-up-circle"
-              color={"blue"}
-              size={38}
-              onPress={() => {
-                sendMessage(text);
+          >
+            <TextInput
+              value={text}
+              style={{
+                flex: 1,
+                backgroundColor: "blue",
+                margin: 0,
+                paddingTop: 10,
+                paddingBottom: 10,
+                //paddingLeft: 10,
+                textAlign: "left",
+                fontSize: 16,
+                backgroundColor: "white",
+                borderLeftWidth: 1,
+                borderTopWidth: 1,
+                borderRightWidth: 1,
+                borderBottomWidth: 1,
+                borderTopLeftRadius: 5,
+                borderTopRightRadius: 5,
+                borderBottomRightRadius: 5,
+                borderBottomLeftRadius: 5,
+              }}
+              placeholder={"Reply..."}
+              multiline={true}
+              autoFocus={false}
+              onChangeText={(text) => {
+                setText(text);
               }}
             />
-          )}
-        </View>
+            {text != null && text.length > 0 && (
+              <IconButton
+                icon="arrow-up-circle"
+                color={"blue"}
+                size={38}
+                onPress={() => {
+                  sendMessage(text);
+                }}
+              />
+            )}
+          </View>
+        </KeyboardAvoidingView>
       </Portal>
     </Modal>
   );

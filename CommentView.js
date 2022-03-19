@@ -40,7 +40,7 @@ export default function CommentView({ item, onPress }) {
         paddingLeft: 10,
         paddingRight: 10,
         paddingBottom: 14,
-        backgroundColor: "white",
+        //backgroundColor: "white",
       }}
     >
       {/* avatar view */}
