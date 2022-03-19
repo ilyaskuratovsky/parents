@@ -8,6 +8,7 @@ const BottomBar = ({ style, children }) => {
       style={[
         style,
         {
+          height: 80,
           paddingTop: 8,
           paddingBottom: 8,
           flexDirection: "row",

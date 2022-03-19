@@ -40,7 +40,7 @@ export default function MessageView({ item, width, onPress }) {
         paddingLeft: 10,
         paddingRight: 10,
         paddingBottom: 14,
-        backgroundColor: "white",
+        //backgroundColor: "white",
       }}
     >
       <View
@@ -50,7 +50,7 @@ export default function MessageView({ item, width, onPress }) {
           flexDirection: "row",
           alignItems: "center",
           paddingBottom: 6,
-          backgroundColor: "white",
+          //backgroundColor: "white",
         }}
       >
         <Avatar
@@ -69,7 +69,7 @@ export default function MessageView({ item, width, onPress }) {
             justifyContent: "space-between",
             alignItems: "center",
             paddingRight: 20,
-            backgroundColor: "white",
+            //backgroundColor: "white",
           }}
         >
           <Text
@@ -106,7 +106,7 @@ export default function MessageView({ item, width, onPress }) {
           paddingLeft: 0,
           paddingTop: 0,
           borderRadius: 0,
-          backgroundColor: "white",
+          //backgroundColor: "white",
         }}
       >
         <Text

@@ -23,7 +23,9 @@ import DebugScreen from "./DebugScreen";
 import * as Notifications from "expo-notifications";
 import * as Actions from "./Actions";
 import PostScreen from "./PostScreen";
+import MessageScreen from "./MessageScreen";
 import TestErrorHandler from "./TestErrorHandler";
+import FlexTest from "./FlexTest";
 
 function RootApp(props, state) {
   //const x = { a: "b" };
@@ -35,14 +37,10 @@ function RootApp(props, state) {
     return state;
   });
 
-  //return <TestErrorHandler />;
+  //return <FlexTest />;
   useEffect(async () => {
     try {
-      return await Controller.initializeApp(
-        dispatch,
-        notificationListener,
-        responseListener
-      );
+      return await Controller.initializeApp(dispatch, notificationListener, responseListener);
     } catch (error) {
       dispatch(Actions.goToScreen({ screen: "ERROR", error }));
     }
@@ -65,8 +63,7 @@ function RootApp(props, state) {
           JSON.stringify(lastNotificationResponse.notification)
       );
       */
-      const groupId =
-        lastNotificationResponse.notification?.request?.content?.data?.groupId;
+      const groupId = lastNotificationResponse.notification?.request?.content?.data?.groupId;
       dispatch(Actions.goToScreen({ screen: "GROUP", groupId }));
     } else {
     }
@@ -110,6 +107,8 @@ function RootApp(props, state) {
     render = <OrgScreen orgId={screenWithParams.orgId} />;
   } else if (screen == "MY_PROFILE") {
     render = <MyProfileScreen />;
+  } else if (screen == "MESSAGE") {
+    render = <MessageScreen groupId={screenWithParams.groupId} messageId={screenWithParams.messageId} />;
   } else if (screen == "DEBUG") {
     render = <DebugScreen backAction={screenWithParams.backAction} />;
   } else if (screen == "ERROR") {

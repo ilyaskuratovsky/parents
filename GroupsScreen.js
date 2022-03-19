@@ -14,14 +14,7 @@ export default function GroupsScreen({}) {
   // const x = null;
   // const a = x.foo;
   const userInfo = useSelector((state) => state.main.userInfo);
-  const {
-    schoolList,
-    schoolMap,
-    groupList,
-    groupMap,
-    userGroupMemberships,
-    orgsMap,
-  } = useSelector((state) => {
+  const { schoolList, schoolMap, groupList, groupMap, userGroupMemberships, orgsMap } = useSelector((state) => {
     return {
       schoolList: state.main.schoolList,
       schoolMap: state.main.schoolMap,
@@ -55,9 +48,7 @@ export default function GroupsScreen({}) {
     if you don't belong to any schools just say - you don't have any groups and only the search is enabled.
   */
   //const userSchools = userInfo.profile.schools ?? [];
-  const userGroups = userGroupMemberships.map(
-    (groupMembership) => groupMembership.groupId
-  );
+  const userGroups = userGroupMemberships.map((groupMembership) => groupMembership.groupId);
   let groupsComponents = null;
   if (userGroups.length > 0) {
     groupsComponents = userGroups.map((groupId, index) => {
@@ -77,9 +68,7 @@ export default function GroupsScreen({}) {
               paddingLeft: 10,
             }}
             onPress={() => {
-              dispatch(
-                Actions.goToScreen({ screen: "GROUP", groupId: group.id })
-              );
+              dispatch(Actions.goToScreen({ screen: "GROUP", groupId: group.id }));
             }}
           >
             <View
@@ -129,11 +118,7 @@ export default function GroupsScreen({}) {
               */}
             </View>
           </TouchableOpacity>
-          <Divider
-            style={{ marginTop: 10, marginBottom: 10 }}
-            width={1}
-            color="lightgrey"
-          />
+          <Divider style={{ marginTop: 10, marginBottom: 10 }} width={1} color="lightgrey" />
         </>
       );
     });
@@ -145,12 +130,7 @@ export default function GroupsScreen({}) {
         style={{}}
         left={
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Avatar
-              size={48}
-              rounded
-              title="I"
-              containerStyle={{ backgroundColor: "coral", marginRight: 10 }}
-            />
+            <Avatar size={48} rounded title="I" containerStyle={{ backgroundColor: "coral", marginRight: 10 }} />
             <Text style={{ fontWeight: "bold", fontSize: 20 }}>My Groups</Text>
           </View>
         }

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { Divider } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
 import * as Controller from "./Controller";
@@ -10,6 +10,10 @@ import Toolbar from "./Toolbar";
 import * as UserInfo from "./UserInfo";
 import * as Actions from "./Actions";
 import MessageView from "./MessageView";
+import * as MessageUtils from "./MessageUtils";
+import MessageScreen from "./MessageScreen";
+import MessageModal from "./MessageModal";
+import ThreadMessageModal from "./ThreadMessageModal";
 import {
   FlatList,
   StatusBar,
@@ -18,38 +22,36 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   View,
+  Dimensions,
   TextInput,
 } from "react-native";
+import { Modal } from "react-native-paper";
+import TopBarLeftContentSideButton from "./TopBarLeftContentSideButton";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function GroupScreen({ groupId }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const { groupMap, orgsMap, messages, userMap, members } = useSelector(
-    (state) => {
-      return {
-        userinfo: state.main.userInfo,
-        schoolList: state.main.schoolList,
-        schoolMap: state.main.schoolMap,
-        groupList: state.main.groupList,
-        groupMap: state.main.groupMap,
-        orgsMap: state.main.orgsMap,
-        userMap: state.main.userMap,
-        messages: state.main.groupMessages[groupId] ?? [],
-        members: state.main.groupMembershipMap[groupId],
-      };
-    }
-  );
+
+  const { groupMap, orgsMap, messages, userMap, members } = useSelector((state) => {
+    return {
+      userinfo: state.main.userInfo,
+      schoolList: state.main.schoolList,
+      schoolMap: state.main.schoolMap,
+      groupList: state.main.groupList,
+      groupMap: state.main.groupMap,
+      orgsMap: state.main.orgsMap,
+      userMap: state.main.userMap,
+      messages: state.main.groupMessages[groupId] ?? [],
+      members: state.main.groupMembershipMap[groupId],
+    };
+  });
   const { height, width } = useWindowDimensions();
   const windowWidth = width ?? 0;
   const [membersModalVisible, setMembersModalVisible] = useState(false);
+  const [messagesModalVisible, setMessagesModalVisible] = useState(null);
+  const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const group = groupMap[groupId];
-
-  const messagesRead = (messages) => {
-    Controller.markMessagesRead(
-      userInfo,
-      messages.map((m) => m._id)
-    );
-  };
 
   const FlatListItemSeparator = () => {
     return (
@@ -63,24 +65,7 @@ export default function GroupScreen({ groupId }) {
     );
   };
 
-  const messageMap = messages.reduce(function (acc, message) {
-    acc[message.id] = { ...message };
-    return acc;
-  }, {});
-
-  for (const m of Object.values(messageMap)) {
-    if (m.papaId != null) {
-      const papaMessage = messageMap[m.papaId];
-      if (papaMessage.children == null) {
-        papaMessage["children"] = [];
-      }
-      papaMessage.children.push(m);
-    }
-  }
-
-  const rootMessages = Object.values(messageMap).filter(
-    (m) => m.papaId == null
-  );
+  const rootMessages = MessageUtils.buildRootMessagesWithChildren(messages);
   const sortedMessages = [...rootMessages] ?? [];
   sortedMessages.sort((m1, m2) => {
     return m2.timestamp - m1.timestamp;
@@ -125,52 +110,71 @@ export default function GroupScreen({ groupId }) {
   const sendMessage = useCallback(async (text, papaId) => {
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(userInfo);
-    return await Controller.sendMessage(
-      dispatch,
-      userInfo,
-      groupId,
-      text,
-      papaId,
-      {
-        groupName,
-        fromName,
-      }
-    );
+    return await Controller.sendMessage(dispatch, userInfo, groupId, text, papaId, {
+      groupName,
+      fromName,
+    });
   }, []);
 
-  // update last viewed callback function
-  const updateGroupLastViewed = useCallback(async () => {
+  const renderMessage = ({ item }) => {
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          setMessagesModalVisible(item._id);
+          //setMembersModalVisible(true);
+          //dispatch(Actions.goToScreen({ screen: "MESSAGE", groupId: groupId, messageId: item._id }));
+        }}
+      >
+        <MessageView item={item} width={windowWidth} />
+      </TouchableOpacity>
+    );
+  };
+  useEffect(async () => {
+    // update last viewed callback function
     if (messages.length > 0) {
       const maxTimestampMessage = messages.reduce((prev, current) =>
         prev.timestamp > current.timestamp ? prev : current
       );
-      await Controller.setUserGroupLastViewedTimestamp(
-        userInfo,
-        group.id,
-        maxTimestampMessage.timestamp
-      );
+      await Controller.setUserGroupLastViewedTimestamp(userInfo, group.id, maxTimestampMessage.timestamp);
     }
+    Controller.markMessagesRead(
+      userInfo,
+      messages.map((m) => m._id)
+    );
   }, [messages]);
 
-  const renderMessage = ({ item }) => {
-    return <MessageView item={item} width={windowWidth} />;
-  };
+  const insets = useSafeAreaInsets();
+  const windowHeight = Dimensions.get("window").height - insets.top - insets.bottom;
+  const topBarHeight = 64;
+  const newMessageHeight = 80;
+  const bottomBarHeight = 64;
+
   return (
     <Portal backgroundColor={/*UIConstants.DEFAULT_BACKGROUND*/ "white"}>
-      <View style={{ backgroundColor: "whitesmoke", flexDirection: "column" }}>
+      {/* top bar section */}
+      <View
+        style={{
+          //backgroundColor: "yellow",
+          flexDirection: "column",
+          height: topBarHeight,
+        }}
+      >
+        {/* group name and members row */}
         <View
           style={[
             {
-              //height: 100,
+              height: topBarHeight - 1,
               paddingLeft: 4,
               paddingRight: 4,
               paddingTop: 8,
               paddingBottom: 8,
               flexDirection: "row",
-              //zIndex: Number.MAX_VALUE,
+              alignItems: "center",
+              //backgroundColor: "cyan",
             },
           ]}
         >
+          {/* group name */}
           <View
             style={{
               flexGrow: 1,
@@ -180,17 +184,12 @@ export default function GroupScreen({ groupId }) {
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <View style={{ flexDirection: "column" }}>
-                <Text style={{ fontWeight: "bold", fontSize: 20 }}>
-                  {group.name}
-                </Text>
-                {org != null && (
-                  <Text style={{ fontWeight: "normal", fontSize: 14 }}>
-                    {org.name}
-                  </Text>
-                )}
+                <Text style={{ fontWeight: "bold", fontSize: 20 }}>{group.name}</Text>
+                {org != null && <Text style={{ fontWeight: "normal", fontSize: 14 }}>{org.name}</Text>}
               </View>
             </View>
           </View>
+          {/* members button */}
           <View
             style={{
               width: 80,
@@ -203,19 +202,10 @@ export default function GroupScreen({ groupId }) {
           >
             <MyButtons.MenuButton
               icon="account-supervisor"
-              text={
-                members.length + " member" + (members.length > 1 ? "s" : "")
-              }
+              text={members.length + " member" + (members.length > 1 ? "s" : "")}
               onPress={() => {
                 console.log("members pressed");
                 setMembersModalVisible(true);
-              }}
-            />
-            <GroupMembersModal
-              groupId={groupId}
-              visible={membersModalVisible}
-              closeModal={() => {
-                setMembersModalVisible(false);
               }}
             />
           </View>
@@ -223,7 +213,55 @@ export default function GroupScreen({ groupId }) {
         <Divider style={{}} width={1} color="darkgrey" />
       </View>
 
-      <View style={{ flex: 1, flexDirection: "column" }}>
+      {/* new message */}
+      <View
+        style={{
+          height: newMessageHeight,
+          alignItems: "center",
+          justifyContent: "center",
+          paddingTop: 10,
+          paddingLeft: 10,
+          paddingRight: 10,
+          paddingBottom: 10,
+          width: windowWidth,
+          //backgroundColor: "orange",
+        }}
+      >
+        <TouchableOpacity
+          style={{
+            borderWidth: 1,
+            borderColor: "darkgrey",
+            borderRadius: 14,
+            width: "100%",
+            height: "100%",
+            justifyContent: "center",
+            alignItems: "flex-start",
+          }}
+          onPress={() => {
+            setShowNewMessageModal(true);
+          }}
+        >
+          <Text
+            style={{
+              paddingLeft: 10,
+              //backgroundColor: "green",
+              fontSize: 14,
+              color: "lightgrey",
+            }}
+          >
+            New Message...
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* messages section */}
+      <View
+        style={{
+          height: windowHeight - topBarHeight - newMessageHeight - bottomBarHeight,
+          flexDirection: "column",
+          //backgroundColor: "orange",
+        }}
+      >
         <View style={{ flex: 1 }}>
           {/*
           <ThreadView
@@ -249,48 +287,43 @@ export default function GroupScreen({ groupId }) {
               }}
               ItemSeparatorComponent={FlatListItemSeparator}
             />
-            <View
-              style={{
-                height: 50,
-                alignItems: "center",
-                justifyContent: "center",
-                paddingLeft: 10,
-                paddingRight: 10,
-                paddingBottom: 10,
-                width: windowWidth,
-                //backgroundColor: "orange",
-              }}
-            >
-              <TouchableOpacity
-                style={{
-                  borderWidth: 1,
-                  borderColor: "darkgrey",
-                  borderRadius: 14,
-                  width: "100%",
-                  height: "100%",
-                  justifyContent: "center",
-                  alignItems: "flex-start",
-                }}
-                onPress={() => {
-                  setShowNewMessageModal(true);
-                }}
-              >
-                <Text
-                  style={{
-                    paddingLeft: 10,
-                    //backgroundColor: "green",
-                    fontSize: 14,
-                    color: "lightgrey",
-                  }}
-                >
-                  New Message...
-                </Text>
-              </TouchableOpacity>
-            </View>
           </View>
         </View>
       </View>
-      <Toolbar />
+
+      {/* toolbar section */}
+      <View style={{ backgroundColor: "purple", flexDirection: "column", height: bottomBarHeight }}>
+        <Toolbar />
+      </View>
+
+      {/* messages modal */}
+      {messagesModalVisible && (
+        <MessageModal
+          groupId={groupId}
+          messageId={messagesModalVisible}
+          visible={messagesModalVisible != null}
+          closeModal={() => {
+            setMessagesModalVisible(null);
+          }}
+        />
+      )}
+      {/* group members modal */}
+      <GroupMembersModal
+        groupId={groupId}
+        visible={membersModalVisible}
+        closeModal={() => {
+          setMembersModalVisible(false);
+        }}
+      />
+      <ThreadMessageModal
+        userInfo={userInfo}
+        group={group}
+        visible={showNewMessageModal}
+        sendMessage={sendMessage}
+        showModal={(flag) => {
+          setShowNewMessageModal(flag);
+        }}
+      />
     </Portal>
   );
 }

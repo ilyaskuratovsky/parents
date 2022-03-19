@@ -3,19 +3,20 @@ import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Avatar, Divider } from "react-native-elements";
 
-const TopBar = ({ left, center, right, style, leftWidth }) => {
+const TopBar = ({ height, left, center, right, style, leftWidth }) => {
   return (
-    <View style={{ backgroundColor: "whitesmoke", flexDirection: "column" }}>
+    <View style={{ height: height, backgroundColor: "lightgrey", flexDirection: "column" }}>
       <View
         style={[
           style,
           {
-            //height: 100,
+            height: height - 1,
             paddingLeft: 4,
             paddingRight: 4,
             paddingTop: 8,
             paddingBottom: 8,
             flexDirection: "row",
+            alignItems: "center",
             //zIndex: Number.MAX_VALUE,
           },
         ]}
