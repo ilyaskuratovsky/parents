@@ -1,4 +1,4 @@
-export function buildMessageWithChildren(messageId, messages) {
+export function buildMessageWithChildren(messageId, messages, userMessagesMap) {
   let rootMessage = { children: [] };
   for (const m of messages) {
     if (m.papaId == messageId) {
@@ -7,10 +7,11 @@ export function buildMessageWithChildren(messageId, messages) {
       rootMessage = { ...m, ...rootMessage };
     }
   }
-  return rootMessage;
+  const rootMessageWithStatus = addStatus(rootMessage, userMessagesMap);
+  return rootMessageWithStatus;
 }
 
-export function buildRootMessagesWithChildren(messages) {
+export function buildRootMessagesWithChildren(messages, userMessagesMap) {
   const messageMap = messages.reduce(function (acc, message) {
     acc[message.id] = { ...message };
     return acc;
@@ -27,8 +28,10 @@ export function buildRootMessagesWithChildren(messages) {
   }
 
   const rootMessages = Object.values(messageMap).filter((m) => m.papaId == null);
-  return rootMessages;
+  const messagesWithStatus = rootMessages.map((message) => addStatus(message, userMessagesMap));
+  return messagesWithStatus;
 }
+
 export function calculateUnreadMessages(groupMessagesMap, userMessagesMap) {
   let unreadMessages = 0;
   for (const groupId of Object.keys(groupMessagesMap)) {
@@ -41,4 +44,18 @@ export function calculateUnreadMessages(groupMessagesMap, userMessagesMap) {
     }
   }
   return unreadMessages;
+}
+
+export function addStatus(rootMessage, userMessagesMap) {
+  const status = userMessagesMap[rootMessage.id]?.status;
+  const unreadChildCount = (rootMessage.children ?? []).filter((c) => {
+    const status = userMessagesMap[c.id]?.status != "read";
+    return status;
+  }).length;
+  const children = [];
+  for (const childMessage of rootMessage.children ?? []) {
+    const childStatus = userMessagesMap[childMessage.id];
+    children.push({ ...childMessage, status: childStatus });
+  }
+  return { ...rootMessage, status, unreadChildCount, children };
 }

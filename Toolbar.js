@@ -32,7 +32,7 @@ const Toolbar = ({ selected }) => {
           );
         }}
         badge={
-          unreadMessages >= 0 ? (
+          (unreadMessages ?? 0) > 0 ? (
             <Badge
               status="error"
               value={unreadMessages}

@@ -134,7 +134,7 @@ export default function ThreadMessageModal({ userInfo, group, visible, sendMessa
               }}
               placeholder="Title"
               multiline={false}
-              autoFocus={false}
+              autoFocus={true}
               onChangeText={(text) => {
                 setTitle(text);
               }}
@@ -158,7 +158,7 @@ export default function ThreadMessageModal({ userInfo, group, visible, sendMessa
                 backgroundColor: "white",
               }}
               multiline={true}
-              autoFocus={true}
+              autoFocus={false}
               onChangeText={(text) => {
                 setText(text);
               }}

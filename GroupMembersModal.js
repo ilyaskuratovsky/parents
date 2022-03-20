@@ -10,15 +10,7 @@ import Portal from "./Portal";
 export default function GroupMembersModal({ groupId, visible, closeModal }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const {
-    userMap,
-    userList,
-    schoolList,
-    schoolMap,
-    groupList,
-    groupMap,
-    members,
-  } = useSelector((state) => {
+  const { userMap, userList, schoolList, schoolMap, groupList, groupMap, members } = useSelector((state) => {
     return {
       userMap: state.main.userMap,
       schoolList: state.main.schoolList,
@@ -98,11 +90,7 @@ export default function GroupMembersModal({ groupId, visible, closeModal }) {
               color="black"
             />
           }
-          center={
-            <Text style={{ fontWeight: "bold", fontSize: 16 }}>
-              Group Members
-            </Text>
-          }
+          center={<Text style={{ fontWeight: "bold", fontSize: 16 }}>Group Members</Text>}
           right={null}
         />
         <View

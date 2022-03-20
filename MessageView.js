@@ -35,7 +35,7 @@ export default function MessageView({ item, width, onPress }) {
     <View
       style={{
         flexDirection: "column",
-        width: width,
+        flex: 1,
         paddingTop: 10,
         paddingLeft: 10,
         paddingRight: 10,
@@ -46,7 +46,7 @@ export default function MessageView({ item, width, onPress }) {
       {/* user avatar and name section */}
       <View
         style={{
-          width: width,
+          flex: 1,
           justifyContent: "flex-start",
           flexDirection: "row",
           alignItems: "center",
@@ -80,7 +80,7 @@ export default function MessageView({ item, width, onPress }) {
               fontSize: 16,
             }}
           >
-            {item.user.name}
+            {item.user.name} {/*item._id*/}
           </Text>
           <View
             style={{
@@ -104,7 +104,6 @@ export default function MessageView({ item, width, onPress }) {
       {/* title */}
       <View
         style={{
-          width: width - 20,
           paddingLeft: 0,
           paddingTop: 0,
           borderRadius: 0,
@@ -116,17 +115,26 @@ export default function MessageView({ item, width, onPress }) {
             paddingLeft: 0,
             fontSize: 20,
             fontWeight: "bold",
-            width: width - 20,
           }}
         >
           {item.title}
         </Text>
+        {/*
+        <Text
+          style={{
+            paddingLeft: 0,
+            fontSize: 10,
+            fontWeight: "bold",
+          }}
+        >
+          {JSON.stringify(item)}
+        </Text>
+        */}
       </View>
 
       {/* message text */}
       <View
         style={{
-          width: width - 20,
           paddingLeft: 0,
           paddingTop: 0,
           borderRadius: 0,
@@ -139,72 +147,11 @@ export default function MessageView({ item, width, onPress }) {
           style={{
             paddingLeft: 0,
             fontSize: 18,
-            width: width - 20,
           }}
         >
           {item.text}
         </Text>
       </View>
-      {/*item.children.map((comment) => {
-        return (
-          <View
-            style={{
-              paddingTop: 4,
-              paddingLeft: 10,
-              flex: 1,
-              flexDirection: "row",
-            }}
-          >
-            <Avatar
-              size={20}
-              rounded
-              title={comment.user.name.charAt(0).toUpperCase()}
-              containerStyle={{
-                backgroundColor: comment.user.avatarColor,
-                marginRight: 1,
-                paddingTop: 2,
-              }}
-            />
-            <View
-              style={{
-                flex: 1,
-                backgroundColor: "lightgrey",
-                flexDirection: "column",
-                borderRadius: 5,
-                paddingLeft: 10,
-                paddingTop: 2,
-                paddingRight: 10,
-                paddingBottom: 2,
-              }}
-            >
-              <Text style={{ fontWeight: "bold" }}>{comment.user.name}</Text>
-              <Text>{comment.text}</Text>
-            </View>
-          </View>
-        );
-      })*/}
-      {/*
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "flex-end",
-          justifyContent: "flex-end",
-        }}
-      >
-        <TouchableOpacity onPress={() => {}}>
-          <Icon name="reply" style={{ color: "lightgrey", fontSize: 20 }} />
-        </TouchableOpacity>
-      </View>
-      */}
-      {/*
-      <View style={{ flexDirection: "row", paddingTop: 10 }}>
-        <MessageTextInput
-          onPressSend={async (text) => {
-            return sendMessage(text, item._id);
-          }}
-        />
-      </View>
-        */}
     </View>
   );
 }

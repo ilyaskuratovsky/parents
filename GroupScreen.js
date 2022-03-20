@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect } from "react";
-import { Divider } from "react-native-elements";
+import { Divider, Badge } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
 import * as Controller from "./Controller";
 import GroupMembersModal from "./GroupMembersModal";
@@ -33,7 +33,7 @@ export default function GroupScreen({ groupId }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
 
-  const { groupMap, orgsMap, messages, userMap, members } = useSelector((state) => {
+  const { groupMap, orgsMap, messages, userMap, members, userMessagesMap } = useSelector((state) => {
     return {
       userinfo: state.main.userInfo,
       schoolList: state.main.schoolList,
@@ -44,6 +44,7 @@ export default function GroupScreen({ groupId }) {
       userMap: state.main.userMap,
       messages: state.main.groupMessages[groupId] ?? [],
       members: state.main.groupMembershipMap[groupId],
+      userMessagesMap: state.main.userMessagesMap,
     };
   });
   const { height, width } = useWindowDimensions();
@@ -65,7 +66,7 @@ export default function GroupScreen({ groupId }) {
     );
   };
 
-  const rootMessages = MessageUtils.buildRootMessagesWithChildren(messages);
+  const rootMessages = MessageUtils.buildRootMessagesWithChildren(messages, userMessagesMap);
   const sortedMessages = [...rootMessages] ?? [];
   sortedMessages.sort((m1, m2) => {
     return m2.timestamp - m1.timestamp;
@@ -89,6 +90,7 @@ export default function GroupScreen({ groupId }) {
                 avatarColor: UserInfo.avatarColor(user),
               },
               children,
+              status: message.status,
             };
           });
 
@@ -103,6 +105,8 @@ export default function GroupScreen({ groupId }) {
         avatarColor: UserInfo.avatarColor(user),
       },
       children: childrenThreadMessages,
+      status: message.status,
+      unreadChildCount: message.unreadChildCount,
     };
   });
 
@@ -126,7 +130,29 @@ export default function GroupScreen({ groupId }) {
           //dispatch(Actions.goToScreen({ screen: "MESSAGE", groupId: groupId, messageId: item._id }));
         }}
       >
-        <MessageView item={item} width={windowWidth} />
+        <View style={{ flex: 1, flexDirection: "row" }}>
+          <View
+            style={{
+              paddingLeft: 4,
+              paddingTop: 11,
+              alignItems: "center",
+              justifyContent: "flex-start",
+              width: 24,
+              //backgroundColor: "cyan",
+            }}
+          >
+            {(item.status != "read" || (item.unreadChildCount ?? 0) > 0) && (
+              <Badge
+                status="primary"
+                value={item.unreadChildCount ?? 0 > 0 ? item.unreadChildCount : " "}
+                containerStyle={{ width: 24, height: 24 }}
+              />
+            )}
+          </View>
+          <View style={{ flexGrow: 1 }}>
+            <MessageView item={item} />
+          </View>
+        </View>
       </TouchableOpacity>
     );
   };
@@ -149,7 +175,6 @@ export default function GroupScreen({ groupId }) {
   const topBarHeight = 64;
   const newMessageHeight = 80;
   const bottomBarHeight = 64;
-
   return (
     <Portal backgroundColor={/*UIConstants.DEFAULT_BACKGROUND*/ "white"}>
       {/* top bar section */}
@@ -264,16 +289,6 @@ export default function GroupScreen({ groupId }) {
         }}
       >
         <View style={{ flex: 1 }}>
-          {/*
-          <ThreadView
-            userInfo={userInfo}
-            group={group}
-            messages={threadMessages}
-            sendMessage={sendMessage}
-            onView={updateGroupLastViewed}
-            messagesRead={messagesRead}
-          />
-            */}
           <View style={{ flexDirection: "column", flex: 1 }}>
             <FlatList
               style={{ flex: 1 }}

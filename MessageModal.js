@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { Modal, Text, View, SafeAreaView, ScrollView, TextInput, Dimensions, KeyboardAvoidingView } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as UserInfo from "./UserInfo";
@@ -16,20 +16,22 @@ import * as Controller from "./Controller";
 export default function MessageModal({ groupId, messageId, visible, closeModal }) {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.main.userInfo);
-  const { messages, userMap, userList, schoolList, schoolMap, groupList, groupMap, members } = useSelector((state) => {
-    return {
-      userMap: state.main.userMap,
-      schoolList: state.main.schoolList,
-      userList: state.main.userList,
-      schoolMap: state.main.schoolMap,
-      groupList: state.main.groupList,
-      groupMap: state.main.groupMap,
-      members: state.main.groupMembershipMap[groupId],
-      messages: state.main.groupMessages[groupId] ?? [],
-    };
-  });
+  const { messages, userMap, userList, schoolList, schoolMap, groupList, groupMap, members, userMessagesMap } =
+    useSelector((state) => {
+      return {
+        userMap: state.main.userMap,
+        schoolList: state.main.schoolList,
+        userList: state.main.userList,
+        schoolMap: state.main.schoolMap,
+        groupList: state.main.groupList,
+        groupMap: state.main.groupMap,
+        members: state.main.groupMembershipMap[groupId],
+        messages: state.main.groupMessages[groupId] ?? [],
+        userMessagesMap: state.main.userMessagesMap,
+      };
+    });
   const group = groupMap[groupId];
-  const message = MessageUtils.buildMessageWithChildren(messageId, messages);
+  const message = MessageUtils.buildMessageWithChildren(messageId, messages, userMessagesMap);
   const sortedChildMessages = [...message.children] ?? [];
   sortedChildMessages.sort((m1, m2) => {
     return m1.timestamp - m2.timestamp;
@@ -55,7 +57,7 @@ export default function MessageModal({ groupId, messageId, visible, closeModal }
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(user);
     setText("");
-    await Controller.sendMessage(dispatch, user, groupId, text, message.id, {
+    await Controller.sendReply(dispatch, user, groupId, text, message.id, {
       groupName,
       fromName,
     });
@@ -74,6 +76,25 @@ export default function MessageModal({ groupId, messageId, visible, closeModal }
   const windowHeight = Dimensions.get("window").height - insets.top - insets.bottom;
   const topBarHeight = 64;
   const replyBarHeight = 80;
+
+  useEffect(async () => {
+    // update last viewed callback function
+    /*
+    if (messages.length > 0) {
+      const maxTimestampMessage = messages.reduce((prev, current) =>
+        prev.timestamp > current.timestamp ? prev : current
+      );
+      await Controller.setUserGroupLastViewedTimestamp(userInfo, group.id, maxTimestampMessage.timestamp);
+    }
+    */
+    let markRead = [];
+    if (message.status != "read") {
+      markRead.push(message.id);
+    }
+    const unreadChildMessages = (message.children ?? []).filter((m) => m.status != "read");
+    markRead = markRead.concat(unreadChildMessages.map((m) => m.id));
+    Controller.markMessagesRead(user, markRead);
+  }, [message]);
 
   return (
     <Modal visible={visible} animationType={"slide"}>
@@ -158,6 +179,16 @@ export default function MessageModal({ groupId, messageId, visible, closeModal }
                   borderRadius: 0,
                 }}
               >
+                <Text
+                  //numberOfLines={showMore[item.id] ? null : 4}
+                  style={{
+                    paddingLeft: 0,
+                    fontWeight: "bold",
+                    fontSize: 20,
+                  }}
+                >
+                  {message.title}
+                </Text>
                 <Text
                   //numberOfLines={showMore[item.id] ? null : 4}
                   style={{

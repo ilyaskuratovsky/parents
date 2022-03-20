@@ -207,6 +207,10 @@ export async function createSchoolGroupAndJoin(dispatch, userInfo, schoolId, gro
   await Database.joinGroup(userInfo, groupId);
 }
 
+export async function markMessageRead(userInfo, messageId) {
+  markMessagesRead(userInfo, [messageId]);
+}
+
 export async function markMessagesRead(userInfo, messageIds) {
   for (const messageId of messageIds) {
     Database.updateUserMessage(userInfo.uid, messageId, { status: "read" });
@@ -234,7 +238,18 @@ export async function sendMessage(dispatch, userInfo, groupId, title, text, papa
   return await Database.sendMessage(
     groupId,
     userInfo.uid,
-    title,
+    title == undefined ? null : title,
+    text,
+    papaId == undefined ? null : papaId,
+    notificationInfo
+  );
+}
+
+export async function sendReply(dispatch, userInfo, groupId, text, papaId, notificationInfo) {
+  return await Database.sendMessage(
+    groupId,
+    userInfo.uid,
+    null,
     text,
     papaId == undefined ? null : papaId,
     notificationInfo
