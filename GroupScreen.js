@@ -1,5 +1,7 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { Divider, Badge } from "react-native-elements";
+import { IconButton } from "react-native-paper";
+
 import { useDispatch, useSelector } from "react-redux";
 import * as Controller from "./Controller";
 import GroupMembersModal from "./GroupMembersModal";
@@ -69,7 +71,7 @@ export default function GroupScreen({ groupId }) {
   const rootMessages = MessageUtils.buildRootMessagesWithChildren(messages, userMessagesMap);
   const sortedMessages = [...rootMessages] ?? [];
   sortedMessages.sort((m1, m2) => {
-    return m2.timestamp - m1.timestamp;
+    return m2.lastUpdated - m1.lastUpdated;
     //return 0;
   });
 
@@ -107,6 +109,7 @@ export default function GroupScreen({ groupId }) {
       children: childrenThreadMessages,
       status: message.status,
       unreadChildCount: message.unreadChildCount,
+      lastUpdated: message.lastUpdated,
     };
   });
 
@@ -122,39 +125,10 @@ export default function GroupScreen({ groupId }) {
   }, []);
 
   const renderMessage = ({ item }) => {
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          setMessagesModalVisible(item._id);
-          //setMembersModalVisible(true);
-          //dispatch(Actions.goToScreen({ screen: "MESSAGE", groupId: groupId, messageId: item._id }));
-        }}
-      >
-        <View style={{ flex: 1, flexDirection: "row" }}>
-          <View
-            style={{
-              paddingLeft: 4,
-              paddingTop: 11,
-              alignItems: "center",
-              justifyContent: "flex-start",
-              width: 24,
-              //backgroundColor: "cyan",
-            }}
-          >
-            {(item.status != "read" || (item.unreadChildCount ?? 0) > 0) && (
-              <Badge
-                status="primary"
-                value={item.unreadChildCount ?? 0 > 0 ? item.unreadChildCount : " "}
-                containerStyle={{ width: 24, height: 24 }}
-              />
-            )}
-          </View>
-          <View style={{ flexGrow: 1 }}>
-            <MessageView item={item} />
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
+    const onPress = () => {
+      setMessagesModalVisible(item._id);
+    };
+    return <MessageView item={item} onPress={onPress} />;
   };
   useEffect(async () => {
     // update last viewed callback function
@@ -200,12 +174,21 @@ export default function GroupScreen({ groupId }) {
             },
           ]}
         >
+          <IconButton
+            icon={"chevron-left"}
+            style={{ width: 18 }}
+            onPress={() => {
+              dispatch(Actions.goToScreen({ screen: "GROUPS" }));
+            }}
+          />
           {/* group name */}
           <View
             style={{
               flexGrow: 1,
+              flexDirection: "row",
               alignItems: "flex-start",
-              justifyContent: "flex-end",
+              justifyContent: "flex-start",
+              //backgroundColor: "cyan",
             }}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -240,6 +223,7 @@ export default function GroupScreen({ groupId }) {
       </View>
 
       {/* new message */}
+      {/*
       <View
         style={{
           height: newMessageHeight,
@@ -279,11 +263,12 @@ export default function GroupScreen({ groupId }) {
           </Text>
         </TouchableOpacity>
       </View>
+          */}
 
       {/* messages section */}
       <View
         style={{
-          height: windowHeight - topBarHeight - newMessageHeight - bottomBarHeight,
+          flexGrow: 1,
           flexDirection: "column",
           //backgroundColor: "orange",
         }}
@@ -307,11 +292,24 @@ export default function GroupScreen({ groupId }) {
         </View>
       </View>
 
+      <Divider style={{}} width={1} color="darkgrey" />
       {/* toolbar section */}
-      <View style={{ backgroundColor: "purple", flexDirection: "column", height: bottomBarHeight }}>
-        <Toolbar />
+      <View
+        style={{
+          //backgroundColor: "purple",
+          alignItems: "flex-end",
+          justifyContent: "center",
+          flexDirection: "column",
+          height: bottomBarHeight,
+        }}
+      >
+        <IconButton
+          icon="plus"
+          onPress={() => {
+            setShowNewMessageModal(true);
+          }}
+        />
       </View>
-
       {/* messages modal */}
       {messagesModalVisible && (
         <MessageModal

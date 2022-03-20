@@ -7,7 +7,7 @@ export function buildMessageWithChildren(messageId, messages, userMessagesMap) {
       rootMessage = { ...m, ...rootMessage };
     }
   }
-  const rootMessageWithStatus = addStatus(rootMessage, userMessagesMap);
+  const rootMessageWithStatus = addMeta(rootMessage, userMessagesMap);
   return rootMessageWithStatus;
 }
 
@@ -28,7 +28,7 @@ export function buildRootMessagesWithChildren(messages, userMessagesMap) {
   }
 
   const rootMessages = Object.values(messageMap).filter((m) => m.papaId == null);
-  const messagesWithStatus = rootMessages.map((message) => addStatus(message, userMessagesMap));
+  const messagesWithStatus = rootMessages.map((message) => addMeta(message, userMessagesMap));
   return messagesWithStatus;
 }
 
@@ -46,7 +46,8 @@ export function calculateUnreadMessages(groupMessagesMap, userMessagesMap) {
   return unreadMessages;
 }
 
-export function addStatus(rootMessage, userMessagesMap) {
+export function addMeta(rootMessage, userMessagesMap) {
+  /* status */
   const status = userMessagesMap[rootMessage.id]?.status;
   const unreadChildCount = (rootMessage.children ?? []).filter((c) => {
     const status = userMessagesMap[c.id]?.status != "read";
@@ -57,5 +58,15 @@ export function addStatus(rootMessage, userMessagesMap) {
     const childStatus = userMessagesMap[childMessage.id];
     children.push({ ...childMessage, status: childStatus });
   }
-  return { ...rootMessage, status, unreadChildCount, children };
+
+  /* timestamp */
+  const lastUpdated = Math.max(
+    rootMessage.timestamp,
+    Math.max.apply(
+      Math,
+      (rootMessage.children ?? []).map((m) => m.timestamp)
+    )
+  );
+
+  return { ...rootMessage, status, unreadChildCount, lastUpdated, children };
 }
