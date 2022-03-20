@@ -3,7 +3,7 @@
     "name": "greenwich-parents2",
     "slug": "greenwich-parents2",
     "version": "1.0.1",
-    "orientation": "default",
+    "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
