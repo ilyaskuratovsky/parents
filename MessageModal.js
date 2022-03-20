@@ -31,7 +31,7 @@ export default function MessageModal({ groupId, messageId, visible, closeModal }
       };
     });
   const group = groupMap[groupId];
-  const message = MessageUtils.buildMessageWithChildren(messageId, messages, userMessagesMap);
+  const message = MessageUtils.buildMessageWithChildren(messageId, messages, user, userMessagesMap);
   const sortedChildMessages = [...message.children] ?? [];
   sortedChildMessages.sort((m1, m2) => {
     return m1.timestamp - m2.timestamp;

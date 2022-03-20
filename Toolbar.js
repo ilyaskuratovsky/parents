@@ -23,7 +23,7 @@ const Toolbar = ({ selected }) => {
       <MyButtons.MenuButton
         icon="account-group"
         color={selected == "groups" ? "mediumblue" : "black"}
-        text="Groups"
+        text="My Groups"
         onPress={() => {
           dispatch(
             Actions.goToScreen({
@@ -44,7 +44,7 @@ const Toolbar = ({ selected }) => {
 
       <MyButtons.MenuButton
         icon="magnify"
-        text="Publici Groups"
+        text="Find Groups"
         color={selected == "find_groups" ? "mediumblue" : "black"}
         onPress={() => {
           dispatch(
@@ -57,7 +57,7 @@ const Toolbar = ({ selected }) => {
 
       <MyButtons.MenuButton
         icon="account-circle"
-        text="My Profile"
+        text="Profile"
         onPress={() => {
           dispatch(
             Actions.goToScreen({

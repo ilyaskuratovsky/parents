@@ -84,7 +84,7 @@ export default function GroupsScreen({}) {
                   fontWeight: "bold",
                 }}
               >
-                {group.name} {group.id}
+                {group.name} {/*group.id*/}
               </Text>
               {org != null && (
                 <Text

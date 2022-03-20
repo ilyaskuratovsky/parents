@@ -40,20 +40,20 @@ export default function MessageView({ item, onPress }) {
       <View style={{ flex: 1, flexDirection: "row" }}>
         <View
           style={{
-            paddingLeft: 4,
+            paddingLeft: 0,
             paddingTop: 15,
             alignItems: "center",
             justifyContent: "flex-start",
-            width: 24,
-            //backgroundColor: "green",
+            width: 20,
+            //backgroundColor: "cyan",
           }}
         >
-          {(true || item.status != "read" || (item.unreadChildCount ?? 0) > 0) && (
+          {(item.status != "read" || (item.unreadChildCount ?? 0) > 0) && (
             <Badge
               status="primary"
               //value={item.unreadChildCount ?? 0 > 0 ? item.unreadChildCount : " "}
               value={""}
-              containerStyle={{ width: 24, height: 24 }}
+              containerStyle={{ width: 12, height: 12 }}
             />
           )}
         </View>
@@ -63,7 +63,7 @@ export default function MessageView({ item, onPress }) {
               flexDirection: "column",
               flex: 1,
               paddingTop: 10,
-              paddingLeft: 10,
+              paddingLeft: 0,
               paddingRight: 10,
               paddingBottom: 14,
               //backgroundColor: "purple",
@@ -116,7 +116,7 @@ export default function MessageView({ item, onPress }) {
                   }}
                 >
                   <TimeAgo
-                    date={item.createdAt}
+                    date={item.lastUpdated}
                     style={{
                       marginLeft: 5,
                       fontWeight: "normal",
@@ -153,7 +153,7 @@ export default function MessageView({ item, onPress }) {
                     fontWeight: "bold",
                   }}
                 >
-                  {item.lastUpdated}
+                  {JSON.stringify(item)}
                 </Text>
                 */}
             </View>
@@ -164,19 +164,69 @@ export default function MessageView({ item, onPress }) {
                 paddingLeft: 0,
                 paddingTop: 0,
                 borderRadius: 0,
-                //backgroundColor: "white",
+                flex: 1,
+                flexDirection: "row",
+                //backgroundColor: "cyan",
               }}
             >
-              <Text
-                numberOfLines={1}
-                ellipsizeMode="head"
+              <View
                 style={{
-                  paddingLeft: 0,
-                  fontSize: 18,
+                  width: 200,
+                  //backgroundColor: "cyan"
                 }}
               >
-                {item.text}
-              </Text>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={{
+                    fontSize: 18,
+                    flexGrow: 1,
+                  }}
+                >
+                  {item.text.replace(/(\r\n|\n|\r)/gm, " ")}
+                </Text>
+              </View>
+              <View style={{ flexGrow: 1 }}></View>
+              {/* replies */}
+              <View
+                style={{
+                  width: 100,
+                  //backgroundColor: "purple",
+                  flexDirection: "row",
+                }}
+              >
+                {item.children.length > 0 && (
+                  <View
+                    style={{
+                      width: 80,
+                      flexDirection: "row",
+                      backgroundColor: "lightgrey",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        //backgroundColor: "green",
+                        paddingLeft: 0,
+                        fontSize: 14,
+                        fontWeight: item.unreadChildCount > 0 ? "bold" : "normal",
+                      }}
+                    >
+                      {item.children.length > 1 ? item.children.length + " replies" : item.children.length + " reply"}
+                    </Text>
+                    {/*
+                    <Badge
+                      status="primary"
+                      //value={item.unreadChildCount ?? 0 > 0 ? item.unreadChildCount : " "}
+                      value={""}
+                      containerStyle={{ top: -2, right: -2, position: "absolute" }}
+                    />
+                    */}
+                  </View>
+                )}
+              </View>
             </View>
           </View>
         </View>

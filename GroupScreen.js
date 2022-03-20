@@ -68,7 +68,7 @@ export default function GroupScreen({ groupId }) {
     );
   };
 
-  const rootMessages = MessageUtils.buildRootMessagesWithChildren(messages, userMessagesMap);
+  const rootMessages = MessageUtils.buildRootMessagesWithChildren(messages, userInfo, userMessagesMap);
   const sortedMessages = [...rootMessages] ?? [];
   sortedMessages.sort((m1, m2) => {
     return m2.lastUpdated - m1.lastUpdated;
