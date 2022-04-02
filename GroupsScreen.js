@@ -8,6 +8,8 @@ import Portal from "./Portal";
 import Toolbar from "./Toolbar";
 import TopBar from "./TopBar";
 import * as UIConstants from "./UIConstants";
+import * as MyButtons from "./MyButtons";
+import NewPrivateGroupModal from "./NewPrivateGroupModal";
 
 export default function GroupsScreen({}) {
   const dispatch = useDispatch();
@@ -25,6 +27,12 @@ export default function GroupsScreen({}) {
     };
   });
   const [visibleSchoolGroupModal, setVisibleSchoolGroupModal] = useState(null);
+  const [newPrivateGroupModalVisible, setNewPrivateGroupModalVisible] = useState(false);
+  const createPrivateGroup = async (groupName) => {
+    const groupId = await Controller.createPrivateGroupAndJoin(dispatch, userInfo, groupName);
+    dispatch(Actions.goToScreen({ screen: "GROUP", groupId: groupId }));
+  };
+
   if (userInfo == null) {
     return <Text>Loading Data...</Text>;
   }
@@ -138,9 +146,26 @@ export default function GroupsScreen({}) {
         right={null}
       />
       <View style={{ flex: 1, backgroundColor: "white", paddingTop: 20 }}>
-        <ScrollView>{groupsComponents}</ScrollView>
+        <ScrollView>
+          {groupsComponents}
+          <View
+            style={{ flex: 1, /*backgroundColor: "cyan",*/ height: 60, alignItems: "center", justifyContent: "center" }}
+          >
+            <MyButtons.LinkButton
+              text="Start a new Group"
+              onPress={async () => {
+                setNewPrivateGroupModalVisible(true);
+              }}
+            />
+          </View>
+        </ScrollView>
         <Toolbar />
       </View>
+      <NewPrivateGroupModal
+        visible={newPrivateGroupModalVisible}
+        createGroup={createPrivateGroup}
+        closeModal={() => setNewPrivateGroupModalVisible(false)}
+      />
     </Portal>
   );
 }

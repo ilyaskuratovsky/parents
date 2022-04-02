@@ -239,8 +239,7 @@ export const {
   searchIndex,
   userMessages,
 } = mainSlice.actions;
-export const { goToScreen, goToUserScreen, goToScreenAfterLogin } =
-  screenSlice.actions;
+export const { goToScreen, goToUserScreen, goToScreenAfterLogin } = screenSlice.actions;
 
 export default configureStore({
   reducer: {
