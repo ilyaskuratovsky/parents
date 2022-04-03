@@ -3,6 +3,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import * as Paper from "react-native-paper";
 import { Badge } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import * as Elements from "react-native-elements";
 
 const MenuButton = React.memo(
   ({ icon, text, onPress, color = "black", badge }) => {
@@ -67,6 +68,7 @@ const PaperDialogButton = React.memo(({ text, icon, onPress }) => {
   );
 });
 
+/*
 const FormButton = React.memo(({ text, icon, onPress, style }) => {
   return (
     <Paper.Button
@@ -81,6 +83,15 @@ const FormButton = React.memo(({ text, icon, onPress, style }) => {
     >
       {text}
     </Paper.Button>
+  );
+});
+*/
+
+const FormButton = React.memo(({ text, icon, onPress, style }) => {
+  return (
+    <Elements.Button title={text} icon={icon} onPress={onPress} mode="outline">
+      {text}
+    </Elements.Button>
   );
 });
 

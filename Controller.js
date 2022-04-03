@@ -12,7 +12,11 @@ import * as Search from "./Search";
 
 const groupMessageSubscriptions = {};
 
-export async function initializeApp(dispatch, notificationListener, responseListener) {
+export async function initializeApp(
+  dispatch,
+  notificationListener,
+  responseListener
+) {
   const orgs = await Database.getAllOrgs();
 
   // store all groups
@@ -66,36 +70,41 @@ export async function initializeApp(dispatch, notificationListener, responseList
   });
   */
   //FOREGROUND app handler
-  const notificationReceivedListener = Notifications.addNotificationReceivedListener((notification) => {
-    /*
+  const notificationReceivedListener =
+    Notifications.addNotificationReceivedListener((notification) => {
+      /*
       alert(
         "FOREGROUND notification received while app is running: " +
           JSON.stringify(notification)
       );
       */
-  });
+    });
 
   // This listener is fired whenever a user taps on or interacts with a
   // notification (works when app is foregrounded, backgrounded, or killed)
-  const notificationResponseReceivedListener = Notifications.addNotificationResponseReceivedListener((response) => {
-    /*
+  const notificationResponseReceivedListener =
+    Notifications.addNotificationResponseReceivedListener((response) => {
+      /*
       alert(
         "FOREGROUND/BACKGROUND/KILLED notification response received listener: " +
           JSON.stringify(response)
       );
       */
-  });
+    });
 
   // subscribe to auth changes
-  const unsubscribeAuth = onAuthStateChanged(auth, async (authenticatedUser) => {
-    console.log("auth state change: " + JSON.stringify(authenticatedUser));
-    if (authenticatedUser != null) {
-      console.log("loggedIN: " + pushToken);
-      loggedIn(dispatch, authenticatedUser, pushToken);
-    } else {
-      loggedOut(dispatch);
+  const unsubscribeAuth = onAuthStateChanged(
+    auth,
+    async (authenticatedUser) => {
+      console.log("auth state change: " + JSON.stringify(authenticatedUser));
+      if (authenticatedUser != null) {
+        console.log("loggedIN: " + pushToken);
+        loggedIn(dispatch, authenticatedUser, pushToken);
+      } else {
+        loggedOut(dispatch);
+      }
     }
-  });
+  );
 
   //observe to group changes
   Database.observeAllGroupChanges((groups) => {
@@ -103,7 +112,10 @@ export async function initializeApp(dispatch, notificationListener, responseList
   });
 
   //build the search index
-  const searchIndex = Search.buildSearchIndex(store.getState().main.orgsMap, store.getState().main.groupMap);
+  const searchIndex = Search.buildSearchIndex(
+    store.getState().main.orgsMap,
+    store.getState().main.groupMap
+  );
 
   dispatch(Actions.searchIndex(searchIndex));
 
@@ -147,18 +159,21 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
     userGroupMemberships.forEach(async (groupMembership) => {
       //Loop through group_memberships and set up a subscriber for its messages
       if (!(groupMembership.groupId in groupMessageSubscriptions)) {
-        const unsubscribe = Database.observeGroupMessages(groupMembership.groupId, (messagesSnapshot) => {
-          const messages = [];
-          messagesSnapshot.forEach((message) => {
-            messages.push(message);
-          });
-          dispatch(
-            Actions.groupMessages({
-              groupId: groupMembership.groupId,
-              messages: messages,
-            })
-          );
-        });
+        const unsubscribe = Database.observeGroupMessages(
+          groupMembership.groupId,
+          (messagesSnapshot) => {
+            const messages = [];
+            messagesSnapshot.forEach((message) => {
+              messages.push(message);
+            });
+            dispatch(
+              Actions.groupMessages({
+                groupId: groupMembership.groupId,
+                messages: messages,
+              })
+            );
+          }
+        );
         groupMessageSubscriptions[groupMembership.groupId] = unsubscribe;
       }
     });
@@ -197,7 +212,14 @@ export async function joinGroup(dispatch, userInfo, groupId) {
   await Database.joinGroup(userInfo, groupId);
 }
 
-export async function createSchoolGroupAndJoin(dispatch, userInfo, schoolId, groupName, grade, year) {
+export async function createSchoolGroupAndJoin(
+  dispatch,
+  userInfo,
+  schoolId,
+  groupName,
+  grade,
+  year
+) {
   const groupId = await Database.createGroup({
     name: groupName,
     orgId: schoolId,
@@ -217,16 +239,36 @@ export async function markMessagesRead(userInfo, messageIds) {
   }
 }
 
-export async function createPrivateGroupAndJoin(dispatch, userInfo, groupName) {
+export async function createPrivateGroupAndJoin(
+  dispatch,
+  userInfo,
+  groupName,
+  invitees,
+  emailInvitees
+) {
   const groupId = await Database.createGroup({
     name: groupName,
     orgId: null,
   });
   await Database.joinGroup(userInfo, groupId);
+
+  for (const inviteeUid of invitees) {
+    sendGroupInviteToUser(userInfo, groupId, inviteeUid);
+  }
+
+  for (const inviteeEmail of emailInvitees) {
+    sendGroupInviteToEmail(userInfo, groupId, inviteeEmail);
+  }
+
   return groupId;
 }
 
-export async function createOrgGroupAndJoin(dispatch, userInfo, orgId, groupName) {
+export async function createOrgGroupAndJoin(
+  dispatch,
+  userInfo,
+  orgId,
+  groupName
+) {
   const groupId = await Database.createGroup({
     name: groupName,
     orgId: orgId,
@@ -234,7 +276,15 @@ export async function createOrgGroupAndJoin(dispatch, userInfo, orgId, groupName
   await Database.joinGroup(userInfo, groupId);
 }
 
-export async function sendMessage(dispatch, userInfo, groupId, title, text, papaId, notificationInfo) {
+export async function sendMessage(
+  dispatch,
+  userInfo,
+  groupId,
+  title,
+  text,
+  papaId,
+  notificationInfo
+) {
   return await Database.sendMessage(
     groupId,
     userInfo.uid,
@@ -245,7 +295,14 @@ export async function sendMessage(dispatch, userInfo, groupId, title, text, papa
   );
 }
 
-export async function sendReply(dispatch, userInfo, groupId, text, papaId, notificationInfo) {
+export async function sendReply(
+  dispatch,
+  userInfo,
+  groupId,
+  text,
+  papaId,
+  notificationInfo
+) {
   return await Database.sendMessage(
     groupId,
     userInfo.uid,
@@ -283,7 +340,8 @@ async function sendPushNotification(expoPushToken) {
 async function registerForPushNotificationsAsync() {
   let token;
   if (Device.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
     if (existingStatus !== "granted") {
       const { status } = await Notifications.requestPermissionsAsync();
@@ -312,7 +370,12 @@ async function registerForPushNotificationsAsync() {
   return token;
 }
 
-export async function inviteToGroup(dispatch, fromUserInfo, touserInfo, groupId) {}
+export async function inviteToGroup(
+  dispatch,
+  fromUserInfo,
+  touserInfo,
+  groupId
+) {}
 
 export async function createOrgAndAssignToUser(dispatch, userInfo, name, type) {
   const orgId = await Database.createOrg(name, type);
@@ -327,7 +390,12 @@ export async function sendGroupInviteToUser(userInfo, groupId, uid) {
   await Database.createInvite(userInfo.uid, groupId, uid, null);
 }
 
-export async function joinGroupFromInvite(dispatch, userInfo, groupId, inviteId) {
+export async function joinGroupFromInvite(
+  dispatch,
+  userInfo,
+  groupId,
+  inviteId
+) {
   await Database.joinGroup(userInfo, groupId);
   await Database.updateInvite(inviteId, { status: "dismissed" });
 }
@@ -342,13 +410,23 @@ export function searchGroupsAndOrgs(text) {
   return results;
 }
 
-export async function setUserGroupLastViewedTimestamp(userInfo, groupId, lastViewedMessageTimestamp) {
-  const userGroupMemberships = store.getState().main.groupMembershipMap[groupId].filter((gm) => gm.uid == userInfo.uid);
+export async function setUserGroupLastViewedTimestamp(
+  userInfo,
+  groupId,
+  lastViewedMessageTimestamp
+) {
+  const userGroupMemberships = store
+    .getState()
+    .main.groupMembershipMap[groupId].filter((gm) => gm.uid == userInfo.uid);
 
-  const userGroupMembership = userGroupMemberships.length > 0 ? userGroupMemberships[0] : null;
+  const userGroupMembership =
+    userGroupMemberships.length > 0 ? userGroupMemberships[0] : null;
   if (userGroupMembership != null) {
     console.log(
-      "found usergroupmembership: " + userGroupMembership.id + ", updating timestamp: " + lastViewedMessageTimestamp
+      "found usergroupmembership: " +
+        userGroupMembership.id +
+        ", updating timestamp: " +
+        lastViewedMessageTimestamp
     );
     Database.updateUserGroupMembership(userGroupMembership.id, {
       lastViewedMessageTimestamp,
