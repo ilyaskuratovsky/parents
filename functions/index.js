@@ -3,9 +3,14 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 const db = admin.database();
 
-const nodemailer = require("nodemailer");
+//const nodemailer = require("nodemailer");
 // Deploy command
+// firebase login
+// firebase init firestore
+// [ go to functions directory]
+// [ install dependencies in functions directory e.g. npm install nodemailer]
 // firebase deploy --only functions:messagePushNotifications
+// firebase deploy --only functions:emailNotifications
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
@@ -14,6 +19,53 @@ const nodemailer = require("nodemailer");
 //   functions.logger.info("Hello logs!", {structuredData: true});
 //   response.send("Hello from Firebase!");
 // });
+
+exports.pushNotifications = functions.firestore
+  .document("/push_notifications/{pushNotificationId}")
+  .onCreate((snap, context) => {
+    const pushNotificationId = context.params.pushNotificationId;
+    console.log("Push notication: " + pushNotificationId);
+    const pushNotification = snap.data();
+    const uid = pushNotification.uid;
+
+    const userRef = db.ref("users/" + uid);
+    userRef.once("value").then((userSnapshot) => {
+      const fetch = require("node-fetch");
+      // Do the push notification here
+      const user = userSnapshot.val();
+      const pushToken = user["pushToken"];
+      let data = {};
+      try {
+        data = JSON.parse(pushNotification.data);
+      } catch (e) {
+        console.log(e);
+      }
+      const pushMessage = {
+        to: pushToken,
+        sound: "default",
+        title: pushNotification.title,
+        body: pushNotification.body,
+        data: data,
+      };
+      console.log(
+        "ilya calling fetch: " + JSON.stringify(pushMessage)
+      );
+      fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Accept-encoding": "gzip, deflate",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(pushMessage),
+      }).then((response) => {
+        console.log(
+          "ilya done calling fetch: response: " +
+            JSON.stringify(response)
+        );
+      });
+    });
+  });
 
 exports.messagePushNotifications = functions.firestore
   .document("/groups/{groupId}/messages/{messageId}")
@@ -146,16 +198,17 @@ exports.messagePushNotifications = functions.firestore
   });
 
 exports.emailNotifications = functions.firestore
-  .document("/notifications/{notificationId}")
+  .document("/email_notifications/{notificationId}")
   .onCreate((snap, context) => {
     const notificationId = context.params.notificationId;
     const notification = snap.data();
-    console.log("ilyanotification:" + JSON.stringify(notification));
-
+    console.log("ilyanotification: (" + notificationId + ")" + JSON.stringify(notification));
+    const nodemailer = require("nodemailer");
     var transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
+      port: 587,
+      secure: false,
+      requireTLS: true,
       auth: {
         user: "ilyaskuratovsky@gmail.com",
         pass: "swwG2ktk",
@@ -168,11 +221,15 @@ exports.emailNotifications = functions.firestore
       html: notification.body,
     };
 
-    return transporter.sendMail(mailOptions, (error, data) => {
+    transporter.sendMail(mailOptions, (error, data) => {
       if (error) {
         console.log(error);
         return;
       }
-      console.log("Sent!");
+      console.log("Sent!: " + JSON.stringify(data));
     });
+
+    return {
+      status: "success",
+    };
   });

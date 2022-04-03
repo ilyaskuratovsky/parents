@@ -64,7 +64,9 @@ function RootApp(props, state) {
       );
       */
       const groupId = lastNotificationResponse.notification?.request?.content?.data?.groupId;
-      dispatch(Actions.goToScreen({ screen: "GROUP", groupId }));
+      if (groupId != null) {
+        dispatch(Actions.goToScreen({ screen: "GROUP", groupId }));
+      }
     } else {
     }
   }, [lastNotificationResponse]);
