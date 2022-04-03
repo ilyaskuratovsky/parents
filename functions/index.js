@@ -2,6 +2,7 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 admin.initializeApp();
 const db = admin.database();
+const fs = admin.firestore();
 
 //const nodemailer = require("nodemailer");
 // Deploy command
@@ -67,7 +68,67 @@ exports.pushNotifications = functions.firestore
     });
   });
 
-exports.messagePushNotifications = functions.firestore
+  exports.inviteNotifications = functions.firestore
+  .document("/invites/{inviteId}")
+  .onCreate((snap, context) => {
+    const inviteId = context.params.inviteId;
+    const invite = snap.data();
+    console.log("inviteId: (" + inviteId + "): " + JSON.stringify(invite));
+    const fromUid = invite.fromUid;
+    const groupId = invite.groupId;
+
+    const toUid = invite.toUid != null && invite.toUid.indexOf("_uid_") == 0 ? invite.toUid.substring(5) : null;
+    console.log("toUid parsed: (" + toUid + ")");
+
+    if (toUid != null) {
+      const fromUserRef = db.ref("users/" + fromUid)
+      fromUserRef
+        .once("value")
+        .then((fromUserSnapshot) => {
+          const fromUser = fromUserSnapshot.val();
+          console.log("fromUser: " + JSON.stringify(fromUser) + ", email: " + fromUser["email"] + ", email: " + fromUser.email);
+          const fromUserDisplayName = fromUser.displayName != null ? fromUser.displayName :  fromUser.email.split("@")[0];
+          const groupRef = db.ref("groups/" + groupId)
+          groupRef.once("value")
+          .then((groupSnapshot) => {
+            const group = groupSnapshot.val();
+            console.log("group: " + JSON.stringify(group));
+            //const firestore = admin.firestore()
+            const title = "Group invite from " + fromUserDisplayName;
+            const body = fromUserDisplayName + " invited you to join " + group.name;
+            console.log("adding push notificatoin");
+            const pushNotificationsRef = fs.collection("push_notifications");
+            console.log("calling adddoc");
+            pushNotificationsRef.add({
+              uid: toUid,
+              title,
+              body,
+              data: "{}"
+            });
+            /*
+            console.log("calling adddoc");
+            fs.add(pushNotificationsRef, {
+              uid: toUid,
+              title,
+              body,
+              data: "{}"
+            });
+            */
+          });        
+        });
+
+    } else { 
+      console.log("skpping invite notification for now, to do will be to put email here");
+    }
+  
+    return {
+      status: "success",
+    };
+  
+  });
+
+
+  exports.messagePushNotifications = functions.firestore
   .document("/groups/{groupId}/messages/{messageId}")
   .onCreate((snap, context) => {
     const groupId = context.params.groupId;

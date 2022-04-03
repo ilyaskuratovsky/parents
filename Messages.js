@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { groupMemberships } from "./Actions";
 import * as MyButtons from "./MyButtons";
 import * as Controller from "./Controller";
+import * as Globals from "./Globals";
 
 export default function Messages(props) {
   const dispatch = useDispatch();
@@ -49,7 +50,7 @@ export default function Messages(props) {
                   alignItems: "center",
                 }}
               >
-                Invite to {group.name}
+                Invite to {group.name} {Globals.dev ? "(" + invite.id + ")": ""}
               </Text>
               <View
                 style={{
