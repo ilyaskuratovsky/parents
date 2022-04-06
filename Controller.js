@@ -433,3 +433,11 @@ export async function setUserGroupLastViewedTimestamp(
     });
   }
 }
+
+export async function initializeProfile(userId, firstName, lastName) {
+  await Database.updateUser(userId, {
+    firstName,
+    lastName,
+    profileInitialized: true,
+  });
+}

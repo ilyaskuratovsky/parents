@@ -26,6 +26,7 @@ import PostScreen from "./PostScreen";
 import MessageScreen from "./MessageScreen";
 import TestErrorHandler from "./TestErrorHandler";
 import TestBook from "./TestBook";
+import ProfileInit from "./ProfileInit";
 
 function RootApp(props, state) {
   //const x = { a: "b" };
@@ -133,9 +134,7 @@ function RootApp(props, state) {
     <View style={{ flex: 1 }}>
       {render}
       <Messages key="messages" />
-      {/*
       <ProfileInit />
-  */}
     </View>
   );
 }

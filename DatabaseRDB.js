@@ -188,6 +188,11 @@ export async function updateUserMessage(uid, messageId, update) {
   await RDB.update(docRef, update);
 }
 
+export async function updateUser(uid, update) {
+  const docRef = RDB.ref(rdb, "/users/" + uid);
+  await RDB.update(docRef, update);
+}
+
 export async function logError(error, info) {
   const newReference = await RDB.push(RDB.ref(rdb, "/errors"));
   await RDB.set(newReference, { error: error.message, stack: error.stack });
