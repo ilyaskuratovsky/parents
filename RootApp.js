@@ -25,7 +25,7 @@ import * as Actions from "./Actions";
 import PostScreen from "./PostScreen";
 import MessageScreen from "./MessageScreen";
 import TestErrorHandler from "./TestErrorHandler";
-import FlexTest from "./FlexTest";
+import TestBook from "./TestBook";
 
 function RootApp(props, state) {
   //const x = { a: "b" };
@@ -37,10 +37,14 @@ function RootApp(props, state) {
     return state;
   });
 
-  //return <FlexTest />;
+  //return <TestBook />;
   useEffect(async () => {
     try {
-      return await Controller.initializeApp(dispatch, notificationListener, responseListener);
+      return await Controller.initializeApp(
+        dispatch,
+        notificationListener,
+        responseListener
+      );
     } catch (error) {
       dispatch(Actions.goToScreen({ screen: "ERROR", error }));
     }
@@ -63,7 +67,8 @@ function RootApp(props, state) {
           JSON.stringify(lastNotificationResponse.notification)
       );
       */
-      const groupId = lastNotificationResponse.notification?.request?.content?.data?.groupId;
+      const groupId =
+        lastNotificationResponse.notification?.request?.content?.data?.groupId;
       if (groupId != null) {
         dispatch(Actions.goToScreen({ screen: "GROUP", groupId }));
       }
@@ -110,7 +115,12 @@ function RootApp(props, state) {
   } else if (screen == "MY_PROFILE") {
     render = <MyProfileScreen />;
   } else if (screen == "MESSAGE") {
-    render = <MessageScreen groupId={screenWithParams.groupId} messageId={screenWithParams.messageId} />;
+    render = (
+      <MessageScreen
+        groupId={screenWithParams.groupId}
+        messageId={screenWithParams.messageId}
+      />
+    );
   } else if (screen == "DEBUG") {
     render = <DebugScreen backAction={screenWithParams.backAction} />;
   } else if (screen == "ERROR") {
@@ -123,6 +133,9 @@ function RootApp(props, state) {
     <View style={{ flex: 1 }}>
       {render}
       <Messages key="messages" />
+      {/*
+      <ProfileInit />
+  */}
     </View>
   );
 }

@@ -56,7 +56,9 @@
     "react-native-vector-icons": "^9.0.0",
     "react-native-web": "^0.17.1",
     "react-redux": "^7.2.6",
-    "react-timeago": "^6.2.1"
+    "react-timeago": "^6.2.1",
+    "expo-facebook": "~12.0.3",
+    "expo-calendar": "~10.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

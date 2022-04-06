@@ -1,12 +1,17 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, Button, TextInput } from "react-native";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  FacebookAuthProvider,
+  getAuth,
+} from "firebase/auth";
 import { auth } from "./config/firebase";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "./Actions";
-//import * as Facebook from "expo-facebook";
-//import FacebookSignin from "./FacebookSignin";
-//import { LoginButton } from "react-native-fbsdk";
+import * as MyButtons from "./MyButtons";
+import { initializeApp } from "firebase/app";
 
 export default function Login({ afterLoginScreen }) {
   const dispatch = useDispatch();
@@ -59,6 +64,102 @@ export default function Login({ afterLoginScreen }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Log In</Text>
+      {/*
+      <Button
+        style={{ paddingBottom: 10 }}
+        onPress={async () => {
+          /*
+          const firebaseConfig = {
+            apiKey: "AIzaSyD7sAZY_oPEoAhPLbLST23DAAmAPiOh8V8",
+            authDomain: "parents-749dd.firebaseapp.com",
+            databaseURL: "https://parents-749dd-default-rtdb.firebaseio.com",
+            projectId: "parents-749dd",
+            storageBucket: "parents-749dd.appspot.com",
+            messagingSenderId: "202897799240",
+            appId: "1:202897799240:web:6e7181665de58029cfc07d",
+            measurementId: "G-RJ6EY4S9LJ",
+          };
+          var firebase = require("firebase");
+          firebase.initializeApp(firebaseConfig);
+          const auth = firebase.auth();
+          // initialize firebase
+          //const app = initializeApp(firebaseConfig);
+          //const auth = getAuth(app);
+
+          const provider = new FacebookAuthProvider();
+          const result = await auth.signInWithPopup(provider);
+          const user = result.user;
+          // This gives you a Facebook Access Token.
+          const credential = provider.credentialFromResult(auth, result);
+          const token = credential.accessToken;
+          console.log("done");
+          /*
+          signInWithRedirect(auth, provider);
+
+          signInWithPopup(auth, provider)
+            .then((result) => {
+              alert("facebook then");
+              // The signed-in user info.
+              const user = result.user;
+
+              // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+              const credential =
+                FacebookAuthProvider.credentialFromResult(result);
+              const accessToken = credential.accessToken;
+
+              // ...
+            })
+            .catch((error) => {
+              alert("facebook catch");
+              // Handle Errors here.
+              const errorCode = error.code;
+              const errorMessage = error.message;
+              // The email of the user's account used.
+              const email = error.email;
+              // The AuthCredential type that was used.
+              const credential =
+                FacebookAuthProvider.credentialFromError(error);
+
+              // ...
+            });
+
+      } color="#f57c00" title="Log in using Facebook" /> */}
+      {/*
+      <Button
+        style={{ paddingBottom: 10 }}
+        onPress={() => {
+          const provider = new GoogleAuthProvider();
+          provider.addScope(
+            "https://www.googleapis.com/auth/contacts.readonly"
+          );
+          const auth = getAuth();
+          signInWithPopup(auth, provider)
+            .then((result) => {
+              console.log("google auth result: " + JSON.stringify(result));
+              // This gives you a Google Access Token. You can use it to access the Google API.
+              const credential =
+                GoogleAuthProvider.credentialFromResult(result);
+              const token = credential.accessToken;
+              // The signed-in user info.
+              const user = result.user;
+              // ...
+            })
+            .catch((error) => {
+              console.log("google auth error: " + JSON.stringify(error));
+              // Handle Errors here.
+              const errorCode = error.code;
+              const errorMessage = error.message;
+              // The email of the user's account used.
+              const email = error.email;
+              // The AuthCredential type that was used.
+              const credential = GoogleAuthProvider.credentialFromError(error);
+              // ...
+            });
+        }}
+        color="#f57c00"
+        title="Log in using Google"
+      />
+      */}
       <TextInput
         style={styles.input}
         placeholder="Enter email"
@@ -89,11 +190,11 @@ export default function Login({ afterLoginScreen }) {
         title="Login With Facebook"
       />
       */}
-      <Button
-        onPress={() => {
+      <MyButtons.LinkButton
+        text="Create an Account"
+        onPress={async () => {
           dispatch(Actions.goToScreen({ screen: "SIGNUP" }));
         }}
-        title="Go to Signup"
       />
       {/*
       <LoginButton />
