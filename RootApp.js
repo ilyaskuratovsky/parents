@@ -27,6 +27,7 @@ import MessageScreen from "./MessageScreen";
 import TestErrorHandler from "./TestErrorHandler";
 import TestBook from "./TestBook";
 import ProfileInit from "./ProfileInit";
+import TestImagePicker from "./TestImagePicker";
 
 function RootApp(props, state) {
   //const x = { a: "b" };
@@ -38,7 +39,7 @@ function RootApp(props, state) {
     return state;
   });
 
-  //return <TestBook />;
+  return <TestImagePicker />;
   useEffect(async () => {
     try {
       return await Controller.initializeApp(

@@ -15,12 +15,16 @@
     "@react-native-async-storage/async-storage": "~1.15.0",
     "@reduxjs/toolkit": "^1.6.2",
     "expo": "~43.0.2",
+    "expo-calendar": "~10.0.3",
     "expo-contacts": "~10.0.3",
     "expo-device": "~4.0.3",
+    "expo-facebook": "~12.0.3",
+    "expo-image-picker": "~11.0.3",
     "expo-notifications": "~0.13.3",
     "expo-status-bar": "~1.1.0",
     "expo-updates": "~0.10.15",
     "firebase": "^9.6.0",
+    "install": "^0.13.0",
     "nodemailer": "^6.7.3",
     "react": "17.0.1",
     "react-dom": "17.0.1",
@@ -56,9 +60,7 @@
     "react-native-vector-icons": "^9.0.0",
     "react-native-web": "^0.17.1",
     "react-redux": "^7.2.6",
-    "react-timeago": "^6.2.1",
-    "expo-facebook": "~12.0.3",
-    "expo-calendar": "~10.0.3"
+    "react-timeago": "^6.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
