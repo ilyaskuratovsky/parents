@@ -29,6 +29,7 @@ import TestBook from "./TestBook";
 import ProfileInit from "./ProfileInit";
 import TestImagePicker from "./TestImagePicker";
 import TestImagePickerFirebase from "./TestImagePickerFirebase";
+import TestDatePicker from "./TestDatePicker";
 
 function RootApp(props, state) {
   //const x = { a: "b" };
@@ -41,7 +42,8 @@ function RootApp(props, state) {
   });
 
   //return <TestImagePicker />;
-  //return <TestImagePickerFirebase />;
+  return <TestDatePicker />;
+  return <TestImagePickerFirebase />;
   useEffect(async () => {
     try {
       return await Controller.initializeApp(

@@ -16,6 +16,7 @@ import * as MessageUtils from "./MessageUtils";
 import MessageScreen from "./MessageScreen";
 import MessageModal from "./MessageModal";
 import ThreadMessageModal from "./ThreadMessageModal";
+import NewEventModal from "./NewEventModal";
 import {
   FlatList,
   StatusBar,
@@ -35,25 +36,27 @@ export default function GroupScreen({ groupId }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
 
-  const { groupMap, orgsMap, messages, userMap, members, userMessagesMap } = useSelector((state) => {
-    return {
-      userinfo: state.main.userInfo,
-      schoolList: state.main.schoolList,
-      schoolMap: state.main.schoolMap,
-      groupList: state.main.groupList,
-      groupMap: state.main.groupMap,
-      orgsMap: state.main.orgsMap,
-      userMap: state.main.userMap,
-      messages: state.main.groupMessages[groupId] ?? [],
-      members: state.main.groupMembershipMap[groupId],
-      userMessagesMap: state.main.userMessagesMap,
-    };
-  });
+  const { groupMap, orgsMap, messages, userMap, members, userMessagesMap } =
+    useSelector((state) => {
+      return {
+        userinfo: state.main.userInfo,
+        schoolList: state.main.schoolList,
+        schoolMap: state.main.schoolMap,
+        groupList: state.main.groupList,
+        groupMap: state.main.groupMap,
+        orgsMap: state.main.orgsMap,
+        userMap: state.main.userMap,
+        messages: state.main.groupMessages[groupId] ?? [],
+        members: state.main.groupMembershipMap[groupId],
+        userMessagesMap: state.main.userMessagesMap,
+      };
+    });
   const { height, width } = useWindowDimensions();
   const windowWidth = width ?? 0;
   const [membersModalVisible, setMembersModalVisible] = useState(false);
   const [messagesModalVisible, setMessagesModalVisible] = useState(null);
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
+  const [showNewEventModal, setShowNewEventModal] = useState(false);
   const group = groupMap[groupId];
 
   const FlatListItemSeparator = () => {
@@ -68,7 +71,11 @@ export default function GroupScreen({ groupId }) {
     );
   };
 
-  const rootMessages = MessageUtils.buildRootMessagesWithChildren(messages, userInfo, userMessagesMap);
+  const rootMessages = MessageUtils.buildRootMessagesWithChildren(
+    messages,
+    userInfo,
+    userMessagesMap
+  );
   const sortedMessages = [...rootMessages] ?? [];
   sortedMessages.sort((m1, m2) => {
     return m2.lastUpdated - m1.lastUpdated;
@@ -118,11 +125,22 @@ export default function GroupScreen({ groupId }) {
   const sendMessage = useCallback(async (title, text, papaId) => {
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(userInfo);
-    return await Controller.sendMessage(dispatch, userInfo, groupId, title, text, papaId, {
-      groupName,
-      fromName,
-    });
+    return await Controller.sendMessage(
+      dispatch,
+      userInfo,
+      groupId,
+      title,
+      text,
+      papaId,
+      {
+        groupName,
+        fromName,
+      }
+    );
   }, []);
+
+  // send message callback function
+  const sendEvent = useCallback(async (title, text, papaId) => {}, []);
 
   const renderMessage = ({ item }) => {
     const onPress = () => {
@@ -136,7 +154,11 @@ export default function GroupScreen({ groupId }) {
       const maxTimestampMessage = messages.reduce((prev, current) =>
         prev.timestamp > current.timestamp ? prev : current
       );
-      await Controller.setUserGroupLastViewedTimestamp(userInfo, group.id, maxTimestampMessage.timestamp);
+      await Controller.setUserGroupLastViewedTimestamp(
+        userInfo,
+        group.id,
+        maxTimestampMessage.timestamp
+      );
     }
     Controller.markMessagesRead(
       userInfo,
@@ -145,7 +167,8 @@ export default function GroupScreen({ groupId }) {
   }, [messages]);
 
   const insets = useSafeAreaInsets();
-  const windowHeight = Dimensions.get("window").height - insets.top - insets.bottom;
+  const windowHeight =
+    Dimensions.get("window").height - insets.top - insets.bottom;
   const topBarHeight = 64;
   const newMessageHeight = 80;
   const bottomBarHeight = 64;
@@ -193,8 +216,14 @@ export default function GroupScreen({ groupId }) {
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <View style={{ flexDirection: "column" }}>
-                <Text style={{ fontWeight: "bold", fontSize: 20 }}>{group.name}</Text>
-                {org != null && <Text style={{ fontWeight: "normal", fontSize: 14 }}>{org.name}</Text>}
+                <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+                  {group.name}
+                </Text>
+                {org != null && (
+                  <Text style={{ fontWeight: "normal", fontSize: 14 }}>
+                    {org.name}
+                  </Text>
+                )}
               </View>
             </View>
           </View>
@@ -211,7 +240,9 @@ export default function GroupScreen({ groupId }) {
           >
             <MyButtons.MenuButton
               icon="account-supervisor"
-              text={members.length + " member" + (members.length > 1 ? "s" : "")}
+              text={
+                members.length + " member" + (members.length > 1 ? "s" : "")
+              }
               onPress={() => {
                 console.log("members pressed");
                 setMembersModalVisible(true);
@@ -221,49 +252,6 @@ export default function GroupScreen({ groupId }) {
         </View>
         <Divider style={{}} width={1} color="darkgrey" />
       </View>
-
-      {/* new message */}
-      {/*
-      <View
-        style={{
-          height: newMessageHeight,
-          alignItems: "center",
-          justifyContent: "center",
-          paddingTop: 10,
-          paddingLeft: 10,
-          paddingRight: 10,
-          paddingBottom: 10,
-          width: windowWidth,
-          //backgroundColor: "orange",
-        }}
-      >
-        <TouchableOpacity
-          style={{
-            borderWidth: 1,
-            borderColor: "darkgrey",
-            borderRadius: 14,
-            width: "100%",
-            height: "100%",
-            justifyContent: "center",
-            alignItems: "flex-start",
-          }}
-          onPress={() => {
-            setShowNewMessageModal(true);
-          }}
-        >
-          <Text
-            style={{
-              paddingLeft: 10,
-              //backgroundColor: "green",
-              fontSize: 14,
-              color: "lightgrey",
-            }}
-          >
-            New Message...
-          </Text>
-        </TouchableOpacity>
-      </View>
-          */}
 
       {/* messages section */}
       <View
@@ -299,7 +287,7 @@ export default function GroupScreen({ groupId }) {
           //backgroundColor: "purple",
           alignItems: "flex-end",
           justifyContent: "center",
-          flexDirection: "column",
+          flexDirection: "row",
           height: bottomBarHeight,
         }}
       >
@@ -307,6 +295,12 @@ export default function GroupScreen({ groupId }) {
           icon="plus"
           onPress={() => {
             setShowNewMessageModal(true);
+          }}
+        />
+        <IconButton
+          icon="calendar-plus"
+          onPress={() => {
+            setShowNewEventModal(true);
           }}
         />
       </View>
@@ -321,6 +315,7 @@ export default function GroupScreen({ groupId }) {
           }}
         />
       )}
+      {/* MODALS */}
       {/* group members modal */}
       <GroupMembersModal
         groupId={groupId}
@@ -336,6 +331,15 @@ export default function GroupScreen({ groupId }) {
         sendMessage={sendMessage}
         showModal={(flag) => {
           setShowNewMessageModal(flag);
+        }}
+      />
+      <NewEventModal
+        userInfo={userInfo}
+        group={group}
+        visible={showNewEventModal}
+        sendEvent={sendEvent}
+        showModal={(flag) => {
+          setShowNewEventModal(flag);
         }}
       />
     </Portal>
