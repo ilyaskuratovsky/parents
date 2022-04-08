@@ -434,10 +434,11 @@ export async function setUserGroupLastViewedTimestamp(
   }
 }
 
-export async function initializeProfile(userId, firstName, lastName) {
+export async function initializeProfile(userId, firstName, lastName, image) {
   await Database.updateUser(userId, {
     firstName,
     lastName,
+    image,
     profileInitialized: true,
   });
 }

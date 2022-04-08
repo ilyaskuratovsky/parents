@@ -41,7 +41,7 @@ function RootApp(props, state) {
   });
 
   //return <TestImagePicker />;
-  return <TestImagePickerFirebase />;
+  //return <TestImagePickerFirebase />;
   useEffect(async () => {
     try {
       return await Controller.initializeApp(

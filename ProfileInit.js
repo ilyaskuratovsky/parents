@@ -1,15 +1,37 @@
 import React, { useState } from "react";
-import { Text, TouchableOpacity, View, Modal, TextInput } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+
+import {
+  Text,
+  TouchableOpacity,
+  View,
+  Modal,
+  TextInput,
+  Image,
+  Button,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import * as Paper from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { groupMemberships } from "./Actions";
+import { groupMemberships, userInfo } from "./Actions";
 import * as MyButtons from "./MyButtons";
 import * as Controller from "./Controller";
 import * as Globals from "./Globals";
 import Portal from "./Portal";
 import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
+import uuid from "uuid";
+
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  uploadString,
+} from "firebase/storage";
+import { storage } from "./config/firebase";
 
 export default function ProfileInit(props) {
   const dispatch = useDispatch();
@@ -30,6 +52,25 @@ function ModalContainer({ userInfo }) {
   const [lastName, setLastName] = useState(userInfo.lastName);
   const [uploading, setUploading] = useState(false);
   const [image, setImage] = useState(null);
+
+  const _maybeRenderUploadingOverlay = () => {
+    if (uploading) {
+      return (
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              backgroundColor: "rgba(0,0,0,0.4)",
+              alignItems: "center",
+              justifyContent: "center",
+            },
+          ]}
+        >
+          <ActivityIndicator color="#fff" animating size="large" />
+        </View>
+      );
+    }
+  };
 
   const _handleImagePicked = async (pickerResult) => {
     try {
@@ -84,7 +125,8 @@ function ModalContainer({ userInfo }) {
               await Controller.initializeProfile(
                 userInfo.uid,
                 firstName,
-                lastName
+                lastName,
+                image
               );
             }}
           />
@@ -135,7 +177,21 @@ function ModalContainer({ userInfo }) {
         <Button onPress={_pickImage} title="Pick an image from camera roll" />
 
         <Button onPress={_takePhoto} title="Take a photo" />
+        <View
+          style={{
+            borderTopRightRadius: 3,
+            borderTopLeftRadius: 3,
+            shadowColor: "rgba(0,0,0,1)",
+            shadowOpacity: 0.2,
+            shadowOffset: { width: 4, height: 4 },
+            shadowRadius: 5,
+            overflow: "hidden",
+          }}
+        >
+          <Image source={{ uri: image }} style={{ width: 80, height: 80 }} />
+        </View>
       </View>
+      {_maybeRenderUploadingOverlay()}
     </Portal>
   );
 }
@@ -159,7 +215,10 @@ async function uploadImageAsync(uri) {
   console.log("blob:" + JSON.stringify(blob));
 
   //const fileRef = ref(getStorage(), uuid.v4());
-  const fileRef = ref(getStorage(), "images/file1.jpg");
+  const fileRef = ref(
+    storage,
+    "images/profile/" + userInfo.uid + "_" + uuid.v4() + ".jpg"
+  );
   console.log("uploading");
   const result = await uploadBytes(fileRef, blob);
   // We're done with the blob, close and release it
