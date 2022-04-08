@@ -1,6 +1,12 @@
 import * as ImagePicker from "expo-image-picker";
 import { getApps, initializeApp } from "firebase/app";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  uploadString,
+} from "firebase/storage";
 import React from "react";
 import {
   ActivityIndicator,
@@ -15,6 +21,7 @@ import {
 } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import uuid from "uuid";
+import { storage } from "./config/firebase";
 
 /*
 const firebaseConfig = {
@@ -24,13 +31,24 @@ const firebaseConfig = {
   storageBucket: "blobtest-36ff6.appspot.com",
   messagingSenderId: "506017999540",
 };
+*/
+/*
+export const firebaseConfig = {
+  apiKey: "AIzaSyD7sAZY_oPEoAhPLbLST23DAAmAPiOh8V8",
+  authDomain: "parents-749dd.firebaseapp.com",
+  databaseURL: "https://parents-749dd-default-rtdb.firebaseio.com",
+  projectId: "parents-749dd",
+  storageBucket: "parents-749dd.appspot.com",
+  messagingSenderId: "202897799240",
+  appId: "1:202897799240:web:6e7181665de58029cfc07d",
+  measurementId: "G-RJ6EY4S9LJ",
+};
 
 // Editing this file with fast refresh will reinitialize the app on every refresh, let's not do that
 if (!getApps().length) {
   initializeApp(firebaseConfig);
 }
 */
-
 // Firebase sets some timeers for a long period, which will trigger some warnings. Let's turn that off for this example
 LogBox.ignoreLogs([`Setting a timer for a long period`]);
 
@@ -207,12 +225,29 @@ async function uploadImageAsync(uri) {
     xhr.open("GET", uri, true);
     xhr.send(null);
   });
+  console.log("blob:" + JSON.stringify(blob));
 
-  const fileRef = ref(getStorage(), uuid.v4());
+  //const fileRef = ref(getStorage(), uuid.v4());
+  //const fileRef = ref(getStorage(), "images/file1.jpg");
+  const fileRef = ref(storage, "images/file1.jpg");
+  console.log("uploading");
   const result = await uploadBytes(fileRef, blob);
-
   // We're done with the blob, close and release it
   blob.close();
 
+  /*
+  const string1 = "5b6p5Y+344GX44G+44GX44Gf77yB44GK44KB44Gn44Go44GG77yB";
+  try {
+    uploadString(fileRef, string1)
+      .then((response) => {
+        console.log("response; " + JSON.stringify(response));
+      })
+      .catch((error) => {
+        console.log("error caught in promise: " + JSON.stringify(error));
+      });
+  } catch (e) {
+    console.log("error caugh: " + JSON.stringify(e));
+  }
+  */
   return await getDownloadURL(fileRef);
 }

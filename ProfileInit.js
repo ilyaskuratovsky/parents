@@ -28,6 +28,45 @@ export default function ProfileInit(props) {
 function ModalContainer({ userInfo }) {
   const [firstName, setFirstName] = useState(userInfo.firstName);
   const [lastName, setLastName] = useState(userInfo.lastName);
+  const [uploading, setUploading] = useState(false);
+  const [image, setImage] = useState(null);
+
+  const _handleImagePicked = async (pickerResult) => {
+    try {
+      setUploading(true);
+
+      if (!pickerResult.cancelled) {
+        const uploadUrl = await uploadImageAsync(pickerResult.uri);
+        setImage(uploadUrl);
+      }
+    } catch (e) {
+      console.log(e);
+      alert("Upload failed, sorry :(");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const _pickImage = async () => {
+    let pickerResult = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+    });
+
+    console.log({ pickerResult });
+
+    _handleImagePicked(pickerResult);
+  };
+
+  const _takePhoto = async () => {
+    let pickerResult = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+    });
+
+    _handleImagePicked(pickerResult);
+  };
+
   return (
     <Portal>
       <TopBarMiddleContentSideButtons
@@ -92,7 +131,53 @@ function ModalContainer({ userInfo }) {
           value={lastName ?? ""}
           selectTextOnFocus={true}
         />
+        <Text>Profile Picture</Text>
+        <Button onPress={_pickImage} title="Pick an image from camera roll" />
+
+        <Button onPress={_takePhoto} title="Take a photo" />
       </View>
     </Portal>
   );
+}
+
+async function uploadImageAsync(uri) {
+  // Why are we using XMLHttpRequest? See:
+  // https://github.com/expo/expo/issues/2402#issuecomment-443726662
+  const blob = await new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+      resolve(xhr.response);
+    };
+    xhr.onerror = function (e) {
+      console.log(e);
+      reject(new TypeError("Network request failed"));
+    };
+    xhr.responseType = "blob";
+    xhr.open("GET", uri, true);
+    xhr.send(null);
+  });
+  console.log("blob:" + JSON.stringify(blob));
+
+  //const fileRef = ref(getStorage(), uuid.v4());
+  const fileRef = ref(getStorage(), "images/file1.jpg");
+  console.log("uploading");
+  const result = await uploadBytes(fileRef, blob);
+  // We're done with the blob, close and release it
+  blob.close();
+
+  /*
+  const string1 = "5b6p5Y+344GX44G+44GX44Gf77yB44GK44KB44Gn44Go44GG77yB";
+  try {
+    uploadString(fileRef, string1)
+      .then((response) => {
+        console.log("response; " + JSON.stringify(response));
+      })
+      .catch((error) => {
+        console.log("error caught in promise: " + JSON.stringify(error));
+      });
+  } catch (e) {
+    console.log("error caugh: " + JSON.stringify(e));
+  }
+  */
+  return await getDownloadURL(fileRef);
 }
