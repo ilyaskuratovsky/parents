@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "./Actions";
 import * as MyButtons from "./MyButtons";
 import * as Random from "./Random";
+import * as Globals from "./Globals";
 
 export default function CommentView({ item, onPress }) {
   const timeAgo = ({ children }) => {
@@ -113,15 +114,19 @@ export default function CommentView({ item, onPress }) {
             />
           </View>
         </View>
-        <Text
-          //numberOfLines={showMore[item.id] ? null : 4}
-          style={{
-            paddingLeft: 0,
-            fontSize: 18,
-          }}
-        >
-          {item.text}
-        </Text>
+        <View style={{ flex: 1, flexDirection: "column" }}>
+          {item.event != null && <Text>Going</Text>}
+          <Text
+            //numberOfLines={showMore[item.id] ? null : 4}
+            style={{
+              paddingLeft: 0,
+              fontSize: 18,
+            }}
+          >
+            {item.text}
+          </Text>
+          {Globals.dev && <Text style={{ fontSize: 8 }}>{item._id}</Text>}
+        </View>
       </View>
     </View>
   );

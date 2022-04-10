@@ -17,6 +17,7 @@ import MessageScreen from "./MessageScreen";
 import MessageModal from "./MessageModal";
 import ThreadMessageModal from "./ThreadMessageModal";
 import NewEventModal from "./NewEventModal";
+import * as Globals from "./Globals";
 import {
   FlatList,
   StatusBar,
@@ -36,8 +37,8 @@ export default function GroupScreen({ groupId }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
 
-  const { groupMap, orgsMap, messages, userMap, members, userMessagesMap } =
-    useSelector((state) => {
+  const { groupMap, orgsMap, messages, userMap, members, userMessagesMap } = useSelector(
+    (state) => {
       return {
         userinfo: state.main.userInfo,
         schoolList: state.main.schoolList,
@@ -50,7 +51,8 @@ export default function GroupScreen({ groupId }) {
         members: state.main.groupMembershipMap[groupId],
         userMessagesMap: state.main.userMessagesMap,
       };
-    });
+    }
+  );
   const { height, width } = useWindowDimensions();
   const windowWidth = width ?? 0;
   const [membersModalVisible, setMembersModalVisible] = useState(false);
@@ -90,6 +92,7 @@ export default function GroupScreen({ groupId }) {
         ? []
         : children.map((message) => {
             return {
+              ...message,
               _id: message.id,
               text: message.text,
               createdAt: new Date(message.timestamp),
@@ -99,11 +102,13 @@ export default function GroupScreen({ groupId }) {
                 avatarColor: UserInfo.avatarColor(user),
               },
               children,
+              event: message.event,
               status: message.status,
             };
           });
 
     return {
+      ...message,
       _id: message.id,
       title: message.title ?? "[No title]",
       text: message.text,
@@ -122,7 +127,7 @@ export default function GroupScreen({ groupId }) {
 
   const org = orgsMap[group.orgId];
   // send message callback function
-  const sendMessage = useCallback(async (title, text, papaId) => {
+  const sendMessage = useCallback(async (title, text) => {
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(userInfo);
     return await Controller.sendMessage(
@@ -131,7 +136,7 @@ export default function GroupScreen({ groupId }) {
       groupId,
       title,
       text,
-      papaId,
+      null, //papa id
       {
         groupName,
         fromName,
@@ -139,8 +144,24 @@ export default function GroupScreen({ groupId }) {
     );
   }, []);
 
-  // send message callback function
-  const sendEvent = useCallback(async (title, text, papaId) => {}, []);
+  const sendEventMessage = useCallback(async (title, text, startDate, endDate) => {
+    const groupName = group.name;
+    const fromName = UserInfo.chatDisplayName(userInfo);
+    return await Controller.sendEventMessage(
+      dispatch,
+      userInfo,
+      groupId,
+      title,
+      text,
+      startDate,
+      endDate,
+      null, //papa id
+      {
+        groupName,
+        fromName,
+      }
+    );
+  }, []);
 
   const renderMessage = ({ item }) => {
     const onPress = () => {
@@ -167,8 +188,7 @@ export default function GroupScreen({ groupId }) {
   }, [messages]);
 
   const insets = useSafeAreaInsets();
-  const windowHeight =
-    Dimensions.get("window").height - insets.top - insets.bottom;
+  const windowHeight = Dimensions.get("window").height - insets.top - insets.bottom;
   const topBarHeight = 64;
   const newMessageHeight = 80;
   const bottomBarHeight = 64;
@@ -216,13 +236,10 @@ export default function GroupScreen({ groupId }) {
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <View style={{ flexDirection: "column" }}>
-                <Text style={{ fontWeight: "bold", fontSize: 20 }}>
-                  {group.name}
-                </Text>
+                <Text style={{ fontWeight: "bold", fontSize: 20 }}>{group.name}</Text>
+                {Globals.dev ? <Text style={{ fontSize: 10 }}>{group.id}</Text> : null}
                 {org != null && (
-                  <Text style={{ fontWeight: "normal", fontSize: 14 }}>
-                    {org.name}
-                  </Text>
+                  <Text style={{ fontWeight: "normal", fontSize: 14 }}>{org.name}</Text>
                 )}
               </View>
             </View>
@@ -240,9 +257,7 @@ export default function GroupScreen({ groupId }) {
           >
             <MyButtons.MenuButton
               icon="account-supervisor"
-              text={
-                members.length + " member" + (members.length > 1 ? "s" : "")
-              }
+              text={members.length + " member" + (members.length > 1 ? "s" : "")}
               onPress={() => {
                 console.log("members pressed");
                 setMembersModalVisible(true);
@@ -252,7 +267,6 @@ export default function GroupScreen({ groupId }) {
         </View>
         <Divider style={{}} width={1} color="darkgrey" />
       </View>
-
       {/* messages section */}
       <View
         style={{
@@ -279,7 +293,6 @@ export default function GroupScreen({ groupId }) {
           </View>
         </View>
       </View>
-
       <Divider style={{}} width={1} color="darkgrey" />
       {/* toolbar section */}
       <View
@@ -305,16 +318,15 @@ export default function GroupScreen({ groupId }) {
         />
       </View>
       {/* messages modal */}
-      {messagesModalVisible && (
-        <MessageModal
-          groupId={groupId}
-          messageId={messagesModalVisible}
-          visible={messagesModalVisible != null}
-          closeModal={() => {
-            setMessagesModalVisible(null);
-          }}
-        />
-      )}
+
+      <MessageModal
+        groupId={groupId}
+        messageId={messagesModalVisible}
+        visible={messagesModalVisible != null}
+        closeModal={() => {
+          setMessagesModalVisible(null);
+        }}
+      />
       {/* MODALS */}
       {/* group members modal */}
       <GroupMembersModal
@@ -337,7 +349,7 @@ export default function GroupScreen({ groupId }) {
         userInfo={userInfo}
         group={group}
         visible={showNewEventModal}
-        sendEvent={sendEvent}
+        sendEvent={sendEventMessage}
         showModal={(flag) => {
           setShowNewEventModal(flag);
         }}

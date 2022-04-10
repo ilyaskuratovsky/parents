@@ -16,6 +16,7 @@ import TimeAgo from "react-timeago";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "./Actions";
 import * as MyButtons from "./MyButtons";
+import * as Globals from "./Globals";
 
 export default function MessageView({ item, onPress }) {
   const timeAgo = ({ children }) => {
@@ -58,6 +59,7 @@ export default function MessageView({ item, onPress }) {
           )}
         </View>
         <View style={{ flexGrow: 1, flexDirection: "row" }}>
+          {/* main content*/}
           <View
             style={{
               flexDirection: "column",
@@ -136,26 +138,21 @@ export default function MessageView({ item, onPress }) {
                 //backgroundColor: "white",
               }}
             >
-              <Text
-                style={{
-                  paddingLeft: 0,
-                  fontSize: 20,
-                  fontWeight: "bold",
-                }}
-              >
-                {item.title}
-              </Text>
-              {/*
+              <View style={{ flex: 1, flexDirection: "row" }}>
+                {item.event != null && (
+                  <Icon name="calendar" style={{ color: "black", fontSize: 24 }} />
+                )}
                 <Text
                   style={{
                     paddingLeft: 0,
-                    fontSize: 10,
+                    fontSize: 20,
                     fontWeight: "bold",
                   }}
                 >
-                  {JSON.stringify(item)}
+                  {item.title}
                 </Text>
-                */}
+              </View>
+              {Globals.dev ? <Text style={{ fontSize: 10 }}>{item._id}</Text> : null}
             </View>
 
             {/* message text */}
@@ -183,7 +180,7 @@ export default function MessageView({ item, onPress }) {
                     flexGrow: 1,
                   }}
                 >
-                  {item.text.replace(/(\r\n|\n|\r)/gm, " ")}
+                  {(item.text ?? "").replace(/(\r\n|\n|\r)/gm, " ")}
                 </Text>
               </View>
               <View style={{ flexGrow: 1 }}></View>
@@ -195,39 +192,38 @@ export default function MessageView({ item, onPress }) {
                   flexDirection: "row",
                 }}
               >
-                {item.children.length > 0 && (
-                  <View
+                <View
+                  style={{
+                    width: 80,
+                    flexDirection: "column",
+                    backgroundColor: "lightgrey",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 10,
+                  }}
+                >
+                  <Text
                     style={{
-                      width: 80,
-                      flexDirection: "row",
-                      backgroundColor: "lightgrey",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderRadius: 10,
+                      //backgroundColor: "green",
+                      paddingLeft: 0,
+                      fontSize: 14,
+                      fontWeight: item.unreadChildCount > 0 ? "bold" : "normal",
                     }}
                   >
-                    <Text
-                      style={{
-                        //backgroundColor: "green",
-                        paddingLeft: 0,
-                        fontSize: 14,
-                        fontWeight: item.unreadChildCount > 0 ? "bold" : "normal",
-                      }}
-                    >
-                      {item.children.length > 1 ? item.children.length + " replies" : item.children.length + " reply"}
-                    </Text>
-                    {/*
-                    <Badge
-                      status="primary"
-                      //value={item.unreadChildCount ?? 0 > 0 ? item.unreadChildCount : " "}
-                      value={""}
-                      containerStyle={{ top: -2, right: -2, position: "absolute" }}
-                    />
-                    */}
-                  </View>
-                )}
+                    {item.children.length > 1
+                      ? item.children.length + " replies"
+                      : item.children.length + " reply"}
+                  </Text>
+                </View>
               </View>
             </View>
+            {item.event != null && item.event.summary != null && (
+              <View style={{ flexDirection: "row" }}>
+                <Text>{item.event.summary.accepted ?? 0} Accepted</Text>
+                <Text>{item.event.summary.declined ?? 0} Declined</Text>
+                <Text>{item.event.summary.not_responded ?? 0} Not Responded</Text>
+              </View>
+            )}
           </View>
         </View>
       </View>

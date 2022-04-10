@@ -30,6 +30,7 @@ import ProfileInit from "./ProfileInit";
 import TestImagePicker from "./TestImagePicker";
 import TestImagePickerFirebase from "./TestImagePickerFirebase";
 import TestDatePicker from "./TestDatePicker";
+import TestICal from "./TestICal";
 
 function RootApp(props, state) {
   //const x = { a: "b" };
@@ -42,15 +43,13 @@ function RootApp(props, state) {
   });
 
   //return <TestImagePicker />;
-  return <TestDatePicker />;
-  return <TestImagePickerFirebase />;
+  //return <TestDatePicker />;
+  //return <TestBook />;
+  //return <TestImagePickerFirebase />;
+  //return <TestICal />;
   useEffect(async () => {
     try {
-      return await Controller.initializeApp(
-        dispatch,
-        notificationListener,
-        responseListener
-      );
+      return await Controller.initializeApp(dispatch, notificationListener, responseListener);
     } catch (error) {
       dispatch(Actions.goToScreen({ screen: "ERROR", error }));
     }
@@ -73,8 +72,7 @@ function RootApp(props, state) {
           JSON.stringify(lastNotificationResponse.notification)
       );
       */
-      const groupId =
-        lastNotificationResponse.notification?.request?.content?.data?.groupId;
+      const groupId = lastNotificationResponse.notification?.request?.content?.data?.groupId;
       if (groupId != null) {
         dispatch(Actions.goToScreen({ screen: "GROUP", groupId }));
       }
@@ -122,10 +120,7 @@ function RootApp(props, state) {
     render = <MyProfileScreen />;
   } else if (screen == "MESSAGE") {
     render = (
-      <MessageScreen
-        groupId={screenWithParams.groupId}
-        messageId={screenWithParams.messageId}
-      />
+      <MessageScreen groupId={screenWithParams.groupId} messageId={screenWithParams.messageId} />
     );
   } else if (screen == "DEBUG") {
     render = <DebugScreen backAction={screenWithParams.backAction} />;

@@ -1,4 +1,10 @@
-export function buildMessageWithChildren(messageId, messages, userInfo, userMessagesMap) {
+export function buildMessageWithChildren(
+  messageId,
+  messages,
+  userInfo,
+  userMessagesMap,
+  groupMembers
+) {
   let rootMessage = { children: [] };
   for (const m of messages) {
     if (m.papaId == messageId) {
@@ -7,11 +13,14 @@ export function buildMessageWithChildren(messageId, messages, userInfo, userMess
       rootMessage = { ...m, ...rootMessage };
     }
   }
-  const rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap);
+  let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap);
+  if (rootMessage.event != null) {
+    rootMessageWithStatus = addEventData(rootMessage, userInfo, groupMembers);
+  }
   return rootMessageWithStatus;
 }
 
-export function buildRootMessagesWithChildren(messages, userInfo, userMessagesMap) {
+export function buildRootMessagesWithChildren(messages, userInfo, userMessagesMap, groupMembers) {
   const messageMap = messages.reduce(function (acc, message) {
     acc[message.id] = { ...message };
     return acc;
@@ -28,7 +37,13 @@ export function buildRootMessagesWithChildren(messages, userInfo, userMessagesMa
   }
 
   const rootMessages = Object.values(messageMap).filter((m) => m.papaId == null);
-  const messagesWithStatus = rootMessages.map((message) => addMeta(message, userInfo, userMessagesMap));
+  const messagesWithStatus = rootMessages.map((rootMessage) => {
+    let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap);
+    if (rootMessage.event != null) {
+      rootMessageWithStatus = addEventData(rootMessage, userInfo, groupMembers);
+    }
+    return rootMessageWithStatus;
+  });
   return messagesWithStatus;
 }
 
@@ -84,4 +99,23 @@ export function addMeta(rootMessage, userInfo, userMessagesMap) {
   );
 
   return { ...rootMessage, status, unreadChildCount, lastUpdated, children };
+}
+
+export function addEventData(rootMessage, userInfo, userMessagesMap, groupMembers) {
+  const eventWithUserStatus = { ...rootMessage.event };
+  for (const childMessage of rootMessage.children ?? []) {
+    const childEvent = childMessage.event;
+    if (childEvent != null) {
+      const childStatus = childEvent.status;
+      const userStatus = { ...eventWithUserStatus.users };
+      userStatus[childMessage.uid] = { status: childStatus };
+      const summary = { ...eventWithUserStatus.summary };
+      const statusCount = summary[childStatus] ?? 0;
+      summary[childStatus] = statusCount + 1;
+      eventWithUserStatus["users"] = userStatus;
+      eventWithUserStatus["summary"] = summary;
+    }
+  }
+
+  return { ...rootMessage, event: eventWithUserStatus };
 }

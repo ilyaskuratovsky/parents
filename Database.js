@@ -70,6 +70,7 @@ export async function sendMessage(
   uid,
   title,
   text,
+  data,
   papaId,
   notificationInfo
 ) {
@@ -78,6 +79,7 @@ export async function sendMessage(
     uid,
     title,
     text,
+    data,
     papaId,
     notificationInfo
   );
@@ -89,6 +91,17 @@ export async function createOrg(name, type) {
 
 export async function createInvite(fromUid, groupId, uid, email) {
   return DatabaseFS.createInvite(fromUid, groupId, uid, email);
+}
+
+export async function createEvent(
+  uid,
+  groupId,
+  title,
+  text,
+  startDate,
+  endDate
+) {
+  return DatabaseFS.createEvent(uid, groupId, title, text, startDate, endDate);
 }
 
 export async function observeToUserInvites(toUid, toEmail, callback) {

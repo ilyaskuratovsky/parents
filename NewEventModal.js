@@ -12,12 +12,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as MyButtons from "./MyButtons";
 import * as UserInfo from "./UserInfo";
 import Portal from "./Portal";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import moment from "moment";
 
 export default function NewEventModal({
   userInfo,
   group,
   visible,
-  sendMessage,
+  sendEvent,
   showModal,
 }) {
   const insets = useSafeAreaInsets();
@@ -25,6 +27,31 @@ export default function NewEventModal({
   const [title, setTitle] = useState(null);
   //<KeyboardAvoidingView behavior="padding" style={{ flex: 1, backgroundColor: "white" }}>
   //</KeyboardAvoidingView>
+  const [date, setDate] = useState(moment());
+  const [startTime, setStartTime] = useState(moment());
+  const [endTime, setEndTime] = useState(moment());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showStartTimePicker, setShowStartTimePicker] = useState(false);
+  const [showEndTimePicker, setShowEndTimePicker] = useState(false);
+
+  const onDateChange = (event, selectedDate) => {
+    alert("on date change");
+    const currentDate = selectedDate || date;
+    setDate(moment(currentDate));
+    setShowDatePicker(false);
+  };
+
+  const onStartTimeChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setStartTime(moment(currentDate));
+    setShowStartTimePicker(false);
+  };
+
+  const onEndTimeChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setEndTime(moment(currentDate));
+    setShowEndTimePicker(false);
+  };
 
   return (
     <Modal visible={visible} animationType={"slide"}>
@@ -86,7 +113,28 @@ export default function NewEventModal({
               <MyButtons.FormButton
                 text="POST"
                 onPress={async () => {
-                  sendMessage(title, text).then(() => {
+                  const startDate = moment();
+                  startDate.set({
+                    year: date.year,
+                    month: date.month,
+                    date: date.date,
+                    hour: startTime.get("hour"),
+                    minute: startTime.get("minute"),
+                  });
+                  const endDate = moment();
+                  startDate.set({
+                    year: date.year,
+                    month: date.month,
+                    date: date.date,
+                    hour: endTime.get("hour"),
+                    minute: endTime.get("minute"),
+                  });
+                  sendEvent(
+                    title,
+                    text,
+                    startDate.format(),
+                    endDate.format()
+                  ).then(() => {
                     showModal(false);
                   });
                 }}
@@ -156,8 +204,41 @@ export default function NewEventModal({
             />
           </View>
           {/* Starts */}
-
-          {/* Ends */}
+          <View
+            style={{
+              flexDirection: "column",
+              height: 100,
+            }}
+          >
+            <View style={{ flex: 1, flexDirection: "row" }}>
+              <Text>Date: </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setShowDatePicker(!showDatePicker);
+                }}
+              >
+                <Text>{date.format("L")}</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={{ flex: 1, flexDirection: "row" }}>
+              <Text>Start Time: </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setShowStartTimePicker(!showStartTimePicker);
+                }}
+              >
+                <Text>{startTime.format("LT")}</Text>
+              </TouchableOpacity>
+              <Text>End Time: </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setShowEndTimePicker(!showEndTimePicker);
+                }}
+              >
+                <Text>{endTime.format("LT")}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
 
           {/* message */}
           <View
@@ -191,6 +272,30 @@ export default function NewEventModal({
             />
           </View>
         </View>
+        <Modal visible={showDatePicker} animationType={"slide"}>
+          <DateTimePicker
+            display={"inline"}
+            mode={"date"}
+            value={startTime.toDate()}
+            onChange={onDateChange}
+          />
+        </Modal>
+        <Modal visible={showStartTimePicker} animationType={"slide"}>
+          <DateTimePicker
+            display={"spinner"}
+            mode={"time"}
+            value={startTime.toDate()}
+            onChange={onStartTimeChange}
+          />
+        </Modal>
+        <Modal visible={showEndTimePicker} animationType={"slide"}>
+          <DateTimePicker
+            display={"spinner"}
+            mode={"time"}
+            value={endTime.toDate()}
+            onChange={onEndTimeChange}
+          />
+        </Modal>
       </Portal>
     </Modal>
   );

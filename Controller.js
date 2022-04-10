@@ -12,11 +12,7 @@ import * as Search from "./Search";
 
 const groupMessageSubscriptions = {};
 
-export async function initializeApp(
-  dispatch,
-  notificationListener,
-  responseListener
-) {
+export async function initializeApp(dispatch, notificationListener, responseListener) {
   const orgs = await Database.getAllOrgs();
 
   // store all groups
@@ -70,15 +66,16 @@ export async function initializeApp(
   });
   */
   //FOREGROUND app handler
-  const notificationReceivedListener =
-    Notifications.addNotificationReceivedListener((notification) => {
+  const notificationReceivedListener = Notifications.addNotificationReceivedListener(
+    (notification) => {
       /*
       alert(
         "FOREGROUND notification received while app is running: " +
           JSON.stringify(notification)
       );
       */
-    });
+    }
+  );
 
   // This listener is fired whenever a user taps on or interacts with a
   // notification (works when app is foregrounded, backgrounded, or killed)
@@ -93,18 +90,15 @@ export async function initializeApp(
     });
 
   // subscribe to auth changes
-  const unsubscribeAuth = onAuthStateChanged(
-    auth,
-    async (authenticatedUser) => {
-      console.log("auth state change: " + JSON.stringify(authenticatedUser));
-      if (authenticatedUser != null) {
-        console.log("loggedIN: " + pushToken);
-        loggedIn(dispatch, authenticatedUser, pushToken);
-      } else {
-        loggedOut(dispatch);
-      }
+  const unsubscribeAuth = onAuthStateChanged(auth, async (authenticatedUser) => {
+    console.log("auth state change: " + JSON.stringify(authenticatedUser));
+    if (authenticatedUser != null) {
+      console.log("loggedIN: " + pushToken);
+      loggedIn(dispatch, authenticatedUser, pushToken);
+    } else {
+      loggedOut(dispatch);
     }
-  );
+  });
 
   //observe to group changes
   Database.observeAllGroupChanges((groups) => {
@@ -263,12 +257,7 @@ export async function createPrivateGroupAndJoin(
   return groupId;
 }
 
-export async function createOrgGroupAndJoin(
-  dispatch,
-  userInfo,
-  orgId,
-  groupName
-) {
+export async function createOrgGroupAndJoin(dispatch, userInfo, orgId, groupName) {
   const groupId = await Database.createGroup({
     name: groupName,
     orgId: orgId,
@@ -290,15 +279,56 @@ export async function sendMessage(
     userInfo.uid,
     title == undefined ? null : title,
     text,
+    null,
     papaId == undefined ? null : papaId,
     notificationInfo
   );
 }
 
-export async function sendReply(
+export async function sendReply(dispatch, userInfo, groupId, text, papaId, notificationInfo) {
+  return await Database.sendMessage(
+    groupId,
+    userInfo.uid,
+    null,
+    text,
+    null,
+    papaId == undefined ? null : papaId,
+    notificationInfo
+  );
+}
+
+export async function sendEventMessage(
   dispatch,
   userInfo,
   groupId,
+  title,
+  text,
+  startDate,
+  endDate,
+  papaId,
+  notificationInfo
+) {
+  return await Database.sendMessage(
+    groupId,
+    userInfo.uid,
+    title == undefined ? null : title,
+    text,
+    {
+      event: {
+        startDate,
+        endDate,
+      },
+    },
+    papaId == undefined ? null : papaId,
+    notificationInfo == undefined ? null : notificationInfo
+  );
+}
+
+export async function sendEventReply(
+  dispatch,
+  userInfo,
+  groupId,
+  status,
   text,
   papaId,
   notificationInfo
@@ -308,6 +338,11 @@ export async function sendReply(
     userInfo.uid,
     null,
     text,
+    {
+      event: {
+        status,
+      },
+    },
     papaId == undefined ? null : papaId,
     notificationInfo
   );
@@ -340,8 +375,7 @@ async function sendPushNotification(expoPushToken) {
 async function registerForPushNotificationsAsync() {
   let token;
   if (Device.isDevice) {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
     if (existingStatus !== "granted") {
       const { status } = await Notifications.requestPermissionsAsync();
@@ -370,12 +404,7 @@ async function registerForPushNotificationsAsync() {
   return token;
 }
 
-export async function inviteToGroup(
-  dispatch,
-  fromUserInfo,
-  touserInfo,
-  groupId
-) {}
+export async function inviteToGroup(dispatch, fromUserInfo, touserInfo, groupId) {}
 
 export async function createOrgAndAssignToUser(dispatch, userInfo, name, type) {
   const orgId = await Database.createOrg(name, type);
@@ -390,12 +419,7 @@ export async function sendGroupInviteToUser(userInfo, groupId, uid) {
   await Database.createInvite(userInfo.uid, groupId, uid, null);
 }
 
-export async function joinGroupFromInvite(
-  dispatch,
-  userInfo,
-  groupId,
-  inviteId
-) {
+export async function joinGroupFromInvite(dispatch, userInfo, groupId, inviteId) {
   await Database.joinGroup(userInfo, groupId);
   await Database.updateInvite(inviteId, { status: "dismissed" });
 }
@@ -419,8 +443,7 @@ export async function setUserGroupLastViewedTimestamp(
     .getState()
     .main.groupMembershipMap[groupId].filter((gm) => gm.uid == userInfo.uid);
 
-  const userGroupMembership =
-    userGroupMemberships.length > 0 ? userGroupMemberships[0] : null;
+  const userGroupMembership = userGroupMemberships.length > 0 ? userGroupMemberships[0] : null;
   if (userGroupMembership != null) {
     console.log(
       "found usergroupmembership: " +

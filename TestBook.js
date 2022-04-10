@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  Button,
-  Platform,
-  ScrollView,
-} from "react-native";
+import { StyleSheet, View, Text, Button, Platform, ScrollView } from "react-native";
 import * as Calendar from "expo-calendar";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -18,9 +11,7 @@ export default function App() {
     (async () => {
       const { status } = await Calendar.requestCalendarPermissionsAsync();
       if (status === "granted") {
-        const calendars = await Calendar.getCalendarsAsync(
-          Calendar.EntityTypes.EVENT
-        );
+        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
         //alert("Here are all your calendars:" + JSON.stringify(calendars));
         setCalendars(calendars);
         //alert("calendar[0]:" + JSON.stringify(calendars[0]));
@@ -33,11 +24,7 @@ export default function App() {
     <SafeAreaView>
       <View style={styles.container}>
         <Text>Calendar Module Example</Text>
-        <Button
-          disabled={true}
-          title="Create a new calendar"
-          onPress={createCalendar}
-        />
+        <Button disabled={true} title="Create a new calendar" onPress={createCalendar} />
         {calendar != null && (
           <Button
             disabled={calendar == null}
@@ -104,12 +91,13 @@ async function createEvent(calendar) {
       ? await getDefaultCalendarSource()
       : { isLocalAccount: true, name: "Expo Calendar" };
 
-  let dateMs = Date.parse("2022-04-06");
+  let dateMs = Date.parse("2022-04-10");
   let startDate = new Date(dateMs);
   let endDate = new Date(dateMs + 2 * 60 * 60 * 1000);
 
+  alert(calendar?.id);
   Calendar.createEventAsync(calendar?.id, {
-    title: "ilya test",
+    title: "ilya test xyz",
     startDate: startDate,
     endDate: endDate,
     timeZone: "America/New_York",
