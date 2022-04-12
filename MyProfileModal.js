@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
+import { IconButton } from "react-native-paper";
 
 import {
   Text,
@@ -21,23 +22,16 @@ import * as MyButtons from "./MyButtons";
 import * as Controller from "./Controller";
 import * as Globals from "./Globals";
 import Portal from "./Portal";
+import * as Actions from "./Actions";
 import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import uuid from "uuid";
 
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  uploadString,
-} from "firebase/storage";
+import { getStorage, ref, uploadBytes, getDownloadURL, uploadString } from "firebase/storage";
 import { storage } from "./config/firebase";
 
-export default function ProfileInit(props) {
+export default function MyProfileModal({ visible }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const visible =
-    userInfo.profileInitialized == null || userInfo.profileInitialized == false;
   const insets = useSafeAreaInsets();
 
   return (
@@ -48,10 +42,12 @@ export default function ProfileInit(props) {
 }
 
 function ModalContainer({ userInfo }) {
+  const dispatch = useDispatch();
   const [firstName, setFirstName] = useState(userInfo.firstName);
   const [lastName, setLastName] = useState(userInfo.lastName);
+  const [editingImage, setEditingImage] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState(userInfo.image);
 
   const _maybeRenderUploadingOverlay = () => {
     if (uploading) {
@@ -112,26 +108,34 @@ function ModalContainer({ userInfo }) {
     <Portal>
       <TopBarMiddleContentSideButtons
         style={{}}
-        left={null}
-        center={
-          <Text style={{ fontWeight: "bold", fontSize: 16 }}>
-            Profile Setup
-          </Text>
+        left={
+          <MyButtons.LinkButton
+            text="Cancel"
+            onPress={async () => {
+              dispatch(
+                Actions.closeModal({
+                  modal: "MY_PROFILE",
+                })
+              );
+            }}
+          />
         }
+        center={<Text style={{ fontWeight: "bold", fontSize: 16 }}>Profile Setup</Text>}
         right={
           <MyButtons.LinkButton
             text="Done"
             onPress={async () => {
-              await Controller.initializeProfile(
-                userInfo.uid,
-                firstName,
-                lastName,
-                image
+              await Controller.saveProfile(userInfo.uid, firstName, lastName, image);
+              dispatch(
+                Actions.closeModal({
+                  modal: "MY_PROFILE",
+                })
               );
             }}
           />
         }
       />
+      {Globals.dev && <Text style={{ fontSize: 10 }}>{userInfo.uid}</Text>}
       <View
         style={{
           paddingTop: 20,
@@ -174,21 +178,32 @@ function ModalContainer({ userInfo }) {
           selectTextOnFocus={true}
         />
         <Text>Profile Picture</Text>
-        <Button onPress={_pickImage} title="Pick an image from camera roll" />
-
-        <Button onPress={_takePhoto} title="Take a photo" />
-        <View
-          style={{
-            borderTopRightRadius: 3,
-            borderTopLeftRadius: 3,
-            shadowColor: "rgba(0,0,0,1)",
-            shadowOpacity: 0.2,
-            shadowOffset: { width: 4, height: 4 },
-            shadowRadius: 5,
-            overflow: "hidden",
-          }}
-        >
-          <Image source={{ uri: image }} style={{ width: 80, height: 80 }} />
+        <View style={{ flexDirection: "row" }}>
+          {image == null && (
+            <Text style={{ width: 80, height: 80, borderRadius: 400 / 2 }}>No Profile Image</Text>
+          )}
+          {image != null && (
+            <Image
+              source={{ uri: image }}
+              style={{ width: 80, height: 80, borderRadius: 400 / 2 }}
+            />
+          )}
+          {/*
+          <IconButton
+            icon="pencil"
+            color={"blue"}
+            size={38}
+            onPress={() => {
+              setEditingImage(!editingImage);
+            }}
+          />
+          */}
+          {editingImage && (
+            <>
+              <Button onPress={_pickImage} title="Pick Image" />
+              <Button onPress={_takePhoto} title="Take Photo" />
+            </>
+          )}
         </View>
       </View>
       {_maybeRenderUploadingOverlay()}
@@ -215,10 +230,7 @@ async function uploadImageAsync(uri) {
   console.log("blob:" + JSON.stringify(blob));
 
   //const fileRef = ref(getStorage(), uuid.v4());
-  const fileRef = ref(
-    storage,
-    "images/profile/" + userInfo.uid + "_" + uuid.v4() + ".jpg"
-  );
+  const fileRef = ref(storage, "images/profile/" + userInfo.uid + "_" + uuid.v4() + ".jpg");
   console.log("uploading");
   const result = await uploadBytes(fileRef, blob);
   // We're done with the blob, close and release it

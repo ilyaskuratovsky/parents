@@ -26,7 +26,7 @@ import PostScreen from "./PostScreen";
 import MessageScreen from "./MessageScreen";
 import TestErrorHandler from "./TestErrorHandler";
 import TestBook from "./TestBook";
-import ProfileInit from "./ProfileInit";
+import MyProfileModal from "./MyProfileModal";
 import TestImagePicker from "./TestImagePicker";
 import TestImagePickerFirebase from "./TestImagePickerFirebase";
 import TestDatePicker from "./TestDatePicker";
@@ -87,6 +87,11 @@ function RootApp(props, state) {
   const screenWithParams = useSelector((state) => state.screen.screen);
   let screen = screenWithParams?.screen;
 
+  const modalWithParams = useSelector((state) => {
+    return state.screen?.modal;
+  });
+  let modal = modalWithParams?.modal;
+
   if (screen === "LOGIN") {
     return <LoginScreen dispatch={dispatch} />;
   } else if (screen === "SIGNUP") {
@@ -134,7 +139,7 @@ function RootApp(props, state) {
     <View style={{ flex: 1 }}>
       {render}
       <Messages key="messages" />
-      <ProfileInit />
+      <MyProfileModal visible={modal === "MY_PROFILE"} />
     </View>
   );
 }

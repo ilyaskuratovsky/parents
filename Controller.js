@@ -200,6 +200,9 @@ export async function initialUserProfileSchools(dispatch, userInfo, schools) {
   //dispatch(Actions.userInfo(newUserInfo));
 
   dispatch(Actions.goToScreen({ screen: "INITIAL_SELECT_SCHOOL_GROUPS" }));
+  if (userInfo.profileInitialized == null || userInfo.profileInitialized == false) {
+    dispatch(Actions.openModal({ modal: "MY_PROFILE" }));
+  }
 }
 
 export async function joinGroup(dispatch, userInfo, groupId) {
@@ -457,7 +460,7 @@ export async function setUserGroupLastViewedTimestamp(
   }
 }
 
-export async function initializeProfile(userId, firstName, lastName, image) {
+export async function saveProfile(userId, firstName, lastName, image) {
   await Database.updateUser(userId, {
     firstName,
     lastName,

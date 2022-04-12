@@ -12,32 +12,26 @@ import * as MyButtons from "./MyButtons";
 import NewPrivateGroupModal from "./NewPrivateGroupModal";
 import * as Controller from "./Controller";
 import * as Globals from "./Globals";
-
+import * as UserInfo from "./UserInfo";
 export default function GroupsScreen({}) {
   const dispatch = useDispatch();
   // const x = null;
   // const a = x.foo;
   const userInfo = useSelector((state) => state.main.userInfo);
-  const {
-    schoolList,
-    schoolMap,
-    groupList,
-    groupMap,
-    userGroupMemberships,
-    orgsMap,
-  } = useSelector((state) => {
-    return {
-      schoolList: state.main.schoolList,
-      schoolMap: state.main.schoolMap,
-      groupList: state.main.groupList,
-      groupMap: state.main.groupMap,
-      userGroupMemberships: state.main.userGroupMemberships,
-      orgsMap: state.main.orgsMap,
-    };
-  });
+  const { schoolList, schoolMap, groupList, groupMap, userGroupMemberships, orgsMap } = useSelector(
+    (state) => {
+      return {
+        schoolList: state.main.schoolList,
+        schoolMap: state.main.schoolMap,
+        groupList: state.main.groupList,
+        groupMap: state.main.groupMap,
+        userGroupMemberships: state.main.userGroupMemberships,
+        orgsMap: state.main.orgsMap,
+      };
+    }
+  );
   const [visibleSchoolGroupModal, setVisibleSchoolGroupModal] = useState(null);
-  const [newPrivateGroupModalVisible, setNewPrivateGroupModalVisible] =
-    useState(false);
+  const [newPrivateGroupModalVisible, setNewPrivateGroupModalVisible] = useState(false);
   const createPrivateGroup = async (groupName, inviteees, emailInvitees) => {
     const groupId = await Controller.createPrivateGroupAndJoin(
       dispatch,
@@ -77,79 +71,76 @@ export default function GroupsScreen({}) {
   // );
   let groupsComponents = null;
   if (userGroupMemberships.length > 0) {
-    groupsComponents = userGroupMemberships.map(
-      (userGroupMembership, index) => {
-        const groupId = userGroupMembership.groupId;
-        const group = groupMap[groupId];
-        if (group == null) {
-          return (
-            <Text>
-              (null), groupId: {groupId}, group_membership_id:
-              {userGroupMembership.id}
-            </Text>
-          );
-        }
-        const org = orgsMap[group.orgId];
+    groupsComponents = userGroupMemberships.map((userGroupMembership, index) => {
+      const groupId = userGroupMembership.groupId;
+      const group = groupMap[groupId];
+      if (group == null) {
         return (
-          <>
-            <TouchableOpacity
-              key={group.id}
+          <Text>
+            (null), groupId: {groupId}, group_membership_id:
+            {userGroupMembership.id}
+          </Text>
+        );
+      }
+      const org = orgsMap[group.orgId];
+      return (
+        <>
+          <TouchableOpacity
+            key={group.id}
+            style={{
+              flexDirection: "row",
+              height: 60,
+              alignItems: "center",
+              paddingLeft: 10,
+            }}
+            onPress={() => {
+              dispatch(Actions.goToScreen({ screen: "GROUP", groupId: group.id }));
+            }}
+          >
+            <View
               style={{
-                flexDirection: "row",
-                height: 60,
-                alignItems: "center",
-                paddingLeft: 10,
-              }}
-              onPress={() => {
-                dispatch(
-                  Actions.goToScreen({ screen: "GROUP", groupId: group.id })
-                );
+                flexGrow: 1,
+                flexDirection: "column",
               }}
             >
-              <View
+              <Text
                 style={{
-                  flexGrow: 1,
-                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: 18,
+                  fontWeight: "bold",
                 }}
               >
+                {group.name} {/*group.id*/}
+              </Text>
+              {Globals.dev && (
+                <Text style={{ fontSize: 8 }}>
+                  user_group_membership: {userGroupMembership.id}
+                  group: {group.id}
+                </Text>
+              )}
+
+              {org != null && (
                 <Text
                   style={{
                     justifyContent: "center",
                     alignItems: "center",
-                    fontSize: 18,
-                    fontWeight: "bold",
+                    fontSize: 14,
                   }}
                 >
-                  {group.name} {/*group.id*/}
+                  {org.name ?? "[No organization]"}
                 </Text>
-                {Globals.dev && (
-                  <Text style={{ fontSize: 8 }}>
-                    user_group_membership: {userGroupMembership.id}
-                    group: {group.id}
-                  </Text>
-                )}
-
-                {org != null && (
-                  <Text
-                    style={{
-                      justifyContent: "center",
-                      alignItems: "center",
-                      fontSize: 14,
-                    }}
-                  >
-                    {org.name ?? "[No organization]"}
-                  </Text>
-                )}
-              </View>
-              <View
-                style={{
-                  flexBasis: 100,
-                  justifyContent: "center",
-                  alignItems: "flex-end",
-                }}
-              >
-                <IconButton icon="chevron-right" color={"darkgrey"} size={32} />
-                {/*
+              )}
+            </View>
+            <View
+              style={{
+                flexBasis: 100,
+                justifyContent: "center",
+                alignItems: "flex-end",
+              }}
+            >
+              <IconButton icon="chevron-right" color={"darkgrey"} size={32} />
+              {/*
               <MyButtons.FormButton
                 text="Open"
                 onPress={() => {
@@ -159,17 +150,12 @@ export default function GroupsScreen({}) {
                 }}
               />
               */}
-              </View>
-            </TouchableOpacity>
-            <Divider
-              style={{ marginTop: 10, marginBottom: 10 }}
-              width={1}
-              color="lightgrey"
-            />
-          </>
-        );
-      }
-    );
+            </View>
+          </TouchableOpacity>
+          <Divider style={{ marginTop: 10, marginBottom: 10 }} width={1} color="lightgrey" />
+        </>
+      );
+    });
   }
 
   return (
@@ -178,12 +164,21 @@ export default function GroupsScreen({}) {
         style={{}}
         left={
           <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {/*
             <Avatar
               size={48}
               rounded
               title="I"
               containerStyle={{ backgroundColor: "coral", marginRight: 10 }}
             />
+        */}
+            {UserInfo.avatarComponent(userInfo, () => {
+              dispatch(
+                Actions.openModal({
+                  modal: "MY_PROFILE",
+                })
+              );
+            })}
             <Text style={{ fontWeight: "bold", fontSize: 20 }}>My Groups</Text>
           </View>
         }

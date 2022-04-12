@@ -11,6 +11,9 @@ export const screenSlice = createSlice({
     screen: {
       screen: null,
     },
+    modal: {
+      modal: null,
+    },
     userScreen: {
       screen: null,
     },
@@ -21,6 +24,20 @@ export const screenSlice = createSlice({
         ...state,
         screen: screen.payload,
         postLoginScreen: null,
+      };
+      return newState;
+    },
+    openModal: (state, modal) => {
+      const newState = {
+        ...state,
+        modal: modal.payload,
+      };
+      return newState;
+    },
+    closeModal: (state, modal) => {
+      const newState = {
+        ...state,
+        modal: null,
       };
       return newState;
     },
@@ -239,7 +256,8 @@ export const {
   searchIndex,
   userMessages,
 } = mainSlice.actions;
-export const { goToScreen, goToUserScreen, goToScreenAfterLogin } = screenSlice.actions;
+export const { goToScreen, openModal, closeModal, goToUserScreen, goToScreenAfterLogin } =
+  screenSlice.actions;
 
 export default configureStore({
   reducer: {

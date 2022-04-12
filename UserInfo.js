@@ -1,4 +1,5 @@
 import { Avatar } from "react-native-elements";
+import { TouchableOpacity } from "react-native";
 import React from "react";
 
 export function chatDisplayName(userInfo) {
@@ -22,9 +23,9 @@ export function avatarColor(userInfo) {
   return "hsl(" + h + ", " + "50" + "%, " + "65" + "%)";
 }
 
-export function avatarComponent(userInfo) {
+export function avatarComponent(userInfo, onPress) {
   const displayName = chatDisplayName(userInfo);
-  return (
+  const avatar = (
     <Avatar
       size={28}
       rounded
@@ -35,4 +36,9 @@ export function avatarComponent(userInfo) {
       }}
     />
   );
+  if (onPress != null) {
+    return <TouchableOpacity onPress={onPress}>{avatar}</TouchableOpacity>;
+  } else {
+    return { avatarComponent };
+  }
 }
