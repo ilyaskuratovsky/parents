@@ -120,7 +120,7 @@ function ModalContainer({ userInfo }) {
             }}
           />
         }
-        center={<Text style={{ fontWeight: "bold", fontSize: 16 }}>Profile Setup</Text>}
+        center={<Text style={{ fontWeight: "bold", fontSize: 16 }}>My Profile</Text>}
         right={
           <MyButtons.LinkButton
             text="Done"
@@ -177,8 +177,8 @@ function ModalContainer({ userInfo }) {
           value={lastName ?? ""}
           selectTextOnFocus={true}
         />
-        <Text>Profile Picture</Text>
-        <View style={{ flexDirection: "row" }}>
+        <Text style={{ marginTop: 20 }}>Profile Picture</Text>
+        <View style={{ marginTop: 10, flexDirection: "row", alignItems: "center" }}>
           {image == null && (
             <Text style={{ width: 80, height: 80, borderRadius: 400 / 2 }}>No Profile Image</Text>
           )}
@@ -201,6 +201,14 @@ function ModalContainer({ userInfo }) {
               <Button onPress={_takePhoto} title="Take Photo" />
             </>
           )}
+        </View>
+        <View style={{ height: 100, justifyContent: "center", alignItems: "center" }}>
+          <MyButtons.LinkButton
+            text="Log Out"
+            onPress={async () => {
+              await Controller.logout();
+            }}
+          />
         </View>
       </View>
       {_maybeRenderUploadingOverlay()}

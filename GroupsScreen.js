@@ -13,23 +13,31 @@ import NewPrivateGroupModal from "./NewPrivateGroupModal";
 import * as Controller from "./Controller";
 import * as Globals from "./Globals";
 import * as UserInfo from "./UserInfo";
+import FacePile from "./FacePile";
 export default function GroupsScreen({}) {
   const dispatch = useDispatch();
   // const x = null;
   // const a = x.foo;
   const userInfo = useSelector((state) => state.main.userInfo);
-  const { schoolList, schoolMap, groupList, groupMap, userGroupMemberships, orgsMap } = useSelector(
-    (state) => {
-      return {
-        schoolList: state.main.schoolList,
-        schoolMap: state.main.schoolMap,
-        groupList: state.main.groupList,
-        groupMap: state.main.groupMap,
-        userGroupMemberships: state.main.userGroupMemberships,
-        orgsMap: state.main.orgsMap,
-      };
-    }
-  );
+  const {
+    schoolList,
+    schoolMap,
+    groupList,
+    groupMap,
+    userGroupMemberships,
+    orgsMap,
+    groupMembershipMap,
+  } = useSelector((state) => {
+    return {
+      schoolList: state.main.schoolList,
+      schoolMap: state.main.schoolMap,
+      groupList: state.main.groupList,
+      groupMap: state.main.groupMap,
+      userGroupMemberships: state.main.userGroupMemberships,
+      groupMembershipMap: state.main.groupMembershipMap,
+      orgsMap: state.main.orgsMap,
+    };
+  });
   const [visibleSchoolGroupModal, setVisibleSchoolGroupModal] = useState(null);
   const [newPrivateGroupModalVisible, setNewPrivateGroupModalVisible] = useState(false);
   const createPrivateGroup = async (groupName, inviteees, emailInvitees) => {
@@ -75,14 +83,19 @@ export default function GroupsScreen({}) {
       const groupId = userGroupMembership.groupId;
       const group = groupMap[groupId];
       if (group == null) {
-        return (
-          <Text>
-            (null), groupId: {groupId}, group_membership_id:
-            {userGroupMembership.id}
-          </Text>
-        );
+        if (Globals.dev) {
+          return (
+            <Text>
+              (null), groupId: {groupId}, group_membership_id:
+              {userGroupMembership.id}
+            </Text>
+          );
+        } else {
+          return null;
+        }
       }
       const org = orgsMap[group.orgId];
+      const members = groupMembershipMap[group.id];
       return (
         <>
           <TouchableOpacity
@@ -119,7 +132,6 @@ export default function GroupsScreen({}) {
                   group: {group.id}
                 </Text>
               )}
-
               {org != null && (
                 <Text
                   style={{
@@ -131,6 +143,13 @@ export default function GroupsScreen({}) {
                   {org.name ?? "[No organization]"}
                 </Text>
               )}
+              <FacePile
+                userIds={members
+                  .filter((groupMembership) => {
+                    return userInfo.uid != groupMembership.uid;
+                  })
+                  .map((groupMembership) => groupMembership.uid)}
+              />
             </View>
             <View
               style={{

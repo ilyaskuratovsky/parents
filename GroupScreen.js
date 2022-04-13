@@ -17,6 +17,7 @@ import MessageScreen from "./MessageScreen";
 import MessageModal from "./MessageModal";
 import ThreadMessageModal from "./ThreadMessageModal";
 import NewEventModal from "./NewEventModal";
+import FacePile from "./FacePile";
 import * as Globals from "./Globals";
 import {
   FlatList,

@@ -70,11 +70,18 @@ export function smallAvatarComponent(userInfo, onPress) {
     const uri = userInfo.image;
     avatar = <Image style={{ height: 20, width: 20, borderRadius: 10 }} uri={uri} />;
   } else {
+    let letters = null;
+    if (userInfo.firstName != null && userInfo.lastName != null) {
+      letters =
+        userInfo.firstName.charAt(0).toUpperCase() + userInfo.lastName.charAt(0).toUpperCase();
+    } else {
+      letters = displayName.charAt(0).toUpperCase();
+    }
     avatar = (
       <Avatar
         size={20}
         rounded
-        title={displayName.charAt(0).toUpperCase()}
+        title={letters}
         containerStyle={{
           backgroundColor: avatarColor(userInfo),
           marginRight: 1,
