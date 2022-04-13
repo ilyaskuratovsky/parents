@@ -179,7 +179,7 @@ export default function GroupsScreen({}) {
                 })
               );
             })}
-            <Text style={{ fontWeight: "bold", fontSize: 20 }}>My Groups</Text>
+            <Text style={{ paddingLeft: 10, fontWeight: "bold", fontSize: 20 }}>My Groups</Text>
           </View>
         }
         center={null}

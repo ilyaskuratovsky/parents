@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "./Actions";
 import * as MyButtons from "./MyButtons";
 import * as Globals from "./Globals";
+import * as UserInfo from "./UserInfo";
 
 export default function MessageView({ item, onPress }) {
   const timeAgo = ({ children }) => {
@@ -82,15 +83,7 @@ export default function MessageView({ item, onPress }) {
                 //backgroundColor: "cyan",
               }}
             >
-              <Avatar
-                size={20}
-                rounded
-                title={item.user.name.charAt(0).toUpperCase()}
-                containerStyle={{
-                  backgroundColor: item.user.avatarColor,
-                  marginRight: 1,
-                }}
-              />
+              {item.user.avatar}
               <View
                 style={{
                   flex: 1,

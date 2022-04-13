@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { IconButton } from "react-native-paper";
+import { Image } from "react-native-expo-image-cache";
 
 import {
   Text,
@@ -8,7 +9,6 @@ import {
   View,
   Modal,
   TextInput,
-  Image,
   Button,
   StyleSheet,
   ActivityIndicator,
@@ -183,10 +183,7 @@ function ModalContainer({ userInfo }) {
             <Text style={{ width: 80, height: 80, borderRadius: 400 / 2 }}>No Profile Image</Text>
           )}
           {image != null && (
-            <Image
-              source={{ uri: image }}
-              style={{ width: 80, height: 80, borderRadius: 400 / 2 }}
-            />
+            <Image style={{ height: 80, width: 80, borderRadius: 40 }} uri={image} />
           )}
           {/*
           <IconButton
