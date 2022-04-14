@@ -53,7 +53,7 @@ const TopBar = ({ left, center, right, style, leftWidth }) => {
           <View style={{ flexDirection: "row" }}>{right}</View>
         </View>
       </View>
-      <Divider style={{}} width={1} color="darkgrey" />
+      <Divider style={{}} width={1} color="lightgrey" />
     </View>
   );
 };

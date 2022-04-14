@@ -20,6 +20,7 @@ import * as Globals from "./Globals";
 import * as UserInfo from "./UserInfo";
 
 export default function MessageView({ item, onPress }) {
+  const timestamp = item.timestamp?.toDate();
   const timeAgo = ({ children }) => {
     return (
       <Text
@@ -98,6 +99,7 @@ export default function MessageView({ item, onPress }) {
                   style={{
                     marginLeft: 5,
                     fontWeight: "bold",
+                    color: "grey",
                     fontSize: 16,
                   }}
                 >
@@ -111,7 +113,8 @@ export default function MessageView({ item, onPress }) {
                   }}
                 >
                   <TimeAgo
-                    date={item.lastUpdated}
+                    date={timestamp}
+                    timeStyle="twitter-first-minute"
                     style={{
                       marginLeft: 5,
                       fontWeight: "normal",
@@ -138,7 +141,7 @@ export default function MessageView({ item, onPress }) {
                 <Text
                   style={{
                     paddingLeft: 0,
-                    fontSize: 20,
+                    fontSize: 16,
                     fontWeight: "bold",
                   }}
                 >
@@ -169,7 +172,8 @@ export default function MessageView({ item, onPress }) {
                   numberOfLines={1}
                   ellipsizeMode="tail"
                   style={{
-                    fontSize: 18,
+                    fontSize: 16,
+                    color: "grey",
                     flexGrow: 1,
                   }}
                 >

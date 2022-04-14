@@ -97,7 +97,13 @@ export default function GroupsScreen({}) {
       const org = orgsMap[group.orgId];
       const members = groupMembershipMap[group.id];
       return (
-        <View key={index} style={{ flex: 1 }}>
+        <View
+          key={index}
+          style={{
+            flex: 1,
+            //backgroundColor: "cyan"
+          }}
+        >
           <TouchableOpacity
             key={group.id}
             style={{
@@ -114,14 +120,16 @@ export default function GroupsScreen({}) {
               style={{
                 flexGrow: 1,
                 flexDirection: "column",
+                //backgroundColor: "green",
               }}
             >
               <Text
                 style={{
                   justifyContent: "center",
-                  alignItems: "center",
+                  alignItems: "flex-start",
                   fontSize: 18,
                   fontWeight: "bold",
+                  fontFamily: "Helvetica Neue",
                 }}
               >
                 {group.name} {/*group.id*/}
@@ -143,13 +151,15 @@ export default function GroupsScreen({}) {
                   {org.name ?? "[No organization]"}
                 </Text>
               )}
-              <FacePile
-                userIds={members
-                  .filter((groupMembership) => {
-                    return userInfo.uid != groupMembership.uid;
-                  })
-                  .map((groupMembership) => groupMembership.uid)}
-              />
+              <View style={{ flex: 1, paddingTop: 8 }}>
+                <FacePile
+                  userIds={members
+                    .filter((groupMembership) => {
+                      return userInfo.uid != groupMembership.uid;
+                    })
+                    .map((groupMembership) => groupMembership.uid)}
+                />
+              </View>
             </View>
             <View
               style={{
@@ -171,7 +181,7 @@ export default function GroupsScreen({}) {
               */}
             </View>
           </TouchableOpacity>
-          <Divider style={{ marginTop: 10, marginBottom: 10 }} width={1} color="lightgrey" />
+          <Divider style={{ marginTop: 20, marginBottom: 10 }} width={3} color="lightgrey" />
         </View>
       );
     });
@@ -184,14 +194,28 @@ export default function GroupsScreen({}) {
         style={{}}
         left={
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            {UserInfo.avatarComponent(userInfo, () => {
-              dispatch(
-                Actions.openModal({
-                  modal: "MY_PROFILE",
-                })
-              );
-            })}
-            <Text style={{ paddingLeft: 10, fontWeight: "bold", fontSize: 20 }}>My Groups</Text>
+            <Text
+              style={{
+                flexGrow: 1,
+                paddingLeft: 6,
+                fontWeight: "bold",
+                fontSize: 22,
+                fontFamily: "Helvetica Neue",
+                //color: "grey",
+                //backgroundColor: "yellow",
+              }}
+            >
+              My Groups
+            </Text>
+            <View style={{ width: 80, alignItems: "flex-end" }}>
+              {UserInfo.avatarComponent(userInfo, () => {
+                dispatch(
+                  Actions.openModal({
+                    modal: "MY_PROFILE",
+                  })
+                );
+              })}
+            </View>
           </View>
         }
         center={null}

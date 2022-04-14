@@ -68,7 +68,7 @@ export function smallAvatarComponent(userInfo, onPress) {
   let avatar = null;
   if (userInfo.image != null) {
     const uri = userInfo.image;
-    avatar = <Image style={{ height: 20, width: 20, borderRadius: 10 }} uri={uri} />;
+    avatar = <Image style={{ height: 30, width: 30, borderRadius: 15 }} uri={uri} />;
   } else {
     let letters = null;
     if (userInfo.firstName != null && userInfo.lastName != null) {
@@ -79,7 +79,7 @@ export function smallAvatarComponent(userInfo, onPress) {
     }
     avatar = (
       <Avatar
-        size={20}
+        size={30}
         rounded
         title={letters}
         containerStyle={{

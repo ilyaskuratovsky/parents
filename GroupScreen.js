@@ -196,11 +196,11 @@ export default function GroupScreen({ groupId }) {
   const newMessageHeight = 80;
   const bottomBarHeight = 64;
   return (
-    <Portal backgroundColor={/*UIConstants.DEFAULT_BACKGROUND*/ "white"}>
+    <Portal backgroundColor={"whitesmoke"}>
       {/* top bar section */}
       <View
         style={{
-          //backgroundColor: "yellow",
+          backgroundColor: "whitesmoke",
           flexDirection: "column",
           height: topBarHeight,
         }}
@@ -268,14 +268,14 @@ export default function GroupScreen({ groupId }) {
             />
           </View>
         </View>
-        <Divider style={{}} width={1} color="darkgrey" />
+        <Divider style={{}} width={1} color="lightgrey" />
       </View>
       {/* messages section */}
       <View
         style={{
           flexGrow: 1,
           flexDirection: "column",
-          //backgroundColor: "orange",
+          backgroundColor: "white",
         }}
       >
         <View style={{ flex: 1 }}>
