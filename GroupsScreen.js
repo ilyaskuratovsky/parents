@@ -85,7 +85,7 @@ export default function GroupsScreen({}) {
       if (group == null) {
         if (Globals.dev) {
           return (
-            <Text>
+            <Text key={index}>
               (null), groupId: {groupId}, group_membership_id:
               {userGroupMembership.id}
             </Text>
@@ -97,7 +97,7 @@ export default function GroupsScreen({}) {
       const org = orgsMap[group.orgId];
       const members = groupMembershipMap[group.id];
       return (
-        <>
+        <View key={index} style={{ flex: 1 }}>
           <TouchableOpacity
             key={group.id}
             style={{
@@ -172,7 +172,7 @@ export default function GroupsScreen({}) {
             </View>
           </TouchableOpacity>
           <Divider style={{ marginTop: 10, marginBottom: 10 }} width={1} color="lightgrey" />
-        </>
+        </View>
       );
     });
   }
@@ -180,17 +180,10 @@ export default function GroupsScreen({}) {
   return (
     <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
       <TopBar
+        key="topbar"
         style={{}}
         left={
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            {/*
-            <Avatar
-              size={48}
-              rounded
-              title="I"
-              containerStyle={{ backgroundColor: "coral", marginRight: 10 }}
-            />
-        */}
             {UserInfo.avatarComponent(userInfo, () => {
               dispatch(
                 Actions.openModal({
@@ -204,8 +197,8 @@ export default function GroupsScreen({}) {
         center={null}
         right={null}
       />
-      <View style={{ flex: 1, backgroundColor: "white", paddingTop: 20 }}>
-        <ScrollView>
+      <View key="main_content" style={{ flex: 1, backgroundColor: "white", paddingTop: 20 }}>
+        <ScrollView key="messages">
           {groupsComponents}
           <View
             style={{
@@ -223,9 +216,10 @@ export default function GroupsScreen({}) {
             />
           </View>
         </ScrollView>
-        <Toolbar />
+        <Toolbar key="toolbar" />
       </View>
       <NewPrivateGroupModal
+        key="new-group-modal"
         visible={newPrivateGroupModalVisible}
         createGroup={createPrivateGroup}
         closeModal={() => setNewPrivateGroupModalVisible(false)}

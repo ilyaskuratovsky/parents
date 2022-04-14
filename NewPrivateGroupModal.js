@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Modal,
-  Text,
-  View,
-  TextInput,
-  SafeAreaView,
-  ScrollView,
-} from "react-native";
+import { Modal, Text, View, TextInput, SafeAreaView, ScrollView } from "react-native";
 import { ToggleButton } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import * as Paper from "react-native-paper";
@@ -16,11 +9,7 @@ import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as UserInfo from "./UserInfo";
 import { CheckBox } from "react-native-elements";
 
-export default function NewPrivateGroupModal({
-  visible,
-  createGroup,
-  closeModal,
-}) {
+export default function NewPrivateGroupModal({ visible, createGroup, closeModal }) {
   const userInfo = useSelector((state) => state.main.userInfo);
   const [groupName, setGroupName] = useState(null);
   const [groupDescription, setGroupDescription] = useState(null);
@@ -29,15 +18,14 @@ export default function NewPrivateGroupModal({
   const [invitesByEmailList, setInvitesByEmailList] = useState([]);
   const [processing, setProcessing] = useState(false);
 
-  const { groupMap, userGroupMemberships, groupMembershipMap, userMap } =
-    useSelector((state) => {
-      return {
-        groupMap: state.main.groupMap,
-        userGroupMemberships: state.main.userGroupMemberships,
-        groupMembershipMap: state.main.groupMembershipMap,
-        userMap: state.main.userMap,
-      };
-    });
+  const { groupMap, userGroupMemberships, groupMembershipMap, userMap } = useSelector((state) => {
+    return {
+      groupMap: state.main.groupMap,
+      userGroupMemberships: state.main.userGroupMemberships,
+      groupMembershipMap: state.main.groupMembershipMap,
+      userMap: state.main.userMap,
+    };
+  });
 
   if (userInfo == null) {
     return <Text>Loading Data...</Text>;
@@ -174,9 +162,7 @@ export default function NewPrivateGroupModal({
                       onPress={() => {
                         let newInviteeList = [...invitees];
                         if (newInviteeList.includes(user.uid)) {
-                          newInviteeList = newInviteeList.filter(
-                            (i) => i != user.uid
-                          );
+                          newInviteeList = newInviteeList.filter((i) => i != user.uid);
                         } else {
                           newInviteeList.push(user.uid);
                         }
@@ -192,7 +178,6 @@ export default function NewPrivateGroupModal({
                       <Text
                         style={{
                           alignItems: "center",
-                          alignSelf: "start",
                           //backgroundColor: "orange",
                         }}
                       >
@@ -201,8 +186,8 @@ export default function NewPrivateGroupModal({
                       <Text
                         style={{
                           alignItems: "center",
-                          alignSelf: "start",
-                          fontSize: "10",
+                          alignSelf: "flex-start",
+                          fontSize: 10,
                           //backgroundColor: "orange",
                         }}
                       >

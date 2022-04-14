@@ -14,8 +14,8 @@ import BottomBar from "./BottomBar";
 export default function GroupsScreen({ navigation }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const { schoolList, schoolMap, groupList, groupMap, userGroupMemberships } =
-    useSelector((state) => {
+  const { schoolList, schoolMap, groupList, groupMap, userGroupMemberships } = useSelector(
+    (state) => {
       return {
         schoolList: state.main.schoolList,
         schoolMap: state.main.schoolMap,
@@ -23,7 +23,8 @@ export default function GroupsScreen({ navigation }) {
         groupMap: state.main.groupMap,
         userGroupMemberships: state.main.userGroupMemberships,
       };
-    });
+    }
+  );
   const [visibleSchoolGroupModal, setVisibleSchoolGroupModal] = useState(null);
   if (userInfo == null) {
     return <Text>Loading Data...</Text>;
@@ -48,16 +49,12 @@ export default function GroupsScreen({ navigation }) {
     if you don't belong to any schools just say - you don't have any groups and only the search is enabled.
   */
   const userSchools = userInfo.profile.schools ?? [];
-  const userGroups = userGroupMemberships.map(
-    (groupMembership) => groupMembership.groupId
-  );
+  const userGroups = userGroupMemberships.map((groupMembership) => groupMembership.groupId);
   let schoolsComponent = null;
   if (userSchools.length > 0) {
     schoolsComponent = userSchools.map((school_id) => {
       const school = schoolMap[school_id];
-      const schoolGroups = groupList.filter(
-        (group) => group.schoolId == school.id
-      );
+      const schoolGroups = groupList.filter((group) => group.schoolId == school.id);
 
       const userSchoolGroups = schoolGroups.filter((schoolGroup) => {
         return userGroups.includes(schoolGroup.id);
@@ -65,10 +62,7 @@ export default function GroupsScreen({ navigation }) {
 
       const schoolGroupComponents = userSchoolGroups.map((group) => {
         return (
-          <View
-            key={"x" + school.id + "_" + group.id}
-            style={{ flexDirection: "row" }}
-          >
+          <View key={"x" + school.id + "_" + group.id} style={{ flexDirection: "row" }}>
             <Text>
               {group.name} ({group.id})
             </Text>
@@ -76,9 +70,7 @@ export default function GroupsScreen({ navigation }) {
             <MyButtons.FormButton
               text="Go To Group"
               onPress={() => {
-                dispatch(
-                  Actions.goToUserScreen({ screen: "GROUP", groupId: group.id })
-                );
+                dispatch(Actions.goToUserScreen({ screen: "GROUP", groupId: group.id }));
               }}
             />
           </View>
@@ -91,10 +83,7 @@ export default function GroupsScreen({ navigation }) {
 
       const joinGroupComponents = joinSchoolGroups.map((group) => {
         return (
-          <View
-            key={"join_" + school.id + "_" + group.id}
-            style={{ flexDirection: "row" }}
-          >
+          <View key={"join_" + school.id + "_" + group.id} style={{ flexDirection: "row" }}>
             <Text>
               {group.name} ({group.id})
             </Text>
@@ -148,22 +137,19 @@ export default function GroupsScreen({ navigation }) {
       );
     });
   } else {
-    schoolsComponent = (
-      <Text key="noschool">
-        No Schools Set Up [link here to set up schools]
-      </Text>
-    );
+    schoolsComponent = <Text key="noschool">No Schools Set Up [link here to set up schools]</Text>;
   }
 
   return (
     <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
       <TopBar
+        key="topbar"
         style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}
         left={null}
         center={<Text>Groups</Text>}
         right={null}
       />
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1 }} key="main_content">
         <SearchBar
           key="search"
           round
@@ -189,8 +175,7 @@ export default function GroupsScreen({ navigation }) {
               dispatch(
                 Actions.goToUserScreen({
                   screen: "DEBUG",
-                  backAction: () =>
-                    Actions.goToUserScreen({ screen: "GROUPS" }),
+                  backAction: () => Actions.goToUserScreen({ screen: "GROUPS" }),
                 })
               );
             }}
