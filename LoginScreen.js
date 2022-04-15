@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, Button, TextInput } from "react-native";
+import { StyleSheet, Text, View, Button, TextInput, ActivityIndicator } from "react-native";
 import {
   GoogleAuthProvider,
   signInWithEmailAndPassword,
@@ -7,6 +7,7 @@ import {
   FacebookAuthProvider,
   getAuth,
 } from "firebase/auth";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "./config/firebase";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "./Actions";
@@ -15,6 +16,8 @@ import { initializeApp } from "firebase/app";
 
 export default function Login({ afterLoginScreen }) {
   const dispatch = useDispatch();
+
+  const [user, loading, error] = useAuthState(auth);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -60,6 +63,23 @@ export default function Login({ afterLoginScreen }) {
     }
   }
   */
+
+  if (loading || user) {
+    return (
+      <View
+        style={[
+          StyleSheet.absoluteFill,
+          {
+            backgroundColor: "rgba(0,0,0,0.4)",
+            alignItems: "center",
+            justifyContent: "center",
+          },
+        ]}
+      >
+        <ActivityIndicator color="#fff" animating size="large" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

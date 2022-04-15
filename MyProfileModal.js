@@ -207,6 +207,11 @@ function ModalContainer({ userInfo }) {
             text="Log Out"
             onPress={async () => {
               await Controller.logout();
+              dispatch(
+                Actions.closeModal({
+                  modal: "MY_PROFILE",
+                })
+              );
             }}
           />
         </View>

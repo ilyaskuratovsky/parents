@@ -1,35 +1,27 @@
-import React, { useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { View } from "react-native";
-import * as Controller from "./Controller";
-import ErrorScreen from "./ErrorScreen";
-import InitialChooseSchoolsWizard from "./InitialChooseSchoolsWizard";
-import SplashScreen from "./SplashScreen";
-import LoginScreen from "./LoginScreen";
-import UserScreen from "./UserScreen";
-import SignupScreen from "./SignupScreen";
-import InitialJoinSchoolGroupsScreen from "./InitialJoinSchoolGroupsScreen";
-import GroupsScreen from "./GroupsScreen";
-import GroupScreen from "./GroupScreen";
-import FindGroupsScreen from "./FindGroupsScreen";
-import SchoolScreen from "./SchoolScreen";
-import RDBTest from "./RDBTest";
-import LoggedInScreenRouter from "./LoggedInScreenRouter";
-import OrgScreen from "./OrgScreen";
-import Messages from "./Messages";
-import MyProfileScreen from "./MyProfileScreen";
-import DebugScreen from "./DebugScreen";
 import * as Notifications from "expo-notifications";
+import React, { useEffect, useRef } from "react";
+import { View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "./Actions";
-import PostScreen from "./PostScreen";
+import * as Controller from "./Controller";
+import DebugScreen from "./DebugScreen";
+import ErrorScreen from "./ErrorScreen";
+import FindGroupsScreen from "./FindGroupsScreen";
+import GroupScreen from "./GroupScreen";
+import GroupsScreen from "./GroupsScreen";
+import InitialChooseSchoolsWizard from "./InitialChooseSchoolsWizard";
+import InitialJoinSchoolGroupsScreen from "./InitialJoinSchoolGroupsScreen";
+import LoginScreen from "./LoginScreen";
+import Messages from "./Messages";
 import MessageScreen from "./MessageScreen";
-import TestErrorHandler from "./TestErrorHandler";
-import TestBook from "./TestBook";
 import MyProfileModal from "./MyProfileModal";
-import TestImagePicker from "./TestImagePicker";
-import TestImagePickerFirebase from "./TestImagePickerFirebase";
-import TestDatePicker from "./TestDatePicker";
-import TestICal from "./TestICal";
+import MyProfileScreen from "./MyProfileScreen";
+import OrgScreen from "./OrgScreen";
+import PostScreen from "./PostScreen";
+import SchoolScreen from "./SchoolScreen";
+import SignupScreen from "./SignupScreen";
+import SplashScreen from "./SplashScreen";
+import UserScreen from "./UserScreen";
 
 function RootApp(props, state) {
   //const x = { a: "b" };
@@ -56,21 +48,7 @@ function RootApp(props, state) {
 
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
   useEffect(() => {
-    /*
-    dispatch(
-      Actions.goToScreen({
-        screen: "GROUP",
-        groupId: "-MyFOw8ypHPOmvARbHAa",
-      })
-    );
-    */
     if (lastNotificationResponse) {
-      /*
-      alert(
-        "lastNotificationResponse.notification: " +
-          JSON.stringify(lastNotificationResponse.notification)
-      );
-      */
       const groupId = lastNotificationResponse.notification?.request?.content?.data?.groupId;
       if (groupId != null) {
         dispatch(Actions.goToScreen({ screen: "GROUP", groupId }));
