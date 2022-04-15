@@ -86,38 +86,6 @@ export default function GroupScreen({ groupId }) {
     //return 0;
   });
 
-  /*
-  const threadMessages = sortedMessages.map((message) => {
-    const user = userMap[message.uid];
-    const children = message.children;
-    const childrenThreadMessages =
-      children == null
-        ? []
-        : children.map((message) => {
-            return {
-              ...message,
-              _id: message.id,
-              text: message.text,
-              createdAt: new Date(message.timestamp),
-              children,
-              event: message.event,
-              status: message.status,
-            };
-          });
-    return {
-      ...message,
-      _id: message.id,
-      title: message.title ?? "[No title]",
-      text: message.text,
-      createdAt: new Date(message.timestamp),
-      children: childrenThreadMessages,
-      status: message.status,
-      unreadChildCount: message.unreadChildCount,
-      lastUpdated: message.lastUpdated,
-    };
-  });
-    */
-
   const org = orgsMap[group?.orgId];
   // send message callback function
   const sendMessage = useCallback(async (title, text) => {

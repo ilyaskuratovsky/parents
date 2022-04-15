@@ -18,8 +18,8 @@ export default function FacePile({ userIds }) {
   const components = userIds.map((uid, index) => {
     const user = userMap[uid];
     return (
-      <View key={index} style={{ position: "relative", left: -(index * 5), zIndex: -index }}>
-        {UserInfo.smallAvatarComponent(user)}
+      <View key={index} style={{ position: "relative", left: -(index * 10), zIndex: -index }}>
+        {UserInfo.smallAvatarComponent(user, null, true)}
       </View>
     );
   });

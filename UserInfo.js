@@ -68,12 +68,23 @@ export function avatarComponent(userInfo, onPress) {
   }
 }
 
-export function smallAvatarComponent(userInfo, onPress) {
+export function smallAvatarComponent(userInfo, onPress, border) {
   const displayName = chatDisplayName(userInfo);
   let avatar = null;
   if (userInfo.image != null) {
     const uri = userInfo.image;
-    avatar = <Image style={{ height: 30, width: 30, borderRadius: 15 }} uri={uri} />;
+    avatar = (
+      <Image
+        style={{
+          height: 30,
+          width: 30,
+          borderWidth: border ? 2 : 0,
+          borderColor: "whitesmoke",
+          borderRadius: 15,
+        }}
+        uri={uri}
+      />
+    );
   } else {
     let letters = null;
     if (userInfo.firstName != null && userInfo.lastName != null) {
@@ -90,6 +101,8 @@ export function smallAvatarComponent(userInfo, onPress) {
         containerStyle={{
           backgroundColor: avatarColor(userInfo),
           marginRight: 1,
+          borderWidth: border ? 1 : 0,
+          borderColor: "whitesmoke",
         }}
       />
     );

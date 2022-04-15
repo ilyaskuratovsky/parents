@@ -5,22 +5,10 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import TimeAgo from "react-timeago";
 import * as Globals from "./Globals";
 import * as UserInfo from "./UserInfo";
+import MessageTime from "./MessageTime";
 
 export default function MessageView({ item, onPress }) {
   const timestamp = item.timestamp?.toDate();
-  const timeAgo = ({ children }) => {
-    return (
-      <Text
-        style={{
-          marginLeft: 5,
-          fontWeight: "normal",
-          fontSize: 14,
-        }}
-      >
-        {children}
-      </Text>
-    );
-  };
   return (
     <TouchableOpacity
       onPress={() => {
@@ -99,16 +87,7 @@ export default function MessageView({ item, onPress }) {
                     fontSize: 14,
                   }}
                 >
-                  <TimeAgo
-                    date={timestamp}
-                    timeStyle="twitter-first-minute"
-                    style={{
-                      marginLeft: 5,
-                      fontWeight: "normal",
-                      fontSize: 14,
-                    }}
-                    component={timeAgo}
-                  />
+                  <MessageTime timestamp={timestamp} />
                 </View>
               </View>
             </View>

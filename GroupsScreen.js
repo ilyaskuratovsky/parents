@@ -156,11 +156,14 @@ export default function GroupsScreen({}) {
               )}
               <View style={{ flex: 1, paddingTop: 8 }}>
                 <FacePile
-                  userIds={members
-                    .filter((groupMembership) => {
-                      return userInfo.uid != groupMembership.uid;
-                    })
-                    .map((groupMembership) => groupMembership.uid)}
+                  userIds={[userInfo.uid].concat(
+                    members
+                      .filter((groupMembership) => {
+                        return userInfo.uid != groupMembership.uid;
+                      })
+                      .map((groupMembership) => groupMembership.uid)
+                  )}
+                  border
                 />
               </View>
             </View>
