@@ -1,21 +1,8 @@
-import React, { useEffect, useState } from "react";
-import {
-  FlatList,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  useWindowDimensions,
-  View,
-  TextInput,
-} from "react-native";
-import { Avatar, Badge } from "react-native-elements";
+import React from "react";
+import { Text, TouchableOpacity, View } from "react-native";
+import { Badge } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import ThreadMessageModal from "./ThreadMessageModal";
 import TimeAgo from "react-timeago";
-import { useDispatch, useSelector } from "react-redux";
-import * as Actions from "./Actions";
-import * as MyButtons from "./MyButtons";
 import * as Globals from "./Globals";
 import * as UserInfo from "./UserInfo";
 
@@ -84,7 +71,7 @@ export default function MessageView({ item, onPress }) {
                 //backgroundColor: "cyan",
               }}
             >
-              {item.user.avatar}
+              {UserInfo.smallAvatarComponent(item.user)}
               <View
                 style={{
                   flex: 1,
@@ -99,11 +86,11 @@ export default function MessageView({ item, onPress }) {
                   style={{
                     marginLeft: 5,
                     fontWeight: "bold",
-                    color: "grey",
+                    color: "#222222",
                     fontSize: 16,
                   }}
                 >
-                  {item.user.name} {/*item._id*/}
+                  {UserInfo.chatDisplayName(item.user)} {/*item._id*/}
                 </Text>
                 <View
                   style={{
@@ -145,10 +132,10 @@ export default function MessageView({ item, onPress }) {
                     fontWeight: "bold",
                   }}
                 >
-                  {item.title}
+                  {item.title ?? "[No Title]"}
                 </Text>
               </View>
-              {Globals.dev ? <Text style={{ fontSize: 10 }}>{item._id}</Text> : null}
+              {Globals.dev ? <Text style={{ fontSize: 10 }}>{item.id}</Text> : null}
             </View>
 
             {/* message text */}

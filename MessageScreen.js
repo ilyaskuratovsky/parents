@@ -5,7 +5,6 @@ import * as Controller from "./Controller";
 import GroupMembersModal from "./GroupMembersModal";
 import * as MyButtons from "./MyButtons";
 import Portal from "./Portal";
-import ThreadView from "./ThreadView";
 import Toolbar from "./Toolbar";
 import * as UserInfo from "./UserInfo";
 import * as Actions from "./Actions";
@@ -49,7 +48,14 @@ export default function MessageScreen({ groupId, messageId, onBack }) {
   const { height, width } = useWindowDimensions();
   const windowWidth = width ?? 0;
   const [membersModalVisible, setMembersModalVisible] = useState(false);
-  const message = MessageUtils.buildMessageWithChildren(messageId, messages);
+  const message = MessageUtils.buildMessageWithChildren(
+    messageId,
+    messages,
+    userInfo,
+    null,
+    null,
+    userMap
+  );
   const user = userMap[message.uid];
 
   const sortedChildMessages = [...message.children] ?? [];
@@ -194,23 +200,6 @@ export default function MessageScreen({ groupId, messageId, onBack }) {
           })}
         </ScrollView>
       </View>
-      {/*
-      <View style={{ flexDirection: "column", flexGrow: 1 }}>
-        <FlatList
-          style={{ flex: 1 }}
-          data={
-            //DATA
-            childMessages
-          }
-          renderItem={renderMessage}
-          keyExtractor={(item) => item._id}
-          contentContainerStyle={{
-            width: windowWidth,
-          }}
-          //ItemSeparatorComponent={FlatListItemSeparator}
-        />
-      </View>
-        */}
       {/* reply text input section */}
       <View
         style={{

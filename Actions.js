@@ -178,7 +178,8 @@ export const mainSlice = createSlice({
       };
     },
     groups: (state, obj) => {
-      const groups = obj.payload;
+      let groups = obj.payload;
+      groups = groups.filter((group) => group != null /* && group.status != "deleted"*/);
       const groupList = [];
       const groupMap = {};
       for (const group of groups) {

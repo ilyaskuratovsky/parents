@@ -120,9 +120,7 @@ function observeAllGroupMembershipChangesHelper(callback, uid, userCallback) {
     const ret = toArray(data);
     callback(ret);
     if (uid != null) {
-      const userGroupMemberships = ret.filter(
-        (groupMembership) => groupMembership.uid == uid
-      );
+      const userGroupMemberships = ret.filter((groupMembership) => groupMembership.uid == uid);
       userCallback(userGroupMemberships);
     }
   });
@@ -172,19 +170,18 @@ export async function createOrg(name, type) {
   return newReference.key;
 }
 
-export async function updateUserGroupMembership(
-  userGroupMembershipId,
-  updateObj
-) {
+export async function updateUserGroupMembership(userGroupMembershipId, updateObj) {
   const docRef = RDB.ref(rdb, "/group_memberships/" + userGroupMembershipId);
   await RDB.update(docRef, updateObj);
 }
 
 export async function updateUserMessage(uid, messageId, update) {
-  console.log(
-    "updating user message, uid: " + uid + ", messageId: " + messageId
-  );
   const docRef = RDB.ref(rdb, "/user_messages/" + uid + "/" + messageId);
+  await RDB.update(docRef, update);
+}
+
+export async function updateGroup(groupId, update) {
+  const docRef = RDB.ref(rdb, "/groups/" + groupId);
   await RDB.update(docRef, update);
 }
 

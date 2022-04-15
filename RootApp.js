@@ -17,7 +17,6 @@ import RDBTest from "./RDBTest";
 import LoggedInScreenRouter from "./LoggedInScreenRouter";
 import OrgScreen from "./OrgScreen";
 import Messages from "./Messages";
-import TestThreadView from "./TestThreadView";
 import MyProfileScreen from "./MyProfileScreen";
 import DebugScreen from "./DebugScreen";
 import * as Notifications from "expo-notifications";

@@ -27,6 +27,7 @@ import { IconButton } from "react-native-paper";
 import * as Controller from "./Controller";
 import { userInfo } from "./Actions";
 import * as Calendar from "expo-calendar";
+import * as Globals from "./Globals";
 
 export default function MessagesContainer({ groupId, messageId, visible, closeModal }) {
   const user = useSelector((state) => state.main.userInfo);
@@ -38,8 +39,15 @@ export default function MessagesContainer({ groupId, messageId, visible, closeMo
       userMap: state.main.userMap,
     };
   });
-  const message = MessageUtils.buildMessageWithChildren(messageId, messages, user, userMessagesMap);
-  console.log(JSON.stringify(message));
+  const message = MessageUtils.buildMessageWithChildren(
+    messageId,
+    messages,
+    user,
+    userMessagesMap,
+    null,
+    userMap
+  );
+  console.log("built message with children: " + message.id);
 
   const group = groupMap[groupId];
   if (message.event == null) {
@@ -75,26 +83,14 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
     //return 0;
   });
 
-  const childMessages = sortedChildMessages.map((message) => {
-    const user = userMap[message.uid];
-    return {
-      ...message,
-      _id: message.id,
-      text: message.text,
-      createdAt: new Date(message.timestamp),
-      user: {
-        _id: message.uid,
-        name: UserInfo.chatDisplayName(user),
-        avatarColor: UserInfo.avatarColor(user),
-      },
-    };
-  });
+  const childMessages = sortedChildMessages;
 
   // send message callback function
   const sendMessage = useCallback(async (text) => {
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(user);
     setText("");
+    Alert.alert("sending message papa_id: " + message.id);
     await Controller.sendReply(dispatch, user, group.id, text, message.id, {
       groupName,
       fromName,
@@ -102,12 +98,6 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
     scrollViewRef.current.scrollToEnd({ animated: true });
   }, []);
 
-  /*
-  const renderMessage = ({ item }) => {
-    return <CommentView item={item} width={windowWidth} />;
-  };
-        <KeyboardAvoidingView behavior="padding" style={{ height: replyBarHeight, flex: 1, backgroundColor: "white" }}>
-  */
   const [text, setText] = useState("");
   const scrollViewRef = useRef();
   const insets = useSafeAreaInsets();
@@ -116,15 +106,6 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
   const replyBarHeight = 80;
 
   useEffect(async () => {
-    // update last viewed callback function
-    /*
-    if (messages.length > 0) {
-      const maxTimestampMessage = messages.reduce((prev, current) =>
-        prev.timestamp > current.timestamp ? prev : current
-      );
-      await Controller.setUserGroupLastViewedTimestamp(userInfo, group.id, maxTimestampMessage.timestamp);
-    }
-    */
     let markRead = [];
     if (message.status != "read") {
       markRead.push(message.id);
@@ -188,7 +169,7 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
                   paddingBottom: 6,
                 }}
               >
-                {UserInfo.avatarComponent(user)}
+                {UserInfo.smallAvatarComponent(user)}
                 <View
                   style={{
                     flex: 1,
@@ -203,7 +184,8 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
                     style={{
                       marginLeft: 5,
                       fontWeight: "bold",
-                      fontSize: 16,
+                      fontSize: 14,
+                      color: "#111111",
                     }}
                   >
                     {UserInfo.chatDisplayName(user)}
@@ -222,7 +204,8 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
                   style={{
                     paddingLeft: 0,
                     fontWeight: "bold",
-                    fontSize: 20,
+                    fontSize: 16,
+                    color: "#111111",
                   }}
                 >
                   {message.title}
@@ -231,18 +214,21 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
                   //numberOfLines={showMore[item.id] ? null : 4}
                   style={{
                     paddingLeft: 0,
-                    fontSize: 18,
+                    paddingTop: 8,
+                    fontSize: 16,
+                    color: "#111111",
                   }}
                 >
                   {message.text}
                 </Text>
+                {Globals.dev && <Text style={{ fontSize: 8 }}>{JSON.stringify(message)}</Text>}
               </View>
             </View>
             <Divider style={{}} width={1} color="darkgrey" />
             {/* comments section */}
             <View style={{ flex: 1 }}>
               {childMessages.map((message) => {
-                return <CommentView item={message} />;
+                return <CommentView item={message} user={user} />;
               })}
             </View>
           </ScrollView>
@@ -522,7 +508,7 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
             {/* comments section */}
             <View style={{ flex: 1 }}>
               {childMessages.map((message) => {
-                return <CommentView item={message} />;
+                return <CommentView item={message} user={user} />;
               })}
             </View>
           </ScrollView>

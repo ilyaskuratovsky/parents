@@ -82,7 +82,8 @@ export default function GroupsScreen({}) {
     groupsComponents = userGroupMemberships.map((userGroupMembership, index) => {
       const groupId = userGroupMembership.groupId;
       const group = groupMap[groupId];
-      if (group == null) {
+      if (group == null || group.status == "deleted") {
+        /*
         if (Globals.dev) {
           return (
             <Text key={index}>
@@ -93,6 +94,8 @@ export default function GroupsScreen({}) {
         } else {
           return null;
         }
+        */
+        return null;
       }
       const org = orgsMap[group.orgId];
       const members = groupMembershipMap[group.id];
@@ -129,7 +132,7 @@ export default function GroupsScreen({}) {
                   alignItems: "flex-start",
                   fontSize: 18,
                   fontWeight: "bold",
-                  fontFamily: "Helvetica Neue",
+                  //fontFamily: "Helvetica Neue",
                 }}
               >
                 {group.name} {/*group.id*/}
@@ -199,8 +202,8 @@ export default function GroupsScreen({}) {
                 flexGrow: 1,
                 paddingLeft: 6,
                 fontWeight: "bold",
-                fontSize: 22,
-                fontFamily: "Helvetica Neue",
+                fontSize: 20,
+                //fontFamily: "Helvetica Neue",
                 //color: "grey",
                 //backgroundColor: "yellow",
               }}

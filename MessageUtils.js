@@ -1,9 +1,11 @@
+/* given a single root message, built it with children */
 export function buildMessageWithChildren(
   messageId,
   messages,
   userInfo,
   userMessagesMap,
-  groupMembers
+  groupMembers,
+  userMap
 ) {
   let rootMessage = { children: [] };
   for (const m of messages) {
@@ -13,14 +15,21 @@ export function buildMessageWithChildren(
       rootMessage = { ...m, ...rootMessage };
     }
   }
-  let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap);
+  let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap, userMap);
   if (rootMessage.event != null) {
     rootMessageWithStatus = addEventData(rootMessage, userInfo, groupMembers);
   }
   return rootMessageWithStatus;
 }
 
-export function buildRootMessagesWithChildren(messages, userInfo, userMessagesMap, groupMembers) {
+/* builds the entire collection of root message for all the messages of a group*/
+export function buildRootMessagesWithChildren(
+  messages,
+  userInfo,
+  userMessagesMap,
+  groupMembers,
+  userMap
+) {
   const messageMap = messages.reduce(function (acc, message) {
     acc[message.id] = { ...message };
     return acc;
@@ -38,11 +47,11 @@ export function buildRootMessagesWithChildren(messages, userInfo, userMessagesMa
 
   const rootMessages = Object.values(messageMap).filter((m) => m.papaId == null);
   const messagesWithStatus = rootMessages.map((rootMessage) => {
-    let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap);
+    let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap, userMap);
     if (rootMessage.event != null) {
       rootMessageWithStatus = addEventData(rootMessage, userInfo, groupMembers);
     }
-    return rootMessageWithStatus;
+    return { ...rootMessage, ...rootMessageWithStatus };
   });
   return messagesWithStatus;
 }
@@ -61,7 +70,7 @@ export function calculateUnreadMessages(groupMessagesMap, userMessagesMap) {
   return unreadMessages;
 }
 
-export function addMeta(rootMessage, userInfo, userMessagesMap) {
+export function addMeta(rootMessage, userInfo, userMessagesMap, userMap) {
   /* status */
   let status = null;
   if (userInfo.uid !== rootMessage.uid) {
@@ -70,6 +79,10 @@ export function addMeta(rootMessage, userInfo, userMessagesMap) {
     status = "read";
   }
 
+  /* user */
+  const user = userMap[rootMessage.uid];
+
+  /* unread child count */
   const unreadChildCount = (rootMessage.children ?? []).filter((c) => {
     if (c.uid === userInfo.uid) {
       return false;
@@ -78,6 +91,7 @@ export function addMeta(rootMessage, userInfo, userMessagesMap) {
     return status;
   }).length;
 
+  /* add meta to children */
   const children = [];
   for (const childMessage of rootMessage.children ?? []) {
     let childStatus = null;
@@ -86,7 +100,8 @@ export function addMeta(rootMessage, userInfo, userMessagesMap) {
     } else {
       childStatus = "read";
     }
-    children.push({ ...childMessage, status: childStatus });
+    const childMessageUser = userMap[childMessage.uid];
+    children.push({ ...childMessage, status: childStatus, user: childMessageUser });
   }
 
   /* timestamp */
@@ -98,7 +113,7 @@ export function addMeta(rootMessage, userInfo, userMessagesMap) {
     )
   );
 
-  return { ...rootMessage, status, unreadChildCount, lastUpdated, children };
+  return { ...rootMessage, status, unreadChildCount, lastUpdated, children, user };
 }
 
 export function addEventData(rootMessage, userInfo, userMessagesMap, groupMembers) {

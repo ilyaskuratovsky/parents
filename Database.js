@@ -65,24 +65,12 @@ export async function createGroup(data) {
   return DatabaseRDB.createGroup(data);
 }
 
-export async function sendMessage(
-  groupId,
-  uid,
-  title,
-  text,
-  data,
-  papaId,
-  notificationInfo
-) {
-  return DatabaseFS.sendMessage(
-    groupId,
-    uid,
-    title,
-    text,
-    data,
-    papaId,
-    notificationInfo
-  );
+export async function updateGroup(groupId, data) {
+  return DatabaseRDB.updateGroup(groupId, data);
+}
+
+export async function sendMessage(groupId, uid, title, text, data, papaId, notificationInfo) {
+  return DatabaseFS.sendMessage(groupId, uid, title, text, data, papaId, notificationInfo);
 }
 
 export async function createOrg(name, type) {
@@ -93,14 +81,7 @@ export async function createInvite(fromUid, groupId, uid, email) {
   return DatabaseFS.createInvite(fromUid, groupId, uid, email);
 }
 
-export async function createEvent(
-  uid,
-  groupId,
-  title,
-  text,
-  startDate,
-  endDate
-) {
+export async function createEvent(uid, groupId, title, text, startDate, endDate) {
   return DatabaseFS.createEvent(uid, groupId, title, text, startDate, endDate);
 }
 

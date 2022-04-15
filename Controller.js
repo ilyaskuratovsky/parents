@@ -468,3 +468,9 @@ export async function saveProfile(userId, firstName, lastName, image) {
     profileInitialized: true,
   });
 }
+
+export async function deleteGroup(userInfo, groupId) {
+  await Database.updateGroup(groupId, {
+    status: "deleted",
+  });
+}

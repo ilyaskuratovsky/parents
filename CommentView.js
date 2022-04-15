@@ -18,8 +18,9 @@ import * as Actions from "./Actions";
 import * as MyButtons from "./MyButtons";
 import * as Random from "./Random";
 import * as Globals from "./Globals";
+import * as UserInfo from "./UserInfo";
 
-export default function CommentView({ item, onPress }) {
+export default function CommentView({ item, user, onPress }) {
   const timeAgo = ({ children }) => {
     return (
       <Text
@@ -34,100 +35,188 @@ export default function CommentView({ item, onPress }) {
     );
   };
 
-  return (
-    <View
-      style={{
-        flexDirection: "row",
-        flex: 1,
-        paddingTop: 10,
-        paddingLeft: 10,
-        paddingBottom: 14,
-        paddingRight: 10,
-        //backgroundColor: Random.randomColor(),
-      }}
-    >
-      {/* avatar view */}
+  if (item.user.uid == user.uid) {
+    return (
       <View
         style={{
-          width: 50,
-          justifyContent: "flex-start",
           flexDirection: "row",
-          alignItems: "center",
-          backgroundColor: "white",
-        }}
-      >
-        <Avatar
-          size={40}
-          rounded
-          title={item.user.name.charAt(0).toUpperCase()}
-          containerStyle={{
-            backgroundColor: item.user.avatarColor,
-            marginRight: 1,
-          }}
-        />
-      </View>
-
-      {/* user name + text */}
-      <View
-        style={{
           flex: 1,
+          marginLeft: 40,
+          paddingTop: 10,
           paddingLeft: 10,
+          paddingBottom: 14,
           paddingRight: 10,
-          paddingTop: 5,
-          paddingBottom: 5,
-          borderRadius: 15,
-          backgroundColor: "lightgrey",
-          flexDirection: "column",
+          //backgroundColor: Random.randomColor(),
         }}
       >
-        {/* user name + time ago */}
+        {/* avatar view */}
         <View
           style={{
-            flexDirection: "row",
+            width: 40,
             justifyContent: "flex-start",
-            alignItems: "flex-start",
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: "white",
           }}
         >
-          <Text
-            style={{
-              fontWeight: "bold",
-              fontSize: 16,
-            }}
-          >
-            {item.user.name}
-          </Text>
+          {UserInfo.smallAvatarComponent(item.user)}
+        </View>
+
+        {/* user name + text */}
+        <View
+          style={{
+            flex: 1,
+            marginRight: 0,
+            paddingLeft: 10,
+            paddingRight: 10,
+            paddingTop: 5,
+            paddingBottom: 5,
+            borderRadius: 15,
+            backgroundColor: "lightskyblue",
+            flexDirection: "column",
+          }}
+        >
+          {/* user name + time ago */}
           <View
             style={{
-              marginLeft: 10,
-              fontWeight: "normal",
-              fontSize: 14,
+              flexDirection: "row",
+              justifyContent: "flex-start",
+              alignItems: "flex-start",
             }}
           >
-            <TimeAgo
-              date={item.createdAt}
+            <Text
               style={{
-                marginLeft: 5,
+                fontWeight: "bold",
+                fontSize: 14,
+              }}
+            >
+              {UserInfo.chatDisplayName(item.user)}
+            </Text>
+            <View
+              style={{
+                marginLeft: 10,
                 fontWeight: "normal",
                 fontSize: 14,
               }}
-              component={timeAgo}
-            />
+            >
+              <TimeAgo
+                date={item.createdAt}
+                style={{
+                  marginLeft: 5,
+                  fontWeight: "normal",
+                  fontSize: 14,
+                }}
+                component={timeAgo}
+              />
+            </View>
+          </View>
+          <View style={{ flex: 1, flexDirection: "column" }}>
+            {item.event != null && <Text>Going</Text>}
+            <Text
+              //numberOfLines={showMore[item.id] ? null : 4}
+              style={{
+                paddingLeft: 0,
+                fontSize: 14,
+                color: "#222222",
+              }}
+            >
+              {item.text}
+            </Text>
+            {Globals.dev && <Text style={{ fontSize: 8 }}>{item.id}</Text>}
           </View>
         </View>
-        <View style={{ flex: 1, flexDirection: "column" }}>
-          {item.event != null && <Text>Going</Text>}
-          <Text
-            //numberOfLines={showMore[item.id] ? null : 4}
+      </View>
+    );
+  } else {
+    return (
+      <View
+        style={{
+          flexDirection: "row",
+          flex: 1,
+          paddingTop: 10,
+          paddingLeft: 10,
+          paddingBottom: 14,
+          paddingRight: 10,
+          //backgroundColor: Random.randomColor(),
+        }}
+      >
+        {/* avatar view */}
+        <View
+          style={{
+            width: 40,
+            justifyContent: "flex-start",
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: "white",
+          }}
+        >
+          {UserInfo.smallAvatarComponent(item.user)}
+        </View>
+
+        {/* user name + text */}
+        <View
+          style={{
+            flex: 1,
+            marginRight: 60,
+            paddingLeft: 10,
+            paddingRight: 10,
+            paddingTop: 5,
+            paddingBottom: 5,
+            borderRadius: 15,
+            backgroundColor: "#EEEEEE",
+            flexDirection: "column",
+          }}
+        >
+          {/* user name + time ago */}
+          <View
             style={{
-              paddingLeft: 0,
-              fontSize: 18,
+              flexDirection: "row",
+              justifyContent: "flex-start",
+              alignItems: "flex-start",
             }}
           >
-            {item.text}
-          </Text>
-          {Globals.dev && <Text style={{ fontSize: 8 }}>{item._id}</Text>}
+            <Text
+              style={{
+                fontWeight: "bold",
+                fontSize: 14,
+              }}
+            >
+              {UserInfo.chatDisplayName(item.user)}
+            </Text>
+            <View
+              style={{
+                marginLeft: 10,
+                fontWeight: "normal",
+                fontSize: 14,
+              }}
+            >
+              <TimeAgo
+                date={item.createdAt}
+                style={{
+                  marginLeft: 5,
+                  fontWeight: "normal",
+                  fontSize: 14,
+                }}
+                component={timeAgo}
+              />
+            </View>
+          </View>
+          <View style={{ flex: 1, flexDirection: "column" }}>
+            {item.event != null && <Text>Going</Text>}
+            <Text
+              //numberOfLines={showMore[item.id] ? null : 4}
+              style={{
+                paddingLeft: 0,
+                fontSize: 14,
+                color: "#222222",
+              }}
+            >
+              {item.text}
+            </Text>
+            {Globals.dev && <Text style={{ fontSize: 8 }}>{item._id}</Text>}
+          </View>
         </View>
       </View>
-    </View>
-  );
+    );
+  }
 }

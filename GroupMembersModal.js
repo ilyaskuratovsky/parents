@@ -1,26 +1,30 @@
 import React, { useState } from "react";
-import { Modal, Text, View, SafeAreaView } from "react-native";
+import { Modal, Text, View, SafeAreaView, Alert } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as UserInfo from "./UserInfo";
 import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as MyButtons from "./MyButtons";
 import GroupInviteModal from "./GroupInviteModal";
 import Portal from "./Portal";
+import * as Controller from "./Controller";
+import * as Actions from "./Actions";
 
 export default function GroupMembersModal({ groupId, visible, closeModal }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const { userMap, userList, schoolList, schoolMap, groupList, groupMap, members } = useSelector((state) => {
-    return {
-      userMap: state.main.userMap,
-      schoolList: state.main.schoolList,
-      userList: state.main.userList,
-      schoolMap: state.main.schoolMap,
-      groupList: state.main.groupList,
-      groupMap: state.main.groupMap,
-      members: state.main.groupMembershipMap[groupId],
-    };
-  });
+  const { userMap, userList, schoolList, schoolMap, groupList, groupMap, members } = useSelector(
+    (state) => {
+      return {
+        userMap: state.main.userMap,
+        schoolList: state.main.schoolList,
+        userList: state.main.userList,
+        schoolMap: state.main.schoolMap,
+        groupList: state.main.groupList,
+        groupMap: state.main.groupMap,
+        members: state.main.groupMembershipMap[groupId],
+      };
+    }
+  );
 
   const [inviteModalVisible, setInviteModalVisible] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -108,6 +112,29 @@ export default function GroupMembersModal({ groupId, visible, closeModal }) {
           text="Invite"
           onPress={async () => {
             setInviteModalVisible(true);
+          }}
+        />
+        <MyButtons.FormButton
+          text="Delete Group"
+          onPress={async () => {
+            Alert.alert("Are You Sure?", null, [
+              {
+                text: "Yes",
+                onPress: async () => {
+                  await Controller.deleteGroup(userInfo, groupId);
+                  dispatch(
+                    Actions.goToScreen({
+                      screen: "GROUPS",
+                    })
+                  );
+                },
+              },
+              {
+                text: "No",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel",
+              },
+            ]);
           }}
         />
         <GroupInviteModal

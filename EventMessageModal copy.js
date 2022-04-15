@@ -54,7 +54,8 @@ export default function MessageModal({ groupId, messageId, visible, closeModal }
     messages,
     user,
     userMessagesMap,
-    members
+    members,
+    userMap
   );
   const sortedChildMessages = [...message.children] ?? [];
   sortedChildMessages.sort((m1, m2) => {
@@ -88,12 +89,6 @@ export default function MessageModal({ groupId, messageId, visible, closeModal }
     scrollViewRef.current.scrollToEnd({ animated: true });
   }, []);
 
-  /*
-  const renderMessage = ({ item }) => {
-    return <CommentView item={item} width={windowWidth} />;
-  };
-        <KeyboardAvoidingView behavior="padding" style={{ height: replyBarHeight, flex: 1, backgroundColor: "white" }}>
-  */
   const [text, setText] = useState("");
   const scrollViewRef = useRef();
   const insets = useSafeAreaInsets();
@@ -228,7 +223,7 @@ export default function MessageModal({ groupId, messageId, visible, closeModal }
             {/* comments section */}
             <View style={{ flex: 1 }}>
               {childMessages.map((message) => {
-                return <CommentView item={message} />;
+                return <CommentView item={message} user={user} />;
               })}
             </View>
           </ScrollView>

@@ -16,15 +16,20 @@ export function chatDisplayName(userInfo) {
     return userInfo.firstName + " " + userInfo.lastName;
   }
 
-  return userInfo.email.split("@")[0];
+  if (userInfo.email != null) {
+    return userInfo.email.split("@")[0];
+  } else {
+    return "<null>";
+  }
 }
 
 export function avatarColor(userInfo) {
   var hash = 0;
-  for (var i = 0; i < userInfo.email.length; i++) {
-    hash = userInfo.email.charCodeAt(i) + ((hash << 5) - hash);
+  if (userInfo.email != null) {
+    for (var i = 0; i < userInfo.email.length; i++) {
+      hash = userInfo.email.charCodeAt(i) + ((hash << 5) - hash);
+    }
   }
-
   var h = hash % 360;
   return "hsl(" + h + ", " + "50" + "%, " + "65" + "%)";
 }

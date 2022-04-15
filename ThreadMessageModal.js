@@ -142,7 +142,15 @@ export default function ThreadMessageModal({ userInfo, group, visible, sendMessa
           </View>
 
           {/* message */}
-          <View style={{ flex: 1, paddingTop: 10, paddingBottom: 10, paddingLeft: 10, paddingRight: 10 }}>
+          <View
+            style={{
+              flex: 1,
+              paddingTop: 10,
+              paddingBottom: 10,
+              paddingLeft: 10,
+              paddingRight: 10,
+            }}
+          >
             <TextInput
               style={{
                 flex: 1,

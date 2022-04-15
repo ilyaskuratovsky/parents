@@ -7,7 +7,6 @@ import * as Controller from "./Controller";
 import GroupMembersModal from "./GroupMembersModal";
 import * as MyButtons from "./MyButtons";
 import Portal from "./Portal";
-import ThreadView from "./ThreadView";
 import Toolbar from "./Toolbar";
 import * as UserInfo from "./UserInfo";
 import * as Actions from "./Actions";
@@ -77,7 +76,9 @@ export default function GroupScreen({ groupId }) {
   const rootMessages = MessageUtils.buildRootMessagesWithChildren(
     messages,
     userInfo,
-    userMessagesMap
+    userMessagesMap,
+    null,
+    userMap
   );
   const sortedMessages = [...rootMessages] ?? [];
   sortedMessages.sort((m1, m2) => {
@@ -85,6 +86,7 @@ export default function GroupScreen({ groupId }) {
     //return 0;
   });
 
+  /*
   const threadMessages = sortedMessages.map((message) => {
     const user = userMap[message.uid];
     const children = message.children;
@@ -97,38 +99,26 @@ export default function GroupScreen({ groupId }) {
               _id: message.id,
               text: message.text,
               createdAt: new Date(message.timestamp),
-              user: {
-                _id: message.uid,
-                name: UserInfo.chatDisplayName(user),
-                avatarColor: UserInfo.avatarColor(user),
-                avatar: UserInfo.smallAvatarComponent(user),
-              },
               children,
               event: message.event,
               status: message.status,
             };
           });
-
     return {
       ...message,
       _id: message.id,
       title: message.title ?? "[No title]",
       text: message.text,
       createdAt: new Date(message.timestamp),
-      user: {
-        _id: message.uid,
-        name: UserInfo.chatDisplayName(user),
-        avatarColor: UserInfo.avatarColor(user),
-        avatar: UserInfo.smallAvatarComponent(user),
-      },
       children: childrenThreadMessages,
       status: message.status,
       unreadChildCount: message.unreadChildCount,
       lastUpdated: message.lastUpdated,
     };
   });
+    */
 
-  const org = orgsMap[group.orgId];
+  const org = orgsMap[group?.orgId];
   // send message callback function
   const sendMessage = useCallback(async (title, text) => {
     const groupName = group.name;
@@ -168,7 +158,7 @@ export default function GroupScreen({ groupId }) {
 
   const renderMessage = ({ item }) => {
     const onPress = () => {
-      setMessagesModalVisible(item._id);
+      setMessagesModalVisible(item.id);
     };
     return <MessageView item={item} onPress={onPress} />;
   };
@@ -186,7 +176,7 @@ export default function GroupScreen({ groupId }) {
     }
     Controller.markMessagesRead(
       userInfo,
-      messages.map((m) => m._id)
+      messages.map((m) => m.id)
     );
   }, [messages]);
 
@@ -284,10 +274,10 @@ export default function GroupScreen({ groupId }) {
               style={{ flex: 1 }}
               data={
                 //DATA
-                threadMessages
+                sortedMessages
               }
               renderItem={renderMessage}
-              keyExtractor={(item) => item._id}
+              keyExtractor={(item) => item.id}
               contentContainerStyle={{
                 width: windowWidth,
               }}
@@ -321,15 +311,16 @@ export default function GroupScreen({ groupId }) {
         />
       </View>
       {/* messages modal */}
-
-      <MessageModal
-        groupId={groupId}
-        messageId={messagesModalVisible}
-        visible={messagesModalVisible != null}
-        closeModal={() => {
-          setMessagesModalVisible(null);
-        }}
-      />
+      {messagesModalVisible != null && (
+        <MessageModal
+          groupId={groupId}
+          messageId={messagesModalVisible}
+          visible={messagesModalVisible != null}
+          closeModal={() => {
+            setMessagesModalVisible(null);
+          }}
+        />
+      )}
       {/* MODALS */}
       {/* group members modal */}
       <GroupMembersModal
