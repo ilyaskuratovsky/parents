@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  KeyboardAvoidingView,
-  Modal,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { KeyboardAvoidingView, Modal, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Avatar, Divider } from "react-native-elements";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as MyButtons from "./MyButtons";
@@ -15,18 +8,10 @@ import Portal from "./Portal";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import moment from "moment";
 
-export default function NewEventModal({
-  userInfo,
-  group,
-  visible,
-  sendEvent,
-  showModal,
-}) {
+export default function NewEventModal({ userInfo, group, visible, sendEvent, showModal }) {
   const insets = useSafeAreaInsets();
   const [text, setText] = useState(null);
   const [title, setTitle] = useState(null);
-  //<KeyboardAvoidingView behavior="padding" style={{ flex: 1, backgroundColor: "white" }}>
-  //</KeyboardAvoidingView>
   const [date, setDate] = useState(moment());
   const [startTime, setStartTime] = useState(moment());
   const [endTime, setEndTime] = useState(moment());
@@ -76,7 +61,7 @@ export default function NewEventModal({
         {/* group name and post button section*/}
         <View
           style={{
-            height: 50,
+            height: 60,
             flexDirection: "column",
           }}
         >
@@ -99,9 +84,7 @@ export default function NewEventModal({
                 justifyContent: "center",
               }}
             >
-              <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-                {group.name}
-              </Text>
+              <Text style={{ fontSize: 20, fontWeight: "bold" }}>{group.name}</Text>
             </View>
             <View
               style={{
@@ -129,12 +112,7 @@ export default function NewEventModal({
                     hour: endTime.get("hour"),
                     minute: endTime.get("minute"),
                   });
-                  sendEvent(
-                    title,
-                    text,
-                    startDate.format(),
-                    endDate.format()
-                  ).then(() => {
+                  sendEvent(title, text, startDate.format(), endDate.format()).then(() => {
                     showModal(false);
                   });
                 }}
@@ -158,7 +136,7 @@ export default function NewEventModal({
               //backgroundColor: "green",
             }}
           >
-            {UserInfo.avatarComponent(userInfo)}
+            {UserInfo.smallAvatarComponent(userInfo)}
             <View
               style={{
                 flex: 1,
@@ -206,36 +184,42 @@ export default function NewEventModal({
           {/* Starts */}
           <View
             style={{
+              marginTop: 10,
+              paddingLeft: 10,
               flexDirection: "column",
+              justifyContent: "center",
               height: 100,
             }}
           >
-            <View style={{ flex: 1, flexDirection: "row" }}>
-              <Text>Date: </Text>
+            <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
+              <Text style={{ width: 50, fontSize: 16 }}>Date: </Text>
               <TouchableOpacity
                 onPress={() => {
                   setShowDatePicker(!showDatePicker);
                 }}
+                style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
               >
-                <Text>{date.format("L")}</Text>
+                <Text style={{ width: 90, fontSize: 16 }}>{date.format("L")}</Text>
               </TouchableOpacity>
             </View>
-            <View style={{ flex: 1, flexDirection: "row" }}>
-              <Text>Start Time: </Text>
+            <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
+              <Text style={{ width: 50, fontSize: 16 }}>Start: </Text>
               <TouchableOpacity
                 onPress={() => {
                   setShowStartTimePicker(!showStartTimePicker);
                 }}
+                style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
               >
-                <Text>{startTime.format("LT")}</Text>
+                <Text style={{ width: 90, fontSize: 16 }}>{startTime.format("LT")}</Text>
               </TouchableOpacity>
-              <Text>End Time: </Text>
+              <Text style={{ marginLeft: 20, width: 50, fontSize: 16 }}>End: </Text>
               <TouchableOpacity
                 onPress={() => {
                   setShowEndTimePicker(!showEndTimePicker);
                 }}
+                style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
               >
-                <Text>{endTime.format("LT")}</Text>
+                <Text style={{ width: 100, fontSize: 16 }}>{endTime.format("LT")}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -269,6 +253,7 @@ export default function NewEventModal({
               onChangeText={(text) => {
                 setText(text);
               }}
+              placeholder="Details..."
             />
           </View>
         </View>

@@ -132,6 +132,7 @@ export default function GroupsScreen({}) {
                   alignItems: "flex-start",
                   fontSize: 18,
                   fontWeight: "bold",
+                  color: UIConstants.BLACK_TEXT_COLOR,
                   //fontFamily: "Helvetica Neue",
                 }}
               >
@@ -206,6 +207,7 @@ export default function GroupsScreen({}) {
                 paddingLeft: 6,
                 fontWeight: "bold",
                 fontSize: 20,
+                color: UIConstants.BLACK_TEXT_COLOR,
                 //fontFamily: "Helvetica Neue",
                 //color: "grey",
                 //backgroundColor: "yellow",

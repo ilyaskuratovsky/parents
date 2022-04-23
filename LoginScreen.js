@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "./Actions";
 import * as MyButtons from "./MyButtons";
 import { initializeApp } from "firebase/app";
+import * as Globals from "./Globals";
 
 export default function Login({ afterLoginScreen }) {
   const dispatch = useDispatch();
@@ -219,6 +220,24 @@ export default function Login({ afterLoginScreen }) {
       {/*
       <LoginButton />
       */}
+      {Globals.dev && (
+        <View style={{ flexDirection: "column" }}>
+          <MyButtons.LinkButton
+            text="ilyaskuratovsky@gmail.com"
+            onPress={async () => {
+              setEmail("ilyaskuratovsky@gmail.com");
+              setPassword("ilyaskuratovsky");
+            }}
+          />
+          <MyButtons.LinkButton
+            text="ingaskur@gmail.com"
+            onPress={async () => {
+              setEmail("ingaskur@gmail.com");
+              setPassword("ingaskur");
+            }}
+          />
+        </View>
+      )}
     </View>
   );
 }

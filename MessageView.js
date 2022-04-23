@@ -6,6 +6,7 @@ import TimeAgo from "react-timeago";
 import * as Globals from "./Globals";
 import * as UserInfo from "./UserInfo";
 import MessageTime from "./MessageTime";
+import * as UIConstants from "./UIConstants";
 
 export default function MessageView({ item, onPress }) {
   const timestamp = item.timestamp?.toDate();
@@ -15,7 +16,7 @@ export default function MessageView({ item, onPress }) {
         onPress();
       }}
     >
-      <View style={{ flex: 1, flexDirection: "row" }}>
+      <View style={{ flex: 1, flexDirection: "row", paddingRight: 20 }}>
         <View
           style={{
             paddingLeft: 0,
@@ -35,7 +36,13 @@ export default function MessageView({ item, onPress }) {
             />
           )}
         </View>
-        <View style={{ flexGrow: 1, flexDirection: "row" }}>
+        <View
+          style={{
+            flexGrow: 1,
+            flexDirection: "row",
+            //backgroundColor: "cyan"
+          }}
+        >
           {/* main content*/}
           <View
             style={{
@@ -43,7 +50,7 @@ export default function MessageView({ item, onPress }) {
               flex: 1,
               paddingTop: 10,
               paddingLeft: 0,
-              paddingRight: 10,
+              paddingRight: 0,
               paddingBottom: 14,
               //backgroundColor: "purple",
             }}
@@ -66,15 +73,15 @@ export default function MessageView({ item, onPress }) {
                   flexDirection: "row",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  paddingRight: 20,
-                  //backgroundColor: "white",
+                  paddingRight: 0,
+                  //backgroundColor: "yellow",
                 }}
               >
                 <Text
                   style={{
                     marginLeft: 5,
                     fontWeight: "bold",
-                    color: "#222222",
+                    color: UIConstants.BLACK_TEXT_COLOR,
                     fontSize: 16,
                   }}
                 >
@@ -87,7 +94,10 @@ export default function MessageView({ item, onPress }) {
                     fontSize: 14,
                   }}
                 >
-                  <MessageTime timestamp={timestamp} />
+                  <MessageTime
+                    timestamp={timestamp}
+                    textStyle={{ fontSize: 11, color: UIConstants.BLACK_TEXT_COLOR }}
+                  />
                 </View>
               </View>
             </View>
@@ -109,12 +119,16 @@ export default function MessageView({ item, onPress }) {
                     paddingLeft: 0,
                     fontSize: 16,
                     fontWeight: "bold",
+                    color: UIConstants.BLACK_TEXT_COLOR,
                   }}
                 >
                   {item.title ?? "[No Title]"}
                 </Text>
               </View>
               {Globals.dev ? <Text style={{ fontSize: 10 }}>{item.id}</Text> : null}
+              {Globals.dev ? (
+                <Text style={{ fontSize: 10 }}>{JSON.stringify({ ...item, children: null })}</Text>
+              ) : null}
             </View>
 
             {/* message text */}
@@ -139,7 +153,7 @@ export default function MessageView({ item, onPress }) {
                   ellipsizeMode="tail"
                   style={{
                     fontSize: 16,
-                    color: "grey",
+                    color: UIConstants.BLACK_TEXT_COLOR,
                     flexGrow: 1,
                   }}
                 >
@@ -157,12 +171,12 @@ export default function MessageView({ item, onPress }) {
               >
                 <View
                   style={{
-                    width: 80,
+                    flex: 1,
                     flexDirection: "column",
-                    backgroundColor: "lightgrey",
-                    alignItems: "center",
+                    //backgroundColor: "lightgrey",
+                    //borderRadius: 10,
                     justifyContent: "center",
-                    borderRadius: 10,
+                    alignItems: "flex-end",
                   }}
                 >
                   <Text
@@ -171,11 +185,12 @@ export default function MessageView({ item, onPress }) {
                       paddingLeft: 0,
                       fontSize: 14,
                       fontWeight: item.unreadChildCount > 0 ? "bold" : "normal",
+                      color: UIConstants.BLACK_TEXT_COLOR,
                     }}
                   >
-                    {item.children.length > 1
-                      ? item.children.length + " replies"
-                      : item.children.length + " reply"}
+                    {(item.children?.length ?? -1) > 1 || item.children?.length == 0
+                      ? (item.children?.length ?? -1) + " replies"
+                      : (item.children?.length ?? -1) + " reply"}
                   </Text>
                 </View>
               </View>

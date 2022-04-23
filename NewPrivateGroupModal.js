@@ -8,6 +8,7 @@ import * as Utils from "./Utils";
 import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as UserInfo from "./UserInfo";
 import { CheckBox } from "react-native-elements";
+import * as Globals from "./Globals";
 
 export default function NewPrivateGroupModal({ visible, createGroup, closeModal }) {
   const userInfo = useSelector((state) => state.main.userInfo);
@@ -81,7 +82,12 @@ export default function NewPrivateGroupModal({ visible, createGroup, closeModal 
               }}
             />
           }
-          center={<Text>New Group</Text>}
+          center={
+            <View style={{ flex: 1 }}>
+              <Text>New Group</Text>
+              {Globals.dev && <Text>NewPrivateGroupModal.js</Text>}
+            </View>
+          }
           right={
             <MyButtons.LinkButton
               text="Done"

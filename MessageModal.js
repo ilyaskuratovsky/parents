@@ -28,6 +28,7 @@ import * as Controller from "./Controller";
 import { userInfo } from "./Actions";
 import * as Calendar from "expo-calendar";
 import * as Globals from "./Globals";
+import * as UIConstants from "./UIConstants";
 
 export default function MessagesContainer({ groupId, messageId, visible, closeModal }) {
   const user = useSelector((state) => state.main.userInfo);
@@ -102,7 +103,7 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
   const scrollViewRef = useRef();
   const insets = useSafeAreaInsets();
   const windowHeight = Dimensions.get("window").height - insets.top - insets.bottom;
-  const topBarHeight = 64;
+  const topBarHeight = 40;
   const replyBarHeight = 80;
 
   useEffect(async () => {
@@ -117,9 +118,13 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
 
   return (
     <Modal visible={visible} animationType={"slide"}>
-      <Portal>
+      <Portal
+        backgroundColor={UIConstants.DEFAULT_BACKGROUND}
+        //backgroundColor="green"
+      >
         {/* top bar */}
         <TopBarMiddleContentSideButtons
+          backgroundColor={UIConstants.DEFAULT_BACKGROUND}
           height={topBarHeight}
           left={
             <MyButtons.MenuButton
@@ -139,7 +144,7 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
         <KeyboardAvoidingView
           style={{
             flex: 1,
-            //backgroundColor: "green",
+            backgroundColor: "white",
           }}
           behavior="padding"
           keyboardVerticalOffset={40}
@@ -185,7 +190,7 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
                       marginLeft: 5,
                       fontWeight: "bold",
                       fontSize: 14,
-                      color: "#111111",
+                      color: UIConstants.BLACK_TEXT_COLOR,
                     }}
                   >
                     {UserInfo.chatDisplayName(user)}
@@ -205,7 +210,7 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
                     paddingLeft: 0,
                     fontWeight: "bold",
                     fontSize: 16,
-                    color: "#111111",
+                    color: UIConstants.BLACK_TEXT_COLOR,
                   }}
                 >
                   {message.title}
@@ -215,8 +220,8 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
                   style={{
                     paddingLeft: 0,
                     paddingTop: 8,
-                    fontSize: 16,
-                    color: "#111111",
+                    fontSize: 14,
+                    color: UIConstants.BLACK_TEXT_COLOR,
                   }}
                 >
                   {message.text}
@@ -226,9 +231,13 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
             </View>
             <Divider style={{}} width={1} color="darkgrey" />
             {/* comments section */}
-            <View style={{ flex: 1 }}>
+            <View style={{ paddingTop: 10, flex: 1 }}>
               {childMessages.map((message) => {
-                return <CommentView item={message} user={user} />;
+                return (
+                  <View style={{ paddingBottom: 10 }}>
+                    <CommentView item={message} user={user} />
+                  </View>
+                );
               })}
             </View>
           </ScrollView>
@@ -434,6 +443,7 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
                     paddingLeft: 0,
                     fontWeight: "bold",
                     fontSize: 20,
+                    color: UIConstants.BLACK_TEXT_COLOR,
                   }}
                 >
                   {message.title}
@@ -506,7 +516,7 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
             </View>
             <Divider style={{}} width={1} color="darkgrey" />
             {/* comments section */}
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, marginTop: 10, backgroundColor: "cyan" }}>
               {childMessages.map((message) => {
                 return <CommentView item={message} user={user} />;
               })}

@@ -19,7 +19,7 @@ import * as MyButtons from "./MyButtons";
 import * as Random from "./Random";
 import * as Globals from "./Globals";
 import * as UserInfo from "./UserInfo";
-
+import * as UIConstants from "./UIConstants";
 export default function CommentView({ item, user, onPress }) {
   const timeAgo = ({ children }) => {
     return (
@@ -42,9 +42,9 @@ export default function CommentView({ item, user, onPress }) {
           flexDirection: "row",
           flex: 1,
           marginLeft: 40,
-          paddingTop: 10,
+          paddingTop: 0,
           paddingLeft: 10,
-          paddingBottom: 14,
+          paddingBottom: 0,
           paddingRight: 10,
           //backgroundColor: Random.randomColor(),
         }}
@@ -72,7 +72,7 @@ export default function CommentView({ item, user, onPress }) {
             paddingTop: 5,
             paddingBottom: 5,
             borderRadius: 15,
-            backgroundColor: "lightskyblue",
+            backgroundColor: "#daedf4", //light blue
             flexDirection: "column",
           }}
         >
@@ -88,6 +88,7 @@ export default function CommentView({ item, user, onPress }) {
               style={{
                 fontWeight: "bold",
                 fontSize: 14,
+                color: UIConstants.BLACK_TEXT_COLOR,
               }}
             >
               {UserInfo.chatDisplayName(item.user)}
@@ -117,7 +118,7 @@ export default function CommentView({ item, user, onPress }) {
               style={{
                 paddingLeft: 0,
                 fontSize: 14,
-                color: "#222222",
+                color: "#333333",
               }}
             >
               {item.text}
@@ -133,9 +134,9 @@ export default function CommentView({ item, user, onPress }) {
         style={{
           flexDirection: "row",
           flex: 1,
-          paddingTop: 10,
+          paddingTop: 0,
           paddingLeft: 10,
-          paddingBottom: 14,
+          paddingBottom: 0,
           paddingRight: 10,
           //backgroundColor: Random.randomColor(),
         }}
@@ -179,6 +180,7 @@ export default function CommentView({ item, user, onPress }) {
               style={{
                 fontWeight: "bold",
                 fontSize: 14,
+                color: UIConstants.BLACK_TEXT_COLOR,
               }}
             >
               {UserInfo.chatDisplayName(item.user)}
@@ -196,6 +198,7 @@ export default function CommentView({ item, user, onPress }) {
                   marginLeft: 5,
                   fontWeight: "normal",
                   fontSize: 14,
+                  color: "#333333",
                 }}
                 component={timeAgo}
               />
@@ -208,7 +211,7 @@ export default function CommentView({ item, user, onPress }) {
               style={{
                 paddingLeft: 0,
                 fontSize: 14,
-                color: "#222222",
+                color: UIConstants.BLACK_TEXT_COLOR,
               }}
             >
               {item.text}

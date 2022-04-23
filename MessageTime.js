@@ -30,6 +30,6 @@ const MessageTime = ({ timestamp, textStyle }) => {
     return () => clearInterval(interval);
   }, []);
 
-  return <Text>{text}</Text>;
+  return <Text style={textStyle}>{text}</Text>;
 };
 export default React.memo(MessageTime);

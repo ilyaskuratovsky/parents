@@ -36,7 +36,7 @@ export default function ThreadMessageModal({ userInfo, group, visible, sendMessa
         {/* group name and post button section*/}
         <View
           style={{
-            height: 50,
+            height: 60,
             flexDirection: "column",
           }}
         >
@@ -95,7 +95,7 @@ export default function ThreadMessageModal({ userInfo, group, visible, sendMessa
               //backgroundColor: "green",
             }}
           >
-            {UserInfo.avatarComponent(userInfo)}
+            {UserInfo.smallAvatarComponent(userInfo)}
             <View
               style={{
                 flex: 1,

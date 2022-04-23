@@ -1,5 +1,5 @@
 import { Avatar } from "react-native-elements";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, Text } from "react-native";
 import React from "react";
 import { Image } from "react-native-expo-image-cache";
 
@@ -71,6 +71,9 @@ export function avatarComponent(userInfo, onPress) {
 export function smallAvatarComponent(userInfo, onPress, border) {
   const displayName = chatDisplayName(userInfo);
   let avatar = null;
+  if (userInfo == null) {
+    return <Text>Null Info</Text>;
+  }
   if (userInfo.image != null) {
     const uri = userInfo.image;
     avatar = (

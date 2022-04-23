@@ -18,6 +18,7 @@ import ThreadMessageModal from "./ThreadMessageModal";
 import NewEventModal from "./NewEventModal";
 import FacePile from "./FacePile";
 import * as Globals from "./Globals";
+import * as UIConstants from "./UIConstants";
 import {
   FlatList,
   StatusBar,
@@ -154,11 +155,14 @@ export default function GroupScreen({ groupId }) {
   const newMessageHeight = 80;
   const bottomBarHeight = 64;
   return (
-    <Portal backgroundColor={"whitesmoke"}>
+    <Portal
+      backgroundColor={UIConstants.DEFAULT_BACKGROUND}
+      //backgroundColor="green"
+    >
       {/* top bar section */}
       <View
         style={{
-          backgroundColor: "whitesmoke",
+          //backgroundColor: "whitesmoke",
           flexDirection: "column",
           height: topBarHeight,
         }}
@@ -180,7 +184,7 @@ export default function GroupScreen({ groupId }) {
         >
           <IconButton
             icon={"chevron-left"}
-            style={{ width: 18 }}
+            style={{ width: 18, color: UIConstants.BLACK_TEXT_COLOR }}
             onPress={() => {
               dispatch(Actions.goToScreen({ screen: "GROUPS" }));
             }}
@@ -197,7 +201,11 @@ export default function GroupScreen({ groupId }) {
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <View style={{ flexDirection: "column" }}>
-                <Text style={{ fontWeight: "bold", fontSize: 20 }}>{group.name}</Text>
+                <Text
+                  style={{ fontWeight: "bold", fontSize: 20, color: UIConstants.BLACK_TEXT_COLOR }}
+                >
+                  {group.name}
+                </Text>
                 {Globals.dev ? <Text style={{ fontSize: 10 }}>{group.id}</Text> : null}
                 {org != null && (
                   <Text style={{ fontWeight: "normal", fontSize: 14 }}>{org.name}</Text>
@@ -237,18 +245,24 @@ export default function GroupScreen({ groupId }) {
         }}
       >
         <View style={{ flex: 1 }}>
-          <View style={{ flexDirection: "column", flex: 1 }}>
+          <View
+            style={{
+              flexDirection: "column",
+              flex: 1,
+              //backgroundColor: "green"
+            }}
+          >
             <FlatList
-              style={{ flex: 1 }}
+              style={{
+                flex: 1,
+                //backgroundColor: "orange"
+              }}
               data={
                 //DATA
                 sortedMessages
               }
               renderItem={renderMessage}
               keyExtractor={(item) => item.id}
-              contentContainerStyle={{
-                width: windowWidth,
-              }}
               ItemSeparatorComponent={FlatListItemSeparator}
             />
           </View>
@@ -319,3 +333,10 @@ export default function GroupScreen({ groupId }) {
     </Portal>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row", // row
+    alignItems: "center",
+  },
+});

@@ -48,6 +48,7 @@ Notifications.setNotificationHandler({
 });
 
 export default function App() {
+  /*
   return (
     <ErrorBoundary
       fallbackRender={({ error, resetErrorBoundary }) => {
@@ -61,5 +62,13 @@ export default function App() {
         </Provider>
       </SafeAreaProvider>
     </ErrorBoundary>
+  );
+  */
+  return (
+    <SafeAreaProvider>
+      <Provider store={store}>
+        <RootApp />
+      </Provider>
+    </SafeAreaProvider>
   );
 }

@@ -49,7 +49,7 @@ export function buildRootMessagesWithChildren(
   const messagesWithStatus = rootMessages.map((rootMessage) => {
     let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap, userMap);
     if (rootMessage.event != null) {
-      rootMessageWithStatus = addEventData(rootMessage, userInfo, groupMembers);
+      rootMessageWithStatus = addEventData(rootMessageWithStatus, userInfo, groupMembers);
     }
     return { ...rootMessage, ...rootMessageWithStatus };
   });

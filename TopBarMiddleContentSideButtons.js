@@ -3,9 +3,15 @@ import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Avatar, Divider } from "react-native-elements";
 
-const TopBar = ({ height = 80, left, center, right, style, leftWidth }) => {
+const TopBar = ({ height = 80, left, center, right, style, leftWidth, backgroundColor }) => {
   return (
-    <View style={{ height: height ?? 80, backgroundColor: "lightgrey", flexDirection: "column" }}>
+    <View
+      style={{
+        height: height ?? 80,
+        backgroundColor: backgroundColor ?? "purple",
+        flexDirection: "column",
+      }}
+    >
       <View
         style={[
           style,

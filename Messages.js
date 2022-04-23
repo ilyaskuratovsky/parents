@@ -50,7 +50,7 @@ export default function Messages(props) {
                   alignItems: "center",
                 }}
               >
-                Invite to {group.name} {Globals.dev ? "(" + invite.id + ")": ""}
+                Invite to {group.name}
               </Text>
               <View
                 style={{
@@ -63,24 +63,18 @@ export default function Messages(props) {
                 <MyButtons.FormButton
                   text="Join"
                   onPress={async () => {
-                    await Controller.joinGroupFromInvite(
-                      dispatch,
-                      userInfo,
-                      group.id,
-                      invite.id
-                    );
+                    await Controller.joinGroupFromInvite(dispatch, userInfo, group.id, invite.id);
                   }}
                 />
                 <MyButtons.FormButton
                   text="Dismiss"
                   onPress={async () => {
-                    await Controller.dismissInvite(
-                      dispatch,
-                      userInfo,
-                      invite.id
-                    );
+                    await Controller.dismissInvite(dispatch, userInfo, invite.id);
                   }}
                 />
+              </View>
+              <View>
+                <Text style={{ fontSize: 10 }}>{Globals.dev ? "(" + invite.id + ")" : ""}</Text>
               </View>
             </View>
           );
