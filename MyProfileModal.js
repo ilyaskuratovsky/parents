@@ -206,7 +206,7 @@ function ModalContainer({ userInfo }) {
           <MyButtons.LinkButton
             text="Log Out"
             onPress={async () => {
-              await Controller.logout();
+              await Controller.logout(dispatch);
               dispatch(
                 Actions.closeModal({
                   modal: "MY_PROFILE",

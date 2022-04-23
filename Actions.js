@@ -88,6 +88,13 @@ export const mainSlice = createSlice({
       };
       return newState;
     },
+    clearUserData: (state, obj) => {
+      const newState = {
+        ...state,
+        userInfo: null,
+      };
+      return newState;
+    },
     locationDataInit: (state, obj) => {
       const { orgs, groups, users, groupMemberships } = obj.payload;
 
@@ -256,6 +263,7 @@ export const {
   toUserInvites,
   searchIndex,
   userMessages,
+  clearUserData,
 } = mainSlice.actions;
 export const { goToScreen, openModal, closeModal, goToUserScreen, goToScreenAfterLogin } =
   screenSlice.actions;

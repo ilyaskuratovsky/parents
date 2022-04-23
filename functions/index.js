@@ -48,9 +48,7 @@ exports.pushNotifications = functions.firestore
         body: pushNotification.body,
         data: data,
       };
-      console.log(
-        "ilya calling fetch: " + JSON.stringify(pushMessage)
-      );
+      console.log("ilya calling fetch: " + JSON.stringify(pushMessage));
       fetch("https://exp.host/--/api/v2/push/send", {
         method: "POST",
         headers: {
@@ -60,15 +58,12 @@ exports.pushNotifications = functions.firestore
         },
         body: JSON.stringify(pushMessage),
       }).then((response) => {
-        console.log(
-          "ilya done calling fetch: response: " +
-            JSON.stringify(response)
-        );
+        console.log("ilya done calling fetch: response: " + JSON.stringify(response));
       });
     });
   });
 
-  exports.inviteNotifications = functions.firestore
+exports.inviteNotifications = functions.firestore
   .document("/invites/{inviteId}")
   .onCreate((snap, context) => {
     const inviteId = context.params.inviteId;
@@ -77,35 +72,41 @@ exports.pushNotifications = functions.firestore
     const fromUid = invite.fromUid;
     const groupId = invite.groupId;
 
-    const toUid = invite.toUid != null && invite.toUid.indexOf("_uid_") == 0 ? invite.toUid.substring(5) : null;
+    const toUid =
+      invite.toUid != null && invite.toUid.indexOf("_uid_") == 0 ? invite.toUid.substring(5) : null;
     console.log("toUid parsed: (" + toUid + ")");
 
     if (toUid != null) {
-      const fromUserRef = db.ref("users/" + fromUid)
-      fromUserRef
-        .once("value")
-        .then((fromUserSnapshot) => {
-          const fromUser = fromUserSnapshot.val();
-          console.log("fromUser: " + JSON.stringify(fromUser) + ", email: " + fromUser["email"] + ", email: " + fromUser.email);
-          const fromUserDisplayName = fromUser.displayName != null ? fromUser.displayName :  fromUser.email.split("@")[0];
-          const groupRef = db.ref("groups/" + groupId)
-          groupRef.once("value")
-          .then((groupSnapshot) => {
-            const group = groupSnapshot.val();
-            console.log("group: " + JSON.stringify(group));
-            //const firestore = admin.firestore()
-            const title = "Group invite from " + fromUserDisplayName;
-            const body = fromUserDisplayName + " invited you to join " + group.name;
-            console.log("adding push notificatoin");
-            const pushNotificationsRef = fs.collection("push_notifications");
-            console.log("calling adddoc");
-            pushNotificationsRef.add({
-              uid: toUid,
-              title,
-              body,
-              data: "{}"
-            });
-            /*
+      const fromUserRef = db.ref("users/" + fromUid);
+      fromUserRef.once("value").then((fromUserSnapshot) => {
+        const fromUser = fromUserSnapshot.val();
+        console.log(
+          "fromUser: " +
+            JSON.stringify(fromUser) +
+            ", email: " +
+            fromUser["email"] +
+            ", email: " +
+            fromUser.email
+        );
+        const fromUserDisplayName =
+          fromUser.displayName != null ? fromUser.displayName : fromUser.email.split("@")[0];
+        const groupRef = db.ref("groups/" + groupId);
+        groupRef.once("value").then((groupSnapshot) => {
+          const group = groupSnapshot.val();
+          console.log("group: " + JSON.stringify(group));
+          //const firestore = admin.firestore()
+          const title = "Group invite from " + fromUserDisplayName;
+          const body = fromUserDisplayName + " invited you to join " + group.name;
+          console.log("adding push notificatoin");
+          const pushNotificationsRef = fs.collection("push_notifications");
+          console.log("calling adddoc");
+          pushNotificationsRef.add({
+            uid: toUid,
+            title,
+            body,
+            data: "{}",
+          });
+          /*
             console.log("calling adddoc");
             fs.add(pushNotificationsRef, {
               uid: toUid,
@@ -114,21 +115,18 @@ exports.pushNotifications = functions.firestore
               data: "{}"
             });
             */
-          });        
         });
-
-    } else { 
+      });
+    } else {
       console.log("skpping invite notification for now, to do will be to put email here");
     }
-  
+
     return {
       status: "success",
     };
-  
   });
 
-
-  exports.messagePushNotifications = functions.firestore
+exports.messagePushNotifications = functions.firestore
   .document("/groups/{groupId}/messages/{messageId}")
   .onCreate((snap, context) => {
     const groupId = context.params.groupId;
@@ -143,10 +141,7 @@ exports.pushNotifications = functions.firestore
         JSON.stringify(snap.data())
     );
     const fetch = require("node-fetch");
-    const groupRef = db
-      .ref("group_memberships")
-      .orderByChild("groupId")
-      .equalTo(groupId);
+    const groupRef = db.ref("group_memberships").orderByChild("groupId").equalTo(groupId);
     groupRef
       .once("value")
       .then((snapshot) => {
@@ -154,19 +149,14 @@ exports.pushNotifications = functions.firestore
           const groupMemberships = snapshot.val();
           for (const groupMembership of Object.values(groupMemberships)) {
             const uid = groupMembership["uid"];
-            console.log(
-              "processing group membership: " + JSON.stringify(groupMembership)
-            );
-            const lastViewedMessageTimestampStr =
-              groupMembership["lastViewedMessageTimestamp"];
+            console.log("processing group membership: " + JSON.stringify(groupMembership));
+            const lastViewedMessageTimestampStr = groupMembership["lastViewedMessageTimestamp"];
             // console.log(
             //     "lastViewedMessageTimestamp: " + lastViewedMessageTimestamp
             // );
             const lastViewedMessageTimestamp =
               lastViewedMessageTimestampStr != null
-                ? admin.firestore.Timestamp.fromMillis(
-                    lastViewedMessageTimestampStr
-                  )
+                ? admin.firestore.Timestamp.fromMillis(lastViewedMessageTimestampStr)
                 : null;
             console.log(
               "lastViewedMessageTimestamp: " +
@@ -182,8 +172,7 @@ exports.pushNotifications = functions.firestore
             // TODO: this timestamp is not in the right format so convert
             if (
               lastViewedMessageTimestamp == null ||
-              messageTimestamp.toDate().getTime() >
-                lastViewedMessageTimestamp.toDate().getTime()
+              messageTimestamp.toDate().getTime() > lastViewedMessageTimestamp.toDate().getTime()
             ) {
               console.log("ilya listening for user: " + uid);
               const userRef = db.ref("users/" + uid);
@@ -192,13 +181,9 @@ exports.pushNotifications = functions.firestore
                 const user = userSnapshot.val();
                 const pushToken = user["pushToken"];
                 const groupName =
-                  message.notificationInfo != null
-                    ? message.notificationInfo.groupName
-                    : null;
+                  message.notificationInfo != null ? message.notificationInfo.groupName : null;
                 const fromName =
-                  message.notificationInfo != null
-                    ? message.notificationInfo.fromName
-                    : null;
+                  message.notificationInfo != null ? message.notificationInfo.fromName : null;
                 const pushMessage = {
                   to: pushToken,
                   sound: "default",
@@ -206,9 +191,7 @@ exports.pushNotifications = functions.firestore
                   body: fromName == null ? "" : "New message from " + fromName,
                   data: { groupId, message },
                 };
-                console.log(
-                  "ilya calling fetch: " + JSON.stringify(pushMessage)
-                );
+                console.log("ilya calling fetch: " + JSON.stringify(pushMessage));
                 fetch("https://exp.host/--/api/v2/push/send", {
                   method: "POST",
                   headers: {
@@ -218,10 +201,7 @@ exports.pushNotifications = functions.firestore
                   },
                   body: JSON.stringify(pushMessage),
                 }).then((response) => {
-                  console.log(
-                    "ilya done calling fetch: response: " +
-                      JSON.stringify(response)
-                  );
+                  console.log("ilya done calling fetch: response: " + JSON.stringify(response));
                 });
               });
             }
@@ -265,6 +245,7 @@ exports.emailNotifications = functions.firestore
     const notification = snap.data();
     console.log("ilyanotification: (" + notificationId + ")" + JSON.stringify(notification));
     const nodemailer = require("nodemailer");
+    /*
     var transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 587,
@@ -275,6 +256,18 @@ exports.emailNotifications = functions.firestore
         pass: "swwG2ktk",
       },
     });
+    */
+    var transporter = nodemailer.createTransport({
+      host: "smtp.mailgun.org",
+      port: 587,
+      secure: false,
+      requireTLS: true,
+      auth: {
+        user: "postmaster@sandboxda7dbd833769483cbe4d9cf320ba0a43.mailgun.org",
+        pass: "4451585d1d1e9268c7fc992d60ec67bb",
+      },
+    });
+
     const mailOptions = {
       from: "ilyaskuratovsky@gmail.com",
       to: notification.to,
@@ -284,10 +277,11 @@ exports.emailNotifications = functions.firestore
 
     transporter.sendMail(mailOptions, (error, data) => {
       if (error) {
-        console.log(error);
+        console.log("Error!: " + error);
         return;
+      } else {
+        console.log("Sent!: " + JSON.stringify(mailOptions) + "/" + JSON.stringify(data));
       }
-      console.log("Sent!: " + JSON.stringify(data));
     });
 
     return {

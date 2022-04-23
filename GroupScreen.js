@@ -201,18 +201,29 @@ export default function GroupScreen({ groupId }) {
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <View style={{ flexDirection: "column" }}>
-                <Text
-                  style={{ fontWeight: "bold", fontSize: 20, color: UIConstants.BLACK_TEXT_COLOR }}
+                <TouchableOpacity
+                  onPress={() => {
+                    setMembersModalVisible(true);
+                  }}
                 >
-                  {group.name}
-                </Text>
-                {Globals.dev ? <Text style={{ fontSize: 10 }}>{group.id}</Text> : null}
-                {org != null && (
-                  <Text style={{ fontWeight: "normal", fontSize: 14 }}>{org.name}</Text>
-                )}
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: 20,
+                      color: UIConstants.BLACK_TEXT_COLOR,
+                    }}
+                  >
+                    {group.name}
+                  </Text>
+                  {Globals.dev ? <Text style={{ fontSize: 10 }}>{group.id}</Text> : null}
+                  {org != null && (
+                    <Text style={{ fontWeight: "normal", fontSize: 14 }}>{org.name}</Text>
+                  )}
+                </TouchableOpacity>
               </View>
             </View>
           </View>
+
           {/* members button */}
           <View
             style={{
@@ -224,6 +235,7 @@ export default function GroupScreen({ groupId }) {
               flexDirection: "column",
             }}
           >
+            {/*
             <MyButtons.MenuButton
               icon="account-supervisor"
               text={members.length + " member" + (members.length > 1 ? "s" : "")}
@@ -232,6 +244,23 @@ export default function GroupScreen({ groupId }) {
                 setMembersModalVisible(true);
               }}
             />
+            */}
+            <TouchableOpacity
+              onPress={() => {
+                setMembersModalVisible(true);
+              }}
+            >
+              <FacePile
+                userIds={[userInfo.uid].concat(
+                  members
+                    .filter((groupMembership) => {
+                      return userInfo.uid != groupMembership.uid;
+                    })
+                    .map((groupMembership) => groupMembership.uid)
+                )}
+                border
+              />
+            </TouchableOpacity>
           </View>
         </View>
         <Divider style={{}} width={1} color="lightgrey" />

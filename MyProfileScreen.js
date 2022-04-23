@@ -12,16 +12,18 @@ import * as Controller from "./Controller";
 export default function MyProfileScreen({}) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const { schoolList, schoolMap, groupList, groupMap, userGroupMemberships, orgsMap } = useSelector((state) => {
-    return {
-      schoolList: state.main.schoolList,
-      schoolMap: state.main.schoolMap,
-      groupList: state.main.groupList,
-      groupMap: state.main.groupMap,
-      userGroupMemberships: state.main.userGroupMemberships,
-      orgsMap: state.main.orgsMap,
-    };
-  });
+  const { schoolList, schoolMap, groupList, groupMap, userGroupMemberships, orgsMap } = useSelector(
+    (state) => {
+      return {
+        schoolList: state.main.schoolList,
+        schoolMap: state.main.schoolMap,
+        groupList: state.main.groupList,
+        groupMap: state.main.groupMap,
+        userGroupMemberships: state.main.userGroupMemberships,
+        orgsMap: state.main.orgsMap,
+      };
+    }
+  );
   const [visibleSchoolGroupModal, setVisibleSchoolGroupModal] = useState(null);
 
   if (userInfo == null) {
@@ -96,7 +98,7 @@ export default function MyProfileScreen({}) {
             <MyButtons.LinkButton
               text="Log Out"
               onPress={async () => {
-                await Controller.logout();
+                await Controller.logout(dispatch);
               }}
             />
           </View>
@@ -123,7 +125,11 @@ export default function MyProfileScreen({}) {
             <Text style={{ fontSize: 20, fontWeight: "bold" }}>My Schools</Text>
             <MyButtons.FormButton text="Manage" onPress={async () => {}} />
           </View>
-          <Divider style={{ marginTop: 10, marginBottom: 15, zIndex: 999999 }} width={1} color="darkgrey" />
+          <Divider
+            style={{ marginTop: 10, marginBottom: 15, zIndex: 999999 }}
+            width={1}
+            color="darkgrey"
+          />
           {mySchoolComponents}
         </View>
         <Toolbar />

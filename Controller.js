@@ -353,6 +353,7 @@ export async function sendEventReply(
 
 export async function logout(dispatch) {
   await signOut(auth);
+  dispatch(Actions.clearUserData({}));
 }
 
 async function sendPushNotification(expoPushToken) {

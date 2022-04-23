@@ -20,7 +20,6 @@ export default function NewEventModal({ userInfo, group, visible, sendEvent, sho
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
 
   const onDateChange = (event, selectedDate) => {
-    alert("on date change");
     const currentDate = selectedDate || date;
     setDate(moment(currentDate));
     setShowDatePicker(false);
