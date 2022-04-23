@@ -12,6 +12,7 @@ const fs = admin.firestore();
 // [ install dependencies in functions directory e.g. npm install nodemailer]
 // firebase deploy --only functions:messagePushNotifications
 // firebase deploy --only functions:emailNotifications
+// firebase deploy --only functions:inviteNotifications
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
@@ -72,54 +73,56 @@ exports.inviteNotifications = functions.firestore
     const fromUid = invite.fromUid;
     const groupId = invite.groupId;
 
-    const toUid =
-      invite.toUid != null && invite.toUid.indexOf("_uid_") == 0 ? invite.toUid.substring(5) : null;
-    console.log("toUid parsed: (" + toUid + ")");
+    const fromUserRef = db.ref("users/" + fromUid);
+    fromUserRef.once("value").then((fromUserSnapshot) => {
+      const fromUser = fromUserSnapshot.val();
+      console.log(
+        "fromUser: " +
+          JSON.stringify(fromUser) +
+          ", email: " +
+          fromUser["email"] +
+          ", email: " +
+          fromUser.email
+      );
+      const fromUserDisplayName =
+        fromUser.displayName != null ? fromUser.displayName : fromUser.email.split("@")[0];
+      const groupRef = db.ref("groups/" + groupId);
+      groupRef.once("value").then((groupSnapshot) => {
+        const group = groupSnapshot.val();
+        console.log("group: " + JSON.stringify(group));
+        //const firestore = admin.firestore()
+        const title = "Group invite from " + fromUserDisplayName;
+        const body = fromUserDisplayName + " invited you to join " + group.name;
 
-    if (toUid != null) {
-      const fromUserRef = db.ref("users/" + fromUid);
-      fromUserRef.once("value").then((fromUserSnapshot) => {
-        const fromUser = fromUserSnapshot.val();
-        console.log(
-          "fromUser: " +
-            JSON.stringify(fromUser) +
-            ", email: " +
-            fromUser["email"] +
-            ", email: " +
-            fromUser.email
-        );
-        const fromUserDisplayName =
-          fromUser.displayName != null ? fromUser.displayName : fromUser.email.split("@")[0];
-        const groupRef = db.ref("groups/" + groupId);
-        groupRef.once("value").then((groupSnapshot) => {
-          const group = groupSnapshot.val();
-          console.log("group: " + JSON.stringify(group));
-          //const firestore = admin.firestore()
-          const title = "Group invite from " + fromUserDisplayName;
-          const body = fromUserDisplayName + " invited you to join " + group.name;
+        const toUid =
+          invite.toUid != null && invite.toUid.indexOf("_uid_") == 0
+            ? invite.toUid.substring(5)
+            : null;
+
+        const toEmail =
+          invite.toUid != null && invite.toUid.indexOf("_email_") == 0
+            ? invite.toUid.substring(7)
+            : null;
+        console.log("toUid parsed: (" + toUid + ")");
+
+        if (toUid != null) {
           console.log("adding push notificatoin");
-          const pushNotificationsRef = fs.collection("push_notifications");
           console.log("calling adddoc");
+          const pushNotificationsRef = fs.collection("push_notifications");
           pushNotificationsRef.add({
             uid: toUid,
             title,
             body,
             data: "{}",
           });
-          /*
-            console.log("calling adddoc");
-            fs.add(pushNotificationsRef, {
-              uid: toUid,
-              title,
-              body,
-              data: "{}"
-            });
-            */
-        });
+        } else {
+          console.log("Calling sendNotification");
+          const subject = "Group invite from " + fromUserDisplayName;
+          const body = fromUserDisplayName + " invited you to join " + group.name;
+          sendNotification(toEmail, subject, body);
+        }
       });
-    } else {
-      console.log("skpping invite notification for now, to do will be to put email here");
-    }
+    });
 
     return {
       status: "success",
@@ -269,7 +272,8 @@ exports.emailNotifications = functions.firestore
     });
 
     const mailOptions = {
-      from: "ilyaskuratovsky@gmail.com",
+      //from: "ilyaskuratovsky@gmail.com",
+      from: "postmaster@sandboxda7dbd833769483cbe4d9cf320ba0a43.mailgun.org",
       to: notification.to,
       subject: notification.subject,
       html: notification.body,
@@ -288,3 +292,14 @@ exports.emailNotifications = functions.firestore
       status: "success",
     };
   });
+
+function sendNotification(toEmail, subject, body) {
+  const emailNotificationsRef = fs.collection("email_notifications");
+  const emailNotification = {
+    to: toEmail,
+    subject: subject,
+    body,
+  };
+  console.log("adding record for email notifications: " + JSON.stringify(emailNotification));
+  emailNotificationsRef.add(emailNotification);
+}

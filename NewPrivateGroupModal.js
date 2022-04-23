@@ -239,6 +239,7 @@ export default function NewPrivateGroupModal({ visible, createGroup, closeModal 
               placeholder={"Email"}
               value={inviteByEmail ?? ""}
               selectTextOnFocus={true}
+              autoCapitalize={"none"}
             />
             <MyButtons.FormButton
               text="Add"

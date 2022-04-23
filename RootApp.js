@@ -23,6 +23,25 @@ import SignupScreen from "./SignupScreen";
 import SplashScreen from "./SplashScreen";
 import UserScreen from "./UserScreen";
 
+/*
+App vision:  The local social network for parents.
+When join you put in your zip code (we also detect based on gps coordinates)
+You get suggested groups of parents that you can join:
+Greenwich parents of infants
+Greenwich parents of toddlers
+North Mianus Elementary Parents
+
+People can also create ephemeral private groups 
+
+Inside the groups you can 
+  write a post
+  create a calendar invite
+  create a poll
+  create a sign up (a la signup genius)
+
+
+*/
+
 function RootApp(props, state) {
   //const x = { a: "b" };
   //x.b.c = "z";
