@@ -118,8 +118,16 @@ exports.inviteNotifications = functions.firestore
         } else {
           console.log("Calling sendNotification");
           const subject = "Group invite from " + fromUserDisplayName;
-          const body = fromUserDisplayName + " invited you to join " + group.name;
-          sendNotification(toEmail, subject, body);
+          //const body = fromUserDisplayName + " invited you to join " + group.name;
+          const body = `
+            <html>
+              <body>
+                Trying html:
+                <a href="https://www.google.com">Google</a>
+              </body>
+            </html>
+          `;
+          sendEmailNotification(toEmail, subject, body);
         }
       });
     });
@@ -293,7 +301,7 @@ exports.emailNotifications = functions.firestore
     };
   });
 
-function sendNotification(toEmail, subject, body) {
+function sendEmailNotification(toEmail, subject, body) {
   const emailNotificationsRef = fs.collection("email_notifications");
   const emailNotification = {
     to: toEmail,

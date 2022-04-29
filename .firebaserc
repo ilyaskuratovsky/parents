@@ -1,6 +1,7 @@
 {
   "projects": {
-    "parents": "parents-749dd"
+    "parents": "parents-749dd",
+    "default": "parents-749dd"
   },
   "targets": {}
 }

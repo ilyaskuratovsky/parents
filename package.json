@@ -7,8 +7,10 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
-  },
+    "eject": "expo eject",
+    "predeploy": "expo build:web",
+    "deploy-hosting": "npm run predeploy && firebase deploy --only hosting"
+},
   "dependencies": {
     "@callstack/async-storage": "^2.0.3",
     "@expo-google-fonts/inter": "^0.2.2",
