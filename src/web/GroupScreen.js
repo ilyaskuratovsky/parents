@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   View,
+  ScrollView,
 } from "react-native";
 import { Divider } from "react-native-elements";
 import { IconButton } from "react-native-paper";
@@ -25,10 +26,12 @@ import * as Actions from "../common/Actions";
 import ThreadMessageModal from "./ThreadMessageModal";
 import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
+import * as Device from "expo-device";
 
 export default function GroupScreen({ groupId }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
+  const deviceType = useSelector((state) => state.main.deviceType);
 
   const { groupMap, orgsMap, messages, userMap, members, userMessagesMap } = useSelector(
     (state) => {
@@ -257,6 +260,7 @@ export default function GroupScreen({ groupId }) {
         </View>
         <Divider style={{}} width={1} color="lightgrey" />
       </View>
+      <Text>{deviceType}</Text>
       {/* messages section */}
       <View
         style={{
@@ -265,29 +269,31 @@ export default function GroupScreen({ groupId }) {
           backgroundColor: "white",
         }}
       >
-        <View style={{ flex: 1 }}>
-          <View
-            style={{
-              flexDirection: "column",
-              flex: 1,
-              //backgroundColor: "green"
-            }}
-          >
-            <FlatList
+        <ScrollView>
+          <View style={{ flex: 1 }}>
+            <View
               style={{
+                flexDirection: "column",
                 flex: 1,
-                //backgroundColor: "orange"
+                //backgroundColor: "green"
               }}
-              data={
-                //DATA
-                sortedMessages
-              }
-              renderItem={renderMessage}
-              keyExtractor={(item) => item.id}
-              ItemSeparatorComponent={FlatListItemSeparator}
-            />
+            >
+              <FlatList
+                style={{
+                  flex: 1,
+                  //backgroundColor: "orange"
+                }}
+                data={
+                  //DATA
+                  sortedMessages
+                }
+                renderItem={renderMessage}
+                keyExtractor={(item) => item.id}
+                ItemSeparatorComponent={FlatListItemSeparator}
+              />
+            </View>
           </View>
-        </View>
+        </ScrollView>
       </View>
       <Divider style={{}} width={1} color="darkgrey" />
       {/* toolbar section */}

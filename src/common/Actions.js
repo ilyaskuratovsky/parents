@@ -68,6 +68,7 @@ export const mainSlice = createSlice({
     toUserInvites: null,
     userMessagesMap: null,
     unreadMessages: [],
+    deviceType: null,
   },
   reducers: {
     appInitialized: (state, obj) => {
@@ -246,6 +247,14 @@ export const mainSlice = createSlice({
       };
       return newState;
     },
+    deviceType: (state, obj) => {
+      const deviceType = obj.payload;
+      const newState = {
+        ...state,
+        deviceType,
+      };
+      return newState;
+    },
   },
 });
 
@@ -264,6 +273,7 @@ export const {
   searchIndex,
   userMessages,
   clearUserData,
+  deviceType,
 } = mainSlice.actions;
 export const { goToScreen, openModal, closeModal, goToUserScreen, goToScreenAfterLogin } =
   screenSlice.actions;

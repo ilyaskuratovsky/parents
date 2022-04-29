@@ -10,7 +10,7 @@
     "eject": "expo eject",
     "predeploy": "expo build:web",
     "deploy-hosting": "npm run predeploy && firebase deploy --only hosting"
-},
+  },
   "dependencies": {
     "@callstack/async-storage": "^2.0.3",
     "@expo-google-fonts/inter": "^0.2.2",
@@ -72,7 +72,7 @@
     "react-native-swiper": "^1.6.0",
     "react-native-swiper-flatlist": "^3.0.16",
     "react-native-vector-icons": "^9.0.0",
-    "react-native-web": "^0.17.1",
+    "react-native-web": "0.17.1",
     "react-redux": "^7.2.6",
     "react-timeago": "^6.2.1"
   },

@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import * as Controller from "../common/Controller";
 import CommentView from "./CommentView";
-import * as MessageUtils from "./MessageUtils";
+import * as MessageUtils from "../common/MessageUtils";
 import * as MyButtons from "./MyButtons";
 import Portal from "./Portal";
 import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";

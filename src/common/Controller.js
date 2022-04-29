@@ -113,6 +113,17 @@ export async function initializeApp(dispatch, notificationListener, responseList
 
   dispatch(Actions.searchIndex(searchIndex));
 
+  Device.getDeviceTypeAsync().then((deviceType) => {
+    //const str = deviceType.toString();
+    if (deviceType == Device.DeviceType.DESKTOP) {
+      dispatch(Actions.deviceType("DESKTOP"));
+    } else if (deviceType == Device.DeviceType.PHONE) {
+      dispatch(Actions.deviceType("PHONE"));
+    } else {
+      dispatch(Actions.deviceType("DESKTOP"));
+    }
+  });
+
   return () => {
     notificationReceivedListener.remove();
     notificationResponseReceivedListener.remove();
