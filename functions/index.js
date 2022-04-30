@@ -13,7 +13,7 @@ const fs = admin.firestore();
 // firebase deploy --only functions:messagePushNotifications
 // firebase deploy --only functions:emailNotifications
 // firebase deploy --only functions:inviteNotifications
-
+// firebase deploy --only functions:messagePushNotifications,functions:emailNotifications,functions:inviteNotifications
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
@@ -91,9 +91,6 @@ exports.inviteNotifications = functions.firestore
         const group = groupSnapshot.val();
         console.log("group: " + JSON.stringify(group));
         //const firestore = admin.firestore()
-        const title = "Group invite from " + fromUserDisplayName;
-        const body = fromUserDisplayName + " invited you to join " + group.name;
-
         const toUid =
           invite.toUid != null && invite.toUid.indexOf("_uid_") == 0
             ? invite.toUid.substring(5)
@@ -106,6 +103,7 @@ exports.inviteNotifications = functions.firestore
         console.log("toUid parsed: (" + toUid + ")");
 
         if (toUid != null) {
+          const title = fromUserDisplayName + " invited you to a group";
           console.log("adding push notificatoin");
           console.log("calling adddoc");
           const pushNotificationsRef = fs.collection("push_notifications");
@@ -115,20 +113,26 @@ exports.inviteNotifications = functions.firestore
             body,
             data: "{}",
           });
-        } else {
-          console.log("Calling sendNotification");
-          const subject = "Group invite from " + fromUserDisplayName;
-          //const body = fromUserDisplayName + " invited you to join " + group.name;
-          const body = `
-            <html>
-              <body>
-                Trying html:
-                <a href="https://www.google.com">Google</a>
-              </body>
-            </html>
-          `;
-          sendEmailNotification(toEmail, subject, body);
         }
+        console.log("Calling sendNotification");
+        const subject = fromUserDisplayName + " invited you to a group";
+        //const body = fromUserDisplayName + " invited you to join " + group.name;
+        const body = `
+          <html>
+            <body>
+              <p>
+              ${fromUserDisplayName} invited you join "${group.name}" on InTheLoop.
+              </p>
+              <p>
+                <a href="https://tizzly.com" style="color: #FFFFFF; background-color: #008CBA;padding: 8px 20px;text-decoration:none;font-weight:bold;border-radius:5px;">View Invite</a>
+              </p>
+              <p>
+                InTheLoop let's parents connect around their kids activities: Schools, sports, and others.
+              </p>
+            </body>
+          </html>
+        `;
+        sendEmailNotification(toEmail, subject, body);
       });
     });
 
@@ -256,6 +260,7 @@ exports.emailNotifications = functions.firestore
     const notification = snap.data();
     console.log("ilyanotification: (" + notificationId + ")" + JSON.stringify(notification));
     const nodemailer = require("nodemailer");
+    const mg = require("nodemailer-mailgun-transport");
     /*
     var transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -268,6 +273,7 @@ exports.emailNotifications = functions.firestore
       },
     });
     */
+    /*
     var transporter = nodemailer.createTransport({
       host: "smtp.mailgun.org",
       port: 587,
@@ -278,10 +284,28 @@ exports.emailNotifications = functions.firestore
         pass: "4451585d1d1e9268c7fc992d60ec67bb",
       },
     });
+    */
 
+    const auth = {
+      auth: {
+        api_key: "key-94ef4322b606854fdae0bcfb3db3b7b5",
+        domain: "ilya.bz",
+      },
+    };
+    const transporter = nodemailer.createTransport(mg(auth));
+
+    /*
     const mailOptions = {
       //from: "ilyaskuratovsky@gmail.com",
       from: "postmaster@sandboxda7dbd833769483cbe4d9cf320ba0a43.mailgun.org",
+      to: notification.to,
+      subject: notification.subject,
+      html: notification.body,
+    };
+    */
+    const mailOptions = {
+      //from: "ilyaskuratovsky@gmail.com",
+      from: "notifications@ilya.bz",
       to: notification.to,
       subject: notification.subject,
       html: notification.body,
@@ -303,11 +327,16 @@ exports.emailNotifications = functions.firestore
 
 function sendEmailNotification(toEmail, subject, body) {
   const emailNotificationsRef = fs.collection("email_notifications");
+  //const timestamp = admin.firestore.FieldValue.serverTimestamp();
   const emailNotification = {
     to: toEmail,
     subject: subject,
     body,
+    //created: timestamp,
   };
-  console.log("adding record for email notifications: " + JSON.stringify(emailNotification));
+  console.log(
+    "starting adding record for email notifications: " + JSON.stringify(emailNotification)
+  );
   emailNotificationsRef.add(emailNotification);
+  console.log("added record for email notifications: " + JSON.stringify(emailNotification));
 }

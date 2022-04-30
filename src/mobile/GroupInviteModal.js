@@ -118,6 +118,7 @@ export default function GroupInviteModal({ groupId, visible, onInvite, closeModa
               }}
               value={email ?? ""}
               selectTextOnFocus={true}
+              autoCapitalize="none"
             />
             <Text>Enter emails separated by ','</Text>
           </View>

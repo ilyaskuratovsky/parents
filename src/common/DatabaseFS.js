@@ -9,8 +9,10 @@ import {
   where,
   query,
   Timestamp,
+  serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
+//import Firebase from "firebase";
 
 export async function getAllSchools() {
   /* firestore */
@@ -244,11 +246,13 @@ export async function sendMessage(groupId, uid, title, text, data, papaId, notif
 
 export async function createInvite(fromUid, groupId, uid, email) {
   const invitesRef = collection(db, "invites");
+  const timestamp = serverTimestamp();
   const group = await addDoc(invitesRef, {
     fromUid,
     groupId,
     toUid: uid != null ? "_uid_" + uid : "_email_" + email,
     status: "new",
+    created: timestamp,
   });
 }
 
