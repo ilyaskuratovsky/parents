@@ -7,6 +7,7 @@ import { auth } from "../../config/firebase";
 import * as Database from "./Database";
 import store from "./Actions";
 import * as Search from "./Search";
+import moment from "moment";
 
 //import { Database } from "firebase-firestore-lite";
 
@@ -317,11 +318,12 @@ export async function sendEventMessage(
   groupId,
   title,
   text,
-  startDate,
-  endDate,
+  eventTime,
   papaId,
   notificationInfo
 ) {
+  const { date, startTime, endTime, timezone } = eventTime;
+
   return await Database.sendMessage(
     groupId,
     userInfo.uid,
@@ -329,8 +331,10 @@ export async function sendEventMessage(
     text,
     {
       event: {
-        startDate,
-        endDate,
+        date: moment(date).format("YYYYMMDD"),
+        startTime: moment(startTime).format("HH:MM"),
+        endTime: moment(endTime).format("HH:MM"),
+        timezone,
       },
     },
     papaId == undefined ? null : papaId,

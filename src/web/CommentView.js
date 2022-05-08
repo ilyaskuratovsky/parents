@@ -84,15 +84,19 @@ export default function CommentView({ item, user, onPress }) {
                 fontSize: 14,
               }}
             >
-              <TimeAgo
-                date={item.createdAt}
-                style={{
-                  marginLeft: 5,
-                  fontWeight: "normal",
-                  fontSize: 14,
-                }}
-                component={timeAgo}
-              />
+              {item.createdAt ? (
+                <TimeAgo
+                  date={item.createdAt}
+                  style={{
+                    marginLeft: 5,
+                    fontWeight: "normal",
+                    fontSize: 14,
+                  }}
+                  component={timeAgo}
+                />
+              ) : (
+                <Text>No Create Time</Text>
+              )}
             </View>
           </View>
           <View style={{ flex: 1, flexDirection: "column" }}>
@@ -176,16 +180,20 @@ export default function CommentView({ item, user, onPress }) {
                 fontSize: 14,
               }}
             >
-              <TimeAgo
-                date={item.createdAt}
-                style={{
-                  marginLeft: 5,
-                  fontWeight: "normal",
-                  fontSize: 14,
-                  color: "#333333",
-                }}
-                component={timeAgo}
-              />
+              {item.createdAt ? (
+                <TimeAgo
+                  date={item.createdAt}
+                  style={{
+                    marginLeft: 5,
+                    fontWeight: "normal",
+                    fontSize: 14,
+                    color: "#333333",
+                  }}
+                  component={timeAgo}
+                />
+              ) : (
+                <Text>No Create Time</Text>
+              )}
             </View>
           </View>
           <View style={{ flex: 1, flexDirection: "column" }}>

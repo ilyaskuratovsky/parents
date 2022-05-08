@@ -5,9 +5,9 @@ import { Badge } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Elements from "react-native-elements";
 
-const MenuButton = React.memo(({ icon, text, onPress, color = "black", badge }) => {
+const MenuButton = React.memo(({ icon, text, onPress, color = "black", badge, containerStyle }) => {
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity onPress={onPress} style={containerStyle}>
       <View
         style={{
           flexDirection: "column",

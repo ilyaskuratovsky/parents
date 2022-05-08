@@ -38,10 +38,12 @@ export function buildRootMessagesWithChildren(
   for (const m of Object.values(messageMap)) {
     if (m.papaId != null) {
       const papaMessage = messageMap[m.papaId];
-      if (papaMessage.children == null) {
-        papaMessage["children"] = [];
+      if (papaMessage != null) {
+        if (papaMessage.children == null) {
+          papaMessage["children"] = [];
+        }
+        papaMessage.children.push(m);
       }
-      papaMessage.children.push(m);
     }
   }
 

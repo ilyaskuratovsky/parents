@@ -101,7 +101,7 @@ export default function GroupScreen({ groupId }) {
     );
   }, []);
 
-  const sendEventMessage = useCallback(async (title, text, startDate, endDate) => {
+  const sendEventMessage = useCallback(async (title, text, eventTime) => {
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(userInfo);
     return await Controller.sendEventMessage(
@@ -110,8 +110,7 @@ export default function GroupScreen({ groupId }) {
       groupId,
       title,
       text,
-      startDate,
-      endDate,
+      eventTime,
       null, //papa id
       {
         groupName,
@@ -310,6 +309,28 @@ export default function GroupScreen({ groupId }) {
           icon="plus"
           onPress={() => {
             setShowNewMessageModal(true);
+          }}
+        />
+        <MyButtons.MenuButton
+          icon="plus"
+          text="New Post"
+          onPress={() => {
+            dispatch(
+              Actions.goToScreen({
+                screen: "FIND_GROUPS",
+              })
+            );
+          }}
+        />
+        <MyButtons.MenuButton
+          icon="calendar-plus"
+          text="New Event"
+          onPress={() => {
+            dispatch(
+              Actions.goToScreen({
+                screen: "FIND_GROUPS",
+              })
+            );
           }}
         />
         <IconButton

@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Avatar, Divider } from "react-native-elements";
-import TimeAgo from "react-timeago";
-
 import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { Text } from "react-native";
+
 const MessageTime = ({ timestamp, textStyle }) => {
   const messageTime = moment(timestamp);
 

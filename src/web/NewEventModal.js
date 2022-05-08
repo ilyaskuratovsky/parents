@@ -209,7 +209,9 @@ export default function NewEventModal({ userInfo, group, visible, sendEvent, sho
                 }}
                 style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
               >
-                <Text style={{ width: 90, fontSize: 16 }}>{startTime.format("LT")}</Text>
+                <Text style={{ width: 90, fontSize: 16 }}>
+                  {/*moment(startTime).format("LT")*/ startTime?.toString() ?? "<null>"}
+                </Text>
               </TouchableOpacity>
               <Text style={{ marginLeft: 20, width: 50, fontSize: 16 }}>End: </Text>
               <TouchableOpacity
@@ -218,7 +220,7 @@ export default function NewEventModal({ userInfo, group, visible, sendEvent, sho
                 }}
                 style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
               >
-                <Text style={{ width: 100, fontSize: 16 }}>{endTime.format("LT")}</Text>
+                <Text style={{ width: 100, fontSize: 16 }}>{endTime?.toString() ?? "<null>"}</Text>
               </TouchableOpacity>
             </View>
           </View>

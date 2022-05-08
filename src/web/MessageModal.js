@@ -461,7 +461,6 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
                 <TouchableOpacity
                   onPress={() => {
                     sendEventReply("accept", null);
-                    /*
                     Alert.alert("Book in Calendar?", null, [
                       {
                         text: "Yes",
@@ -485,7 +484,6 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
                         style: "cancel",
                       },
                     ]);
-                    */
                   }}
                 >
                   {(message.event.users ?? {})[user.uid]?.status === "accept" && (

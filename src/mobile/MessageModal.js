@@ -27,6 +27,9 @@ import * as Globals from "./Globals";
 import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
+import BookCalendarEventModal from "./BookCalendarEventModal";
+//import moment from "moment";
+import moment from "moment-timezone";
 
 export default function MessagesContainer({ groupId, messageId, visible, closeModal }) {
   const user = useSelector((state) => state.main.userInfo);
@@ -306,6 +309,18 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
     //return 0;
   });
 
+  const event = message.event;
+  const eventStartDate = moment
+    .tz(event.date + " " + event.startTime, "YYYYMMDD HH:mm", event.timezone)
+    .utc()
+    .toDate();
+  const eventEndDate = moment
+    .tz(event.date + " " + event.endTime, "YYYYMMDD HH:mm", event.timezone)
+    .utc()
+    .toDate();
+  //const eventStartDate = moment.tz("2022-05-07 19:00", "America/New_York").utc().toDate();
+  //const eventEndDate = moment.tz("2022-05-07 19:00", "America/New_York").utc().toDate();
+
   const childMessages = sortedChildMessages.map((message) => {
     const user = userMap[message.uid];
     return {
@@ -334,7 +349,6 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
 
   const [text, setText] = useState("");
   const [calendar, setCalendar] = useState(null);
-  const [calendars, setCalendars] = useState(null);
   const [showCalendarSelection, setShowCalendarSelection] = useState(false);
   const scrollViewRef = useRef();
   const insets = useSafeAreaInsets();
@@ -435,6 +449,7 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
                   borderRadius: 0,
                 }}
               >
+                {Globals.dev && <Text>{message.id}</Text>}
                 <Text
                   //numberOfLines={showMore[item.id] ? null : 4}
                   style={{
@@ -453,6 +468,15 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
                     fontSize: 18,
                   }}
                 >
+                  {JSON.stringify(message.event)}
+                </Text>
+                <Text
+                  //numberOfLines={showMore[item.id] ? null : 4}
+                  style={{
+                    paddingLeft: 0,
+                    fontSize: 18,
+                  }}
+                >
                   {message.text}
                 </Text>
               </View>
@@ -461,22 +485,11 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
                 <TouchableOpacity
                   onPress={() => {
                     sendEventReply("accept", null);
-                    /*
                     Alert.alert("Book in Calendar?", null, [
                       {
                         text: "Yes",
-                        onPress: async () => {
-                          const { status } = await Calendar.requestCalendarPermissionsAsync();
-                          if (status === "granted") {
-                            const calendars = await Calendar.getCalendarsAsync(
-                              Calendar.EntityTypes.EVENT
-                            );
-                            //alert("Here are all your calendars:" + JSON.stringify(calendars));
-                            setCalendars(calendars);
-                            //alert("calendar[0]:" + JSON.stringify(calendars[0]));
-                            //setCalendar(calendars[0]);
-                            setShowCalendarSelection(true);
-                          }
+                        onPress: () => {
+                          setShowCalendarSelection(true);
                         },
                       },
                       {
@@ -485,7 +498,6 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
                         style: "cancel",
                       },
                     ]);
-                    */
                   }}
                 >
                   {(message.event.users ?? {})[user.uid]?.status === "accept" && (
@@ -574,60 +586,19 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
         </KeyboardAvoidingView>
       </Portal>
 
-      {showCalendarSelection && (
-        <View
-          style={[
-            StyleSheet.absoluteFill,
-            {
-              backgroundColor: "rgba(0,0,0,0.4)",
-              alignItems: "center",
-              justifyContent: "center",
-            },
-          ]}
-        >
-          <SafeAreaView>
-            <ScrollView style={{ height: 200, backgroundColor: "cyan" }}>
-              {(calendars ?? []).map((calendar) => {
-                return (
-                  <Button
-                    disabled={calendar == null}
-                    title={
-                      "Choose " +
-                      (calendar?.title ?? "null") +
-                      "[" +
-                      (calendar?.source.name ?? "null") +
-                      "]"
-                    }
-                    onPress={() => {
-                      createEvent(calendar).then((eventId) => {
-                        setShowCalendarSelection(false);
-                      });
-                    }}
-                  />
-                );
-              })}
-            </ScrollView>
-          </SafeAreaView>
-        </View>
-      )}
+      <BookCalendarEventModal
+        key="BookCalendarEventModal"
+        title={message.title}
+        startDate={eventStartDate}
+        endDate={eventEndDate}
+        onComplete={() => {
+          setShowCalendarSelection(false);
+        }}
+        visible={showCalendarSelection}
+        onDismiss={() => {
+          setShowCalendarSelection(false);
+        }}
+      />
     </Modal>
   );
-}
-
-async function createEvent(calendar) {
-  let dateMs = Date.parse("2022-04-11");
-  let startDate = new Date(dateMs);
-  let endDate = new Date(dateMs + 2 * 60 * 60 * 1000);
-
-  Calendar.createEventAsync(calendar?.id, {
-    title: "ilya test 3",
-    startDate: startDate,
-    endDate: endDate,
-    timeZone: "America/New_York",
-    location: "Ilya's Bedroom",
-  }).then((eventId) => {
-    console.log("booked: " + eventId);
-    return eventId;
-  });
-  // console.log(`calendar ID is: ${id}`)
 }

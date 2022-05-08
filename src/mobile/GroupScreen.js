@@ -25,6 +25,7 @@ import * as Actions from "../common/Actions";
 import ThreadMessageModal from "./ThreadMessageModal";
 import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
+import * as MyButtons from "./MyButtons";
 
 export default function GroupScreen({ groupId }) {
   const dispatch = useDispatch();
@@ -98,7 +99,7 @@ export default function GroupScreen({ groupId }) {
     );
   }, []);
 
-  const sendEventMessage = useCallback(async (title, text, startDate, endDate) => {
+  const sendEventMessage = useCallback(async (title, text, date, startTime, endTime) => {
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(userInfo);
     return await Controller.sendEventMessage(
@@ -107,8 +108,9 @@ export default function GroupScreen({ groupId }) {
       groupId,
       title,
       text,
-      startDate,
-      endDate,
+      date,
+      startTime,
+      endTime,
       null, //papa id
       {
         groupName,
@@ -300,14 +302,17 @@ export default function GroupScreen({ groupId }) {
           height: bottomBarHeight,
         }}
       >
-        <IconButton
+        <MyButtons.MenuButton
           icon="plus"
+          text="New Post"
           onPress={() => {
             setShowNewMessageModal(true);
           }}
+          containerStyle={{ paddingRight: 24 }}
         />
-        <IconButton
+        <MyButtons.MenuButton
           icon="calendar-plus"
+          text="New Event"
           onPress={() => {
             setShowNewEventModal(true);
           }}
@@ -322,6 +327,7 @@ export default function GroupScreen({ groupId }) {
           closeModal={() => {
             setMessagesModalVisible(null);
           }}
+          containerStyle={{ paddingLeft: 24 }}
         />
       )}
       {/* MODALS */}

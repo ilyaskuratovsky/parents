@@ -20,7 +20,7 @@ export default function Messages(props) {
 
   const insets = useSafeAreaInsets();
 
-  if (toUserInvites != null) {
+  if (toUserInvites != null && toUserInvites.length > 0) {
     return (
       <View
         style={{
