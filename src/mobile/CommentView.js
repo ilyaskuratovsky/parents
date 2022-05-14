@@ -108,6 +108,7 @@ export default function CommentView({ item, user, onPress }) {
               {item.text}
             </Text>
             {Globals.dev && <Text style={{ fontSize: 8 }}>{item.id}</Text>}
+            {Globals.dev && <Text style={{ fontSize: 8 }}>{JSON.stringify(item, null, 2)}</Text>}
           </View>
         </View>
       </View>
@@ -136,6 +137,7 @@ export default function CommentView({ item, user, onPress }) {
           }}
         >
           {UserInfo.smallAvatarComponent(item.user)}
+          <Text>x</Text>
         </View>
 
         {/* user name + text */}
@@ -200,7 +202,10 @@ export default function CommentView({ item, user, onPress }) {
             >
               {item.text}
             </Text>
-            {Globals.dev && <Text style={{ fontSize: 8 }}>{item._id}</Text>}
+            {Globals.dev && (
+              <Text style={{ fontSize: 8 }}>(not from parent message uid) {item.id}</Text>
+            )}
+            {Globals.dev && <Text style={{ fontSize: 8 }}>{JSON.stringify(item, null, 2)}</Text>}
           </View>
         </View>
       </View>

@@ -19,7 +19,7 @@ export function chatDisplayName(userInfo) {
   if (userInfo.email != null) {
     return userInfo.email.split("@")[0];
   } else {
-    return "<null>";
+    return null;
   }
 }
 
@@ -94,7 +94,11 @@ export function smallAvatarComponent(userInfo, onPress, border) {
       letters =
         userInfo.firstName.charAt(0).toUpperCase() + userInfo.lastName.charAt(0).toUpperCase();
     } else {
-      letters = displayName.charAt(0).toUpperCase();
+      if (displayName != null) {
+        letters = displayName.charAt(0).toUpperCase();
+      } else {
+        ("N/A");
+      }
     }
     avatar = (
       <Avatar

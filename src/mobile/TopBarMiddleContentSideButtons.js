@@ -8,7 +8,7 @@ const TopBar = ({ height = 80, left, center, right, style, leftWidth, background
     <View
       style={{
         height: height ?? 80,
-        backgroundColor: backgroundColor ?? "purple",
+        //backgroundColor: backgroundColor ?? "purple",
         flexDirection: "column",
       }}
     >

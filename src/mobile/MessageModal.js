@@ -30,6 +30,7 @@ import * as UserInfo from "../common/UserInfo";
 import BookCalendarEventModal from "./BookCalendarEventModal";
 //import moment from "moment";
 import moment from "moment-timezone";
+import JSONTree from "react-native-json-tree";
 
 export default function MessagesContainer({ groupId, messageId, visible, closeModal }) {
   const user = useSelector((state) => state.main.userInfo);
@@ -227,7 +228,9 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
                 >
                   {message.text}
                 </Text>
-                {Globals.dev && <Text style={{ fontSize: 8 }}>{JSON.stringify(message)}</Text>}
+                {Globals.dev && (
+                  <Text style={{ fontSize: 8 }}>{JSON.stringify(message, null, 2)}</Text>
+                )}
               </View>
             </View>
             <Divider style={{}} width={1} color="darkgrey" />
@@ -321,20 +324,7 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
   //const eventStartDate = moment.tz("2022-05-07 19:00", "America/New_York").utc().toDate();
   //const eventEndDate = moment.tz("2022-05-07 19:00", "America/New_York").utc().toDate();
 
-  const childMessages = sortedChildMessages.map((message) => {
-    const user = userMap[message.uid];
-    return {
-      ...message,
-      _id: message.id,
-      text: message.text,
-      createdAt: new Date(message.timestamp),
-      user: {
-        _id: message.uid,
-        name: UserInfo.chatDisplayName(user),
-        avatarColor: UserInfo.avatarColor(user),
-      },
-    };
-  });
+  const childMessages = sortedChildMessages;
 
   const sendEventReply = useCallback(async (status, text) => {
     const groupName = group.name;
@@ -348,11 +338,8 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
   }, []);
 
   const [text, setText] = useState("");
-  const [calendar, setCalendar] = useState(null);
   const [showCalendarSelection, setShowCalendarSelection] = useState(false);
   const scrollViewRef = useRef();
-  const insets = useSafeAreaInsets();
-  const windowHeight = Dimensions.get("window").height - insets.top - insets.bottom;
   const topBarHeight = 64;
   const replyBarHeight = 80;
 
@@ -372,6 +359,7 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
         {/* top bar */}
         <TopBarMiddleContentSideButtons
           height={topBarHeight}
+          backgroundColor={UIConstants.DEFAULT_BACKGROUND}
           left={
             <MyButtons.MenuButton
               icon="arrow-left"
@@ -450,6 +438,23 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
                 }}
               >
                 {Globals.dev && <Text>{message.id}</Text>}
+                {Globals.dev && (
+                  <ScrollView style={{ height: 80 }}>
+                    {/*
+                    <JSONTree
+                      data={message}
+                      labelRenderer={(raw) => (
+                        <Text style={{ fontSize: 8, fontWeight: "bold" }}>{raw}</Text>
+                      )}
+                      valueRenderer={(raw) => (
+                        <Text style={{ fontSize: 8, fontWeight: "bold" }}>{raw}</Text>
+                      )}
+                    />
+                      */}
+
+                    <Text style={{ fontSize: 8 }}>{JSON.stringify(message, null, 2)}</Text>
+                  </ScrollView>
+                )}
                 <Text
                   //numberOfLines={showMore[item.id] ? null : 4}
                   style={{
@@ -461,15 +466,15 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
                 >
                   {message.title}
                 </Text>
-                <Text
-                  //numberOfLines={showMore[item.id] ? null : 4}
-                  style={{
-                    paddingLeft: 0,
-                    fontSize: 18,
-                  }}
-                >
-                  {JSON.stringify(message.event)}
-                </Text>
+                {Globals.dev && (
+                  <Text
+                    style={{
+                      fontSize: 10,
+                    }}
+                  >
+                    {JSON.stringify(message.event, null, 2)}
+                  </Text>
+                )}
                 <Text
                   //numberOfLines={showMore[item.id] ? null : 4}
                   style={{
@@ -526,9 +531,15 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
             </View>
             <Divider style={{}} width={1} color="darkgrey" />
             {/* comments section */}
-            <View style={{ flex: 1, marginTop: 10, backgroundColor: "cyan" }}>
-              {childMessages.map((message) => {
-                return <CommentView item={message} user={user} />;
+            <View
+              style={{
+                flex: 1,
+                marginTop: 10,
+                //backgroundColor: "cyan"
+              }}
+            >
+              {childMessages.map((message, i) => {
+                return <CommentView key={i} item={message} user={user} />;
               })}
             </View>
           </ScrollView>
