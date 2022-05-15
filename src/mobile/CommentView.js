@@ -84,15 +84,19 @@ export default function CommentView({ item, user, onPress }) {
                 fontSize: 14,
               }}
             >
-              <TimeAgo
-                date={item.createdAt}
-                style={{
-                  marginLeft: 5,
-                  fontWeight: "normal",
-                  fontSize: 14,
-                }}
-                component={timeAgo}
-              />
+              {item.createdAt ? (
+                <TimeAgo
+                  date={item.createdAt}
+                  style={{
+                    marginLeft: 5,
+                    fontWeight: "normal",
+                    fontSize: 14,
+                  }}
+                  component={timeAgo}
+                />
+              ) : (
+                <Text>Fix needed</Text>
+              )}
             </View>
           </View>
           <View style={{ flex: 1, flexDirection: "column" }}>
@@ -114,6 +118,7 @@ export default function CommentView({ item, user, onPress }) {
       </View>
     );
   } else {
+    console.log("2timeago time: " + item.createdAt);
     return (
       <View
         style={{

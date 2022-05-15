@@ -40,14 +40,32 @@ export default function BookCalendarEventModal({
   onDismiss,
 }) {
   const [calendars, setCalendars] = useState(null);
+  const [calendarMap, setCalendarMap] = useState(null);
 
   useEffect(async () => {
-    const { status } = await Calendar.requestCalendarPermissionsAsync();
-    if (status === "granted") {
-      const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-      setCalendars(calendars);
+    if (visible) {
+      console.log("requesting calendar permission");
+      const { status } = await Calendar.requestCalendarPermissionsAsync();
+      if (status === "granted") {
+        console.log("requesting calendar permission: granted");
+        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+        const calendarMap = calendars
+          .filter((cal) => {
+            return cal.allowsModifications === true;
+          })
+          .reduce((map, cal) => {
+            const source = cal.source.name;
+            if (map[source] == null) {
+              map[source] = [];
+            }
+            map[source].push(cal);
+            return map;
+          }, {});
+        setCalendars(calendars);
+        setCalendarMap(calendarMap);
+      }
     }
-  });
+  }, [visible]);
 
   return (
     <Modal visible={visible} animationType={"slide"}>
@@ -67,43 +85,83 @@ export default function BookCalendarEventModal({
         >
           <SafeAreaView style={{ flex: 1, flexDirection: "column" }}>
             {Globals.dev && (
-              <Text>
-                title: {title}, startDate: {moment(startDate).format()}, endDate:{" "}
-                {moment(endDate).format()}
-              </Text>
+              <>
+                <Text>BookCalendarEventModal.js</Text>
+                <Text>
+                  title: {title}, startDate: {moment(startDate).format()}, endDate:{" "}
+                  {moment(endDate).format()}
+                </Text>
+              </>
             )}
-            <ScrollView style={{ height: 200, backgroundColor: "cyan" }}>
-              {(calendars ?? [])
-                .sort((c1, c2) => c1.source.name.localeCompare(c2.source.name))
-                .filter((calendar) => calendar.allowsModifications)
-                .map((calendar) => {
+            {calendarMap == null && <Text>Loading...</Text>}
+            <ScrollView style={{ height: 200, backgroundColor: "gray" }}>
+              {(calendarMap != null ? Object.keys(calendarMap) : [])
+                .sort((source1, source2) => source1.localeCompare(source2))
+                .map((source, i) => {
+                  const calendars = calendarMap[source];
                   return (
-                    <TouchableOpacity
-                      onPress={() => {
-                        createEvent(calendar, title, startDate, endDate)
-                          .then((eventId) => {
-                            Alert.alert("Done", null, [
-                              {
-                                text: "OK",
-                                onPress: async () => {
-                                  onComplete();
-                                },
-                              },
-                            ]);
-                          })
-                          .catch((error) => {
-                            Alert.alert("caught error: " + JSON.stringify(error));
-                          });
-                      }}
-                    >
-                      <Text style={{ fontSize: 8, fontWeight: "bold" }}>
-                        {(calendar?.title ?? "null") +
-                          "[" +
-                          (calendar?.source.name ?? "null") +
-                          "]"}
-                      </Text>
-                      <Text style={{ fontSize: 8 }}>{JSON.stringify(calendar)}</Text>
-                    </TouchableOpacity>
+                    <View key={source}>
+                      <Text>{source}</Text>
+                      <View
+                        style={{
+                          backgroundColor: "white",
+                          borderRadius: 10,
+                          padding: 10,
+                          flexDirection: "column",
+                        }}
+                      >
+                        {calendars.map((calendar, i) => {
+                          console.log("color: " + JSON.stringify(calendar.color));
+                          return (
+                            <TouchableOpacity
+                              key={i}
+                              style={{ flexDirection: "column" }}
+                              onPress={() => {
+                                createEvent(calendar, title, startDate, endDate)
+                                  .then((eventId) => {
+                                    Alert.alert("Done", null, [
+                                      {
+                                        text: "OK",
+                                        onPress: async () => {
+                                          onComplete();
+                                        },
+                                      },
+                                    ]);
+                                  })
+                                  .catch((error) => {
+                                    Alert.alert("caught error: " + JSON.stringify(error));
+                                  });
+                              }}
+                            >
+                              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                <View
+                                  style={{
+                                    height: 20,
+                                    width: 20,
+                                    backgroundColor: calendar.color ?? "gray",
+                                  }}
+                                ></View>
+                                <Text style={{ fontSize: 8, fontWeight: "bold" }}>
+                                  {calendar?.title ?? "null"}
+                                </Text>
+                              </View>
+                              {Globals.dev && (
+                                <Text style={{ fontSize: 8 }}>
+                                  {JSON.stringify(calendar, 2, null)}
+                                </Text>
+                              )}
+                              {i < calendars.length - 1 && (
+                                <Divider
+                                  style={{ marginTop: 20, marginBottom: 10 }}
+                                  width={3}
+                                  color="lightgrey"
+                                />
+                              )}
+                            </TouchableOpacity>
+                          );
+                        })}
+                      </View>
+                    </View>
                   );
                 })}
             </ScrollView>
