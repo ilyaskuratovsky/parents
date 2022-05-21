@@ -197,7 +197,7 @@ export function observeGroupMessages(groupId, callback) {
         title: data.title,
         text: data.text,
         uid: data.uid,
-        timestamp: data.timestamp.toMillis(),
+        timestamp: data.timestamp,
         papaId: data.papaId,
         ...data,
       };
@@ -230,6 +230,8 @@ export async function createGroup(data) {
 }
 
 export async function sendMessage(groupId, uid, title, text, data, papaId, notificationInfo) {
+  // console.log(firebase.firestore);
+  // console.log(Object.keys(firebase.firestore));
   const message = {
     uid: uid,
     groupId,
@@ -237,7 +239,8 @@ export async function sendMessage(groupId, uid, title, text, data, papaId, notif
     text,
     ...data,
     papaId,
-    timestamp: Timestamp.now().toDate(),
+    //timestamp: Timestamp.now().toDate(),
+    timestamp: serverTimestamp(),
     notificationInfo,
   };
   const messagesRef = collection(doc(collection(db, "groups"), groupId), "messages");

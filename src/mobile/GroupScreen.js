@@ -13,6 +13,7 @@ import { IconButton } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import * as Controller from "../common/Controller";
+import * as Date from "../common/Date";
 import FacePile from "./FacePile";
 import * as Globals from "./Globals";
 import GroupMembersModal from "./GroupMembersModal";
@@ -128,13 +129,16 @@ export default function GroupScreen({ groupId }) {
   useEffect(async () => {
     // update last viewed callback function
     if (messages.length > 0) {
-      const maxTimestampMessage = messages.reduce((prev, current) =>
-        prev.timestamp > current.timestamp ? prev : current
+      const maxTimestampMessage = messages.reduce((prev, current) => {
+        return Date.compare(prev.timestamp, current.timestamp) == 1 ? prev : current;
+      });
+      console.log(
+        "setting user group last viewed timestamp: " + JSON.stringify(maxTimestampMessage.timestamp)
       );
       await Controller.setUserGroupLastViewedTimestamp(
         userInfo,
         group.id,
-        maxTimestampMessage.timestamp
+        Date.toDate(maxTimestampMessage.timestamp)
       );
     }
     Controller.markMessagesRead(

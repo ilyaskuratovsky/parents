@@ -471,7 +471,7 @@ export async function setUserGroupLastViewedTimestamp(
         lastViewedMessageTimestamp
     );
     Database.updateUserGroupMembership(userGroupMembership.id, {
-      lastViewedMessageTimestamp,
+      lastViewedMessageTimestamp: lastViewedMessageTimestamp.getTime(),
     });
   }
 }

@@ -156,6 +156,8 @@ exports.messagePushNotifications = functions.firestore
         JSON.stringify(snap.data())
     );
     const fetch = require("node-fetch");
+
+    // get all the group memberships for the group that the message came from
     const groupRef = db.ref("group_memberships").orderByChild("groupId").equalTo(groupId);
     groupRef
       .once("value")
@@ -165,29 +167,19 @@ exports.messagePushNotifications = functions.firestore
           for (const groupMembership of Object.values(groupMemberships)) {
             const uid = groupMembership["uid"];
             console.log("processing group membership: " + JSON.stringify(groupMembership));
-            const lastViewedMessageTimestampStr = groupMembership["lastViewedMessageTimestamp"];
-            // console.log(
-            //     "lastViewedMessageTimestamp: " + lastViewedMessageTimestamp
-            // );
-            const lastViewedMessageTimestamp =
-              lastViewedMessageTimestampStr != null
-                ? admin.firestore.Timestamp.fromMillis(lastViewedMessageTimestampStr)
-                : null;
+            const lastViewedMessageTimestampMillis = groupMembership["lastViewedMessageTimestamp"];
             console.log(
-              "lastViewedMessageTimestamp: " +
-                (lastViewedMessageTimestamp != null
-                  ? lastViewedMessageTimestamp.toDate()
-                  : "xnullx")
+              "lastViewedMessageTimestamp: " + JSON.stringify(lastViewedMessageTimestampMillis)
             );
             const messageTimestamp = message.timestamp;
             // const messageTimestamp = message.timestamp.ToString();
-            console.log("message.timestamp2" + messageTimestamp.toDate());
+            console.log("message.timestamp2" + messageTimestamp.toMillis());
             // const messageTimestamp = 0;
 
             // TODO: this timestamp is not in the right format so convert
             if (
-              lastViewedMessageTimestamp == null ||
-              messageTimestamp.toDate().getTime() > lastViewedMessageTimestamp.toDate().getTime()
+              lastViewedMessageTimestampMillis == null ||
+              messageTimestamp.toMillis() > lastViewedMessageTimestampMillis
             ) {
               console.log("ilya listening for user: " + uid);
               const userRef = db.ref("users/" + uid);
@@ -226,7 +218,8 @@ exports.messagePushNotifications = functions.firestore
         }
       })
       .catch((error) => {
-        console.error("ilyagroupsnapshot3: " + error);
+        console.error("ilya error: " + error);
+        console.error("ilya error stack: " + JSON.stringify(error.stack));
       });
 
     /*

@@ -229,6 +229,13 @@ export default function Login({ afterLoginScreen }) {
               setPassword("ingaskur");
             }}
           />
+          <MyButtons.LinkButton
+            text="testuser1@test.com"
+            onPress={async () => {
+              setEmail("testuser1@test.com");
+              setPassword("testuser1");
+            }}
+          />
         </View>
       )}
     </View>
