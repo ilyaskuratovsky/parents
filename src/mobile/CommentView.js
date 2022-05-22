@@ -4,6 +4,8 @@ import TimeAgo from "react-timeago";
 import * as Globals from "./Globals";
 import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
+import * as Date from "../common/Date";
+
 export default function CommentView({ item, user, onPress }) {
   const timeAgo = ({ children }) => {
     return (
@@ -84,9 +86,9 @@ export default function CommentView({ item, user, onPress }) {
                 fontSize: 14,
               }}
             >
-              {item.createdAt ? (
+              {item.timestamp ? (
                 <TimeAgo
-                  date={item.createdAt}
+                  date={Date.toDate(item.timestamp)}
                   style={{
                     marginLeft: 5,
                     fontWeight: "normal",
@@ -118,7 +120,6 @@ export default function CommentView({ item, user, onPress }) {
       </View>
     );
   } else {
-    console.log("2timeago time: " + item.createdAt);
     return (
       <View
         style={{
@@ -183,9 +184,9 @@ export default function CommentView({ item, user, onPress }) {
                 fontSize: 14,
               }}
             >
-              {item.createdAt ? (
+              {item.timestamp ? (
                 <TimeAgo
-                  date={item.createdAt}
+                  date={Date.toDate(item.timestamp)}
                   style={{
                     marginLeft: 5,
                     fontWeight: "normal",
@@ -194,7 +195,7 @@ export default function CommentView({ item, user, onPress }) {
                   component={timeAgo}
                 />
               ) : (
-                <Text>Fix needed</Text>
+                <Text>Fix needed: {JSON.stringify(item.createdAt)}</Text>
               )}
             </View>
           </View>

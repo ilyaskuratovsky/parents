@@ -32,7 +32,6 @@ export function toDate(obj) {
   }
 
   if (typeof obj.toMillis === "function") {
-    console.log("calling to millis");
     const millis = obj.toMillis();
     return new Date(millis);
   }
