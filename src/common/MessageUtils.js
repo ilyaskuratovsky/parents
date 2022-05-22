@@ -75,8 +75,11 @@ export function calculateUnreadMessages(groupMessagesMap, userMessagesMap) {
 export function addMeta(rootMessage, userInfo, userMessagesMap, userMap) {
   /* status */
   let status = null;
+  let userMessageId = null;
   if (userInfo.uid !== rootMessage.uid) {
-    status = userMessagesMap[rootMessage.id]?.status;
+    const userMessage = userMessagesMap[rootMessage.id];
+    status = userMessage?.status;
+    userMessageId = userMessage?.id;
   } else {
     status = "read";
   }
@@ -115,7 +118,7 @@ export function addMeta(rootMessage, userInfo, userMessagesMap, userMap) {
     )
   );
 
-  return { ...rootMessage, status, unreadChildCount, lastUpdated, children, user };
+  return { ...rootMessage, status, userMessageId, unreadChildCount, lastUpdated, children, user };
 }
 
 export function addEventData(rootMessage, userInfo, userMessagesMap, groupMembers) {

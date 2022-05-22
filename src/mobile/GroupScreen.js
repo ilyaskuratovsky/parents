@@ -128,6 +128,7 @@ export default function GroupScreen({ groupId }) {
   };
   useEffect(async () => {
     // update last viewed callback function
+    /* commenting out this code to check if we need it
     if (messages.length > 0) {
       const maxTimestampMessage = messages.reduce((prev, current) => {
         return Date.compare(prev.timestamp, current.timestamp) == 1 ? prev : current;
@@ -145,6 +146,7 @@ export default function GroupScreen({ groupId }) {
       userInfo,
       messages.map((m) => m.id)
     );
+    */
   }, [messages]);
 
   const insets = useSafeAreaInsets();
