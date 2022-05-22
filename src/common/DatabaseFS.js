@@ -179,10 +179,17 @@ export function observeToUserInvites(toUid, toEmail, callback) {
   );
 
   onSnapshot(snapshotQuery, (snapshot) => {
-    const list = snapshot.docs.map((doc) => {
-      const data = doc.data();
-      return { id: doc.id, ...data };
-    });
+    const list = snapshot.docs
+      .filter((doc) => {
+        const toUid = doc.toUid;
+        const filter = toUid == "_uid_" + toUid || toUid == "_email_" + toEmail;
+        console.log("userinvite snapshot: " + toUid + ", filter: " + filter);
+        return filter;
+      })
+      .map((doc) => {
+        const data = doc.data();
+        return { id: doc.id, ...data };
+      });
     callback(list);
   });
 }

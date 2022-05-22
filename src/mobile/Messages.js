@@ -101,9 +101,14 @@ export default function Messages(props) {
                   }}
                 />
               </View>
-              <View>
-                <Text style={{ fontSize: 10 }}>{Globals.dev ? "(" + invite.id + ")" : ""}</Text>
-              </View>
+              {Globals.dev && (
+                <View>
+                  <Text style={{ fontSize: 10 }}>{invite.id}</Text>
+                  <Text style={{ fontSize: 10 }}>
+                    toUserInvites: {JSON.stringify(toUserInvites, null, 2)}
+                  </Text>
+                </View>
+              )}
             </View>
           );
         })}

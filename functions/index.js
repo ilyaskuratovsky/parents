@@ -66,7 +66,7 @@ exports.pushNotifications = functions.firestore
 
 exports.inviteNotifications = functions.firestore
   .document("/invites/{inviteId}")
-  .onCreate((snap, context) => {
+  .onCreate(async (snap, context) => {
     const inviteId = context.params.inviteId;
     const invite = snap.data();
     console.log("inviteId: (" + inviteId + "): " + JSON.stringify(invite));
@@ -74,7 +74,7 @@ exports.inviteNotifications = functions.firestore
     const groupId = invite.groupId;
 
     const fromUserRef = db.ref("users/" + fromUid);
-    fromUserRef.once("value").then((fromUserSnapshot) => {
+    fromUserRef.once("value").then(async (fromUserSnapshot) => {
       const fromUser = fromUserSnapshot.val();
       console.log(
         "fromUser: " +
@@ -87,7 +87,7 @@ exports.inviteNotifications = functions.firestore
       const fromUserDisplayName =
         fromUser.displayName != null ? fromUser.displayName : fromUser.email.split("@")[0];
       const groupRef = db.ref("groups/" + groupId);
-      groupRef.once("value").then((groupSnapshot) => {
+      groupRef.once("value").then(async (groupSnapshot) => {
         const group = groupSnapshot.val();
         console.log("group: " + JSON.stringify(group));
         //const firestore = admin.firestore()
@@ -96,23 +96,30 @@ exports.inviteNotifications = functions.firestore
             ? invite.toUid.substring(5)
             : null;
 
-        const toEmail =
+        let toEmail =
           invite.toUid != null && invite.toUid.indexOf("_email_") == 0
             ? invite.toUid.substring(7)
             : null;
         console.log("toUid parsed: (" + toUid + ")");
 
         if (toUid != null) {
-          const title = fromUserDisplayName + " invited you to a group";
           console.log("adding push notificatoin");
           console.log("calling adddoc");
           const pushNotificationsRef = fs.collection("push_notifications");
           pushNotificationsRef.add({
             uid: toUid,
-            title,
-            body,
+            title: fromUserDisplayName + " invited you to a group",
+            body: "Invitation to group " + group.name,
             data: "{}",
           });
+
+          const toUserRef = db.ref("users/" + toUid);
+          console.log("getting toUser");
+          const toUserSnapshot = await toUserRef.once("value");
+          const toUser = toUserSnapshot.val();
+          console.log("got to user: " + JSON.stringify(toUser));
+          toEmail = toUser.email;
+          console.log("got toUser email: " + toEmail);
         }
         console.log("Calling sendNotification");
         const subject = fromUserDisplayName + " invited you to a group";
@@ -211,6 +218,19 @@ exports.messagePushNotifications = functions.firestore
                   console.log("ilya done calling fetch: response: " + JSON.stringify(response));
                 });
               });
+            } else {
+              console.log(
+                "not sending push notification because messageTimestamp " +
+                  messageTimestamp.toMillis() +
+                  " (" +
+                  new Date(messageTimestamp.toMillis()) +
+                  ") " +
+                  " is after lastViewedMessageTime " +
+                  lastViewedMessageTimestampMillis +
+                  " (" +
+                  new Date(lastViewedMessageTimestampMillis) +
+                  ")"
+              );
             }
           }
         } else {

@@ -236,9 +236,9 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
             <Divider style={{}} width={1} color="darkgrey" />
             {/* comments section */}
             <View style={{ paddingTop: 10, flex: 1 }}>
-              {childMessages.map((message) => {
+              {childMessages.map((message, index) => {
                 return (
-                  <View style={{ paddingBottom: 10 }}>
+                  <View key={index} style={{ paddingBottom: 10 }}>
                     <CommentView item={message} user={user} />
                   </View>
                 );

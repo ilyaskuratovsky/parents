@@ -468,7 +468,10 @@ export async function setUserGroupLastViewedTimestamp(
       "found usergroupmembership: " +
         userGroupMembership.id +
         ", updating timestamp: " +
-        lastViewedMessageTimestamp
+        lastViewedMessageTimestamp.getTime() +
+        "(" +
+        lastViewedMessageTimestamp +
+        ")"
     );
     Database.updateUserGroupMembership(userGroupMembership.id, {
       lastViewedMessageTimestamp: lastViewedMessageTimestamp.getTime(),
