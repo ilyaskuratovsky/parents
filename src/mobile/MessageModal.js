@@ -93,7 +93,6 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(user);
     setText("");
-    Alert.alert("sending message papa_id: " + message.id);
     await Controller.sendReply(dispatch, user, group.id, text, message.id, {
       groupName,
       fromName,
