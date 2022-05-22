@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Database from "../common/Database";
 import * as MyButtons from "./MyButtons";
 import Toolbar from "./Toolbar";
+import * as Globals from "./Globals";
 
 export default function DebugScreen({ backAction }) {
   const dispatch = useDispatch();
@@ -27,6 +28,14 @@ export default function DebugScreen({ backAction }) {
   return (
     <SafeAreaView>
       <View style={{ grow: 1 }}>
+        <MyButtons.FormButton
+          text="Debug Mode Toggle"
+          disabled={false}
+          style={{ width: 100, fontSize: 10 }}
+          onPress={async () => {
+            Globals.dev = !Globals.dev;
+          }}
+        />
         <View
           style={{
             backgroundColor: "orange",
