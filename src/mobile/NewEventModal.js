@@ -8,12 +8,14 @@ import Portal from "./Portal";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import moment from "moment";
 import * as Localization from "expo-localization";
+import * as UIConstants from "./UIConstants";
+import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 
 export default function NewEventModal({ userInfo, group, visible, sendEvent, showModal }) {
   const insets = useSafeAreaInsets();
   const [text, setText] = useState(null);
   const [title, setTitle] = useState(null);
-  const [date, setDate] = useState(moment());
+  const [date, setDate] = useState(new Date());
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -21,20 +23,19 @@ export default function NewEventModal({ userInfo, group, visible, sendEvent, sho
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
 
   const onDateChange = (event, selectedDate) => {
-    console.log("onDateChange: " + moment(selectedDate).format("YYYYMMDD HH:MM:SS"));
-    const currentDate = selectedDate || date;
+    console.log("onDateChange: " + selectedDate);
     setDate(selectedDate);
     setShowDatePicker(false);
   };
 
-  const onStartTimeChange = (event, selectedDate) => {
-    console.log("onStartTimeChange: " + moment(selectedDate).format("YYYYMMDD HH:MM:SS"));
+  const onStartTimeChange = (selectedDate) => {
+    console.log("onStartTimeChange: " + selectedDate);
     setStartTime(selectedDate);
     setShowStartTimePicker(false);
   };
 
-  const onEndTimeChange = (event, selectedDate) => {
-    console.log("onEndTimeChange: " + moment(selectedDate).format("YYYYMMDD HH:MM:SS"));
+  const onEndTimeChange = (selectedDate) => {
+    console.log("onEndTimeChange: " + selectedDate);
     setEndTime(selectedDate);
     setShowEndTimePicker(false);
   };
@@ -186,13 +187,16 @@ export default function NewEventModal({ userInfo, group, visible, sendEvent, sho
                 }}
                 style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
               >
-                <Text style={{ width: 90, fontSize: 16 }}>{date.format("L")}</Text>
+                <Text style={{ width: 90, fontSize: 16 }}>{moment(date).format("L")}</Text>
               </TouchableOpacity>
             </View>
             <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
               <Text style={{ width: 50, fontSize: 16 }}>Start: </Text>
               <TouchableOpacity
                 onPress={() => {
+                  console.log(
+                    "Start time box pressed, showStartTimePicker: " + showStartTimePicker
+                  );
                   setShowStartTimePicker(!showStartTimePicker);
                 }}
                 style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
@@ -249,29 +253,98 @@ export default function NewEventModal({ userInfo, group, visible, sendEvent, sho
           </View>
         </View>
         <Modal visible={showDatePicker} animationType={"slide"}>
-          <DateTimePicker
-            display={"inline"}
-            mode={"date"}
-            value={date ?? moment()}
-            onChange={onDateChange}
-          />
+          <Portal
+            backgroundColor={UIConstants.DEFAULT_BACKGROUND}
+            //backgroundColor="green"
+          >
+            <TopBarMiddleContentSideButtons
+              backgroundColor={UIConstants.DEFAULT_BACKGROUND}
+              height={64}
+              left={
+                <MyButtons.MenuButton
+                  icon="arrow-left"
+                  text="Back"
+                  onPress={() => {
+                    setShowDatePicker(false);
+                  }}
+                  color="black"
+                />
+              }
+              center={null}
+              right={null}
+            />
+            <DateTimePicker
+              display={"inline"}
+              mode={"date"}
+              value={date}
+              onChange={onDateChange}
+              onCancel={() => {
+                setShowStartTimePicker(false);
+              }}
+            />
+          </Portal>
         </Modal>
-        <Modal visible={showStartTimePicker} animationType={"slide"}>
-          <DateTimePicker
-            display={"spinner"}
-            mode={"time"}
-            value={startTime ?? new Date()}
-            onChange={onStartTimeChange}
-          />
-        </Modal>
-        <Modal visible={showEndTimePicker} animationType={"slide"}>
-          <DateTimePicker
-            display={"spinner"}
-            mode={"time"}
-            value={endTime ?? new Date()}
-            onChange={onEndTimeChange}
-          />
-        </Modal>
+        <TimePickerModal
+          value={startTime ?? new Date()}
+          visible={showStartTimePicker}
+          onChange={onStartTimeChange}
+          onCancel={() => {
+            setShowStartTimePicker(false);
+          }}
+        />
+        <TimePickerModal
+          value={endTime ?? new Date()}
+          visible={showEndTimePicker}
+          onChange={onEndTimeChange}
+          onCancel={() => {
+            setShowEndTimePicker(false);
+          }}
+        />
+      </Portal>
+    </Modal>
+  );
+}
+
+function TimePickerModal({ value, visible, onChange, onCancel }) {
+  const [time, setTime] = useState(value);
+  console.log("Time picker modal visible: " + visible);
+  return (
+    <Modal visible={visible} animationType={"slide"}>
+      <Portal
+        backgroundColor={UIConstants.DEFAULT_BACKGROUND}
+        //backgroundColor="green"
+      >
+        <TopBarMiddleContentSideButtons
+          backgroundColor={UIConstants.DEFAULT_BACKGROUND}
+          height={64}
+          left={
+            <MyButtons.MenuButton
+              icon="arrow-left"
+              text="Back"
+              onPress={() => {
+                onCancel();
+              }}
+              color="black"
+            />
+          }
+          center={null}
+          right={
+            <MyButtons.FormButton
+              text="Done"
+              onPress={() => {
+                onChange(time);
+              }}
+            />
+          }
+        />
+        <DateTimePicker
+          display={"spinner"}
+          mode={"time"}
+          value={time}
+          onChange={(event, newValue) => {
+            setTime(newValue);
+          }}
+        />
       </Portal>
     </Modal>
   );
