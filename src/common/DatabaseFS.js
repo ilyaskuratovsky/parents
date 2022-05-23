@@ -181,9 +181,12 @@ export function observeToUserInvites(toUid, toEmail, callback) {
   onSnapshot(snapshotQuery, (snapshot) => {
     const list = snapshot.docs
       .filter((doc) => {
-        const toUid = doc.toUid;
-        const filter = toUid == "_uid_" + toUid || toUid == "_email_" + toEmail;
-        console.log("userinvite snapshot: " + toUid + ", filter: " + filter);
+        const data = doc.data();
+        const toUidStr = data.toUid;
+        const filter = toUidStr == "_uid_" + toUid || toUidStr == "_email_" + toEmail;
+        console.log(
+          "userinvite snapshot: " + toUid + ", toUidStr: " + toUidStr + ", filter: " + filter
+        );
         return filter;
       })
       .map((doc) => {
