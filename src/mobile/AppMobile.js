@@ -4,21 +4,22 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import RootApp from "./RootApp";
 import store from "../common/Actions";
+import { setNativeExceptionHandler } from "react-native-exception-handler";
+//import { ErrorBoundary } from "react-error-boundary";
+import ErrorBoundary from "./ErrorBoundary";
+import ErrorScreen from "./ErrorScreen";
+import * as Database from "../common/Database";
 
 /*
 setNativeExceptionHandler((errorString) => {
   //You can do something like call an api to report to dev team here
-  // When you call setNativeExceptionHandler, react-native-exception-handler sets a
-  // Native Exception Handler popup which supports restart on error in case of android.
+  // When you call setNativeExceptionHandler, rea ct-native-exception-handler sets a
+  // Native Exception Handler popup which supports πrestart on error in case of android.
   // In case of iOS, it is not possible to restart the app programmatically, so we just show an error popup and close the app.
   // To customize the popup screen take a look at CUSTOMIZATION section.
 });
-*/
 
-const myErrorHandler = (error, info) => {
-  //Database.logError(error, info);
-  console.log("error: " + error + ", info: " + JSON.stringify(info));
-};
+*/
 
 //foreground notifications settings
 //alert('setting notification handler');
@@ -32,23 +33,24 @@ Notifications.setNotificationHandler({
   },
 });
 
+const myErrorHandler = (error, info) => {
+  console.log("logging error to database");
+  Database.logError(error, info);
+  console.log("error: " + error + ", info: " + JSON.stringify(info));
+};
+
 export default function App() {
-  /*
   return (
-    <ErrorBoundary
-      fallbackRender={({ error, resetErrorBoundary }) => {
-        return <ErrorScreen error={error} resetErrorBoundary={resetErrorBoundary} />;
-      }}
-      onError={myErrorHandler}
-    >
-      <SafeAreaProvider>
-        <Provider store={store}>
+    <SafeAreaProvider>
+      <Provider store={store}>
+        <ErrorBoundary>
           <RootApp />
-        </Provider>
-      </SafeAreaProvider>
-    </ErrorBoundary>
+        </ErrorBoundary>
+      </Provider>
+    </SafeAreaProvider>
   );
-  */
+
+  /*
   return (
     <SafeAreaProvider>
       <Provider store={store}>
@@ -56,4 +58,5 @@ export default function App() {
       </Provider>
     </SafeAreaProvider>
   );
+  */
 }

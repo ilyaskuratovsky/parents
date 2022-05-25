@@ -49,7 +49,7 @@ exports.pushNotifications = functions.firestore
         body: pushNotification.body,
         data: data,
       };
-      console.log("ilya calling fetch: " + JSON.stringify(pushMessage));
+      console.log("(pushNotifications) ilya calling fetch: " + JSON.stringify(pushMessage));
       fetch("https://exp.host/--/api/v2/push/send", {
         method: "POST",
         headers: {
@@ -59,7 +59,9 @@ exports.pushNotifications = functions.firestore
         },
         body: JSON.stringify(pushMessage),
       }).then((response) => {
-        console.log("ilya done calling fetch: response: " + JSON.stringify(response));
+        console.log(
+          "(pushNotifications) ilya done calling fetch: response: " + JSON.stringify(response)
+        );
       });
     });
   });
@@ -153,6 +155,7 @@ exports.messagePushNotifications = functions.firestore
   .onCreate((snap, context) => {
     const groupId = context.params.groupId;
     const message = snap.data();
+    const messageId = snap.id;
     console.log("ilyamessage:" + JSON.stringify(message));
     console.log(
       "ilyalog message detected created: " +
@@ -203,9 +206,11 @@ exports.messagePushNotifications = functions.firestore
                   sound: "default",
                   title: groupName == null ? "New message" : groupName,
                   body: fromName == null ? "" : "New message from " + fromName,
-                  data: { groupId, message },
+                  data: { groupId, message, messageId },
                 };
-                console.log("ilya calling fetch: " + JSON.stringify(pushMessage));
+                console.log(
+                  "(messagePushNotifications) ilya calling fetch: " + JSON.stringify(pushMessage)
+                );
                 fetch("https://exp.host/--/api/v2/push/send", {
                   method: "POST",
                   headers: {
@@ -215,7 +220,10 @@ exports.messagePushNotifications = functions.firestore
                   },
                   body: JSON.stringify(pushMessage),
                 }).then((response) => {
-                  console.log("ilya done calling fetch: response: " + JSON.stringify(response));
+                  console.log(
+                    "(messagePushNotifications)ilya done calling fetch: response: " +
+                      JSON.stringify(response)
+                  );
                 });
               });
             } else {

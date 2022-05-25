@@ -1,6 +1,6 @@
 import * as Notifications from "expo-notifications";
 import React, { useEffect, useRef } from "react";
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "../common/Actions";
 import * as Controller from "../common/Controller";
@@ -52,11 +52,6 @@ function RootApp(props, state) {
     return state;
   });
 
-  //return <TestImagePicker />;
-  //return <TestDatePicker />;
-  //return <TestBook />;
-  //return <TestImagePickerFirebase />;
-  //return <TestICal />;
   useEffect(async () => {
     try {
       return await Controller.initializeApp(dispatch, notificationListener, responseListener);
@@ -69,8 +64,10 @@ function RootApp(props, state) {
   useEffect(() => {
     if (lastNotificationResponse) {
       const groupId = lastNotificationResponse.notification?.request?.content?.data?.groupId;
+      const messageId = lastNotificationResponse.notification?.request?.content?.data?.messageId;
+      //Alert.alert("last notification response: " + groupId + ", " + messageId);
       if (groupId != null) {
-        dispatch(Actions.goToScreen({ screen: "GROUP", groupId }));
+        dispatch(Actions.goToScreen({ screen: "GROUP", groupId, messageId }));
       }
     } else {
     }
@@ -108,7 +105,13 @@ function RootApp(props, state) {
   } else if (screen == "GROUPS" || screen == null) {
     render = <GroupsScreen />;
   } else if (screen == "GROUP") {
-    render = <GroupScreen groupId={screenWithParams.groupId} />;
+    render = (
+      <GroupScreen
+        groupId={screenWithParams.groupId}
+        messageId={screenWithParams.messageId}
+        debug={JSON.stringify(screenWithParams)}
+      />
+    );
   } else if (screen == "FIND_GROUPS") {
     render = <FindGroupsScreen />;
   } else if (screen == "SCHOOL") {

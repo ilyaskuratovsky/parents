@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
+  Alert,
   Dimensions,
   FlatList,
   StyleSheet,
@@ -28,7 +29,7 @@ import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
 import * as MyButtons from "./MyButtons";
 
-export default function GroupScreen({ groupId }) {
+export default function GroupScreen({ groupId, messageId, debug }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
 
@@ -149,11 +150,21 @@ export default function GroupScreen({ groupId }) {
     */
   }, [messages]);
 
+  useEffect(async () => {
+    //Alert.alert("setting messageId: " + messageId);
+    if (messageId != null) {
+      setMessagesModalVisible(messageId);
+    }
+  }, [messageId]);
+
   const insets = useSafeAreaInsets();
   const windowHeight = Dimensions.get("window").height - insets.top - insets.bottom;
   const topBarHeight = 64;
   const newMessageHeight = 80;
   const bottomBarHeight = 64;
+
+  //Alert.alert("rendering GroupScreen: " + JSON.stringify({ groupId, messageId }));
+
   return (
     <Portal
       backgroundColor={UIConstants.DEFAULT_BACKGROUND}
@@ -167,6 +178,11 @@ export default function GroupScreen({ groupId }) {
           height: topBarHeight,
         }}
       >
+        {/*
+        <Text>
+          debug: {debug}, messagesModalVisible: {messagesModalVisible}
+        </Text>
+      */}
         {/* group name and members row */}
         <View
           style={[

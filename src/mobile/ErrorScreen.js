@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, SafeAreaView, Text } from "react-native";
+import { Text, View, Button, SafeAreaView } from "react-native";
 
 function ErrorScreen({ error, resetErrorBoundary }) {
   return (

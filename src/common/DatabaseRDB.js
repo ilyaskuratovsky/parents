@@ -191,8 +191,10 @@ export async function updateUser(uid, update) {
 }
 
 export async function logError(error, info) {
+  console.log("loggin error to rdb: " + JSON.stringify(error));
   const newReference = await RDB.push(RDB.ref(rdb, "/errors"));
-  await RDB.set(newReference, { error: error.message, stack: error.stack });
+  await RDB.set(newReference, { error: error.toString(), stack: error.stack });
+  console.log("done logging error to rdb: " + JSON.stringify(error));
   return newReference.key;
 }
 
