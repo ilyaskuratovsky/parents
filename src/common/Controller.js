@@ -8,6 +8,7 @@ import * as Database from "./Database";
 import store from "./Actions";
 import * as Search from "./Search";
 import moment from "moment";
+import * as UserInfo from "./UserInfo";
 
 //import { Database } from "firebase-firestore-lite";
 
@@ -199,6 +200,11 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
   Database.observeToUserInvites(userInfo.uid, userInfo.email, (invites) => {
     dispatch(Actions.toUserInvites(invites));
   });
+
+  // redirect user automatically to profile if it's not complete
+  if (UserInfo.profileIncomplete(userInfo)) {
+    dispatch(Actions.openModal({ modal: "MY_PROFILE", forceComplete: true }));
+  }
 }
 
 export async function loggedOut(dispatch) {
@@ -483,7 +489,7 @@ export async function saveProfile(userId, firstName, lastName, image) {
   await Database.updateUser(userId, {
     firstName,
     lastName,
-    image,
+    image: image === undefined ? null : image,
     profileInitialized: true,
   });
 }

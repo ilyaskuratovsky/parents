@@ -23,6 +23,7 @@ import SignupScreen from "./SignupScreen";
 import SplashScreen from "./SplashScreen";
 import UserScreen from "./UserScreen";
 import TestThreadView from "./TestThreadView";
+import * as UserInfo from "../common/UserInfo";
 /*
 App vision:  The local social network for parents.
 When join you put in your zip code (we also detect based on gps coordinates)
@@ -84,6 +85,7 @@ function RootApp(props, state) {
     return state.screen?.modal;
   });
   let modal = modalWithParams?.modal;
+  console.log("modalWithParams: " + JSON.stringify(modalWithParams));
 
   //return <TestThreadView />;
   if (screen === "LOGIN") {
@@ -140,7 +142,7 @@ function RootApp(props, state) {
     <View style={{ flex: 1 }}>
       {render}
       <Messages key="messages" />
-      <MyProfileModal visible={modal === "MY_PROFILE"} />
+      <MyProfileModal visible={modal === "MY_PROFILE"} {...modalWithParams} />
     </View>
   );
 }

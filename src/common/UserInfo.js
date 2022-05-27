@@ -120,3 +120,10 @@ export function smallAvatarComponent(userInfo, onPress, border) {
     return <>{avatar}</>;
   }
 }
+
+export function profileIncomplete(userInfo) {
+  return (
+    (userInfo.firstName == null || userInfo.firstName.trim() == "") &&
+    (userInfo.lastName == null || userInfo.lastName.trim() == "")
+  );
+}

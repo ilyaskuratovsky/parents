@@ -88,10 +88,20 @@ const FormButton = React.memo(({ text, icon, onPress, style }) => {
   );
 });
 
-const LinkButton = React.memo(({ text, onPress, style }) => {
+const LinkButton = React.memo(({ text, onPress, style, disabled }) => {
   return (
-    <TouchableOpacity onPress={onPress}>
-      <Text style={[style, { fontSize: 16, textDecorationLine: "underline", color: "blue" }]}>
+    <TouchableOpacity onPress={onPress} disabled={disabled != null ? disabled : false}>
+      <Text
+        style={[
+          style,
+          {
+            fontSize: 16,
+            textDecorationLine: "underline",
+            color: "blue",
+            opacity: disabled ? 0.5 : 1,
+          },
+        ]}
+      >
         {text}
       </Text>
     </TouchableOpacity>

@@ -1,6 +1,6 @@
 import * as ImagePicker from "expo-image-picker";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { ActivityIndicator, Button, Modal, StyleSheet, Text, TextInput, View } from "react-native";
 import { Image } from "react-native-expo-image-cache";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -14,23 +14,26 @@ import * as Controller from "../common/Controller";
 import * as Globals from "./Globals";
 import * as MyButtons from "./MyButtons";
 import Portal from "./Portal";
+import { profileIncomplete } from "../common/UserInfo";
 
-export default function MyProfileModal({ visible }) {
+export default function MyProfileModal({ visible, forceComplete }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
   const insets = useSafeAreaInsets();
 
+  console.log("myprofilemodal, forceComplete: " + forceComplete);
+
   return (
     <Modal visible={visible} animationType={"slide"}>
-      {visible && <ModalContainer userInfo={userInfo} />}
+      {visible && <ModalContainer userInfo={userInfo} forceComplete={forceComplete} />}
     </Modal>
   );
 }
 
-function ModalContainer({ userInfo }) {
+function ModalContainer({ userInfo, forceComplete }) {
   const dispatch = useDispatch();
-  const [firstName, setFirstName] = useState(userInfo.firstName);
-  const [lastName, setLastName] = useState(userInfo.lastName);
+  const [firstName, setFirstName] = useState(userInfo.firstName ?? "");
+  const [lastName, setLastName] = useState(userInfo.lastName ?? "");
   const [editingImage, setEditingImage] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [image, setImage] = useState(userInfo.image);
@@ -90,6 +93,12 @@ function ModalContainer({ userInfo }) {
     _handleImagePicked(pickerResult);
   };
 
+  const isProfileComplete = useCallback(() => {
+    return (
+      firstName != null && firstName.trim() !== "" && lastName != null && lastName.trim() != ""
+    );
+  }, [firstName, lastName]);
+
   return (
     <Portal>
       <TopBarMiddleContentSideButtons
@@ -97,6 +106,7 @@ function ModalContainer({ userInfo }) {
         left={
           <MyButtons.LinkButton
             text="Cancel"
+            disabled={forceComplete}
             onPress={async () => {
               dispatch(
                 Actions.closeModal({
@@ -109,7 +119,8 @@ function ModalContainer({ userInfo }) {
         center={<Text style={{ fontWeight: "bold", fontSize: 16 }}>My Profile</Text>}
         right={
           <MyButtons.LinkButton
-            text="Done"
+            text="Save"
+            disabled={!isProfileComplete()}
             onPress={async () => {
               await Controller.saveProfile(userInfo.uid, firstName, lastName, image);
               dispatch(
