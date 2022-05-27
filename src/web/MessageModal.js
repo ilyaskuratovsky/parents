@@ -38,7 +38,7 @@ export default function MessagesContainer({ groupId, messageId, visible, closeMo
       userMap: state.main.userMap,
     };
   });
-  const message = MessageUtils.buildMessageWithChildren(
+  const message = MessageUtils.buildRootMessageWithChildren(
     messageId,
     messages,
     user,

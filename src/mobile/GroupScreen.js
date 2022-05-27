@@ -150,6 +150,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
     */
   }, [messages]);
 
+  // show message modal if there's a messageId prop
   useEffect(async () => {
     //Alert.alert("setting messageId: " + messageId);
     if (messageId != null) {

@@ -43,7 +43,8 @@ export default function MessagesContainer({ groupId, messageId, visible, closeMo
       userMap: state.main.userMap,
     };
   });
-  const message = MessageUtils.buildMessageWithChildren(
+  // if message has a parent, render the parent message
+  const message = MessageUtils.buildRootMessageWithChildren(
     messageId,
     messages,
     user,
@@ -63,6 +64,7 @@ export default function MessagesContainer({ groupId, messageId, visible, closeMo
         visible={visible}
         closeModal={closeModal}
         userMap={userMap}
+        scrollToEnd={message.id != messageId}
       />
     );
   } else {
@@ -79,7 +81,7 @@ export default function MessagesContainer({ groupId, messageId, visible, closeMo
   }
 }
 
-function MessageModal({ user, group, message, visible, closeModal, userMap }) {
+function MessageModal({ user, group, message, scrollToEnd, visible, closeModal, userMap }) {
   const dispatch = useDispatch();
   const sortedChildMessages = [...message.children] ?? [];
   sortedChildMessages.sort((m1, m2) => {
@@ -118,6 +120,14 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
     Controller.markMessagesRead(user, markRead);
   }, [message]);
 
+  // if the the message id is a comment (e.g. this view was opened to a comment, scroll all the way down
+  // fix this later to scroll to the specific message
+  useEffect(async () => {
+    if (scrollToEnd) {
+      scrollViewRef.current.scrollToEnd({ anmiated: true });
+    }
+  }, []);
+
   return (
     <Modal visible={visible} animationType={"slide"}>
       <Portal
@@ -155,7 +165,9 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
           <ScrollView
             ref={scrollViewRef}
             style={{ flex: 1 }}
-            //onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
+            onContentSizeChange={() => {
+              //scrollViewRef.current.scrollToEnd({ animated: true });
+            }}
           >
             {/* parent message */}
             <View
@@ -218,19 +230,6 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
                   {message.title}
                 </Text>
                 {/* the message text */}
-                {/*
-                <Text
-                  //numberOfLines={showMore[item.id] ? null : 4}
-                  style={{
-                    paddingLeft: 0,
-                    paddingTop: 8,
-                    fontSize: 14,
-                    color: UIConstants.BLACK_TEXT_COLOR,
-                  }}
-                >
-                  {message.text}
-                </Text>
-                */}
                 <Autolink
                   // Required: the text to parse for links
                   text={message.text}

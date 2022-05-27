@@ -22,7 +22,7 @@ import SchoolScreen from "./SchoolScreen";
 import SignupScreen from "./SignupScreen";
 import SplashScreen from "./SplashScreen";
 import UserScreen from "./UserScreen";
-
+import TestThreadView from "./TestThreadView";
 /*
 App vision:  The local social network for parents.
 When join you put in your zip code (we also detect based on gps coordinates)
@@ -85,6 +85,7 @@ function RootApp(props, state) {
   });
   let modal = modalWithParams?.modal;
 
+  //return <TestThreadView />;
   if (screen === "LOGIN") {
     return <LoginScreen dispatch={dispatch} />;
   } else if (screen === "SIGNUP") {
@@ -109,6 +110,7 @@ function RootApp(props, state) {
       <GroupScreen
         groupId={screenWithParams.groupId}
         messageId={screenWithParams.messageId}
+        //messageId={"u0A2kEIkHIrBnqbrtNZv"}
         debug={JSON.stringify(screenWithParams)}
       />
     );

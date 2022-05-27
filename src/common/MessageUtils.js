@@ -1,5 +1,5 @@
 /* given a single root message, built it with children */
-export function buildMessageWithChildren(
+export function buildRootMessageWithChildren(
   messageId,
   messages,
   userInfo,
@@ -7,13 +7,16 @@ export function buildMessageWithChildren(
   groupMembers,
   userMap
 ) {
-  // const a = null;
-  // const b = a.foo;
   let rootMessage = { children: [] };
+  const message = messages.filter((m) => m.id === messageId)[0];
+  let rootMessageId = message.id;
+  if (message.papaId != null) {
+    rootMessageId = message.papaId;
+  }
   for (const m of messages) {
-    if (m.papaId == messageId) {
+    if (m.papaId == rootMessageId) {
       rootMessage.children.push(m);
-    } else if (m.id == messageId) {
+    } else if (m.id == rootMessageId) {
       rootMessage = { ...m, ...rootMessage };
     }
   }

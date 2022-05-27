@@ -32,7 +32,7 @@ export default function MessageScreen({ groupId, messageId, onBack }) {
   const { height, width } = useWindowDimensions();
   const windowWidth = width ?? 0;
   const [membersModalVisible, setMembersModalVisible] = useState(false);
-  const message = MessageUtils.buildMessageWithChildren(
+  const message = MessageUtils.buildRootMessageWithChildren(
     messageId,
     messages,
     userInfo,
