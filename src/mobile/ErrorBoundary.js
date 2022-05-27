@@ -16,7 +16,7 @@ export default class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.log("logging error: " + error + ", errorInfo" + JSON.stringify(errorInfo));
-    Database.logError(error, errorInfo);
+    //Database.logError(error, errorInfo);
   }
 
   render() {

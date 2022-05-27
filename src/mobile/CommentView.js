@@ -5,6 +5,7 @@ import * as Globals from "./Globals";
 import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
 import * as Date from "../common/Date";
+import Autolink from "react-native-autolink";
 
 export default function CommentView({ item, user, onPress }) {
   const timeAgo = ({ children }) => {
@@ -103,16 +104,21 @@ export default function CommentView({ item, user, onPress }) {
           </View>
           <View style={{ flex: 1, flexDirection: "column" }}>
             {item.event != null && <Text>Going</Text>}
-            <Text
-              //numberOfLines={showMore[item.id] ? null : 4}
+            <Autolink
+              // Required: the text to parse for links
+              text={item.text}
+              // Optional: enable email linking
+              email
+              // Optional: enable hashtag linking to instagram
+              phone="sms"
+              // Optional: enable URL linking
+              url
               style={{
                 paddingLeft: 0,
                 fontSize: 14,
                 color: "#333333",
               }}
-            >
-              {item.text}
-            </Text>
+            />
             {Globals.dev && <Text style={{ fontSize: 8 }}>{item.id}</Text>}
             {Globals.dev && <Text style={{ fontSize: 8 }}>{JSON.stringify(item, null, 2)}</Text>}
           </View>
@@ -201,16 +207,22 @@ export default function CommentView({ item, user, onPress }) {
           </View>
           <View style={{ flex: 1, flexDirection: "column" }}>
             {item.event != null && <Text>Going</Text>}
-            <Text
-              //numberOfLines={showMore[item.id] ? null : 4}
+            <Autolink
+              // Required: the text to parse for links
+              text={item.text}
+              // Optional: enable email linking
+              email
+              // Optional: enable hashtag linking to instagram
+              phone="sms"
+              // Optional: enable URL linking
+              url
               style={{
                 paddingLeft: 0,
                 fontSize: 14,
                 color: UIConstants.BLACK_TEXT_COLOR,
               }}
-            >
-              {item.text}
-            </Text>
+            />
+
             {Globals.dev && (
               <Text style={{ fontSize: 8 }}>(not from parent message uid) {item.id}</Text>
             )}

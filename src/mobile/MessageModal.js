@@ -31,6 +31,7 @@ import BookCalendarEventModal from "./BookCalendarEventModal";
 //import moment from "moment";
 import moment from "moment-timezone";
 import JSONTree from "react-native-json-tree";
+import Autolink from "react-native-autolink";
 
 export default function MessagesContainer({ groupId, messageId, visible, closeModal }) {
   const user = useSelector((state) => state.main.userInfo);
@@ -216,6 +217,8 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
                 >
                   {message.title}
                 </Text>
+                {/* the message text */}
+                {/*
                 <Text
                   //numberOfLines={showMore[item.id] ? null : 4}
                   style={{
@@ -227,6 +230,23 @@ function MessageModal({ user, group, message, visible, closeModal, userMap }) {
                 >
                   {message.text}
                 </Text>
+                */}
+                <Autolink
+                  // Required: the text to parse for links
+                  text={message.text}
+                  // Optional: enable email linking
+                  email
+                  // Optional: enable hashtag linking to instagram
+                  phone="sms"
+                  // Optional: enable URL linking
+                  url
+                  style={{
+                    paddingLeft: 0,
+                    paddingTop: 8,
+                    fontSize: 14,
+                    color: UIConstants.BLACK_TEXT_COLOR,
+                  }}
+                />
                 {Globals.dev && (
                   <Text style={{ fontSize: 8 }}>{JSON.stringify(message, null, 2)}</Text>
                 )}
@@ -474,15 +494,22 @@ function EventMessageModal({ group, message, user, userMap, visible, closeModal 
                     {JSON.stringify(message.event, null, 2)}
                   </Text>
                 )}
-                <Text
-                  //numberOfLines={showMore[item.id] ? null : 4}
+                <Autolink
+                  // Required: the text to parse for links
+                  text={message.text}
+                  // Optional: enable email linking
+                  email
+                  // Optional: enable hashtag linking to instagram
+                  phone="sms"
+                  // Optional: enable URL linking
+                  url
                   style={{
                     paddingLeft: 0,
-                    fontSize: 18,
+                    paddingTop: 8,
+                    fontSize: 14,
+                    color: UIConstants.BLACK_TEXT_COLOR,
                   }}
-                >
-                  {message.text}
-                </Text>
+                />
               </View>
               {/* accept/decline bar */}
               <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-evenly" }}>
