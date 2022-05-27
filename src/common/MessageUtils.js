@@ -7,6 +7,8 @@ export function buildMessageWithChildren(
   groupMembers,
   userMap
 ) {
+  // const a = null;
+  // const b = a.foo;
   let rootMessage = { children: [] };
   for (const m of messages) {
     if (m.papaId == messageId) {

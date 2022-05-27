@@ -1,22 +1,46 @@
 import React from "react";
-import { Text, View, Button, SafeAreaView } from "react-native";
+import { Text, View, TextInput } from "react-native";
 
-function ErrorScreen({ error, resetErrorBoundary }) {
-  return (
-    <SafeAreaView>
-      <Text>ErrorScreen</Text>
-      <Text>{error.message}</Text>
-      <Text>{error.stack}</Text>
-      <Button
-        title="Reset error boundary"
-        onPress={() => {
-          if (resetErrorBoundary) {
-            resetErrorBoundary();
-          }
-        }}
-      />
-    </SafeAreaView>
-  );
+import * as Database from "../common/Database";
+
+export default class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.log("logging error: " + error + ", errorInfo" + JSON.stringify(errorInfo));
+    Database.logError(error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <View
+          style={{
+            flex: 1,
+            //backgroundColor: "yellow",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: 10,
+          }}
+        >
+          <Text>Oops, something went wrong.</Text>
+          <TextInput
+            style={{ fontSize: 7, border: 1 }}
+            multiline
+            numberOfLines={2}
+            value={this.state.error != null ? JSON.stringify(this.state.error, null, 2) : "null"}
+          />
+        </View>
+      );
+    }
+    return this.props.children;
+  }
 }
-
-export default ErrorScreen;
