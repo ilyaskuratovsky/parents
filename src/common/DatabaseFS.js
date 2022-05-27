@@ -258,6 +258,7 @@ export async function sendMessage(groupId, uid, title, text, data, papaId, notif
 }
 
 export async function createInvite(fromUid, groupId, uid, email) {
+  console.log("creating invite");
   const invitesRef = collection(db, "invites");
   const timestamp = serverTimestamp();
   const group = await addDoc(invitesRef, {
@@ -267,6 +268,7 @@ export async function createInvite(fromUid, groupId, uid, email) {
     status: "new",
     created: timestamp,
   });
+  console.log("invite created: " + JSON.stringify(group));
 }
 
 export async function createEvent(uid, groupId, title, text, startDate, endDate) {

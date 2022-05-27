@@ -37,37 +37,18 @@ export default function NewPrivateGroupModal({ visible, createGroup, closeModal 
     );
   }
 
-  let addList = [];
-  for (let m of userGroupMemberships) {
-    const groupId = m.groupId;
-    const group = groupMap[groupId];
-    const members = groupMembershipMap[groupId];
-    for (let userGroupMemebership of members) {
-      const userId = userGroupMemebership.uid;
-      if (userId != userInfo.uid) {
-        const user = userMap[userId];
-        addList.push(user);
-      }
-    }
-  }
-  addList = Utils.uniqueArray(addList, (user) => user.uid);
-  /*
-  useEffect(() => {
-    (async () => {
-      const { status } = await Contacts.requestPermissionsAsync();
-      if (status === "granted") {
-        const { data } = await Contacts.getContactsAsync({
-          fields: [Contacts.Fields.Emails],
-        });
+  console.log("getting group invitee list");
 
-        if (data.length > 0) {
-          const contact = data[0];
-          console.log(contact);
-        }
-      }
-    })();
-  }, []);
-  */
+  let addList = UserInfo.groupInviteeList(
+    userInfo,
+    null,
+    userGroupMemberships,
+    groupMap,
+    groupMembershipMap,
+    userMap
+  );
+  console.log("got group invitee list");
+
   return (
     <Modal visible={visible} animationType={"slide"}>
       <SafeAreaView style={{ flex: 1 }}>

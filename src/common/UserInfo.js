@@ -2,6 +2,7 @@ import { Avatar } from "react-native-elements";
 import { TouchableOpacity, Text } from "react-native";
 import React from "react";
 import { Image } from "react-native-expo-image-cache";
+import * as Utils from "../common/Utils";
 
 // preview can be a local image or a data uri
 export function chatDisplayName(userInfo) {
@@ -126,4 +127,37 @@ export function profileIncomplete(userInfo) {
     (userInfo.firstName == null || userInfo.firstName.trim() == "") &&
     (userInfo.lastName == null || userInfo.lastName.trim() == "")
   );
+}
+
+export function groupInviteeList(
+  userInfo,
+  groupId,
+  userGroupMemberships,
+  groupMap,
+  groupMembershipMap,
+  userMap
+) {
+  let addList = [];
+  for (let m of userGroupMemberships) {
+    const userMembershipGroupId = m.groupId;
+    const members = groupMembershipMap[userMembershipGroupId];
+    for (let userGroupMemebership of members) {
+      const userId = userGroupMemebership.uid;
+      if (userId != userInfo.uid) {
+        const user = userMap[userId];
+        addList.push(user);
+      }
+    }
+  }
+  addList = Utils.uniqueArray(addList, (user) => user.uid);
+  //filter existing users
+  if (groupId != null) {
+    const thisGroupMembers = groupMembershipMap[groupId].map((m) => m.uid);
+    addList = addList.filter((user) => {
+      const inTheGroup = thisGroupMembers.includes(user.uid);
+      return !inTheGroup;
+    });
+  }
+
+  return addList;
 }
