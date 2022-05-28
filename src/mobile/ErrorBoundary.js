@@ -35,7 +35,7 @@ export default class ErrorBoundary extends React.Component {
         >
           <Text>Oops, something went wrong.</Text>
           <TextInput
-            style={{ fontSize: 7, border: 1 }}
+            style={{ fontSize: 7 }}
             multiline
             numberOfLines={2}
             value={

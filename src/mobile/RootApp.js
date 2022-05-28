@@ -143,6 +143,7 @@ function RootApp(props, state) {
     render = <ErrorScreen error={{ message: "No screen" }} />;
   }
 
+  console.log("root app rendering:");
   return (
     <View style={{ flex: 1 }}>
       {render}

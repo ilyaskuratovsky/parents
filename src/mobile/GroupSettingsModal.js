@@ -107,7 +107,7 @@ function TabView({ tab1, tab2 }) {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={{ flex: 1, justifyContent: "center", alignItems: "center", border: 1 }}
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           onPress={() => {
             setVisibleTab(1);
           }}
