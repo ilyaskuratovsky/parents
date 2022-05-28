@@ -353,7 +353,7 @@ export default function GroupScreen({ groupId }) {
       )}
       {/* MODALS */}
       {/* group members modal */}
-      <GroupMembersModal
+      <GroupSettingsModal
         groupId={groupId}
         visible={membersModalVisible}
         closeModal={() => {

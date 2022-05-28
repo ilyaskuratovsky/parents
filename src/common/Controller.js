@@ -498,6 +498,10 @@ export async function saveProfile(userId, firstName, lastName, image) {
   });
 }
 
+export async function updateGroup(userInfo, groupId, update) {
+  await Database.updateGroup(groupId, update);
+}
+
 export async function deleteGroup(userInfo, groupId) {
   await Database.updateGroup(groupId, {
     status: "deleted",

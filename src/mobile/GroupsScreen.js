@@ -14,6 +14,7 @@ import Toolbar from "./Toolbar";
 import TopBar from "./TopBar";
 import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
+import * as Utils from "../common/Utils";
 export default function GroupsScreen({}) {
   const dispatch = useDispatch();
   // const x = null;
@@ -111,7 +112,7 @@ export default function GroupsScreen({}) {
             key={group.id}
             style={{
               flexDirection: "row",
-              height: 60,
+              //height: Utils.isEmptyString(group.description) ? 60 : 80,
               alignItems: "center",
               paddingLeft: 10,
             }}
@@ -133,11 +134,27 @@ export default function GroupsScreen({}) {
                   fontSize: 18,
                   fontWeight: "bold",
                   color: UIConstants.BLACK_TEXT_COLOR,
+                  height: 26,
                   //fontFamily: "Helvetica Neue",
                 }}
               >
                 {group.name} {/*group.id*/}
               </Text>
+              {!Utils.isEmptyString(group.description) && (
+                <Text
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "flex-start",
+                    fontSize: 14,
+                    fontWeight: "normal",
+                    color: UIConstants.BLACK_TEXT_COLOR,
+                    height: 20,
+                    //fontFamily: "Helvetica Neue",
+                  }}
+                >
+                  {group.description} {/*group.id*/}
+                </Text>
+              )}
               {Globals.dev && (
                 <Text style={{ fontSize: 8 }}>
                   user_group_membership: {userGroupMembership.id}

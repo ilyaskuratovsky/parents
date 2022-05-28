@@ -17,7 +17,7 @@ import * as Controller from "../common/Controller";
 import * as Date from "../common/Date";
 import FacePile from "./FacePile";
 import * as Globals from "./Globals";
-import GroupMembersModal from "./GroupMembersModal";
+import GroupSettingsModal from "./GroupSettingsModal";
 import MessageModal from "./MessageModal";
 import * as MessageUtils from "../common/MessageUtils";
 import MessageView from "./MessageView";
@@ -51,7 +51,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
   );
   const { height, width } = useWindowDimensions();
   const windowWidth = width ?? 0;
-  const [membersModalVisible, setMembersModalVisible] = useState(false);
+  const [groupSettingsModalVisible, setGroupSettingsModalVisible] = useState(false);
   const [messagesModalVisible, setMessagesModalVisible] = useState(null);
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [showNewEventModal, setShowNewEventModal] = useState(false);
@@ -220,7 +220,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
               <View style={{ flexDirection: "column" }}>
                 <TouchableOpacity
                   onPress={() => {
-                    setMembersModalVisible(true);
+                    setGroupSettingsModalVisible(true);
                   }}
                 >
                   <Text
@@ -264,7 +264,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
             */}
             <TouchableOpacity
               onPress={() => {
-                setMembersModalVisible(true);
+                setGroupSettingsModalVisible(true);
               }}
             >
               <FacePile
@@ -355,11 +355,11 @@ export default function GroupScreen({ groupId, messageId, debug }) {
       )}
       {/* MODALS */}
       {/* group members modal */}
-      <GroupMembersModal
+      <GroupSettingsModal
         groupId={groupId}
-        visible={membersModalVisible}
+        visible={groupSettingsModalVisible}
         closeModal={() => {
-          setMembersModalVisible(false);
+          setGroupSettingsModalVisible(false);
         }}
       />
       <ThreadMessageModal

@@ -9,7 +9,7 @@ import * as Actions from "../common/Actions";
 import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as UserInfo from "../common/UserInfo";
 
-export default function GroupMembersModal({ groupId, visible, closeModal }) {
+export default function GroupSettingsModal({ groupId, visible, closeModal }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
   const { userMap, userList, schoolList, schoolMap, groupList, groupMap, members } = useSelector(
