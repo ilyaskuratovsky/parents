@@ -1,3 +1,5 @@
+import * as Logger from "./Logger";
+
 /* given a single root message, built it with children */
 export function buildRootMessageWithChildren(
   messageId,
@@ -7,6 +9,7 @@ export function buildRootMessageWithChildren(
   groupMembers,
   userMap
 ) {
+  Logger.log("buildingRootMessageWithChildren, messageId: " + messageId);
   let rootMessage = { children: [] };
   const message = messages.filter((m) => m.id === messageId)[0];
   let rootMessageId = message.id;
@@ -24,6 +27,8 @@ export function buildRootMessageWithChildren(
   if (rootMessage.event != null) {
     rootMessageWithStatus = addEventData(rootMessageWithStatus, userInfo, groupMembers);
   }
+
+  Logger.log("done buildingRootMessageWithChildren, messageId: " + messageId);
   return rootMessageWithStatus;
 }
 
@@ -35,6 +40,7 @@ export function buildRootMessagesWithChildren(
   groupMembers,
   userMap
 ) {
+  Logger.log("buildRootMessagesWithChildren, messages.length: " + messages?.length);
   const messageMap = messages.reduce(function (acc, message) {
     acc[message.id] = { ...message };
     return acc;
@@ -60,6 +66,9 @@ export function buildRootMessagesWithChildren(
     }
     return { ...rootMessage, ...rootMessageWithStatus };
   });
+  Logger.log(
+    "done buildRootMessagesWithChildren, messagesWithStatus.length: " + messagesWithStatus?.length
+  );
   return messagesWithStatus;
 }
 

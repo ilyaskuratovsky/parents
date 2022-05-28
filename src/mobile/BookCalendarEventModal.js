@@ -44,10 +44,10 @@ export default function BookCalendarEventModal({
 
   useEffect(async () => {
     if (visible) {
-      console.log("requesting calendar permission");
+      Logger.log("requesting calendar permission");
       const { status } = await Calendar.requestCalendarPermissionsAsync();
       if (status === "granted") {
-        console.log("requesting calendar permission: granted");
+        Logger.log("requesting calendar permission: granted");
         const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
         const calendarMap = calendars
           .filter((cal) => {

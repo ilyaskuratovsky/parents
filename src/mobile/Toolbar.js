@@ -6,6 +6,7 @@ import * as MyButtons from "./MyButtons";
 import * as Actions from "../common/Actions";
 import BottomBar from "./BottomBar";
 import * as UIConstants from "./UIConstants";
+import * as Logger from "../common/Logger";
 
 const Toolbar = ({ selected }) => {
   const dispatch = useDispatch();
@@ -24,6 +25,7 @@ const Toolbar = ({ selected }) => {
         color={selected == "groups" ? "mediumblue" : "black"}
         text="Groups"
         onPress={() => {
+          Logger.log("Toolbar: groups clicked");
           dispatch(
             Actions.goToScreen({
               screen: "GROUPS",

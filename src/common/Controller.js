@@ -9,6 +9,7 @@ import store from "./Actions";
 import * as Search from "./Search";
 import moment from "moment";
 import * as UserInfo from "./UserInfo";
+import * as Logger from "./Logger";
 
 //import { Database } from "firebase-firestore-lite";
 
@@ -47,11 +48,11 @@ export async function initializeApp(dispatch, notificationListener, responseList
   // to push notifications to this particular device
   await registerForPushNotificationsAsync()
     .then((token) => {
-      console.log("Got push notificaiton token: " + token);
+      Logger.log("Got push notificaiton token: " + token);
       pushToken = token;
     })
     .catch((error) => {
-      console.log("ERROR REtRieving PUSH TOKEN _ INVESTIGATE!!!\n" + error);
+      Logger.log("ERROR REtRieving PUSH TOKEN _ INVESTIGATE!!!\n" + error);
     });
 
   //foreground notifications settings
@@ -93,9 +94,9 @@ export async function initializeApp(dispatch, notificationListener, responseList
 
   // subscribe to auth changes
   const unsubscribeAuth = onAuthStateChanged(auth, async (authenticatedUser) => {
-    console.log("auth state change: " + JSON.stringify(authenticatedUser));
+    Logger.log("auth state change: " + JSON.stringify(authenticatedUser));
     if (authenticatedUser != null) {
-      console.log("loggedIN: " + pushToken);
+      Logger.log("loggedIN: " + pushToken);
       loggedIn(dispatch, authenticatedUser, pushToken);
     } else {
       loggedOut(dispatch);
@@ -141,7 +142,7 @@ export function getLoggedInScreen(state) {
 }
 
 export async function loggedIn(dispatch, authenticatedUser, pushToken) {
-  console.log("logged in");
+  Logger.log("logged in");
   const uid = authenticatedUser.uid;
 
   let userData = {
@@ -412,7 +413,7 @@ async function registerForPushNotificationsAsync() {
     }
     if (finalStatus !== "granted") {
       //alert("Failed to get push token for push notification!");
-      console.log("Failed to get push token for push notification!");
+      Logger.log("Failed to get push token for push notification!");
       return;
     }
     token = (await Notifications.getExpoPushTokenAsync()).data;
@@ -474,7 +475,7 @@ export async function setUserGroupLastViewedTimestamp(
 
   const userGroupMembership = userGroupMemberships.length > 0 ? userGroupMemberships[0] : null;
   if (userGroupMembership != null) {
-    console.log(
+    Logger.log(
       "found usergroupmembership: " +
         userGroupMembership.id +
         ", updating timestamp: " +

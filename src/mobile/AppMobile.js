@@ -33,11 +33,13 @@ Notifications.setNotificationHandler({
   },
 });
 
+/*
 const myErrorHandler = (error, info) => {
   console.log("logging error to database");
   Database.logError(error, info);
   console.log("error: " + error + ", info: " + JSON.stringify(info));
 };
+*/
 
 export default function App() {
   return (

@@ -35,7 +35,7 @@ export function observeSchoolChanges(callback) {
       callback(schools);
     },
     (err) => {
-      console.log(`Encountered error: ${err}`);
+      Logger.log(`Encountered error: ${err}`);
     }
   );
 }

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import {
   Alert,
   Dimensions,
@@ -69,12 +69,16 @@ export default function GroupScreen({ groupId, messageId, debug }) {
     );
   };
 
-  const rootMessages = MessageUtils.buildRootMessagesWithChildren(
-    messages,
-    userInfo,
-    userMessagesMap,
-    null,
-    userMap
+  const rootMessages = useMemo(
+    () =>
+      MessageUtils.buildRootMessagesWithChildren(
+        messages,
+        userInfo,
+        userMessagesMap,
+        null,
+        userMap
+      ),
+    [messages, userInfo, userMessagesMap, null, userMap]
   );
   const sortedMessages = [...rootMessages] ?? [];
   sortedMessages.sort((m1, m2) => {

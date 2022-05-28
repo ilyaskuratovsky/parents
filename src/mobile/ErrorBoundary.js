@@ -1,5 +1,7 @@
 import React from "react";
 import { Text, View, TextInput } from "react-native";
+import * as Logger from "../common/Logger";
+import Toolbar from "./Toolbar";
 
 import * as Database from "../common/Database";
 
@@ -10,18 +12,20 @@ export default class ErrorBoundary extends React.Component {
   }
 
   static getDerivedStateFromError(error) {
-    console.log("driving state from error: " + error);
+    Logger.log("driving state from error: " + error);
     return { hasError: true, error };
   }
 
   componentDidCatch(error, errorInfo) {
-    console.log("logging error: " + error + ", errorInfo" + JSON.stringify(errorInfo));
+    Logger.log("logging error: " + error + ", errorInfo" + JSON.stringify(errorInfo));
     //Database.logError(error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
-      console.log("this.state.error: " + this.state.error);
+      Logger.log("this.state.error: " + this.state.error);
+
+      const errorText = Logger.toString();
       return (
         <View
           style={{
@@ -33,9 +37,9 @@ export default class ErrorBoundary extends React.Component {
             margin: 10,
           }}
         >
-          <Text>Oops, something went wrong.</Text>
+          <Text style={{ height: 80 }}>Oops, something went wrong.</Text>
           <TextInput
-            style={{ fontSize: 7 }}
+            style={{ fontSize: 7, flex: 2 }}
             multiline
             numberOfLines={2}
             value={
@@ -43,6 +47,12 @@ export default class ErrorBoundary extends React.Component {
                 ? this.state.error.toString() + JSON.stringify(this.state.error, null, 2)
                 : "null"
             }
+          />
+          <TextInput
+            style={{ fontSize: 7, flex: 8, borderWidth: 1, width: "100%" }}
+            multiline
+            numberOfLines={20}
+            value={Logger.flush()}
           />
         </View>
       );

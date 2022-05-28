@@ -37,8 +37,6 @@ export default function NewPrivateGroupModal({ visible, createGroup, closeModal 
     );
   }
 
-  console.log("getting group invitee list");
-
   let addList = UserInfo.groupInviteeList(
     userInfo,
     null,
@@ -47,7 +45,6 @@ export default function NewPrivateGroupModal({ visible, createGroup, closeModal 
     groupMembershipMap,
     userMap
   );
-  console.log("got group invitee list");
 
   return (
     <Modal visible={visible} animationType={"slide"}>

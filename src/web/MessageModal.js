@@ -38,13 +38,17 @@ export default function MessagesContainer({ groupId, messageId, visible, closeMo
       userMap: state.main.userMap,
     };
   });
-  const message = MessageUtils.buildRootMessageWithChildren(
-    messageId,
-    messages,
-    user,
-    userMessagesMap,
-    null,
-    userMap
+  const message = useMemo(
+    () =>
+      MessageUtils.buildRootMessageWithChildren(
+        messageId,
+        messages,
+        user,
+        userMessagesMap,
+        null,
+        userMap
+      ),
+    [messageId, messages, user, userMessagesMap, userMap]
   );
   console.log("built message with children: " + message.id);
 

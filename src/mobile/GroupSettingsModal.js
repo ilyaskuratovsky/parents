@@ -10,6 +10,7 @@ import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as UserInfo from "../common/UserInfo";
 import * as Globals from "./Globals";
 import { Avatar, Divider } from "react-native-elements";
+import * as Logger from "../common/Logger";
 
 export default function GroupSettingsModal({ groupId, visible, closeModal }) {
   const dispatch = useDispatch();
@@ -32,9 +33,11 @@ export default function GroupSettingsModal({ groupId, visible, closeModal }) {
       groupList: state.main.groupList,
       groupMap: state.main.groupMap,
       members: state.main.groupMembershipMap[groupId],
-      fromUserInvites: state.main.fromUserInvites.filter((invite) => invite.groupId == groupId),
+      fromUserInvites:
+        state.main.fromUserInvites?.filter((invite) => invite.groupId == groupId) ?? [],
     };
   });
+  //console.log("fromUserInviets: " + (fromUserInvites ? fromUserInvites.length : "null"));
 
   const [processing, setProcessing] = useState(false);
   const group = groupMap[groupId];
@@ -177,7 +180,7 @@ function GroupSettings({ userInfo, group, closeModal }) {
             name: groupName,
             description: groupDescription,
           });
-          console.log("going to screen tab");
+          Logger.log("going to screen tab");
           closeModal();
         }}
       />
