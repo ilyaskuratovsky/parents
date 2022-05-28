@@ -13,6 +13,9 @@ export function buildSearchIndex(orgsMap, groupsMap) {
 
   for (const groupId of Object.keys(groupsMap)) {
     const group = groupsMap[groupId];
+    if (group == null) {
+      continue;
+    }
     const org = orgsMap[groupId.orgId];
     const groupWords = splitIntoWords(group.name);
     const orgWords = org != null ? splitIntoWords(org.name) : [];
@@ -41,6 +44,9 @@ export function buildSearchIndex(orgsMap, groupsMap) {
 }
 
 function splitIntoWords(str) {
+  if (str == undefined || str == null) {
+    return [];
+  }
   const split = [];
   let current = null;
   for (const c of str) {
