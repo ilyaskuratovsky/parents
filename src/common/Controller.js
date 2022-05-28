@@ -201,6 +201,10 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
     dispatch(Actions.toUserInvites(invites));
   });
 
+  Database.observeFromUserInvites(userInfo.uid, (invites) => {
+    dispatch(Actions.fromUserInvites(invites));
+  });
+
   // redirect user automatically to profile if it's not complete
   if (UserInfo.profileIncomplete(userInfo)) {
     dispatch(Actions.openModal({ modal: "MY_PROFILE", forceComplete: true }));

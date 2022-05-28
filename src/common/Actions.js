@@ -66,6 +66,7 @@ export const mainSlice = createSlice({
     groupMessages: {},
     pushToken: null,
     toUserInvites: null,
+    fromUserInvites: null,
     userMessagesMap: null,
     unreadMessages: [],
     deviceType: null,
@@ -239,6 +240,14 @@ export const mainSlice = createSlice({
       };
       return newState;
     },
+    fromUserInvites: (state, obj) => {
+      const fromUserInvites = obj.payload;
+      const newState = {
+        ...state,
+        fromUserInvites,
+      };
+      return newState;
+    },
     searchIndex: (state, obj) => {
       const searchIndex = obj.payload;
       const newState = {
@@ -270,6 +279,7 @@ export const {
   groups,
   groupMemberships,
   toUserInvites,
+  fromUserInvites,
   searchIndex,
   userMessages,
   clearUserData,

@@ -89,6 +89,10 @@ export async function observeToUserInvites(toUid, toEmail, callback) {
   return DatabaseFS.observeToUserInvites(toUid, toEmail, callback);
 }
 
+export async function observeFromUserInvites(toUid, callback) {
+  return DatabaseFS.observeFromUserInvites(toUid, callback);
+}
+
 export async function updateInvite(inviteId, update) {
   DatabaseFS.updateInvite(inviteId, update);
 }

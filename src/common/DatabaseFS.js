@@ -197,6 +197,22 @@ export function observeToUserInvites(toUid, toEmail, callback) {
   });
 }
 
+export function observeFromUserInvites(fromUid, callback) {
+  const snapshotQuery = query(
+    collection(db, "invites"),
+    where("fromUid", "==", fromUid),
+    where("status", "==", "new")
+  );
+
+  onSnapshot(snapshotQuery, (snapshot) => {
+    const list = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return { id: doc.id, ...data };
+    });
+    callback(list);
+  });
+}
+
 export function observeGroupMessages(groupId, callback) {
   const ref = collection(doc(collection(db, "groups"), groupId), "messages");
   return onSnapshot(ref, (snapshot) => {
