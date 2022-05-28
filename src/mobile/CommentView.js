@@ -149,7 +149,6 @@ export default function CommentView({ item, user, onPress }) {
           }}
         >
           {UserInfo.smallAvatarComponent(item.user)}
-          <Text>x</Text>
         </View>
 
         {/* user name + text */}
