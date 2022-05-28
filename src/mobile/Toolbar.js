@@ -22,7 +22,7 @@ const Toolbar = ({ selected }) => {
       <MyButtons.MenuButton
         icon="account-group"
         color={selected == "groups" ? "mediumblue" : "black"}
-        text="My Groups"
+        text="Groups"
         onPress={() => {
           dispatch(
             Actions.goToScreen({
@@ -43,7 +43,7 @@ const Toolbar = ({ selected }) => {
 
       <MyButtons.MenuButton
         icon="magnify"
-        text="Find Groups"
+        text="Find"
         color={selected == "find_groups" ? "mediumblue" : "black"}
         onPress={() => {
           dispatch(
@@ -54,6 +54,7 @@ const Toolbar = ({ selected }) => {
         }}
       />
 
+      {/*
       <MyButtons.MenuButton
         icon="account-circle"
         text="Profile"
@@ -65,6 +66,19 @@ const Toolbar = ({ selected }) => {
           );
         }}
       />
+      */}
+      <MyButtons.MenuButton
+        icon="account-multiple"
+        text="Friends"
+        onPress={() => {
+          dispatch(
+            Actions.goToScreen({
+              screen: "FRIENDS",
+            })
+          );
+        }}
+      />
+
       {/*
       <MyButtons.MenuButton
         icon="logout"

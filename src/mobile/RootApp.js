@@ -21,6 +21,7 @@ import PostScreen from "./PostScreen";
 import SchoolScreen from "./SchoolScreen";
 import SignupScreen from "./SignupScreen";
 import SplashScreen from "./SplashScreen";
+import FriendsScreen from "./FriendsScreen";
 import UserScreen from "./UserScreen";
 import TestThreadView from "./TestThreadView";
 import * as UserInfo from "../common/UserInfo";
@@ -80,6 +81,7 @@ function RootApp(props, state) {
 
   const screenWithParams = useSelector((state) => state.screen.screen);
   let screen = screenWithParams?.screen;
+  console.log("screenWithParams: " + JSON.stringify(screenWithParams));
 
   const modalWithParams = useSelector((state) => {
     return state.screen?.modal;
@@ -107,6 +109,8 @@ function RootApp(props, state) {
     render = <InitialJoinSchoolGroupsScreen />;
   } else if (screen == "GROUPS" || screen == null) {
     render = <GroupsScreen />;
+    // } else if (screen == "FRIENDS") {
+    //   render = <FriendsScreen />;
   } else if (screen == "GROUP") {
     render = (
       <GroupScreen
@@ -118,6 +122,7 @@ function RootApp(props, state) {
     );
   } else if (screen == "FIND_GROUPS") {
     render = <FindGroupsScreen />;
+    q;
   } else if (screen == "SCHOOL") {
     render = <SchoolScreen schoolId={screenWithParams.schoolId} />;
   } else if (screen == "POST") {

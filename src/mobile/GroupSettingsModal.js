@@ -188,7 +188,8 @@ function GroupSettings({ userInfo, group, closeModal }) {
             {
               text: "Yes",
               onPress: async () => {
-                await Controller.deleteGroup(userInfo, groupId);
+                await Controller.deleteGroup(userInfo, group.id);
+                closeModal();
                 dispatch(
                   Actions.goToScreen({
                     screen: "GROUPS",
