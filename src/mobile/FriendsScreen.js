@@ -43,7 +43,6 @@ export default function FriendsScreen({}) {
     return <Text>Loading Data...</Text>;
   }
 
-  return null;
   return (
     <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
       <TopBar
@@ -80,7 +79,26 @@ export default function FriendsScreen({}) {
         right={null}
       />
       <View key="main_content" style={{ flex: 1, backgroundColor: "white", paddingTop: 20 }}>
-        <Text>Sorry this feature is not available yet.</Text>
+        <ScrollView
+          key="messages"
+          style={
+            {
+              //backgroundColor: "yellow"
+            }
+          }
+        >
+          <View
+            style={{
+              flex: 1,
+              height: 400,
+              alignItems: "center",
+              justifyContent: "center",
+              //backgroundColor: "green",
+            }}
+          >
+            <Text>Feature not yet available</Text>
+          </View>
+        </ScrollView>
         <Toolbar key="toolbar" />
       </View>
     </Portal>

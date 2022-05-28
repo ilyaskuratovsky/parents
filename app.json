@@ -27,7 +27,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.skuratovsky.greenwichparents2",
-      "buildNumber": "35"
+      "buildNumber": "36"
     },
     "android": {
       "adaptiveIcon": {

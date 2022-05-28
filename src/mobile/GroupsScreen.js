@@ -230,7 +230,7 @@ export default function GroupsScreen({}) {
                 //backgroundColor: "yellow",
               }}
             >
-              My Groups
+              {/*My Groups*/}
             </Text>
             <View style={{ width: 80, alignItems: "flex-end" }}>
               {UserInfo.avatarComponent(userInfo, () => {

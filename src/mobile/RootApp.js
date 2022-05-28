@@ -109,8 +109,8 @@ function RootApp(props, state) {
     render = <InitialJoinSchoolGroupsScreen />;
   } else if (screen == "GROUPS" || screen == null) {
     render = <GroupsScreen />;
-    // } else if (screen == "FRIENDS") {
-    //   render = <FriendsScreen />;
+  } else if (screen == "FRIENDS") {
+    render = <FriendsScreen />;
   } else if (screen == "GROUP") {
     render = (
       <GroupScreen
@@ -122,7 +122,6 @@ function RootApp(props, state) {
     );
   } else if (screen == "FIND_GROUPS") {
     render = <FindGroupsScreen />;
-    q;
   } else if (screen == "SCHOOL") {
     render = <SchoolScreen schoolId={screenWithParams.schoolId} />;
   } else if (screen == "POST") {
