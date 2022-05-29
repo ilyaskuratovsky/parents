@@ -4,6 +4,7 @@ import {
   Timestamp,
   //} from "firebase/firestore/lite";
 } from "firebase/firestore";
+import * as Logger from "./Logger";
 
 export const screenSlice = createSlice({
   name: "screen",
@@ -20,6 +21,7 @@ export const screenSlice = createSlice({
   },
   reducers: {
     goToScreen: (state, screen) => {
+      Logger.log("Actions.goToScreen: " + JSON.stringify(screen));
       const newState = {
         ...state,
         screen: screen.payload,
@@ -28,6 +30,7 @@ export const screenSlice = createSlice({
       return newState;
     },
     openModal: (state, modal) => {
+      Logger.log("Actions.openModal: " + JSON.stringify(modal));
       const newState = {
         ...state,
         modal: modal.payload,
@@ -35,6 +38,7 @@ export const screenSlice = createSlice({
       return newState;
     },
     closeModal: (state, modal) => {
+      Logger.log("Actions.closeModal: " + JSON.stringify(modal));
       const newState = {
         ...state,
         modal: null,
@@ -73,6 +77,7 @@ export const mainSlice = createSlice({
   },
   reducers: {
     appInitialized: (state, obj) => {
+      Logger.log("Actions.appInitialized");
       const newState = {
         ...state,
         appInitialized: true,
@@ -81,6 +86,7 @@ export const mainSlice = createSlice({
     },
     userInfo: (state, obj) => {
       const userInfo = obj.payload;
+      Logger.log("Actions.userInfo: " + userInfo?.id);
       const newUserMap = { ...state.userMap };
       newUserMap[userInfo.uid] = userInfo;
       const newState = {
@@ -146,6 +152,7 @@ export const mainSlice = createSlice({
     },
     pushToken: (state, obj) => {
       const { token } = obj.payload;
+      Logger.log("Actions.pushToken: " + JSON.stringify(token));
 
       const newState = {
         ...state,
@@ -155,6 +162,9 @@ export const mainSlice = createSlice({
     },
     userGroupMemberships: (state, obj) => {
       const userGroupMemberships = obj.payload;
+      Logger.log(
+        "Actions.userGroupMemberships: " + JSON.stringify(userGroupMemberships?.map((u) => u?.id))
+      );
       const newState = {
         ...state,
         userGroupMemberships,
@@ -163,6 +173,7 @@ export const mainSlice = createSlice({
     },
     groupMessages: (state, obj) => {
       const { groupId, messages } = obj.payload;
+      Logger.log("Actions.groupMessages, groupId:" + groupId);
       const orderedMessages = messages.sort((message1, message2) => {
         return message2.timestamp - message1.timestamp;
       });
@@ -177,6 +188,7 @@ export const mainSlice = createSlice({
     },
     userMessages: (state, obj) => {
       const messages = obj.payload;
+      Logger.log("Actions.userMessages");
       const userMessagesMap = { ...state.userMessagesMap };
       for (const message of messages) {
         userMessagesMap[message.id] = message;
@@ -189,6 +201,7 @@ export const mainSlice = createSlice({
     groups: (state, obj) => {
       let groups = obj.payload;
       groups = groups.filter((group) => group != null /* && group.status != "deleted"*/);
+      Logger.log("Actions.groups");
       const groupList = [];
       const groupMap = {};
       for (const group of groups) {
@@ -204,6 +217,7 @@ export const mainSlice = createSlice({
     },
     groupMemberships: (state, obj) => {
       const groupMemberships = obj.payload;
+      Logger.log("Actions.groupMemberships");
       const groupMembershipMap = {};
       for (const groupMembership of groupMemberships) {
         !(groupMembership.groupId in groupMembershipMap)
@@ -234,6 +248,7 @@ export const mainSlice = createSlice({
     },
     toUserInvites: (state, obj) => {
       const toUserInvites = obj.payload;
+      Logger.log("Actions.toUserInvites");
       const newState = {
         ...state,
         toUserInvites,
@@ -242,6 +257,7 @@ export const mainSlice = createSlice({
     },
     fromUserInvites: (state, obj) => {
       const fromUserInvites = obj.payload;
+      Logger.log("Actions.fromUserInvites");
       const newState = {
         ...state,
         fromUserInvites,
@@ -250,6 +266,7 @@ export const mainSlice = createSlice({
     },
     searchIndex: (state, obj) => {
       const searchIndex = obj.payload;
+      Logger.log("Actions.searchIndex");
       const newState = {
         ...state,
         searchIndex,
@@ -258,6 +275,7 @@ export const mainSlice = createSlice({
     },
     deviceType: (state, obj) => {
       const deviceType = obj.payload;
+      Logger.log("Actions.deviceType");
       const newState = {
         ...state,
         deviceType,

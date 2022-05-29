@@ -43,6 +43,7 @@ export default function MessagesContainer({ groupId, messageId, visible, closeMo
       userMap: state.main.userMap,
     };
   });
+
   // if message has a parent, render the parent message
   const message = MessageUtils.buildRootMessageWithChildren(
     messageId,

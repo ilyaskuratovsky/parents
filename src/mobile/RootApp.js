@@ -25,6 +25,7 @@ import FriendsScreen from "./FriendsScreen";
 import UserScreen from "./UserScreen";
 import TestThreadView from "./TestThreadView";
 import * as UserInfo from "../common/UserInfo";
+import Loading from "./Loading";
 /*
 App vision:  The local social network for parents.
 When join you put in your zip code (we also detect based on gps coordinates)
@@ -75,10 +76,6 @@ function RootApp(props, state) {
     }
   }, [lastNotificationResponse]);
 
-  if (!appState.main.appInitialized == "SPLASH") {
-    return <SplashScreen appInitializedCallback={() => {}} refresh={2200} />;
-  }
-
   const screenWithParams = useSelector((state) => state.screen.screen);
   let screen = screenWithParams?.screen;
   console.log("screenWithParams: " + JSON.stringify(screenWithParams));
@@ -88,6 +85,12 @@ function RootApp(props, state) {
   });
   let modal = modalWithParams?.modal;
   console.log("modalWithParams: " + JSON.stringify(modalWithParams));
+
+  console.log("RootApp.js:appInitialized: " + appState.main.appInitialized);
+  if (!appState.main.appInitialized) {
+    //return <SplashScreen appInitializedCallback={() => {}} refresh={2200} />;
+    return <Loading />;
+  }
 
   //return <TestThreadView />;
   if (screen === "LOGIN") {
@@ -116,7 +119,8 @@ function RootApp(props, state) {
       <GroupScreen
         groupId={screenWithParams.groupId}
         messageId={screenWithParams.messageId}
-        //messageId={"u0A2kEIkHIrBnqbrtNZv"}
+        //groupId={"-N2kmR4mYVvaPUHUX11e"}
+        //messageId={"SsFzz8lpH4VOpyy8ZLdj"}
         debug={JSON.stringify(screenWithParams)}
       />
     );
@@ -142,7 +146,7 @@ function RootApp(props, state) {
     render = <ErrorScreen error={{ message: "No screen" }} />;
   }
 
-  console.log("root app rendering:");
+  console.log("root app rendering");
   return (
     <View style={{ flex: 1 }}>
       {render}

@@ -9,9 +9,26 @@ export function buildRootMessageWithChildren(
   groupMembers,
   userMap
 ) {
-  Logger.log("buildingRootMessageWithChildren, messageId: " + messageId);
+  Logger.log(
+    "buildingRootMessageWithChildren, messageId: " +
+      messageId +
+      ", messages: " +
+      JSON.stringify(
+        messages.map((message) => {
+          if (message != null) {
+            return { id: message.id, papaId: message.papaId };
+          } else {
+            return { id: "undefined" };
+          }
+        }),
+        null,
+        2
+      )
+  );
   let rootMessage = { children: [] };
   const message = messages.filter((m) => m.id === messageId)[0];
+  //message = undefined;
+  Logger.log("found root message: " + JSON.stringify(message));
   let rootMessageId = message.id;
   if (message.papaId != null) {
     rootMessageId = message.papaId;
@@ -23,10 +40,14 @@ export function buildRootMessageWithChildren(
       rootMessage = { ...m, ...rootMessage };
     }
   }
+  Logger.log("got root message: " + JSON.stringify(rootMessage));
   let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap, userMap);
   if (rootMessage.event != null) {
     rootMessageWithStatus = addEventData(rootMessageWithStatus, userInfo, groupMembers);
   }
+
+  // const a = null;
+  // const b = a.foo;
 
   Logger.log("done buildingRootMessageWithChildren, messageId: " + messageId);
   return rootMessageWithStatus;

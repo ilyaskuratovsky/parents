@@ -28,34 +28,59 @@ import ThreadMessageModal from "./ThreadMessageModal";
 import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
 import * as MyButtons from "./MyButtons";
+import Loading from "./Loading";
+import * as Logger from "../common/Logger";
 
 export default function GroupScreen({ groupId, messageId, debug }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
 
-  const { groupMap, orgsMap, messages, userMap, members, userMessagesMap } = useSelector(
-    (state) => {
-      return {
-        userinfo: state.main.userInfo,
-        schoolList: state.main.schoolList,
-        schoolMap: state.main.schoolMap,
-        groupList: state.main.groupList,
-        groupMap: state.main.groupMap,
-        orgsMap: state.main.orgsMap,
-        userMap: state.main.userMap,
-        messages: state.main.groupMessages[groupId] ?? [],
-        members: state.main.groupMembershipMap[groupId],
-        userMessagesMap: state.main.userMessagesMap,
-      };
+  let { groupMap, orgsMap, messages, userMap, members, userMessagesMap } = useSelector((state) => {
+    return {
+      userinfo: state.main.userInfo,
+      schoolList: state.main.schoolList,
+      schoolMap: state.main.schoolMap,
+      groupList: state.main.groupList,
+      groupMap: state.main.groupMap,
+      orgsMap: state.main.orgsMap,
+      userMap: state.main.userMap,
+      messages: state.main.groupMessages[groupId] ?? [],
+      members: state.main.groupMembershipMap[groupId],
+      userMessagesMap: state.main.userMessagesMap,
+    };
+  });
+
+  /*
+  if (messageId != null) {
+    const groupIdArr = messages.filter((m) => m.id === messageId);
+    if (groupIdArr.length === 1) {
+      groupId = groupIdArr[0].groupId;
+    } else {
+      Logger.log("Could not find group id for messageId: " + messageId);
+      groupId = null;
     }
+  }
+  */
+
+  const group = groupMap?.[groupId];
+  console.log(
+    "GroupScreen, groupId: " +
+      groupId +
+      ", messageId: " +
+      messageId +
+      ", group: " +
+      JSON.stringify(group)
   );
-  const { height, width } = useWindowDimensions();
-  const windowWidth = width ?? 0;
+  const isLoaded =
+    group != null &&
+    (messageId != null
+      ? messages != null && messages.filter((m) => m.id === messageId).length > 0
+      : true);
+
   const [groupSettingsModalVisible, setGroupSettingsModalVisible] = useState(false);
   const [messagesModalVisible, setMessagesModalVisible] = useState(null);
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [showNewEventModal, setShowNewEventModal] = useState(false);
-  const group = groupMap[groupId];
 
   const FlatListItemSeparator = () => {
     return (
@@ -69,22 +94,23 @@ export default function GroupScreen({ groupId, messageId, debug }) {
     );
   };
 
-  const rootMessages = useMemo(
-    () =>
-      MessageUtils.buildRootMessagesWithChildren(
+  const sortedMessages = useMemo(() => {
+    if (isLoaded) {
+      const rootMessages = MessageUtils.buildRootMessagesWithChildren(
         messages,
         userInfo,
         userMessagesMap,
         null,
         userMap
-      ),
-    [messages, userInfo, userMessagesMap, null, userMap]
-  );
-  const sortedMessages = [...rootMessages] ?? [];
-  sortedMessages.sort((m1, m2) => {
-    return m2.lastUpdated - m1.lastUpdated;
-    //return 0;
-  });
+      );
+      const sortedMessages = [...rootMessages] ?? [];
+      sortedMessages.sort((m1, m2) => {
+        return m2.lastUpdated - m1.lastUpdated;
+      });
+      return sortedMessages;
+    }
+    return null;
+  }, [messages, userInfo, userMessagesMap, null, userMap]);
 
   const org = orgsMap[group?.orgId];
   // send message callback function
@@ -157,19 +183,20 @@ export default function GroupScreen({ groupId, messageId, debug }) {
   // show message modal if there's a messageId prop
   useEffect(async () => {
     //Alert.alert("setting messageId: " + messageId);
+    // only show if the message has been loaded and exists in the message map
     if (messageId != null) {
       setMessagesModalVisible(messageId);
     }
   }, [messageId]);
 
   const insets = useSafeAreaInsets();
-  const windowHeight = Dimensions.get("window").height - insets.top - insets.bottom;
   const topBarHeight = 64;
-  const newMessageHeight = 80;
   const bottomBarHeight = 64;
 
   //Alert.alert("rendering GroupScreen: " + JSON.stringify({ groupId, messageId }));
-
+  if (!isLoaded) {
+    return <Loading />;
+  }
   return (
     <Portal
       backgroundColor={UIConstants.DEFAULT_BACKGROUND}

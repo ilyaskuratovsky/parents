@@ -21,8 +21,6 @@ export default function MyProfileModal({ visible, forceComplete }) {
   const userInfo = useSelector((state) => state.main.userInfo);
   const insets = useSafeAreaInsets();
 
-  console.log("myprofilemodal, forceComplete: " + forceComplete);
-
   return (
     <Modal visible={visible} animationType={"slide"}>
       {visible && <ModalContainer userInfo={userInfo} forceComplete={forceComplete} />}

@@ -16,6 +16,7 @@ import * as Logger from "./Logger";
 const groupMessageSubscriptions = {};
 
 export async function initializeApp(dispatch, notificationListener, responseListener) {
+  Logger.log("initializing App");
   const orgs = await Database.getAllOrgs();
 
   // store all groups
@@ -109,10 +110,12 @@ export async function initializeApp(dispatch, notificationListener, responseList
   });
 
   //build the search index
+  Logger.log("building search index");
   const searchIndex = Search.buildSearchIndex(
     store.getState().main.orgsMap,
     store.getState().main.groupMap
   );
+  Logger.log("done building search index");
 
   dispatch(Actions.searchIndex(searchIndex));
 
@@ -126,6 +129,9 @@ export async function initializeApp(dispatch, notificationListener, responseList
       dispatch(Actions.deviceType("DESKTOP"));
     }
   });
+
+  Logger.log("Initialization complete");
+  dispatch(Actions.appInitialized());
 
   return () => {
     notificationReceivedListener.remove();
@@ -210,6 +216,8 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
   if (UserInfo.profileIncomplete(userInfo)) {
     dispatch(Actions.openModal({ modal: "MY_PROFILE", forceComplete: true }));
   }
+
+  Logger.log("Logged in complete");
 }
 
 export async function loggedOut(dispatch) {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, TextInput } from "react-native";
+import { Text, View, TextInput, KeyboardAvoidingView, ScrollView } from "react-native";
 import * as Logger from "../common/Logger";
 import Toolbar from "./Toolbar";
 
@@ -27,15 +27,14 @@ export default class ErrorBoundary extends React.Component {
 
       const errorText = Logger.toString();
       return (
-        <View
+        <KeyboardAvoidingView
           style={{
             flex: 1,
-            //backgroundColor: "yellow",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            margin: 10,
+            backgroundColor: "white",
           }}
+          behavior="padding"
+          keyboardVerticalOffset={40}
+          enabled
         >
           <Text style={{ height: 80 }}>Oops, something went wrong.</Text>
           <TextInput
@@ -51,10 +50,10 @@ export default class ErrorBoundary extends React.Component {
           <TextInput
             style={{ fontSize: 7, flex: 8, borderWidth: 1, width: "100%" }}
             multiline
-            numberOfLines={20}
+            numberOfLines={10}
             value={Logger.flush()}
           />
-        </View>
+        </KeyboardAvoidingView>
       );
     }
     return this.props.children;
