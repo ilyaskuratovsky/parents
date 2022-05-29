@@ -6,6 +6,7 @@ import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
 import * as Date from "../common/Date";
 import Autolink from "react-native-autolink";
+import MessageTime from "./MessageTime";
 
 export default function CommentView({ item, user, onPress }) {
   const timeAgo = ({ children }) => {
@@ -82,12 +83,15 @@ export default function CommentView({ item, user, onPress }) {
             </Text>
             <View
               style={{
+                flex: 1,
                 marginLeft: 10,
                 fontWeight: "normal",
                 fontSize: 14,
+                alignItems: "flex-end",
               }}
             >
               {item.timestamp ? (
+                /*
                 <TimeAgo
                   date={Date.toDate(item.timestamp)}
                   style={{
@@ -96,6 +100,11 @@ export default function CommentView({ item, user, onPress }) {
                     fontSize: 14,
                   }}
                   component={timeAgo}
+                />
+                */
+                <MessageTime
+                  timestamp={item.timestamp?.toDate()}
+                  textStyle={{ fontSize: 11, color: UIConstants.BLACK_TEXT_COLOR }}
                 />
               ) : (
                 <Text>Fix needed</Text>
@@ -184,12 +193,16 @@ export default function CommentView({ item, user, onPress }) {
             </Text>
             <View
               style={{
+                flex: 1,
                 marginLeft: 10,
                 fontWeight: "normal",
                 fontSize: 14,
+                alignItems: "flex-end",
+                //backgroundColor: "green",
               }}
             >
               {item.timestamp ? (
+                /*
                 <TimeAgo
                   date={Date.toDate(item.timestamp)}
                   style={{
@@ -198,6 +211,11 @@ export default function CommentView({ item, user, onPress }) {
                     fontSize: 14,
                   }}
                   component={timeAgo}
+                />
+                */
+                <MessageTime
+                  timestamp={item.timestamp?.toDate()}
+                  textStyle={{ fontSize: 11, color: UIConstants.BLACK_TEXT_COLOR }}
                 />
               ) : (
                 <Text>Fix needed: {JSON.stringify(item.createdAt)}</Text>
