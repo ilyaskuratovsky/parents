@@ -365,7 +365,7 @@ export async function sendEventReply(
   dispatch,
   userInfo,
   groupId,
-  status,
+  eventResponse,
   text,
   papaId,
   notificationInfo
@@ -377,7 +377,7 @@ export async function sendEventReply(
     text,
     {
       event: {
-        status,
+        eventResponse,
       },
     },
     papaId == undefined ? null : papaId,

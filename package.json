@@ -16,6 +16,7 @@
     "@expo-google-fonts/inter": "^0.2.2",
     "@iconify/react": "^3.1.2",
     "@react-native-async-storage/async-storage": "~1.15.0",
+    "@react-native-community/checkbox": "^0.5.12",
     "@react-native-community/datetimepicker": "^3.5.2",
     "@react-native-segmented-control/segmented-control": "2.4.0",
     "@reduxjs/toolkit": "^1.6.2",

@@ -18,7 +18,7 @@ import * as Date from "../common/Date";
 import FacePile from "./FacePile";
 import * as Globals from "./Globals";
 import GroupSettingsModal from "./GroupSettingsModal";
-import MessageModal from "./MessageModal";
+import MessageModal from "./MessageContainerModal";
 import * as MessageUtils from "../common/MessageUtils";
 import MessageView from "./MessageView";
 import NewEventModal from "./NewEventModal";

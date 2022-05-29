@@ -7,7 +7,7 @@ import * as UserInfo from "../common/UserInfo";
 import * as Date from "../common/Date";
 import Autolink from "react-native-autolink";
 import MessageTime from "./MessageTime";
-
+import * as Utils from "../common/Utils";
 export default function CommentView({ item, user, onPress }) {
   const timeAgo = ({ children }) => {
     return (
@@ -112,22 +112,24 @@ export default function CommentView({ item, user, onPress }) {
             </View>
           </View>
           <View style={{ flex: 1, flexDirection: "column" }}>
-            {item.event != null && <Text>Going</Text>}
-            <Autolink
-              // Required: the text to parse for links
-              text={item.text}
-              // Optional: enable email linking
-              email
-              // Optional: enable hashtag linking to instagram
-              phone="sms"
-              // Optional: enable URL linking
-              url
-              style={{
-                paddingLeft: 0,
-                fontSize: 14,
-                color: "#333333",
-              }}
-            />
+            {item.event != null && <Text>{item.event.eventResponse}</Text>}
+            {!Utils.isEmptyString(item.text) && (
+              <Autolink
+                // Required: the text to parse for links
+                text={item.text}
+                // Optional: enable email linking
+                email
+                // Optional: enable hashtag linking to instagram
+                phone="sms"
+                // Optional: enable URL linking
+                url
+                style={{
+                  paddingLeft: 0,
+                  fontSize: 14,
+                  color: "#333333",
+                }}
+              />
+            )}
             {Globals.dev && <Text style={{ fontSize: 8 }}>{item.id}</Text>}
             {Globals.dev && <Text style={{ fontSize: 8 }}>{JSON.stringify(item, null, 2)}</Text>}
           </View>
@@ -223,7 +225,7 @@ export default function CommentView({ item, user, onPress }) {
             </View>
           </View>
           <View style={{ flex: 1, flexDirection: "column" }}>
-            {item.event != null && <Text>Going</Text>}
+            {item.event != null && <Text>{item.event.eventResponse}</Text>}
             <Autolink
               // Required: the text to parse for links
               text={item.text}
