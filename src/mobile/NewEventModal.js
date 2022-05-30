@@ -33,18 +33,43 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
   const [showStartTimePicker, setShowStartTimePicker] = useState(false);
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
 
-  const sendEvent = useCallback(async (title, text, date, startTime, endTime) => {
+  const sendEvent = useCallback(async (title, text, start, end) => {
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(userInfo);
-    return await Controller.sendEventMessage(
+    const timezone = Localization.timezone;
+    const event = {
+      event: {
+        start: moment(start).format("YYYYMMDD HH:MM"),
+        end: moment(end).format("YYYYMMDD HH:MM"),
+        timezone,
+      },
+    };
+    await Controller.sendMessage(
       dispatch,
       userInfo,
       group.id,
       title,
       text,
-      date,
-      startTime,
-      endTime,
+      event,
+      null, //papa id
+      {
+        groupName,
+        fromName,
+      }
+    );
+    showModal(false);
+  }, []);
+
+  const sendPoll = useCallback(async (title, text, pollOptions) => {
+    const groupName = group.name;
+    const fromName = UserInfo.chatDisplayName(userInfo);
+    await Controller.sendMessage(
+      dispatch,
+      userInfo,
+      group.id,
+      title,
+      text,
+      { event_poll: pollOptions }, // data
       null, //papa id
       {
         groupName,
@@ -149,17 +174,14 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
                     text="POST"
                     onPress={async () => {
                       //const m = moment(date);
-                      const timezone = Localization.timezone;
                       if (!poll) {
-                        sendEvent(title, text, { date, startTime, endTime, timezone }).then(() => {
+                        sendEvent(title, text, start, end).then(() => {
                           showModal(false);
                         });
                       } else {
-                        /*
-                        sendPoll(title, text, { date, startTime, endTime, timezone }).then(() => {
+                        sendPoll(title, text, pollOptions).then(() => {
                           showModal(false);
                         });
-                        */
                       }
                     }}
                   />

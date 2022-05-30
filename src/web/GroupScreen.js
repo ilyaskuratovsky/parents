@@ -93,6 +93,7 @@ export default function GroupScreen({ groupId }) {
       groupId,
       title,
       text,
+      null, //data
       null, //papa id
       {
         groupName,

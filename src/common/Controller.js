@@ -305,6 +305,7 @@ export async function sendMessage(
   groupId,
   title,
   text,
+  data,
   papaId,
   notificationInfo
 ) {
@@ -313,7 +314,7 @@ export async function sendMessage(
     userInfo.uid,
     title == undefined ? null : title,
     text,
-    null,
+    data,
     papaId == undefined ? null : papaId,
     notificationInfo
   );
@@ -331,13 +332,37 @@ export async function sendReply(dispatch, userInfo, groupId, text, papaId, notif
   );
 }
 
+/*
 export async function sendEventMessage(
   dispatch,
   userInfo,
   groupId,
   title,
   text,
-  eventTime,
+  event,
+  papaId,
+  notificationInfo
+) {
+  return await Database.sendMessage(
+    groupId,
+    userInfo.uid,
+    title == undefined ? null : title,
+    text,
+    {
+      event: event,
+    },
+    papaId == undefined ? null : papaId,
+    notificationInfo == undefined ? null : notificationInfo
+  );
+}
+
+export async function sendEventPollMessage(
+  dispatch,
+  userInfo,
+  groupId,
+  title,
+  text,
+  eventPoll,
   papaId,
   notificationInfo
 ) {
@@ -349,17 +374,13 @@ export async function sendEventMessage(
     title == undefined ? null : title,
     text,
     {
-      event: {
-        date: moment(date).format("YYYYMMDD"),
-        startTime: moment(startTime).format("HH:MM"),
-        endTime: moment(endTime).format("HH:MM"),
-        timezone,
-      },
+      event_poll: eventPoll,
     },
     papaId == undefined ? null : papaId,
     notificationInfo == undefined ? null : notificationInfo
   );
 }
+*/
 
 export async function sendEventReply(
   dispatch,

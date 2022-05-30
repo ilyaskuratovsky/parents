@@ -123,7 +123,8 @@ export default function GroupScreen({ groupId, messageId, debug }) {
       groupId,
       title,
       text,
-      null, //papa id
+      null, // data
+      null, // papa id
       {
         groupName,
         fromName,

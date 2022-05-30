@@ -36,6 +36,7 @@ import Autolink from "react-native-autolink";
 import { userInfo } from "../common/Actions";
 import MessageModal from "./MessageModal";
 import EventMessageModal from "./EventMessageModal";
+import EventPollMessageModal from "./EventPollMessageModal";
 
 export default function MessagesContainer({ groupId, messageId, visible, closeModal }) {
   const user = useSelector((state) => state.main.userInfo);
@@ -60,7 +61,29 @@ export default function MessagesContainer({ groupId, messageId, visible, closeMo
   console.log("built message with children: " + message.id);
 
   const group = groupMap[groupId];
-  if (message.event == null) {
+  if (message.event != null) {
+    return (
+      <EventMessageModal
+        user={user}
+        group={group}
+        message={message}
+        visible={visible}
+        closeModal={closeModal}
+        userMap={userMap}
+      />
+    );
+  } else if (message.event_poll != null) {
+    return (
+      <EventPollMessageModal
+        user={user}
+        group={group}
+        message={message}
+        visible={visible}
+        closeModal={closeModal}
+        userMap={userMap}
+      />
+    );
+  } else {
     return (
       <MessageModal
         user={user}
@@ -70,17 +93,6 @@ export default function MessagesContainer({ groupId, messageId, visible, closeMo
         closeModal={closeModal}
         userMap={userMap}
         scrollToEnd={message.id != messageId}
-      />
-    );
-  } else {
-    return (
-      <EventMessageModal
-        user={user}
-        group={group}
-        message={message}
-        visible={visible}
-        closeModal={closeModal}
-        userMap={userMap}
       />
     );
   }

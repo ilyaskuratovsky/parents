@@ -113,6 +113,7 @@ export default function MessageView({ item, onPress }) {
                 {item.event != null && (
                   <Icon name="calendar" style={{ color: "black", fontSize: 24 }} />
                 )}
+                {item.event_poll != null && <Text>Event Poll</Text>}
                 <Text
                   style={{
                     paddingLeft: 0,

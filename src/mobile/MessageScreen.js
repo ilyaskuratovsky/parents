@@ -67,10 +67,18 @@ export default function MessageScreen({ groupId, messageId, onBack }) {
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(userInfo);
     setText("");
-    return await Controller.sendMessage(dispatch, userInfo, groupId, text, message.id, {
-      groupName,
-      fromName,
-    });
+    return await Controller.sendMessage(
+      dispatch,
+      userInfo,
+      groupId,
+      text,
+      null /* data */,
+      message.id,
+      {
+        groupName,
+        fromName,
+      }
+    );
   }, []);
 
   const renderMessage = ({ item }) => {

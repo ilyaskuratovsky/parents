@@ -174,3 +174,70 @@ export function addEventData(rootMessage, userInfo, userMessagesMap, groupMember
 
   return { ...rootMessage, event: eventWithUserStatus };
 }
+
+export function addPollData(rootMessage, userInfo, userMessagesMap, groupMembers) {
+  const eventWithUserStatus = { ...rootMessage.event };
+  for (const childMessage of rootMessage.children ?? []) {
+    const childEvent = childMessage.event;
+    if (childEvent != null) {
+      const childStatus = childEvent.status;
+      const userStatus = { ...eventWithUserStatus.users };
+      userStatus[childMessage.uid] = { status: childStatus };
+      const summary = { ...eventWithUserStatus.summary };
+      const statusCount = summary[childStatus] ?? 0;
+      summary[childStatus] = statusCount + 1;
+      eventWithUserStatus["users"] = userStatus;
+      eventWithUserStatus["summary"] = summary;
+    }
+  }
+
+  return { ...rootMessage, event: eventWithUserStatus };
+}
+
+export function eventPollResponseSummary(rootMessage) {
+  // accumulate all the 'last' responses per user
+  const eventPollResponsesPerUser = {};
+  const childMessages = rootMessage.children;
+  for (const childMessage of childMessages) {
+    if (childMessage.event_poll_response != null) {
+      eventPollResponsesPerUser[childMessage.user.uid] = childMessage;
+    }
+  }
+
+  // get the poll options
+  const eventPollOptions = rootMessage.event_poll;
+  const result = [];
+  for (const pollOption of eventPollOptions) {
+    const uid_list = [];
+    for (const [userId, userEventPollResponseMessage] of Object.entries(
+      eventPollResponsesPerUser
+    )) {
+      const pollResponse = userEventPollResponseMessage.event_poll_response;
+      if (
+        pollResponse != null &&
+        pollResponse.find((option) => option.name === pollOption.name) != null
+      ) {
+        uid_list.push(userId);
+      }
+    }
+    result.push({ poll_option: pollOption, uid_list: uid_list });
+  }
+  return result;
+  /*
+  // read off responses for each option + the unresponded ones
+  [
+    {
+      poll_option: { name: "Option 1" },
+      uid_list: [],
+    },
+    {
+      poll_option: { name: "Option 2" },
+      uid_list: [],
+    },
+    {
+      poll_option: null,
+      uid_list: [],
+    },
+  ];
+  */
+}

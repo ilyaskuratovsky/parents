@@ -33,9 +33,16 @@ import BookCalendarEventModal from "./BookCalendarEventModal";
 import moment from "moment-timezone";
 import JSONTree from "react-native-json-tree";
 import Autolink from "react-native-autolink";
-import { userInfo } from "../common/Actions";
+import FacePile from "./FacePile";
 
-export default function EventMessageModal({ group, message, user, userMap, visible, closeModal }) {
+export default function EventPollMessageModal({
+  group,
+  message,
+  user,
+  userMap,
+  visible,
+  closeModal,
+}) {
   const dispatch = useDispatch();
   const sortedChildMessages = [...message.children] ?? [];
   sortedChildMessages.sort((m1, m2) => {
@@ -43,53 +50,20 @@ export default function EventMessageModal({ group, message, user, userMap, visib
     //return 0;
   });
 
-  const event = message.event;
-  const eventStartDate = moment
-    .tz(event.date + " " + event.startTime, "YYYYMMDD HH:mm", event.timezone)
-    .utc()
-    .toDate();
-  const eventEndDate = moment
-    .tz(event.date + " " + event.endTime, "YYYYMMDD HH:mm", event.timezone)
-    .utc()
-    .toDate();
-  //const eventStartDate = moment.tz("2022-05-07 19:00", "America/New_York").utc().toDate();
-  //const eventEndDate = moment.tz("2022-05-07 19:00", "America/New_York").utc().toDate();
+  const eventPoll = message.event_poll;
 
   const childMessages = sortedChildMessages;
-  let currentUserStatus = null;
-  const currentUserStatusArr = childMessages.filter((m) => {
-    console.log(
-      "userInfo.uid: " +
-        user.uid +
-        ", m.uid: " +
-        m.uid +
-        ", m.event.eventResponse: " +
-        m.event.eventResponse
-    );
-    return m.uid == user.uid && !Utils.isEmptyString(m.event?.eventResponse);
-  });
-  console.log(
-    "currentUserSTatusArr: " +
-      JSON.stringify(currentUserStatusArr) +
-      ", childMessages: " +
-      JSON.stringify(childMessages)
-  );
-  if (currentUserStatusArr.length > 0) {
-    currentUserStatus = currentUserStatusArr[currentUserStatusArr.length - 1].event?.eventResponse;
-  }
-  console.log("currentUserStatus: " + currentUserStatus);
-
-  const sendEventReply = useCallback(async (eventResponse, text) => {
+  const sendEventPollReply = useCallback(async (pollResponse, txt) => {
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(user);
-    setText("");
+
     await Controller.sendMessage(
       dispatch,
       user,
       group.id,
       null, //title
-      text,
-      eventResponse,
+      txt,
+      { event_poll_response: pollResponse },
       message.id,
       {
         groupName,
@@ -97,27 +71,11 @@ export default function EventMessageModal({ group, message, user, userMap, visib
       }
     );
     scrollViewRef.current.scrollToEnd({ animated: true });
-
-    if (eventResponse === "Going" && currentUserStatus != "Going") {
-      Alert.alert("Book in Calendar?", null, [
-        {
-          text: "Yes",
-          onPress: () => {
-            setShowCalendarSelection(true);
-          },
-        },
-        {
-          text: "No",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-      ]);
-    }
-  }, []);
+  });
 
   const [text, setText] = useState("");
-  const [eventResponse, setEventResponse] = useState(currentUserStatus);
-  const [showCalendarSelection, setShowCalendarSelection] = useState(false);
+  const currentUserPollResponse = [];
+  const [pollResponse, setPollResponse] = useState(currentUserPollResponse);
   const scrollViewRef = useRef();
   const topBarHeight = 64;
   const replyBarHeight = 80;
@@ -132,10 +90,28 @@ export default function EventMessageModal({ group, message, user, userMap, visib
     Controller.markMessagesRead(user, markRead);
   }, [message]);
 
-  console.log("event response is empty string: " + Utils.isEmptyString(eventResponse));
   const canSend =
     (text != null && text.length > 0) ||
-    (!Utils.isEmptyString(eventResponse) && eventResponse != currentUserStatus);
+    (pollResponse != null &&
+      JSON.stringify(pollResponse) != JSON.stringify(currentUserPollResponse));
+
+  const togglePollResponse = (option) => {
+    console.log("toggling poll response: " + JSON.stringify(option));
+    const index = pollResponse.findIndex((response) => {
+      return response.name == option.name;
+    });
+    console.log("toggling poll response, index" + index);
+    const newPollResponse = [...pollResponse];
+    if (index == -1) {
+      newPollResponse.push(option);
+    } else {
+      newPollResponse.splice(index, 1);
+    }
+    console.log("newPollResponse: " + JSON.stringify(newPollResponse));
+    setPollResponse(newPollResponse);
+  };
+
+  const pollResponseSummary = MessageUtils.eventPollResponseSummary(message);
   return (
     <Modal visible={visible} animationType={"slide"}>
       <Portal>
@@ -174,6 +150,7 @@ export default function EventMessageModal({ group, message, user, userMap, visib
           >
             {/* parent message */}
             <View
+              key="root_message"
               style={{
                 flexDirection: "column",
                 paddingTop: 10,
@@ -220,22 +197,14 @@ export default function EventMessageModal({ group, message, user, userMap, visib
                   borderRadius: 0,
                 }}
               >
-                {Globals.dev && <Text>EventMessageModal</Text>}
+                {Globals.dev && <Text>EventPollMessageModal</Text>}
                 {Globals.dev && <Text>{message.id}</Text>}
                 {Globals.dev && (
-                  <ScrollView style={{ height: 200 }}>
-                    {/*
-                    <JSONTree
-                      data={message}
-                      labelRenderer={(raw) => (
-                        <Text style={{ fontSize: 8, fontWeight: "bold" }}>{raw}</Text>
-                      )}
-                      valueRenderer={(raw) => (
-                        <Text style={{ fontSize: 8, fontWeight: "bold" }}>{raw}</Text>
-                      )}
-                    />
-                      */}
-
+                  <ScrollView style={{ height: 120 }}>
+                    <Text style={{ fontSize: 8 }}>
+                      Poll Response Summary
+                      {JSON.stringify(pollResponseSummary, null, 2)}
+                    </Text>
                     <Text style={{ fontSize: 8 }}>{JSON.stringify(message, null, 2)}</Text>
                   </ScrollView>
                 )}
@@ -250,6 +219,15 @@ export default function EventMessageModal({ group, message, user, userMap, visib
                 >
                   {message.title}
                 </Text>
+                {Globals.dev && (
+                  <Text
+                    style={{
+                      fontSize: 10,
+                    }}
+                  >
+                    {JSON.stringify(message.event, null, 2)}
+                  </Text>
+                )}
                 <Autolink
                   // Required: the text to parse for links
                   text={message.text}
@@ -267,44 +245,22 @@ export default function EventMessageModal({ group, message, user, userMap, visib
                   }}
                 />
               </View>
-              {/* accept/decline bar */}
-              {/*
-              <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-evenly" }}>
-                <TouchableOpacity
-                  onPress={() => {
-                    sendEventReply("accept", null);
-                  }}
-                >
-                  {(message.event.users ?? {})[user.uid]?.status === "accept" && (
-                    <Text style={{ backgroundColor: "green" }}>Going</Text>
-                  )}
-                  {(message.event.users ?? {})[user.uid]?.status != "accept" && <Text>Going</Text>}
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    sendEventReply("decline", null);
-                  }}
-                >
-                  <Text>Not Going</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    sendEventReply("tentative", null);
-                  }}
-                >
-                  <Text>Don't Know Yet</Text>
-                </TouchableOpacity>
-                <TouchableOpacity>
-                  <Text>...</Text>
-                </TouchableOpacity>
+              {/* responses */}
+              <View>
+                {pollResponseSummary.map((option) => {
+                  return (
+                    <View style={{ flex: 1, flexDirection: "column" }}>
+                      <Text>{option.poll_option.name}</Text>
+                      <FacePile userIds={option.uid_list} border />
+                    </View>
+                  );
+                })}
               </View>
-                */}
             </View>
             <Divider style={{}} width={1} color="darkgrey" />
             {/* comments section */}
             <View
               style={{
-                flex: 1,
                 paddingTop: 10,
                 //backgroundColor: "cyan",
               }}
@@ -321,52 +277,37 @@ export default function EventMessageModal({ group, message, user, userMap, visib
           {/* reply text input section */}
           <View
             style={{
-              height: replyBarHeight + 60,
               alignItems: "center",
               justifyContent: "center",
               flexDirection: "column",
             }}
           >
-            <View style={{ flex: 1, flexDirection: "row" }}>
-              <CheckBox
-                checked={eventResponse === "Going"}
-                onPress={() => {
-                  const response = "Going";
-                  if (eventResponse != response) {
-                    setEventResponse(response);
-                  } else {
-                    setEventResponse("");
-                  }
-                }}
-                style={{ alignSelf: "center" }}
-                title="Going"
-              />
-              <CheckBox
-                checked={eventResponse === "Not Going"}
-                onPress={() => {
-                  const response = "Not Going";
-                  if (eventResponse != response) {
-                    setEventResponse(response);
-                  } else {
-                    setEventResponse("");
-                  }
-                }}
-                style={{ alignSelf: "center" }}
-                title="Not Going"
-              />
-              <CheckBox
-                checked={eventResponse === "Maybe"}
-                onPress={() => {
-                  const response = "Maybe";
-                  if (eventResponse != response) {
-                    setEventResponse(response);
-                  } else {
-                    setEventResponse("");
-                  }
-                }}
-                style={{ alignSelf: "center" }}
-                title="Maybe"
-              />
+            <View
+              style={{
+                width: "100%",
+                //backgroundColor: "yellow",
+                flexDirection: "column",
+              }}
+            >
+              {Globals.dev && (
+                <Text style={{ fontSize: 8 }}>
+                  pollResponseState: {JSON.stringify(pollResponse, null, 2)}
+                </Text>
+              )}
+              {message.event_poll.map((option) => {
+                return (
+                  <CheckBox
+                    checked={
+                      pollResponse.filter((response) => response.name == option.name).length > 0
+                    }
+                    onPress={() => {
+                      togglePollResponse(option);
+                    }}
+                    style={{ alignSelf: "center" }}
+                    title={option.name}
+                  />
+                );
+              })}
             </View>
             <View
               style={{
@@ -413,7 +354,7 @@ export default function EventMessageModal({ group, message, user, userMap, visib
                   color={"blue"}
                   size={38}
                   onPress={() => {
-                    sendEventReply(eventResponse, text);
+                    sendEventPollReply(pollResponse, text);
                   }}
                 />
               )}
@@ -421,20 +362,6 @@ export default function EventMessageModal({ group, message, user, userMap, visib
           </View>
         </KeyboardAvoidingView>
       </Portal>
-
-      <BookCalendarEventModal
-        key="BookCalendarEventModal"
-        title={message.title}
-        startDate={eventStartDate}
-        endDate={eventEndDate}
-        onComplete={() => {
-          setShowCalendarSelection(false);
-        }}
-        visible={showCalendarSelection}
-        onDismiss={() => {
-          setShowCalendarSelection(false);
-        }}
-      />
     </Modal>
   );
 }
