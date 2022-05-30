@@ -131,26 +131,6 @@ export default function GroupScreen({ groupId, messageId, debug }) {
     );
   }, []);
 
-  const sendEventMessage = useCallback(async (title, text, date, startTime, endTime) => {
-    const groupName = group.name;
-    const fromName = UserInfo.chatDisplayName(userInfo);
-    return await Controller.sendEventMessage(
-      dispatch,
-      userInfo,
-      groupId,
-      title,
-      text,
-      date,
-      startTime,
-      endTime,
-      null, //papa id
-      {
-        groupName,
-        fromName,
-      }
-    );
-  }, []);
-
   const renderMessage = ({ item }) => {
     const onPress = () => {
       setMessagesModalVisible(item.id);
@@ -406,7 +386,6 @@ export default function GroupScreen({ groupId, messageId, debug }) {
         userInfo={userInfo}
         group={group}
         visible={showNewEventModal}
-        sendEvent={sendEventMessage}
         showModal={(flag) => {
           setShowNewEventModal(flag);
         }}
