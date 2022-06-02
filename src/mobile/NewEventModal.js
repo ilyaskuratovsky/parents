@@ -494,35 +494,6 @@ export default function NewEventModal({
                         </TouchableOpacity>
                       </View>
                     </View>
-                    {/*
-                <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
-                  <Text style={{ width: 50, fontSize: 16 }}>Start: </Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      console.log(
-                        "Start time box pressed, showStartTimePicker: " + showStartTimePicker
-                      );
-                      setShowStartTimePicker(!showStartTimePicker);
-                    }}
-                    style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
-                  >
-                    <Text style={{ width: 90, fontSize: 16 }}>
-                      {startTime != null ? moment(startTime).format("LT") : ""}
-                    </Text>
-                  </TouchableOpacity>
-                  <Text style={{ marginLeft: 20, width: 50, fontSize: 16 }}>End: </Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setShowEndTimePicker(!showEndTimePicker);
-                    }}
-                    style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
-                  >
-                    <Text style={{ width: 100, fontSize: 16 }}>
-                      {endTime != null ? moment(endTime).format("LT") : ""}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-                  */}
                   </View>
                 )}
                 {poll && (
@@ -598,7 +569,7 @@ export default function NewEventModal({
                             onPress={() => {
                               console.log("setShowDatePicker: option: " + JSON.stringify(option));
                               setShowTimePicker({
-                                value: option.startTime ?? new Date(),
+                                value: option.startTime ?? Dates.roundToNearest(new Date(), 15),
                                 onChange: (value) => {
                                   setOptionStartTime(option.name, value);
                                 },
@@ -627,7 +598,7 @@ export default function NewEventModal({
                             onPress={() => {
                               console.log("setShowDatePicker: option: " + JSON.stringify(option));
                               setShowTimePicker({
-                                value: option.endTime ?? new Date(),
+                                value: option.endTime ?? Dates.roundToNearest(new Date(), 15),
                                 onChange: (value) => {
                                   setOptionEndTime(option.name, value);
                                 },
