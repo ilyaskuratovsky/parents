@@ -82,7 +82,7 @@ export default function EventMessageModal({ group, message, user, userMap, visib
       group.id,
       null, //title
       text,
-      eventResponse,
+      { eventResponse },
       message.id,
       {
         groupName,

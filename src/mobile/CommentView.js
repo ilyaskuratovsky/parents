@@ -112,7 +112,7 @@ export default function CommentView({ item, user, onPress }) {
             </View>
           </View>
           <View style={{ flex: 1, flexDirection: "column" }}>
-            {item.event != null && <Text>{item.event.eventResponse}</Text>}
+            {item.eventResponse != null && <Text>{item.eventResponse}</Text>}
             {!Utils.isEmptyString(item.text) && (
               <Autolink
                 // Required: the text to parse for links
@@ -225,7 +225,7 @@ export default function CommentView({ item, user, onPress }) {
             </View>
           </View>
           <View style={{ flex: 1, flexDirection: "column" }}>
-            {item.event != null && <Text>{item.event.eventResponse}</Text>}
+            {item.eventResponse != null && <Text>{item.eventResponse}</Text>}
             <Autolink
               // Required: the text to parse for links
               text={item.text}
