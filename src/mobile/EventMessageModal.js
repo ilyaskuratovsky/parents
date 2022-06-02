@@ -317,53 +317,55 @@ export default function EventMessageModal({ group, message, user, userMap, visib
           {/* reply text input section */}
           <View
             style={{
-              height: replyBarHeight + 60,
+              height: replyBarHeight + (user.uid != event.creator ? 60 : 0),
               alignItems: "center",
               justifyContent: "center",
               flexDirection: "column",
             }}
           >
-            <View style={{ flex: 1, flexDirection: "row" }}>
-              <CheckBox
-                checked={eventResponse === "Going"}
-                onPress={() => {
-                  const response = "Going";
-                  if (eventResponse != response) {
-                    setEventResponse(response);
-                  } else {
-                    setEventResponse("");
-                  }
-                }}
-                style={{ alignSelf: "center" }}
-                title="Going"
-              />
-              <CheckBox
-                checked={eventResponse === "Not Going"}
-                onPress={() => {
-                  const response = "Not Going";
-                  if (eventResponse != response) {
-                    setEventResponse(response);
-                  } else {
-                    setEventResponse("");
-                  }
-                }}
-                style={{ alignSelf: "center" }}
-                title="Not Going"
-              />
-              <CheckBox
-                checked={eventResponse === "Maybe"}
-                onPress={() => {
-                  const response = "Maybe";
-                  if (eventResponse != response) {
-                    setEventResponse(response);
-                  } else {
-                    setEventResponse("");
-                  }
-                }}
-                style={{ alignSelf: "center" }}
-                title="Maybe"
-              />
-            </View>
+            {user.uid != event.creator && (
+              <View style={{ flex: 1, flexDirection: "row" }}>
+                <CheckBox
+                  checked={eventResponse === "Going"}
+                  onPress={() => {
+                    const response = "Going";
+                    if (eventResponse != response) {
+                      setEventResponse(response);
+                    } else {
+                      setEventResponse("");
+                    }
+                  }}
+                  style={{ alignSelf: "center" }}
+                  title="Going"
+                />
+                <CheckBox
+                  checked={eventResponse === "Not Going"}
+                  onPress={() => {
+                    const response = "Not Going";
+                    if (eventResponse != response) {
+                      setEventResponse(response);
+                    } else {
+                      setEventResponse("");
+                    }
+                  }}
+                  style={{ alignSelf: "center" }}
+                  title="Not Going"
+                />
+                <CheckBox
+                  checked={eventResponse === "Maybe"}
+                  onPress={() => {
+                    const response = "Maybe";
+                    if (eventResponse != response) {
+                      setEventResponse(response);
+                    } else {
+                      setEventResponse("");
+                    }
+                  }}
+                  style={{ alignSelf: "center" }}
+                  title="Maybe"
+                />
+              </View>
+            )}
             <View
               style={{
                 height: replyBarHeight,
