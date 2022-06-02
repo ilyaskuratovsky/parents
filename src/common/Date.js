@@ -36,5 +36,17 @@ export function toDate(obj) {
     return new Date(millis);
   }
 
+  try {
+    const m = moment(obj);
+    if (m != null) {
+      return m.toDate();
+    }
+  } catch (e) {}
   throw "not able to parse date: " + JSON.stringify(obj);
+}
+
+export function roundToNearest(date, nearest = 15) {
+  const ms = 1000 * 60 * nearest;
+
+  return new Date(Math.ceil(date.getTime() / ms) * ms);
 }

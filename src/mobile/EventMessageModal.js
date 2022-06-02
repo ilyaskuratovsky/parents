@@ -34,6 +34,7 @@ import moment from "moment-timezone";
 import JSONTree from "react-native-json-tree";
 import Autolink from "react-native-autolink";
 import { userInfo } from "../common/Actions";
+import * as Dates from "../common/Date";
 
 export default function EventMessageModal({ group, message, user, userMap, visible, closeModal }) {
   const dispatch = useDispatch();
@@ -44,16 +45,8 @@ export default function EventMessageModal({ group, message, user, userMap, visib
   });
 
   const event = message.event;
-  const eventStartDate = moment
-    .tz(event.date + " " + event.startTime, "YYYYMMDD HH:mm", event.timezone)
-    .utc()
-    .toDate();
-  const eventEndDate = moment
-    .tz(event.date + " " + event.endTime, "YYYYMMDD HH:mm", event.timezone)
-    .utc()
-    .toDate();
-  //const eventStartDate = moment.tz("2022-05-07 19:00", "America/New_York").utc().toDate();
-  //const eventEndDate = moment.tz("2022-05-07 19:00", "America/New_York").utc().toDate();
+  const eventStart = moment(event.start).toDate();
+  const eventEnd = moment(event.end).toDate();
 
   const childMessages = sortedChildMessages;
   let currentUserStatus = null;
@@ -250,6 +243,9 @@ export default function EventMessageModal({ group, message, user, userMap, visib
                 >
                   {message.title}
                 </Text>
+                <Text>
+                  {moment(eventStart).format("LLLL")} - {moment(eventEnd).format("LT")}
+                </Text>
                 <Autolink
                   // Required: the text to parse for links
                   text={message.text}
@@ -425,8 +421,8 @@ export default function EventMessageModal({ group, message, user, userMap, visib
       <BookCalendarEventModal
         key="BookCalendarEventModal"
         title={message.title}
-        startDate={eventStartDate}
-        endDate={eventEndDate}
+        startDate={eventStart}
+        endDate={eventEnd}
         onComplete={() => {
           setShowCalendarSelection(false);
         }}

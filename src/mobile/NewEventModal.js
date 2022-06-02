@@ -20,7 +20,7 @@ import * as UIConstants from "./UIConstants";
 import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as Controller from "../common/Controller";
 import { useDispatch, useSelector } from "react-redux";
-
+import * as Dates from "../common/Date";
 export default function NewEventModal({
   userInfo,
   group,
@@ -59,12 +59,23 @@ export default function NewEventModal({
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(userInfo);
     const timezone = Localization.timezone;
+
+    const start = moment(
+      moment(startDate).format("YYYY-MM-DD") + " " + moment(startTime).format("hh:mm a"),
+      "YYYY-MM-DD hh:mm a"
+    );
+    const end = moment(
+      moment(startDate).format("YYYY-MM-DD") + " " + moment(endTime).format("hh:mm a"),
+      "YYYY-MM-DD hh:mm a"
+    );
+
+    const localStart = start.tz(timezone);
+    const localEnd = end.tz(timezone);
+
     const event = {
       event: {
-        startDate: moment(startDate).format("YYYYMMDD"),
-        startTime: moment(startTime).format("HH:MM"),
-        endTime: moment(endTime).format("HH:MM"),
-        timezone,
+        start: localStart.utc().format(),
+        end: localEnd.utc().format(),
       },
     };
     await Controller.sendMessage(
@@ -392,7 +403,7 @@ export default function NewEventModal({
                         <TouchableOpacity
                           onPress={() => {
                             setShowTimePicker({
-                              value: startTime ?? new Date(),
+                              value: startTime ?? Dates.roundToNearest(new Date(), 15),
                               onChange: (value) => {
                                 setStartTime(value);
                               },
@@ -799,6 +810,7 @@ function TimePickerModal({ value, visible, onChange, closeModal }) {
           minuteInterval={15}
           value={time ?? new Date()}
           onChange={(event, newValue) => {
+            console.log("DateTimePicker onchange: " + newValue);
             setTime(newValue);
           }}
         />

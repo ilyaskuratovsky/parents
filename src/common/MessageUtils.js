@@ -160,7 +160,7 @@ export function addEventData(rootMessage, userInfo, userMessagesMap, groupMember
     (message) => message.event != null
   );
   if (eventMessages.length > 0) {
-    event = eventMessages[0].event;
+    event = { ...eventMessages[0].event };
   }
   if (event != null) {
     const eventWithUserStatus = { ...event };
