@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   KeyboardAvoidingView,
   Modal,
@@ -21,26 +21,49 @@ import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as Controller from "../common/Controller";
 import { useDispatch, useSelector } from "react-redux";
 
-export default function NewEventModal({ userInfo, group, visible, showModal }) {
+export default function NewEventModal({
+  userInfo,
+  group,
+  papaId,
+  allowCreatePoll,
+  initialTitle,
+  initialText,
+  initialStartDate,
+  initialStartTime,
+  initialEndTime,
+  visible,
+  closeModal,
+}) {
+  console.log("NewEventModal: initialTitle: " + initialTitle + ", closeModal: " + closeModal);
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const [text, setText] = useState(null);
   const [title, setTitle] = useState(null);
   const [date, setDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [startTimeFrom, setStartTimeFrom] = useState(null);
   const [startTime, setStartTime] = useState(null);
+  const [endTimeFrom, setEndTimeFrom] = useState(null);
   const [endTime, setEndTime] = useState(null);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showStartTimePicker, setShowStartTimePicker] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(null);
+  const [showTimePicker, setShowTimePicker] = useState(null);
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
 
-  const sendEvent = useCallback(async (title, text, start, end) => {
+  useEffect(() => {
+    console.log("setting title: " + initialTitle);
+    setTitle(initialTitle);
+  }, [initialTitle, initialText, initialStartDate, initialStartTime, initialEndTime]);
+
+  const sendEvent = useCallback(async (title, text, startDate, startTime, endTime) => {
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(userInfo);
     const timezone = Localization.timezone;
     const event = {
       event: {
-        start: moment(start).format("YYYYMMDD HH:MM"),
-        end: moment(end).format("YYYYMMDD HH:MM"),
+        startDate: moment(startDate).format("YYYYMMDD"),
+        startTime: moment(startTime).format("HH:MM"),
+        endTime: moment(endTime).format("HH:MM"),
         timezone,
       },
     };
@@ -51,13 +74,13 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
       title,
       text,
       event,
-      null, //papa id
+      papaId, //papa id
       {
         groupName,
         fromName,
       }
     );
-    showModal(false);
+    closeModal();
   }, []);
 
   const sendPoll = useCallback(async (title, text, pollOptions) => {
@@ -76,13 +99,13 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
         fromName,
       }
     );
-    showModal(false);
+    closeModal();
   }, []);
 
   const onDateChange = (event, selectedDate) => {
     console.log("onDateChange: " + selectedDate);
     setDate(selectedDate);
-    setShowDatePicker(false);
+    setShowDatePicker(null);
   };
 
   const onStartTimeChange = (selectedDate) => {
@@ -98,13 +121,38 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
   };
 
   const [poll, setPoll] = useState(false);
-  const [pollOptions, setPollOptions] = useState([{ name: "Option 1" }, { name: "Option 2" }]);
+  const [pollOptions, setPollOptions] = useState([
+    { name: "Option 1", startDate: new Date() },
+    { name: "Option 2", startDate: new Date() },
+  ]);
   const addPollOption = () => {
     const name = "Option " + (pollOptions.length + 1);
     const newOptions = [...pollOptions];
     newOptions.push({ name });
     setPollOptions(newOptions);
   };
+
+  const setOptionStartDate = (optionName, date) => {
+    const index = pollOptions.findIndex((option) => option.name == optionName);
+    const newPollOptions = [...pollOptions];
+    newPollOptions[index] = { ...pollOptions[index], startDate: date };
+    setPollOptions(newPollOptions);
+  };
+
+  const setOptionStartTime = (optionName, time) => {
+    const index = pollOptions.findIndex((option) => option.name == optionName);
+    const newPollOptions = [...pollOptions];
+    newPollOptions[index] = { ...pollOptions[index], startTime: time };
+    setPollOptions(newPollOptions);
+  };
+
+  const setOptionEndTime = (optionName, time) => {
+    const index = pollOptions.findIndex((option) => option.name == optionName);
+    const newPollOptions = [...pollOptions];
+    newPollOptions[index] = { ...pollOptions[index], endTime: time };
+    setPollOptions(newPollOptions);
+  };
+
   return (
     <Modal visible={visible} animationType={"slide"}>
       <Portal>
@@ -129,7 +177,7 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
             >
               <TouchableOpacity
                 onPress={() => {
-                  showModal(false);
+                  closeModal();
                 }}
               >
                 <Text style={{ fontSize: 20, color: "blue" }}>Close</Text>
@@ -175,12 +223,12 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
                     onPress={async () => {
                       //const m = moment(date);
                       if (!poll) {
-                        sendEvent(title, text, start, end).then(() => {
-                          showModal(false);
+                        sendEvent(title, text, startDate, startTime, endTime).then(() => {
+                          closeModal();
                         });
                       } else {
                         sendPoll(title, text, pollOptions).then(() => {
-                          showModal(false);
+                          closeModal();
                         });
                       }
                     }}
@@ -252,6 +300,7 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
                   }}
                   placeholder="Title"
                   multiline={false}
+                  defaultValue={title}
                   autoFocus={true}
                   onChangeText={(text) => {
                     setTitle(text);
@@ -269,13 +318,15 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
                 }}
               >
                 {/* is poll */}
-                <CheckBox
-                  onPress={() => {
-                    setPoll(!poll);
-                  }}
-                  title="Create a poll for multiple dates &amp; times"
-                  checked={poll}
-                />
+                {allowCreatePoll && (
+                  <CheckBox
+                    onPress={() => {
+                      setPoll(!poll);
+                    }}
+                    title="Create a poll for multiple dates &amp; times"
+                    checked={poll}
+                  />
+                )}
                 {/* Starts */}
                 {!poll && (
                   <View
@@ -306,45 +357,29 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
                       </View>
                       <View
                         style={{
-                          width: 110,
+                          width: 100,
                           marginRight: 10,
                         }}
                       >
+                        {/* start date */}
                         <TouchableOpacity
                           onPress={() => {
-                            setShowDatePicker(!showDatePicker);
+                            setShowDatePicker({
+                              value: startDate ?? new Date(),
+                              onChange: (value) => {
+                                setStartDate(value);
+                              },
+                            });
                           }}
                           style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
                         >
                           <Text
                             style={{
-                              fontSize: 16,
+                              fontSize: 14,
                               alignItems: "center",
                             }}
                           >
-                            {date != null ? moment(date).format("L") : "Date"}
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
-                      <View
-                        style={{
-                          width: 80,
-                          marginRight: 10,
-                        }}
-                      >
-                        <TouchableOpacity
-                          onPress={() => {
-                            setShowDatePicker(!showDatePicker);
-                          }}
-                          style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
-                        >
-                          <Text
-                            style={{
-                              fontSize: 16,
-                              alignItems: "center",
-                            }}
-                          >
-                            {" "}
+                            {startDate != null ? moment(startDate).format("L") : "Date"}
                           </Text>
                         </TouchableOpacity>
                       </View>
@@ -353,19 +388,25 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
                           width: 80,
                         }}
                       >
+                        {/* start time to */}
                         <TouchableOpacity
                           onPress={() => {
-                            setShowDatePicker(!showDatePicker);
+                            setShowTimePicker({
+                              value: startTime ?? new Date(),
+                              onChange: (value) => {
+                                setStartTime(value);
+                              },
+                            });
                           }}
                           style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
                         >
                           <Text
                             style={{
-                              fontSize: 16,
+                              fontSize: 14,
                               alignItems: "center",
                             }}
                           >
-                            {" "}
+                            {startTime != null ? moment(startTime).format("LT") : ""}
                           </Text>
                         </TouchableOpacity>
                       </View>
@@ -379,7 +420,7 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
                       >
                         <Text
                           style={{
-                            fontSize: 16,
+                            fontSize: 14,
                             alignItems: "center",
                           }}
                         >
@@ -388,45 +429,29 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
                       </View>
                       <View
                         style={{
-                          width: 110,
+                          width: 100,
                           marginRight: 10,
                         }}
                       >
+                        {/* end date */}
                         <TouchableOpacity
                           onPress={() => {
-                            setShowDatePicker(!showDatePicker);
+                            setShowDatePicker({
+                              value: endDate ?? new Date(),
+                              onChange: (value) => {
+                                setEndDate(value);
+                              },
+                            });
                           }}
                           style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
                         >
                           <Text
                             style={{
-                              fontSize: 16,
+                              fontSize: 14,
                               alignItems: "center",
                             }}
                           >
-                            {date != null ? moment(date).format("L") : "Date"}
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
-                      <View
-                        style={{
-                          width: 80,
-                          marginRight: 10,
-                        }}
-                      >
-                        <TouchableOpacity
-                          onPress={() => {
-                            setShowDatePicker(!showDatePicker);
-                          }}
-                          style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
-                        >
-                          <Text
-                            style={{
-                              fontSize: 16,
-                              alignItems: "center",
-                            }}
-                          >
-                            {" "}
+                            {endDate != null ? moment(endDate).format("L") : "Date"}
                           </Text>
                         </TouchableOpacity>
                       </View>
@@ -435,19 +460,25 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
                           width: 80,
                         }}
                       >
+                        {/* end time to */}
                         <TouchableOpacity
                           onPress={() => {
-                            setShowDatePicker(!showDatePicker);
+                            setShowTimePicker({
+                              value: endTime ?? new Date(),
+                              onChange: (value) => {
+                                setEndTime(value);
+                              },
+                            });
                           }}
                           style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
                         >
                           <Text
                             style={{
-                              fontSize: 16,
+                              fontSize: 14,
                               alignItems: "center",
                             }}
                           >
-                            {" "}
+                            {endTime != null ? moment(endTime).format("LT") : ""}
                           </Text>
                         </TouchableOpacity>
                       </View>
@@ -505,13 +536,13 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
                       >
                         <View
                           style={{
-                            width: 70,
+                            width: 60,
                             marginRight: 10,
                           }}
                         >
                           <Text
                             style={{
-                              fontSize: 16,
+                              fontSize: 14,
                               alignItems: "center",
                             }}
                           >
@@ -526,39 +557,53 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
                         >
                           <TouchableOpacity
                             onPress={() => {
-                              setShowDatePicker(!showDatePicker);
+                              console.log("setShowDatePicker: option: " + JSON.stringify(option));
+                              setShowDatePicker({
+                                value: option.startDate ?? new Date(),
+                                onChange: (value) => {
+                                  setOptionStartDate(option.name, value);
+                                },
+                              });
                             }}
                             style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
                           >
                             <Text
                               style={{
-                                fontSize: 16,
+                                fontSize: 14,
                                 alignItems: "center",
                               }}
                             >
-                              {date != null ? moment(date).format("L") : "Date"}
+                              {option.startDate != null ? moment(option.startDate).format("L") : ""}
                             </Text>
                           </TouchableOpacity>
                         </View>
                         <View
                           style={{
-                            width: 80,
+                            width: 90,
                             marginRight: 10,
                           }}
                         >
                           <TouchableOpacity
                             onPress={() => {
-                              setShowDatePicker(!showDatePicker);
+                              console.log("setShowDatePicker: option: " + JSON.stringify(option));
+                              setShowTimePicker({
+                                value: option.startTime ?? new Date(),
+                                onChange: (value) => {
+                                  setOptionStartTime(option.name, value);
+                                },
+                              });
                             }}
                             style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
                           >
                             <Text
                               style={{
-                                fontSize: 16,
+                                fontSize: 14,
                                 alignItems: "center",
                               }}
                             >
-                              {" "}
+                              {option.startTime != null
+                                ? moment(option.startTime).format("LT")
+                                : ""}
                             </Text>
                           </TouchableOpacity>
                         </View>
@@ -569,17 +614,23 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
                         >
                           <TouchableOpacity
                             onPress={() => {
-                              setShowDatePicker(!showDatePicker);
+                              console.log("setShowDatePicker: option: " + JSON.stringify(option));
+                              setShowTimePicker({
+                                value: option.endTime ?? new Date(),
+                                onChange: (value) => {
+                                  setOptionEndTime(option.name, value);
+                                },
+                              });
                             }}
                             style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
                           >
                             <Text
                               style={{
-                                fontSize: 16,
+                                fontSize: 14,
                                 alignItems: "center",
                               }}
                             >
-                              {" "}
+                              {option.endTime != null ? moment(option.endTime).format("LT") : ""}
                             </Text>
                           </TouchableOpacity>
                         </View>
@@ -618,9 +669,11 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
                     textAlign: "left",
                     fontSize: 16,
                     backgroundColor: "white",
+                    minHeight: 300,
                   }}
                   multiline={true}
                   autoFocus={false}
+                  numberOfLines={10}
                   onChangeText={(text) => {
                     setText(text);
                   }}
@@ -629,62 +682,34 @@ export default function NewEventModal({ userInfo, group, visible, showModal }) {
               </View>
             </View>
           </ScrollView>
-          <Modal visible={showDatePicker} animationType={"slide"}>
-            <Portal
-              backgroundColor={UIConstants.DEFAULT_BACKGROUND}
-              //backgroundColor="green"
-            >
-              <TopBarMiddleContentSideButtons
-                backgroundColor={UIConstants.DEFAULT_BACKGROUND}
-                height={64}
-                left={
-                  <MyButtons.MenuButton
-                    icon="arrow-left"
-                    text="Back"
-                    onPress={() => {
-                      setShowDatePicker(false);
-                    }}
-                    color="black"
-                  />
-                }
-                center={null}
-                right={null}
-              />
-              <DateTimePicker
-                display={"inline"}
-                mode={"date"}
-                value={date}
-                onChange={onDateChange}
-                onCancel={() => {
-                  setShowStartTimePicker(false);
-                }}
-              />
-            </Portal>
-          </Modal>
-          <TimePickerModal
-            value={startTime ?? new Date()}
-            visible={showStartTimePicker}
-            onChange={onStartTimeChange}
-            onCancel={() => {
-              setShowStartTimePicker(false);
-            }}
-          />
-          <TimePickerModal
-            value={endTime ?? new Date()}
-            visible={showEndTimePicker}
-            onChange={onEndTimeChange}
-            onCancel={() => {
-              setShowEndTimePicker(false);
-            }}
-          />
         </KeyboardAvoidingView>
       </Portal>
+      <TimePickerModal
+        value={showTimePicker?.value}
+        visible={showTimePicker != null}
+        onChange={showTimePicker?.onChange}
+        closeModal={() => {
+          setShowTimePicker(null);
+        }}
+      />
+      <DatePickerModal
+        visible={showDatePicker != null}
+        value={showDatePicker?.value}
+        onChange={showDatePicker?.onChange}
+        closeModal={() => {
+          setShowDatePicker(null);
+        }}
+      />
     </Modal>
   );
 }
 
-function TimePickerModal({ value, visible, onChange, onCancel }) {
-  const [time, setTime] = useState(value);
+function DatePickerModal({ value, visible, onChange, closeModal }) {
+  console.log("DatePickerModal, value: " + value);
+  const [date, setDate] = useState(value);
+  useEffect(() => {
+    setDate(value);
+  }, [value]);
   console.log("Time picker modal visible: " + visible);
   return (
     <Modal visible={visible} animationType={"slide"}>
@@ -700,7 +725,58 @@ function TimePickerModal({ value, visible, onChange, onCancel }) {
               icon="arrow-left"
               text="Back"
               onPress={() => {
-                onCancel();
+                closeModal();
+              }}
+              color="black"
+            />
+          }
+          center={null}
+          right={
+            <MyButtons.FormButton
+              text="Done"
+              onPress={() => {
+                onChange(date);
+                setDate(null);
+                closeModal();
+              }}
+            />
+          }
+        />
+        <DateTimePicker
+          display={"inline"}
+          mode={"date"}
+          value={date ?? new Date()}
+          onChange={(event, newValue) => {
+            setDate(newValue);
+          }}
+        />
+      </Portal>
+    </Modal>
+  );
+}
+
+function TimePickerModal({ value, visible, onChange, closeModal }) {
+  console.log("TimePickerModal value: " + value);
+  const [time, setTime] = useState(value ?? new Date());
+  console.log("Time picker modal visible: " + visible);
+  useEffect(() => {
+    setTime(value);
+  }, [value]);
+  return (
+    <Modal visible={visible} animationType={"slide"}>
+      <Portal
+        backgroundColor={UIConstants.DEFAULT_BACKGROUND}
+        //backgroundColor="green"
+      >
+        <TopBarMiddleContentSideButtons
+          backgroundColor={UIConstants.DEFAULT_BACKGROUND}
+          height={64}
+          left={
+            <MyButtons.MenuButton
+              icon="arrow-left"
+              text="Back"
+              onPress={() => {
+                closeModal();
               }}
               color="black"
             />
@@ -711,6 +787,8 @@ function TimePickerModal({ value, visible, onChange, onCancel }) {
               text="Done"
               onPress={() => {
                 onChange(time);
+                setTime(null);
+                closeModal();
               }}
             />
           }
@@ -718,7 +796,8 @@ function TimePickerModal({ value, visible, onChange, onCancel }) {
         <DateTimePicker
           display={"spinner"}
           mode={"time"}
-          value={time}
+          minuteInterval={15}
+          value={time ?? new Date()}
           onChange={(event, newValue) => {
             setTime(newValue);
           }}

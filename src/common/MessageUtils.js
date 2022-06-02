@@ -42,9 +42,7 @@ export function buildRootMessageWithChildren(
   }
   Logger.log("got root message: " + JSON.stringify(rootMessage));
   let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap, userMap);
-  if (rootMessage.event != null) {
-    rootMessageWithStatus = addEventData(rootMessageWithStatus, userInfo, groupMembers);
-  }
+  rootMessageWithStatus = addEventData(rootMessageWithStatus, userInfo, groupMembers);
 
   // const a = null;
   // const b = a.foo;
@@ -157,22 +155,32 @@ export function addMeta(rootMessage, userInfo, userMessagesMap, userMap) {
 }
 
 export function addEventData(rootMessage, userInfo, userMessagesMap, groupMembers) {
-  const eventWithUserStatus = { ...rootMessage.event };
-  for (const childMessage of rootMessage.children ?? []) {
-    const childEvent = childMessage.event;
-    if (childEvent != null) {
-      const childStatus = childEvent.status;
-      const userStatus = { ...eventWithUserStatus.users };
-      userStatus[childMessage.uid] = { status: childStatus };
-      const summary = { ...eventWithUserStatus.summary };
-      const statusCount = summary[childStatus] ?? 0;
-      summary[childStatus] = statusCount + 1;
-      eventWithUserStatus["users"] = userStatus;
-      eventWithUserStatus["summary"] = summary;
-    }
+  let event = null;
+  const eventMessages = [rootMessage, ...rootMessage.children].filter(
+    (message) => message.event != null
+  );
+  if (eventMessages.length > 0) {
+    event = eventMessages[0].event;
   }
+  if (event != null) {
+    const eventWithUserStatus = { ...event };
+    for (const childMessage of rootMessage.children ?? []) {
+      const childEvent = childMessage.event;
+      if (childEvent != null) {
+        const childStatus = childEvent.status;
+        const userStatus = { ...eventWithUserStatus.users };
+        userStatus[childMessage.uid] = { status: childStatus };
+        const summary = { ...eventWithUserStatus.summary };
+        const statusCount = summary[childStatus] ?? 0;
+        summary[childStatus] = statusCount + 1;
+        eventWithUserStatus["users"] = userStatus;
+        eventWithUserStatus["summary"] = summary;
+      }
+    }
 
-  return { ...rootMessage, event: eventWithUserStatus };
+    return { ...rootMessage, event: eventWithUserStatus };
+  }
+  return rootMessage;
 }
 
 export function addPollData(rootMessage, userInfo, userMessagesMap, groupMembers) {
@@ -240,4 +248,16 @@ export function eventPollResponseSummary(rootMessage) {
     },
   ];
   */
+}
+
+export function userEventPollResponse(user, rootMessage) {
+  // accumulate all the 'last' responses per user
+  let eventPollResponse = null;
+  const childMessages = rootMessage.children;
+  for (const childMessage of childMessages) {
+    if (childMessage.event_poll_response != null && childMessage.user.uid == user.uid) {
+      eventPollResponse = childMessage;
+    }
+  }
+  return eventPollResponse;
 }

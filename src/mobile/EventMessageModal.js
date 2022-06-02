@@ -64,7 +64,7 @@ export default function EventMessageModal({ group, message, user, userMap, visib
         ", m.uid: " +
         m.uid +
         ", m.event.eventResponse: " +
-        m.event.eventResponse
+        m.event?.eventResponse
     );
     return m.uid == user.uid && !Utils.isEmptyString(m.event?.eventResponse);
   });

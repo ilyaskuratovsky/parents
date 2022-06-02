@@ -14,6 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import NewEventModal from "./NewEventModal";
 import * as Utils from "../common/Utils";
 import { Divider, CheckBox } from "react-native-elements";
 import { IconButton } from "react-native-paper";
@@ -34,6 +35,7 @@ import moment from "moment-timezone";
 import JSONTree from "react-native-json-tree";
 import Autolink from "react-native-autolink";
 import FacePile from "./FacePile";
+import * as Date from "../common/Date";
 
 export default function EventPollMessageModal({
   group,
@@ -73,9 +75,11 @@ export default function EventPollMessageModal({
     scrollViewRef.current.scrollToEnd({ animated: true });
   });
 
+  const pollResponseSummary = MessageUtils.eventPollResponseSummary(message);
+  const userPollResponse = MessageUtils.userEventPollResponse(user, message);
+
   const [text, setText] = useState("");
-  const currentUserPollResponse = [];
-  const [pollResponse, setPollResponse] = useState(currentUserPollResponse);
+  const [pollResponse, setPollResponse] = useState(userPollResponse?.event_poll_response ?? []);
   const scrollViewRef = useRef();
   const topBarHeight = 64;
   const replyBarHeight = 80;
@@ -93,7 +97,7 @@ export default function EventPollMessageModal({
   const canSend =
     (text != null && text.length > 0) ||
     (pollResponse != null &&
-      JSON.stringify(pollResponse) != JSON.stringify(currentUserPollResponse));
+      JSON.stringify(pollResponse) != JSON.stringify(userPollResponse?.event_poll_response ?? []));
 
   const togglePollResponse = (option) => {
     console.log("toggling poll response: " + JSON.stringify(option));
@@ -111,7 +115,8 @@ export default function EventPollMessageModal({
     setPollResponse(newPollResponse);
   };
 
-  const pollResponseSummary = MessageUtils.eventPollResponseSummary(message);
+  const [showNewEventModal, setShowNewEventModal] = useState(null);
+
   return (
     <Modal visible={visible} animationType={"slide"}>
       <Portal>
@@ -200,13 +205,17 @@ export default function EventPollMessageModal({
                 {Globals.dev && <Text>EventPollMessageModal</Text>}
                 {Globals.dev && <Text>{message.id}</Text>}
                 {Globals.dev && (
-                  <ScrollView style={{ height: 120 }}>
-                    <Text style={{ fontSize: 8 }}>
-                      Poll Response Summary
-                      {JSON.stringify(pollResponseSummary, null, 2)}
-                    </Text>
-                    <Text style={{ fontSize: 8 }}>{JSON.stringify(message, null, 2)}</Text>
-                  </ScrollView>
+                  <View style={{ height: 240 }}>
+                    <ScrollView style={{ height: 120 }}>
+                      <Text style={{ fontSize: 8 }}>
+                        Poll Response Summary
+                        {JSON.stringify(pollResponseSummary, null, 2)}
+                      </Text>
+                    </ScrollView>
+                    <ScrollView style={{ height: 120 }}>
+                      <Text style={{ fontSize: 8 }}>{JSON.stringify(message, null, 2)}</Text>
+                    </ScrollView>
+                  </View>
                 )}
                 <Text
                   //numberOfLines={showMore[item.id] ? null : 4}
@@ -250,7 +259,40 @@ export default function EventPollMessageModal({
                 {pollResponseSummary.map((option) => {
                   return (
                     <View style={{ flex: 1, flexDirection: "column" }}>
-                      <Text>{option.poll_option.name}</Text>
+                      <View
+                        style={{
+                          flex: 1,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          //backgroundColor: "yellow",
+                        }}
+                      >
+                        <Text>
+                          {moment(Date.toDate(option.poll_option.startDate)).format("L") +
+                            " " +
+                            moment(Date.toDate(option.poll_option.startTime)).format("LT") +
+                            " - " +
+                            moment(Date.toDate(option.poll_option.endTime)).format("LT")}
+                        </Text>
+                        <IconButton
+                          style={{
+                            flex: 1,
+                            //backgroundColor: "purple",
+                            margin: 0,
+                            alignItems: "flex-end",
+                          }}
+                          icon="calendar-plus"
+                          onPress={() => {
+                            setShowNewEventModal({
+                              title: message.title,
+                              text: message.text,
+                              startDate: option.poll_option.startDate,
+                              startTime: option.poll_option.startTime,
+                              endTime: option.poll_option.endTime,
+                            });
+                          }}
+                        />
+                      </View>
                       <FacePile userIds={option.uid_list} border />
                     </View>
                   );
@@ -304,7 +346,13 @@ export default function EventPollMessageModal({
                       togglePollResponse(option);
                     }}
                     style={{ alignSelf: "center" }}
-                    title={option.name}
+                    title={
+                      moment(Date.toDate(option.startDate)).format("L") +
+                      " " +
+                      moment(Date.toDate(option.startTime)).format("LT") +
+                      " - " +
+                      moment(Date.toDate(option.endTime)).format("LT")
+                    }
                   />
                 );
               })}
@@ -361,6 +409,21 @@ export default function EventPollMessageModal({
             </View>
           </View>
         </KeyboardAvoidingView>
+        <NewEventModal
+          userInfo={user}
+          group={group}
+          visible={showNewEventModal != null}
+          allowCreatePoll={false}
+          papaId={message.id}
+          initialTitle={showNewEventModal?.title}
+          text={showNewEventModal?.text}
+          startDate={showNewEventModal?.startDate}
+          startTime={showNewEventModal?.startTime}
+          endTime={showNewEventModal?.endTime}
+          closeModal={(flag) => {
+            setShowNewEventModal(null);
+          }}
+        />
       </Portal>
     </Modal>
   );

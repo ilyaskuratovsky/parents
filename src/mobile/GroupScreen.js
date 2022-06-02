@@ -386,9 +386,10 @@ export default function GroupScreen({ groupId, messageId, debug }) {
       <NewEventModal
         userInfo={userInfo}
         group={group}
+        allowCreatePoll={true}
         visible={showNewEventModal}
-        showModal={(flag) => {
-          setShowNewEventModal(flag);
+        closeModal={() => {
+          setShowNewEventModal(false);
         }}
       />
     </Portal>
