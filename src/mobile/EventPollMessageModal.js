@@ -52,8 +52,6 @@ export default function EventPollMessageModal({
     //return 0;
   });
 
-  const eventPoll = message.event_poll;
-
   const childMessages = sortedChildMessages;
   const sendEventPollReply = useCallback(async (pollResponse, txt) => {
     const groupName = group.name;
@@ -75,8 +73,8 @@ export default function EventPollMessageModal({
     scrollViewRef.current.scrollToEnd({ animated: true });
   });
 
-  const pollResponseSummary = MessageUtils.eventPollResponseSummary(message);
-  const userPollResponse = MessageUtils.userEventPollResponse(user, message);
+  const pollResponseSummary = message.event_poll_response_summary;
+  const userPollResponse = message.user_event_poll_responses[user.uid];
 
   const [text, setText] = useState("");
   const [pollResponse, setPollResponse] = useState(userPollResponse?.event_poll_response ?? []);
@@ -99,6 +97,7 @@ export default function EventPollMessageModal({
     (pollResponse != null &&
       JSON.stringify(pollResponse) != JSON.stringify(userPollResponse?.event_poll_response ?? []));
 
+  console.log("canSend: " + canSend + ", text: " + text);
   const togglePollResponse = (option) => {
     console.log("toggling poll response: " + JSON.stringify(option));
     const index = pollResponse.findIndex((response) => {
@@ -274,26 +273,41 @@ export default function EventPollMessageModal({
                             " - " +
                             moment(Date.toDate(option.poll_option.endTime)).format("LT")}
                         </Text>
-                        <IconButton
-                          style={{
-                            flex: 1,
-                            //backgroundColor: "purple",
-                            margin: 0,
-                            alignItems: "flex-end",
-                          }}
-                          icon="calendar-plus"
-                          onPress={() => {
-                            setShowNewEventModal({
-                              title: message.title,
-                              text: message.text,
-                              startDate: option.poll_option.startDate,
-                              startTime: option.poll_option.startTime,
-                              endTime: option.poll_option.endTime,
-                            });
-                          }}
-                        />
+                        {message.event_poll.creator === user.uid && (
+                          <IconButton
+                            style={{
+                              flex: 1,
+                              //backgroundColor: "purple",
+                              margin: 0,
+                              alignItems: "flex-end",
+                            }}
+                            icon="calendar-plus"
+                            onPress={() => {
+                              setShowNewEventModal({
+                                title: message.title,
+                                text: message.text,
+                                startDate: option.poll_option.startDate,
+                                startTime: option.poll_option.startTime,
+                                endTime: option.poll_option.endTime,
+                              });
+                            }}
+                          />
+                        )}
                       </View>
-                      <FacePile userIds={option.uid_list} border />
+                      {option.uid_list.length == 0 && (
+                        <View style={{ height: 30, justifyContent: "center" }}>
+                          <Text
+                            style={
+                              {
+                                //backgroundColor: "yellow",
+                              }
+                            }
+                          >
+                            No responses
+                          </Text>
+                        </View>
+                      )}
+                      {option.uid_list.length >= 0 && <FacePile userIds={option.uid_list} border />}
                     </View>
                   );
                 })}
@@ -332,30 +346,36 @@ export default function EventPollMessageModal({
               }}
             >
               {Globals.dev && (
-                <Text style={{ fontSize: 8 }}>
-                  pollResponseState: {JSON.stringify(pollResponse, null, 2)}
-                </Text>
+                <ScrollView style={{ height: 150 }}>
+                  <Text style={{ fontSize: 8 }}>
+                    pollResponseState: {JSON.stringify(pollResponse, null, 2)}
+                  </Text>
+                </ScrollView>
               )}
-              {message.event_poll.map((option) => {
-                return (
-                  <CheckBox
-                    checked={
-                      pollResponse.filter((response) => response.name == option.name).length > 0
-                    }
-                    onPress={() => {
-                      togglePollResponse(option);
-                    }}
-                    style={{ alignSelf: "center" }}
-                    title={
-                      moment(Date.toDate(option.startDate)).format("L") +
-                      " " +
-                      moment(Date.toDate(option.startTime)).format("LT") +
-                      " - " +
-                      moment(Date.toDate(option.endTime)).format("LT")
-                    }
-                  />
-                );
-              })}
+              {message.event_poll.creator != user.uid && (
+                <>
+                  {message.event_poll.options.map((option) => {
+                    return (
+                      <CheckBox
+                        checked={
+                          pollResponse.filter((response) => response.name == option.name).length > 0
+                        }
+                        onPress={() => {
+                          togglePollResponse(option);
+                        }}
+                        style={{ alignSelf: "center" }}
+                        title={
+                          moment(Date.toDate(option.startDate)).format("L") +
+                          " " +
+                          moment(Date.toDate(option.startTime)).format("LT") +
+                          " - " +
+                          moment(Date.toDate(option.endTime)).format("LT")
+                        }
+                      />
+                    );
+                  })}
+                </>
+              )}
             </View>
             <View
               style={{
@@ -393,6 +413,7 @@ export default function EventPollMessageModal({
                 multiline={true}
                 autoFocus={false}
                 onChangeText={(text) => {
+                  console.log("setting text: " + text);
                   setText(text);
                 }}
               />

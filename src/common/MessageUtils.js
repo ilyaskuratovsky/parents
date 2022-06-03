@@ -43,6 +43,7 @@ export function buildRootMessageWithChildren(
   Logger.log("got root message: " + JSON.stringify(rootMessage));
   let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap, userMap);
   rootMessageWithStatus = addEventData(rootMessageWithStatus, userInfo, groupMembers);
+  rootMessageWithStatus = addPollData(rootMessageWithStatus, userInfo, groupMembers);
 
   // const a = null;
   // const b = a.foo;
@@ -184,25 +185,30 @@ export function addEventData(rootMessage, userInfo, userMessagesMap, groupMember
 }
 
 export function addPollData(rootMessage, userInfo, userMessagesMap, groupMembers) {
-  const eventWithUserStatus = { ...rootMessage.event };
-  for (const childMessage of rootMessage.children ?? []) {
-    const childEvent = childMessage.event;
-    if (childEvent != null) {
-      const childStatus = childEvent.status;
-      const userStatus = { ...eventWithUserStatus.users };
-      userStatus[childMessage.uid] = { status: childStatus };
-      const summary = { ...eventWithUserStatus.summary };
-      const statusCount = summary[childStatus] ?? 0;
-      summary[childStatus] = statusCount + 1;
-      eventWithUserStatus["users"] = userStatus;
-      eventWithUserStatus["summary"] = summary;
-    }
+  let poll = null;
+  const pollMessages = [rootMessage, ...rootMessage.children].filter(
+    (message) => message.event_poll != null
+  );
+  if (pollMessages.length > 0) {
+    poll = { options: [...pollMessages[0].event_poll], creator: pollMessages[0].uid };
   }
 
-  return { ...rootMessage, event: eventWithUserStatus };
+  if (poll != null) {
+    const pollResponseSummary = eventPollResponseSummary(rootMessage);
+    const userEventPollResponsesMap = userEventPollResponses(rootMessage);
+
+    return {
+      ...rootMessage,
+      event_poll: poll,
+      event_poll_response_summary: pollResponseSummary,
+      user_event_poll_responses: userEventPollResponsesMap,
+    };
+  }
+
+  return rootMessage;
 }
 
-export function eventPollResponseSummary(rootMessage) {
+function eventPollResponseSummary(rootMessage) {
   // accumulate all the 'last' responses per user
   const eventPollResponsesPerUser = {};
   const childMessages = rootMessage.children;
@@ -231,33 +237,16 @@ export function eventPollResponseSummary(rootMessage) {
     result.push({ poll_option: pollOption, uid_list: uid_list });
   }
   return result;
-  /*
-  // read off responses for each option + the unresponded ones
-  [
-    {
-      poll_option: { name: "Option 1" },
-      uid_list: [],
-    },
-    {
-      poll_option: { name: "Option 2" },
-      uid_list: [],
-    },
-    {
-      poll_option: null,
-      uid_list: [],
-    },
-  ];
-  */
 }
 
-export function userEventPollResponse(user, rootMessage) {
+export function userEventPollResponses(rootMessage) {
   // accumulate all the 'last' responses per user
-  let eventPollResponse = null;
+  let eventPollUserResponses = {};
   const childMessages = rootMessage.children;
   for (const childMessage of childMessages) {
-    if (childMessage.event_poll_response != null && childMessage.user.uid == user.uid) {
-      eventPollResponse = childMessage;
+    if (childMessage.event_poll_response != null) {
+      eventPollUserResponses[childMessage.user.uid] = childMessage.event_poll_response;
     }
   }
-  return eventPollResponse;
+  return eventPollUserResponses;
 }
