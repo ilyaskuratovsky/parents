@@ -111,9 +111,14 @@ export default function MessageView({ item, onPress }) {
             >
               <View style={{ flex: 1, flexDirection: "row" }}>
                 {item.event != null && (
-                  <Icon name="calendar" style={{ color: "black", fontSize: 24 }} />
+                  <Icon name="calendar" style={{ color: "black", fontSize: 24, marginRight: 6 }} />
                 )}
-                {item.event_poll != null && <Text>Event Poll</Text>}
+                {item.event_poll != null && (
+                  <Icon
+                    name="calendar-multiple"
+                    style={{ color: "black", fontSize: 24, marginRight: 6 }}
+                  />
+                )}
                 <Text
                   style={{
                     paddingLeft: 0,

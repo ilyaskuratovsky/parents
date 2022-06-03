@@ -292,12 +292,12 @@ export default function NewEventModal({
               {/* title */}
               <View
                 style={{
-                  height: 50,
+                  height: 60,
                   paddingTop: 10,
                   paddingBottom: 10,
                   paddingLeft: 10,
                   paddingRight: 10,
-                  backgroundColor: "yellow",
+                  //backgroundColor: "yellow",
                 }}
               >
                 <TextInput
@@ -323,14 +323,11 @@ export default function NewEventModal({
                 />
               </View>
               <View
-                style={{
-                  marginTop: 10,
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 10,
-                  paddingRight: 10,
-                  backgroundColor: "yellow",
-                }}
+                style={
+                  {
+                    //backgroundColor: "yellow",
+                  }
+                }
               >
                 {/* is poll */}
                 {allowCreatePoll && (
@@ -338,7 +335,7 @@ export default function NewEventModal({
                     onPress={() => {
                       setPoll(!poll);
                     }}
-                    title="Create a poll for multiple dates &amp; times"
+                    title="Create a poll with multiple dates &amp; times"
                     checked={poll}
                   />
                 )}
@@ -346,12 +343,12 @@ export default function NewEventModal({
                 {!poll && (
                   <View
                     style={{
-                      marginTop: 10,
+                      marginTop: 0,
                       paddingLeft: 10,
                       flexDirection: "column",
                       justifyContent: "center",
-                      height: 100,
-                      backgroundColor: "cyan",
+                      height: 90,
+                      //backgroundColor: "cyan",
                     }}
                   >
                     <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
@@ -371,7 +368,7 @@ export default function NewEventModal({
                       </View>
                       <View
                         style={{
-                          width: 100,
+                          width: 80,
                           marginRight: 10,
                         }}
                       >
@@ -385,7 +382,14 @@ export default function NewEventModal({
                               },
                             });
                           }}
-                          style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
+                          style={{
+                            backgroundColor: "lightgrey",
+                            borderRadius: 10,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            paddingTop: 10,
+                            paddingBottom: 10,
+                          }}
                         >
                           <Text
                             style={{
@@ -393,7 +397,7 @@ export default function NewEventModal({
                               alignItems: "center",
                             }}
                           >
-                            {startDate != null ? moment(startDate).format("L") : "Date"}
+                            {startDate != null ? moment(startDate).format("L") : ""}
                           </Text>
                         </TouchableOpacity>
                       </View>
@@ -473,7 +477,14 @@ export default function NewEventModal({
                               },
                             });
                           }}
-                          style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
+                          style={{
+                            backgroundColor: "lightgrey",
+                            borderRadius: 10,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            paddingTop: 10,
+                            paddingBottom: 10,
+                          }}
                         >
                           <Text
                             style={{
@@ -514,7 +525,14 @@ export default function NewEventModal({
                               },
                             });
                           }}
-                          style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
+                          style={{
+                            backgroundColor: "lightgrey",
+                            borderRadius: 10,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            paddingTop: 10,
+                            paddingBottom: 10,
+                          }}
                         >
                           <Text
                             style={{
@@ -532,27 +550,29 @@ export default function NewEventModal({
                 {poll && (
                   <View
                     style={{
-                      marginTop: 10,
-                      paddingLeft: 0,
+                      //marginTop: 10,
+                      paddingLeft: 10,
+                      paddingRight: 10,
                       flexDirection: "column",
                       justifyContent: "center",
-                      backgroundColor: "cyan",
+                      //backgroundColor: "cyan",
                     }}
                   >
                     {pollOptions.map((option, index) => (
                       <View
                         key={"poll_option" + index}
                         style={{
-                          flex: 1,
+                          //flex: 1,
+                          marginBottom: 5,
                           flexDirection: "row",
                           alignItems: "center",
-                          backgroundColor: "red",
+                          //backgroundColor: "red",
                         }}
                       >
                         <View
                           style={{
-                            width: 60,
-                            marginRight: 10,
+                            width: 68,
+                            marginRight: 4,
                           }}
                         >
                           <Text
@@ -566,7 +586,7 @@ export default function NewEventModal({
                         </View>
                         <View
                           style={{
-                            width: 110,
+                            width: 100,
                             marginRight: 10,
                           }}
                         >
@@ -594,10 +614,11 @@ export default function NewEventModal({
                         </View>
                         <View
                           style={{
-                            width: 90,
+                            width: 80,
                             marginRight: 10,
                           }}
                         >
+                          {/* start time */}
                           <TouchableOpacity
                             onPress={() => {
                               console.log("setShowDatePicker: option: " + JSON.stringify(option));
@@ -608,7 +629,14 @@ export default function NewEventModal({
                                 },
                               });
                             }}
-                            style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
+                            style={{
+                              backgroundColor: "lightgrey",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              paddingTop: 10,
+                              paddingBottom: 10,
+                              borderRadius: 10,
+                            }}
                           >
                             <Text
                               style={{
@@ -627,6 +655,7 @@ export default function NewEventModal({
                             width: 80,
                           }}
                         >
+                          {/* end time */}
                           <TouchableOpacity
                             onPress={() => {
                               console.log("setShowDatePicker: option: " + JSON.stringify(option));
@@ -637,7 +666,14 @@ export default function NewEventModal({
                                 },
                               });
                             }}
-                            style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
+                            style={{
+                              backgroundColor: "lightgrey",
+                              borderRadius: 10,
+                              alignItems: "center",
+                              justifyContent: "center",
+                              paddingTop: 10,
+                              paddingBottom: 10,
+                            }}
                           >
                             <Text
                               style={{
