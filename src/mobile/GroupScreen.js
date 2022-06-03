@@ -12,6 +12,7 @@ import {
 import { Divider } from "react-native-elements";
 import { IconButton } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import BookCalendarEventModal from "./BookCalendarEventModal";
 import { useDispatch, useSelector } from "react-redux";
 import * as Controller from "../common/Controller";
 import * as Date from "../common/Date";
@@ -81,6 +82,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
   const [messagesModalVisible, setMessagesModalVisible] = useState(null);
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [showNewEventModal, setShowNewEventModal] = useState(false);
+  const [showBookCalendar, setShowBookCalendar] = useState(null);
 
   const FlatListItemSeparator = () => {
     return (
@@ -388,9 +390,48 @@ export default function GroupScreen({ groupId, messageId, debug }) {
         group={group}
         allowCreatePoll={true}
         visible={showNewEventModal}
-        closeModal={() => {
+        onComplete={(event) => {
           setShowNewEventModal(false);
+          if (event != null) {
+            Alert.alert("Book in Calendar?", null, [
+              {
+                text: "Yes",
+                onPress: () => {
+                  console.log("showing book calendar: " + JSON.stringify(event));
+                  setShowBookCalendar({
+                    title: event.title,
+                    notes: event.text,
+                    start: event.start,
+                    end: event.end,
+                    onDismiss: () => {
+                      setShowBookCalendar(null);
+                    },
+                  });
+                },
+              },
+              {
+                text: "No",
+                onPress: () => {
+                  console.log("Cancel Pressed");
+                  setShowBookCalendar(null);
+                },
+                style: "cancel",
+              },
+            ]);
+          }
         }}
+      />
+      <BookCalendarEventModal
+        key="BookCalendarEventModal"
+        title={showBookCalendar?.title}
+        notes={showBookCalendar?.notes}
+        startDate={showBookCalendar?.start}
+        endDate={showBookCalendar?.end}
+        onComplete={() => {
+          setShowBookCalendar(null);
+        }}
+        visible={showBookCalendar != null}
+        onDismiss={showBookCalendar?.onDismiss}
       />
     </Portal>
   );

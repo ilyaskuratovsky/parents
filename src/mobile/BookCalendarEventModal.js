@@ -29,9 +29,11 @@ import * as Globals from "./Globals";
 import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
+import * as Logger from "../common/Logger";
 
 export default function BookCalendarEventModal({
   title,
+  notes,
   startDate,
   endDate,
   timezone,
@@ -88,8 +90,10 @@ export default function BookCalendarEventModal({
               <>
                 <Text>BookCalendarEventModal.js</Text>
                 <Text>
-                  title: {title}, startDate: {moment(startDate).format()}, endDate:{" "}
-                  {moment(endDate).format()}
+                  title: {title}, notes: {notes}, startDate: {moment(startDate).format("LLLL")},
+                  endDate:
+                  {moment(endDate).format("LLLL")}
+                  onDismiss: {onDismiss == null ? "null" : "not null"}
                 </Text>
               </>
             )}
@@ -117,7 +121,7 @@ export default function BookCalendarEventModal({
                               key={i}
                               style={{ flexDirection: "column" }}
                               onPress={() => {
-                                createEvent(calendar, title, startDate, endDate)
+                                createEvent(calendar, title, notes, startDate, endDate)
                                   .then((eventId) => {
                                     Alert.alert("Done", null, [
                                       {
@@ -173,7 +177,7 @@ export default function BookCalendarEventModal({
   );
 }
 
-async function createEvent(calendar, title, startDate, endDate) {
+async function createEvent(calendar, title, notes, startDate, endDate) {
   let dateMs = Date.parse("2022-04-11");
 
   Calendar.createEventAsync(calendar?.id, {
@@ -181,6 +185,7 @@ async function createEvent(calendar, title, startDate, endDate) {
     title: title,
     startDate: startDate,
     endDate: endDate,
+    notes: notes,
     //timeZone: "America/New_York",
     //timeZone: timeZone,
     location: "",

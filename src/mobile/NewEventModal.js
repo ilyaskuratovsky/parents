@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Modal,
   Text,
@@ -21,6 +22,7 @@ import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as Controller from "../common/Controller";
 import { useDispatch, useSelector } from "react-redux";
 import * as Dates from "../common/Date";
+import BookCalendarEventModal from "./BookCalendarEventModal";
 export default function NewEventModal({
   userInfo,
   group,
@@ -32,9 +34,9 @@ export default function NewEventModal({
   initialStartTime,
   initialEndTime,
   visible,
-  closeModal,
+  onComplete,
 }) {
-  console.log("NewEventModal: initialTitle: " + initialTitle + ", closeModal: " + closeModal);
+  console.log("NewEventModal: initialTitle: " + initialTitle + ", onComplete: " + onComplete);
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const [text, setText] = useState(null);
@@ -49,14 +51,15 @@ export default function NewEventModal({
   const [showDatePicker, setShowDatePicker] = useState(null);
   const [showTimePicker, setShowTimePicker] = useState(null);
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
+  const [showBookCalendar, setShowBookCalendar] = useState(null);
 
   useEffect(() => {
     console.log("setting title: " + initialTitle + ", text: " + initialText);
     setTitle(initialTitle);
     setText(initialText);
-    setStartDate(Dates.toDate(initialStartDate));
-    setStartTime(Dates.toDate(initialStartTime));
-    setEndTime(Dates.toDate(initialEndTime));
+    setStartDate(Dates.toDate(initialStartDate) ?? new Date());
+    setStartTime(Dates.toDate(initialStartTime) ?? new Date());
+    setEndTime(Dates.toDate(initialEndTime) ?? new Date());
   }, [initialTitle, initialText, initialStartDate, initialStartTime, initialEndTime]);
 
   const sendEvent = useCallback(async (title, text, startDate, startTime, endTime) => {
@@ -95,7 +98,7 @@ export default function NewEventModal({
         fromName,
       }
     );
-    closeModal();
+    onComplete({ title, text, start: localStart.toDate(), end: localEnd.toDate() });
   }, []);
 
   const sendPoll = useCallback(async (title, text, pollOptions) => {
@@ -114,26 +117,8 @@ export default function NewEventModal({
         fromName,
       }
     );
-    closeModal();
+    onComplete();
   }, []);
-
-  const onDateChange = (event, selectedDate) => {
-    console.log("onDateChange: " + selectedDate);
-    setDate(selectedDate);
-    setShowDatePicker(null);
-  };
-
-  const onStartTimeChange = (selectedDate) => {
-    console.log("onStartTimeChange: " + selectedDate);
-    setStartTime(selectedDate);
-    setShowStartTimePicker(false);
-  };
-
-  const onEndTimeChange = (selectedDate) => {
-    console.log("onEndTimeChange: " + selectedDate);
-    setEndTime(selectedDate);
-    setShowEndTimePicker(false);
-  };
 
   const [poll, setPoll] = useState(false);
   const [pollOptions, setPollOptions] = useState([
@@ -192,7 +177,7 @@ export default function NewEventModal({
             >
               <TouchableOpacity
                 onPress={() => {
-                  closeModal();
+                  onComplete();
                 }}
               >
                 <Text style={{ fontSize: 20, color: "blue" }}>Close</Text>
@@ -238,12 +223,10 @@ export default function NewEventModal({
                     onPress={async () => {
                       //const m = moment(date);
                       if (!poll) {
-                        sendEvent(title, text, startDate, startTime, endTime).then(() => {
-                          closeModal();
-                        });
+                        await sendEvent(title, text, startDate, startTime, endTime);
                       } else {
                         sendPoll(title, text, pollOptions).then(() => {
-                          closeModal();
+                          onComplete();
                         });
                       }
                     }}

@@ -56,8 +56,8 @@ export default function EventPollMessageModal({
   const sendEventPollReply = useCallback(async (pollResponse, txt) => {
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(user);
-
-    await Controller.sendMessage(
+    setText("");
+    Controller.sendMessage(
       dispatch,
       user,
       group.id,
