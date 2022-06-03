@@ -24,8 +24,8 @@ export function compare(obj1, obj2) {
   }
 }
 export function toDate(obj) {
-  if (obj === null) {
-    throw "not able to parse date since it is null";
+  if (obj == null) {
+    return null;
   }
   if (obj instanceof Date) {
     return obj;
@@ -37,7 +37,7 @@ export function toDate(obj) {
   }
 
   try {
-    const m = moment(obj);
+    const m = moment(obj, "YYYYMMDD ");
     if (m != null) {
       return m.toDate();
     }

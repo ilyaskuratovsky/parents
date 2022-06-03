@@ -51,8 +51,12 @@ export default function NewEventModal({
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
 
   useEffect(() => {
-    console.log("setting title: " + initialTitle);
+    console.log("setting title: " + initialTitle + ", text: " + initialText);
     setTitle(initialTitle);
+    setText(initialText);
+    setStartDate(Dates.toDate(initialStartDate));
+    setStartTime(Dates.toDate(initialStartTime));
+    setEndTime(Dates.toDate(initialEndTime));
   }, [initialTitle, initialText, initialStartDate, initialStartTime, initialEndTime]);
 
   const sendEvent = useCallback(async (title, text, startDate, startTime, endTime) => {
@@ -353,17 +357,16 @@ export default function NewEventModal({
                     <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
                       <View
                         style={{
-                          width: 50,
-                          marginRight: 10,
+                          width: 80,
                         }}
                       >
                         <Text
                           style={{
-                            fontSize: 16,
+                            fontSize: 14,
                             alignItems: "center",
                           }}
                         >
-                          Starts:
+                          Date:
                         </Text>
                       </View>
                       <View
@@ -394,9 +397,70 @@ export default function NewEventModal({
                           </Text>
                         </TouchableOpacity>
                       </View>
+                    </View>
+                    <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
+                      {/*
+                      <View
+                        style={{
+                          width: 50,
+                          marginRight: 10,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 14,
+                            alignItems: "center",
+                          }}
+                        >
+                          Time End:
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          width: 100,
+                          marginRight: 10,
+                        }}
+                      >
+                        <TouchableOpacity
+                          onPress={() => {
+                            setShowDatePicker({
+                              value: endDate ?? new Date(),
+                              onChange: (value) => {
+                                setEndDate(value);
+                              },
+                            });
+                          }}
+                          style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
+                        >
+                          <Text
+                            style={{
+                              fontSize: 14,
+                              alignItems: "center",
+                            }}
+                          >
+                            {endDate != null ? moment(endDate).format("L") : "Date"}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                      */}
                       <View
                         style={{
                           width: 80,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 14,
+                            alignItems: "center",
+                          }}
+                        >
+                          Time Start:
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          width: 80,
+                          marginRight: 10,
                         }}
                       >
                         {/* start time to */}
@@ -421,12 +485,9 @@ export default function NewEventModal({
                           </Text>
                         </TouchableOpacity>
                       </View>
-                    </View>
-                    <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
                       <View
                         style={{
-                          width: 50,
-                          marginRight: 10,
+                          width: 80,
                         }}
                       >
                         <Text
@@ -435,36 +496,8 @@ export default function NewEventModal({
                             alignItems: "center",
                           }}
                         >
-                          Ends:
+                          Time End:
                         </Text>
-                      </View>
-                      <View
-                        style={{
-                          width: 100,
-                          marginRight: 10,
-                        }}
-                      >
-                        {/* end date */}
-                        <TouchableOpacity
-                          onPress={() => {
-                            setShowDatePicker({
-                              value: endDate ?? new Date(),
-                              onChange: (value) => {
-                                setEndDate(value);
-                              },
-                            });
-                          }}
-                          style={{ backgroundColor: "lightgrey", padding: 10, borderRadius: 10 }}
-                        >
-                          <Text
-                            style={{
-                              fontSize: 14,
-                              alignItems: "center",
-                            }}
-                          >
-                            {endDate != null ? moment(endDate).format("L") : "Date"}
-                          </Text>
-                        </TouchableOpacity>
                       </View>
                       <View
                         style={{
@@ -656,6 +689,7 @@ export default function NewEventModal({
                   multiline={true}
                   autoFocus={false}
                   numberOfLines={10}
+                  defaultValue={text}
                   onChangeText={(text) => {
                     setText(text);
                   }}

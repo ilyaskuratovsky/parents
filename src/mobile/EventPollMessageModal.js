@@ -283,6 +283,12 @@ export default function EventPollMessageModal({
                             }}
                             icon="calendar-plus"
                             onPress={() => {
+                              console.log(
+                                "setShowNewEventModal: " +
+                                  JSON.stringify(option.poll_option) +
+                                  ", text: " +
+                                  message.text
+                              );
                               setShowNewEventModal({
                                 title: message.title,
                                 text: message.text,
@@ -437,10 +443,10 @@ export default function EventPollMessageModal({
           allowCreatePoll={false}
           papaId={message.id}
           initialTitle={showNewEventModal?.title}
-          text={showNewEventModal?.text}
-          startDate={showNewEventModal?.startDate}
-          startTime={showNewEventModal?.startTime}
-          endTime={showNewEventModal?.endTime}
+          initialText={showNewEventModal?.text}
+          initialStartDate={showNewEventModal?.startDate}
+          initialStartTime={showNewEventModal?.startTime}
+          initialEndTime={showNewEventModal?.endTime}
           closeModal={(flag) => {
             setShowNewEventModal(null);
           }}
