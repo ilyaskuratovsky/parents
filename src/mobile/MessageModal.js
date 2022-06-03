@@ -150,7 +150,7 @@ export default function MessageModal({
                   paddingBottom: 6,
                 }}
               >
-                {UserInfo.smallAvatarComponent(user)}
+                {UserInfo.smallAvatarComponent(message.user)}
                 <View
                   style={{
                     flex: 1,
@@ -169,7 +169,7 @@ export default function MessageModal({
                       color: UIConstants.BLACK_TEXT_COLOR,
                     }}
                   >
-                    {UserInfo.chatDisplayName(user)}
+                    {UserInfo.chatDisplayName(message.user)}
                   </Text>
                 </View>
               </View>

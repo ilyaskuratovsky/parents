@@ -184,7 +184,7 @@ export default function EventMessageModal({ group, message, user, userMap, visib
                   paddingBottom: 6,
                 }}
               >
-                {UserInfo.avatarComponent(user)}
+                {UserInfo.avatarComponent(message.user)}
                 <View
                   style={{
                     flex: 1,
@@ -202,7 +202,7 @@ export default function EventMessageModal({ group, message, user, userMap, visib
                       fontSize: 16,
                     }}
                   >
-                    {UserInfo.chatDisplayName(user)}
+                    {UserInfo.chatDisplayName(message.user)}
                   </Text>
                 </View>
               </View>
