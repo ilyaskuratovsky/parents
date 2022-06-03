@@ -21,6 +21,21 @@ const Toolbar = ({ selected }) => {
   return (
     <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
       <MyButtons.MenuButton
+        icon="content-copy"
+        color={selected == "groups" ? "mediumblue" : "black"}
+        text="Feed"
+        onPress={() => {
+          Logger.log("Toolbar: groups clicked");
+          dispatch(
+            Actions.goToScreen({
+              screen: "FEED",
+            })
+          );
+        }}
+        badge={null}
+      />
+
+      <MyButtons.MenuButton
         icon="account-group"
         color={selected == "groups" ? "mediumblue" : "black"}
         text="Groups"

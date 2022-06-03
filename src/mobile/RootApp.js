@@ -22,6 +22,7 @@ import SchoolScreen from "./SchoolScreen";
 import SignupScreen from "./SignupScreen";
 import SplashScreen from "./SplashScreen";
 import FriendsScreen from "./FriendsScreen";
+import FeedScreen from "./FeedScreen";
 import UserScreen from "./UserScreen";
 import TestThreadView from "./TestThreadView";
 import * as UserInfo from "../common/UserInfo";
@@ -112,6 +113,8 @@ function RootApp(props, state) {
     render = <InitialJoinSchoolGroupsScreen />;
   } else if (screen == "GROUPS" || screen == null) {
     render = <GroupsScreen />;
+  } else if (screen == "FEED" || screen == null) {
+    render = <FeedScreen />;
   } else if (screen == "FRIENDS") {
     render = <FriendsScreen />;
   } else if (screen == "GROUP") {
