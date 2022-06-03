@@ -75,103 +75,117 @@ export default function BookCalendarEventModal({
         backgroundColor={UIConstants.DEFAULT_BACKGROUND}
         //backgroundColor="green"
       >
-        <View
-          style={[
-            StyleSheet.absoluteFill,
-            {
-              backgroundColor: "rgba(0,0,0,0.4)",
-              alignItems: "center",
-              justifyContent: "center",
-            },
-          ]}
-        >
-          <SafeAreaView style={{ flex: 1, flexDirection: "column" }}>
-            {Globals.dev && (
-              <>
-                <Text>BookCalendarEventModal.js</Text>
-                <Text>
-                  title: {title}, notes: {notes}, startDate: {moment(startDate).format("LLLL")},
-                  endDate:
-                  {moment(endDate).format("LLLL")}
-                  onDismiss: {onDismiss == null ? "null" : "not null"}
-                </Text>
-              </>
-            )}
-            {calendarMap == null && <Text>Loading...</Text>}
-            <ScrollView style={{ height: 200, backgroundColor: "gray" }}>
-              {(calendarMap != null ? Object.keys(calendarMap) : [])
-                .sort((source1, source2) => source1.localeCompare(source2))
-                .map((source, i) => {
-                  const calendars = calendarMap[source];
-                  return (
-                    <View key={source}>
-                      <Text>{source}</Text>
-                      <View
-                        style={{
-                          backgroundColor: "white",
-                          borderRadius: 10,
-                          padding: 10,
-                          flexDirection: "column",
-                        }}
-                      >
-                        {calendars.map((calendar, i) => {
-                          console.log("color: " + JSON.stringify(calendar.color));
-                          return (
-                            <TouchableOpacity
-                              key={i}
-                              style={{ flexDirection: "column" }}
-                              onPress={() => {
-                                createEvent(calendar, title, notes, startDate, endDate)
-                                  .then((eventId) => {
-                                    Alert.alert("Done", null, [
-                                      {
-                                        text: "OK",
-                                        onPress: async () => {
-                                          onComplete();
-                                        },
-                                      },
-                                    ]);
-                                  })
-                                  .catch((error) => {
-                                    Alert.alert("caught error: " + JSON.stringify(error));
-                                  });
-                              }}
-                            >
-                              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                                <View
-                                  style={{
-                                    height: 20,
-                                    width: 20,
-                                    backgroundColor: calendar.color ?? "gray",
-                                  }}
-                                ></View>
-                                <Text style={{ fontSize: 8, fontWeight: "bold" }}>
-                                  {calendar?.title ?? "null"}
-                                </Text>
-                              </View>
-                              {Globals.dev && (
-                                <Text style={{ fontSize: 8 }}>
-                                  {JSON.stringify(calendar, 2, null)}
-                                </Text>
-                              )}
-                              {i < calendars.length - 1 && (
-                                <Divider
-                                  style={{ marginTop: 20, marginBottom: 10 }}
-                                  width={3}
-                                  color="lightgrey"
-                                />
-                              )}
-                            </TouchableOpacity>
-                          );
-                        })}
-                      </View>
+        {/* top bar */}
+        <TopBarMiddleContentSideButtons
+          backgroundColor={UIConstants.DEFAULT_BACKGROUND}
+          height={40}
+          left={
+            <MyButtons.LinkButton
+              text="Cancel"
+              onPress={() => {
+                onDismiss();
+              }}
+            />
+          }
+          center={<Text>Select Calendar</Text>}
+          right={null}
+        />
+        <SafeAreaView style={{ flex: 1, flexDirection: "column", backgroundColor: "white" }}>
+          {Globals.dev && (
+            <>
+              <Text>BookCalendarEventModal.js</Text>
+              <Text>
+                title: {title}, notes: {notes}, startDate: {moment(startDate).format("LLLL")},
+                endDate:
+                {moment(endDate).format("LLLL")}
+                onDismiss: {onDismiss == null ? "null" : "not null"}
+              </Text>
+            </>
+          )}
+          {calendarMap == null && <Text>Loading...</Text>}
+
+          <ScrollView style={{ height: 200, backgroundColor: "lightgrey", padding: 20 }}>
+            {(calendarMap != null ? Object.keys(calendarMap) : [])
+              .sort((source1, source2) => source1.localeCompare(source2))
+              .map((source, i) => {
+                const calendars = calendarMap[source];
+                return (
+                  <View
+                    key={source}
+                    style={{
+                      backgroundColor: "white",
+                      borderRadius: 10,
+                      padding: 10,
+                      marginBottom: 20,
+                    }}
+                  >
+                    <Text style={{ fontSize: 12 }}>{source}</Text>
+                    <View
+                      style={{
+                        marginTop: 10,
+                        paddingTop: 10,
+                        paddingBottom: 10,
+                        flexDirection: "column",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {calendars.map((calendar, i) => {
+                        console.log("color: " + JSON.stringify(calendar.color));
+                        return (
+                          <TouchableOpacity
+                            key={i}
+                            style={{ flexDirection: "column" }}
+                            onPress={() => {
+                              createEvent(calendar, title, notes, startDate, endDate)
+                                .then((eventId) => {
+                                  onComplete();
+                                  Alert.alert("Added to Calendar", null, [
+                                    {
+                                      text: "OK",
+                                      onPress: async () => {},
+                                    },
+                                  ]);
+                                })
+                                .catch((error) => {
+                                  Alert.alert("caught error: " + JSON.stringify(error));
+                                });
+                            }}
+                          >
+                            <View style={{ flexDirection: "row", alignItems: "center" }}>
+                              <View
+                                style={{
+                                  height: 10,
+                                  width: 10,
+                                  borderRadius: 10,
+                                  marginRight: 6,
+                                  backgroundColor: calendar.color ?? "gray",
+                                }}
+                              ></View>
+                              <Text style={{ fontSize: 12, fontWeight: "bold" }}>
+                                {calendar?.title ?? "null"}
+                              </Text>
+                            </View>
+                            {Globals.dev && (
+                              <Text style={{ fontSize: 8 }}>
+                                {JSON.stringify(calendar, 2, null)}
+                              </Text>
+                            )}
+                            {i < calendars.length - 1 && (
+                              <Divider
+                                style={{ marginTop: 20, marginBottom: 10 }}
+                                width={3}
+                                color="lightgrey"
+                              />
+                            )}
+                          </TouchableOpacity>
+                        );
+                      })}
                     </View>
-                  );
-                })}
-            </ScrollView>
-            <Button title="Cancel" onPress={() => onDismiss()} />
-          </SafeAreaView>
-        </View>
+                  </View>
+                );
+              })}
+          </ScrollView>
+        </SafeAreaView>
       </Portal>
     </Modal>
   );
