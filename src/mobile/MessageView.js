@@ -7,7 +7,7 @@ import * as Globals from "./Globals";
 import MessageTime from "./MessageTime";
 import * as UIConstants from "./UIConstants";
 
-export default function MessageView({ item, onPress }) {
+export default function MessageView({ item, onPress, showGroup = false }) {
   const timestamp = item.timestamp?.toDate();
   return (
     <TouchableOpacity
@@ -54,52 +54,107 @@ export default function MessageView({ item, onPress }) {
               //backgroundColor: "purple",
             }}
           >
-            {/* user avatar and name section */}
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "flex-start",
-                flexDirection: "row",
-                alignItems: "center",
-                paddingBottom: 6,
-                //backgroundColor: "cyan",
-              }}
-            >
-              {UserInfo.smallAvatarComponent(item.user)}
+            {/* group name/user avatar and name section */}
+            {showGroup && (
               <View
                 style={{
                   flex: 1,
+                  justifyContent: "flex-start",
                   flexDirection: "row",
-                  justifyContent: "space-between",
                   alignItems: "center",
-                  paddingRight: 0,
-                  //backgroundColor: "yellow",
+                  paddingBottom: 6,
+                  //backgroundColor: "cyan",
                 }}
               >
-                <Text
-                  style={{
-                    marginLeft: 5,
-                    fontWeight: "bold",
-                    color: UIConstants.BLACK_TEXT_COLOR,
-                    fontSize: 16,
-                  }}
-                >
-                  {UserInfo.chatDisplayName(item.user)} {/*item._id*/}
-                </Text>
+                {UserInfo.smallAvatarComponent(item.user)}
                 <View
                   style={{
-                    marginLeft: 5,
-                    fontWeight: "normal",
-                    fontSize: 14,
+                    flex: 1,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    paddingRight: 0,
+                    //backgroundColor: "yellow",
                   }}
                 >
-                  <MessageTime
-                    timestamp={timestamp}
-                    textStyle={{ fontSize: 11, color: UIConstants.BLACK_TEXT_COLOR }}
-                  />
+                  <View style={{ flex: 1, flexDirection: "column", marginLeft: 6 }}>
+                    <Text style={{ fontWeight: "bold", fontSize: 14 }}>
+                      {item.group?.name ?? "No group name"}
+                    </Text>
+                    <Text
+                      style={{
+                        fontWeight: "normal",
+                        color: UIConstants.BLACK_TEXT_COLOR,
+                        fontSize: 12,
+                      }}
+                    >
+                      {UserInfo.chatDisplayName(item.user)} {/*item._id*/}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      marginLeft: 5,
+                      fontWeight: "normal",
+                      fontSize: 14,
+                    }}
+                  >
+                    <MessageTime
+                      timestamp={timestamp}
+                      textStyle={{ fontSize: 11, color: UIConstants.BLACK_TEXT_COLOR }}
+                    />
+                  </View>
                 </View>
               </View>
-            </View>
+            )}
+
+            {/* user avatar and name section */}
+            {!showGroup && (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "flex-start",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingBottom: 6,
+                  //backgroundColor: "cyan",
+                }}
+              >
+                {UserInfo.smallAvatarComponent(item.user)}
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    paddingRight: 0,
+                    //backgroundColor: "yellow",
+                  }}
+                >
+                  <Text
+                    style={{
+                      marginLeft: 5,
+                      fontWeight: "bold",
+                      color: UIConstants.BLACK_TEXT_COLOR,
+                      fontSize: 16,
+                    }}
+                  >
+                    {UserInfo.chatDisplayName(item.user)} {/*item._id*/}
+                  </Text>
+                  <View
+                    style={{
+                      marginLeft: 5,
+                      fontWeight: "normal",
+                      fontSize: 14,
+                    }}
+                  >
+                    <MessageTime
+                      timestamp={timestamp}
+                      textStyle={{ fontSize: 11, color: UIConstants.BLACK_TEXT_COLOR }}
+                    />
+                  </View>
+                </View>
+              </View>
+            )}
             {/* title */}
             <View
               style={{

@@ -38,7 +38,7 @@ export default function FeedScreen({ debug }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
 
-  let { messages, userMap, userMessagesMap } = useSelector((state) => {
+  let { messages, userMap, userMessagesMap, groupMap } = useSelector((state) => {
     return {
       userinfo: state.main.userInfo,
       schoolList: state.main.schoolList,
@@ -70,6 +70,7 @@ export default function FeedScreen({ debug }) {
       userInfo,
       userMessagesMap,
       null,
+      groupMap,
       userMap
     );
     const sortedMessages = [...rootMessages] ?? [];
@@ -83,7 +84,7 @@ export default function FeedScreen({ debug }) {
     const onPress = () => {
       setMessagesModalVisible(item.id);
     };
-    return <MessageView item={item} onPress={onPress} />;
+    return <MessageView showGroup={true} item={item} onPress={onPress} />;
   };
   useEffect(async () => {}, [messages]);
 

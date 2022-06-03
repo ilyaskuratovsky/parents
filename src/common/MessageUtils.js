@@ -58,6 +58,7 @@ export function buildRootMessagesWithChildren(
   userInfo,
   userMessagesMap,
   groupMembers,
+  groupMap,
   userMap
 ) {
   Logger.log("buildRootMessagesWithChildren, messages.length: " + messages?.length);
@@ -80,10 +81,8 @@ export function buildRootMessagesWithChildren(
 
   const rootMessages = Object.values(messageMap).filter((m) => m.papaId == null);
   const messagesWithStatus = rootMessages.map((rootMessage) => {
-    let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap, userMap);
-    if (rootMessage.event != null) {
-      rootMessageWithStatus = addEventData(rootMessageWithStatus, userInfo, groupMembers);
-    }
+    let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap, userMap, groupMap);
+    rootMessageWithStatus = addEventData(rootMessageWithStatus, userInfo, groupMembers);
     return { ...rootMessage, ...rootMessageWithStatus };
   });
   Logger.log(
@@ -106,7 +105,7 @@ export function calculateUnreadMessages(groupMessagesMap, userMessagesMap) {
   return unreadMessages;
 }
 
-export function addMeta(rootMessage, userInfo, userMessagesMap, userMap) {
+export function addMeta(rootMessage, userInfo, userMessagesMap, userMap, groupMap) {
   /* status */
   let status = null;
   let userMessageId = null;
@@ -130,6 +129,9 @@ export function addMeta(rootMessage, userInfo, userMessagesMap, userMap) {
     return status;
   }).length;
 
+  /* group */
+  const group = groupMap[rootMessage.groupId];
+
   /* add meta to children */
   const children = [];
   for (const childMessage of rootMessage.children ?? []) {
@@ -152,7 +154,16 @@ export function addMeta(rootMessage, userInfo, userMessagesMap, userMap) {
     )
   );
 
-  return { ...rootMessage, status, userMessageId, unreadChildCount, lastUpdated, children, user };
+  return {
+    ...rootMessage,
+    status,
+    userMessageId,
+    unreadChildCount,
+    lastUpdated,
+    children,
+    user,
+    group,
+  };
 }
 
 export function addEventData(rootMessage, userInfo, userMessagesMap, groupMembers) {

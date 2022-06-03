@@ -103,8 +103,10 @@ export default function GroupScreen({ groupId, messageId, debug }) {
         userInfo,
         userMessagesMap,
         null,
+        groupMap,
         userMap
       );
+
       const sortedMessages = [...rootMessages] ?? [];
       sortedMessages.sort((m1, m2) => {
         return m2.lastUpdated - m1.lastUpdated;
