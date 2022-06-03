@@ -111,7 +111,7 @@ function RootApp(props, state) {
     render = <InitialChooseSchoolsWizard />;
   } else if (screen == "INITIAL_SELECT_SCHOOL_GROUPS") {
     render = <InitialJoinSchoolGroupsScreen />;
-  } else if (screen == "GROUPS" || screen == null) {
+  } else if (screen == "GROUPS") {
     render = <GroupsScreen />;
   } else if (screen == "FEED" || screen == null) {
     render = <FeedScreen />;

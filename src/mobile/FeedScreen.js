@@ -19,7 +19,7 @@ import * as Date from "../common/Date";
 import FacePile from "./FacePile";
 import * as Globals from "./Globals";
 import GroupSettingsModal from "./GroupSettingsModal";
-import MessageModal from "./MessageContainerModal";
+import MessageModalContainer from "./MessageContainerModal";
 import * as MessageUtils from "../common/MessageUtils";
 import MessageView from "./MessageView";
 import NewEventModal from "./NewEventModal";
@@ -37,6 +37,7 @@ import Toolbar from "./Toolbar";
 export default function FeedScreen({ debug }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
+  const [messagesModalVisible, setMessagesModalVisible] = useState(null);
 
   let { messages, userMap, userMessagesMap, groupMap } = useSelector((state) => {
     return {
@@ -82,7 +83,7 @@ export default function FeedScreen({ debug }) {
 
   const renderMessage = ({ item }) => {
     const onPress = () => {
-      setMessagesModalVisible(item.id);
+      setMessagesModalVisible({ messageId: item.id, groupId: item.groupId });
     };
     return <MessageView showGroup={true} item={item} onPress={onPress} />;
   };
@@ -165,6 +166,17 @@ export default function FeedScreen({ debug }) {
       <Toolbar key="toolbar" />
 
       {/* MODALS */}
+      {messagesModalVisible != null && (
+        <MessageModalContainer
+          groupId={messagesModalVisible.groupId}
+          messageId={messagesModalVisible.messageId}
+          visible={messagesModalVisible != null}
+          closeModal={() => {
+            setMessagesModalVisible(null);
+          }}
+          containerStyle={{ paddingLeft: 24 }}
+        />
+      )}
     </Portal>
   );
 }

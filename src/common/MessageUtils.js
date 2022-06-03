@@ -7,6 +7,7 @@ export function buildRootMessageWithChildren(
   userInfo,
   userMessagesMap,
   groupMembers,
+  groupMap,
   userMap
 ) {
   Logger.log(
@@ -130,7 +131,10 @@ export function addMeta(rootMessage, userInfo, userMessagesMap, userMap, groupMa
   }).length;
 
   /* group */
-  const group = groupMap[rootMessage.groupId];
+  let group = null;
+  if (groupMap != null) {
+    group = groupMap[rootMessage.groupId];
+  }
 
   /* add meta to children */
   const children = [];

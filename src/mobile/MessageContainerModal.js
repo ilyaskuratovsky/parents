@@ -56,6 +56,7 @@ export default function MessagesContainer({ groupId, messageId, visible, closeMo
     user,
     userMessagesMap,
     null,
+    null,
     userMap
   );
   console.log("built message with children: " + message.id);
