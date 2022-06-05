@@ -21,7 +21,7 @@ import * as Globals from "./Globals";
 import GroupSettingsModal from "./GroupSettingsModal";
 import MessageModalContainer from "./MessageContainerModal";
 import * as MessageUtils from "../common/MessageUtils";
-import MessageView from "./MessageView";
+import MessageViewContainer from "./MessageViewContainer";
 import NewEventModal from "./NewEventModal";
 import Portal from "./Portal";
 import * as Actions from "../common/Actions";
@@ -85,7 +85,7 @@ export default function FeedScreen({ debug }) {
     const onPress = () => {
       setMessagesModalVisible({ messageId: item.id, groupId: item.groupId });
     };
-    return <MessageView showGroup={true} item={item} onPress={onPress} />;
+    return <MessageViewContainer showGroup={true} item={item} onPress={onPress} />;
   };
   useEffect(async () => {}, [messages]);
 

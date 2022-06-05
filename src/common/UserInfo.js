@@ -70,6 +70,20 @@ export function avatarComponent(userInfo, onPress) {
 }
 
 export function smallAvatarComponent(userInfo, onPress, border) {
+  return sizedAvatarComponent(userInfo, onPress, border, "small");
+}
+
+export function tinyAvatarComponent(userInfo, onPress, border) {
+  return sizedAvatarComponent(userInfo, onPress, border, "tiny");
+}
+
+function sizedAvatarComponent(userInfo, onPress, border, size) {
+  let imageHeight = 30;
+  if (size == "small") {
+    imageHeight = 30;
+  } else if (size == "tiny") {
+    imageHeight = 16;
+  }
   const displayName = chatDisplayName(userInfo);
   let avatar = null;
   if (userInfo == null) {
@@ -80,11 +94,11 @@ export function smallAvatarComponent(userInfo, onPress, border) {
     avatar = (
       <Image
         style={{
-          height: 30,
-          width: 30,
+          height: imageHeight,
+          width: imageHeight,
           borderWidth: border ? 2 : 0,
           borderColor: "whitesmoke",
-          borderRadius: 15,
+          borderRadius: imageHeight / 2,
         }}
         uri={uri}
       />
@@ -103,7 +117,7 @@ export function smallAvatarComponent(userInfo, onPress, border) {
     }
     avatar = (
       <Avatar
-        size={30}
+        size={imageHeight}
         rounded
         title={letters}
         containerStyle={{

@@ -1,5 +1,9 @@
 export function toMillis(obj) {
   const dt = toDate(obj);
+  console.log("obj: " + obj + ", dt: " + dt);
+  if (dt == null) {
+    return null;
+  }
   return dt.getTime();
 }
 

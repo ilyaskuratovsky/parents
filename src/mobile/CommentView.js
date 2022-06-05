@@ -23,6 +23,24 @@ export default function CommentView({ item, user, onPress }) {
     );
   };
 
+  if (item.event_poll_response != null) {
+    return (
+      <View
+        style={{
+          paddingLeft: 10,
+          //backgroundColor: "yellow",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        {UserInfo.tinyAvatarComponent(item.user)}
+        <Text style={{ color: "grey", marginLeft: 10, fontStyle: "italic", fontSize: 10 }}>
+          {UserInfo.chatDisplayName(item.user)} responded to the poll
+        </Text>
+      </View>
+    );
+  }
+
   if (item.user.uid == user.uid) {
     return (
       <View

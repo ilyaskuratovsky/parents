@@ -504,6 +504,7 @@ export async function setUserGroupLastViewedTimestamp(
 
   const userGroupMembership = userGroupMemberships.length > 0 ? userGroupMemberships[0] : null;
   if (userGroupMembership != null) {
+    /*
     Logger.log(
       "found usergroupmembership: " +
         userGroupMembership.id +
@@ -513,6 +514,8 @@ export async function setUserGroupLastViewedTimestamp(
         lastViewedMessageTimestamp +
         ")"
     );
+    */
+    console.log("lastViewedMessageTimestamp: " + lastViewedMessageTimestamp);
     Database.updateUserGroupMembership(userGroupMembership.id, {
       lastViewedMessageTimestamp: lastViewedMessageTimestamp.getTime(),
     });

@@ -1,4 +1,5 @@
 import * as Logger from "./Logger";
+import * as Dates from "../common/Date";
 
 /* given a single root message, built it with children */
 export function buildRootMessageWithChildren(
@@ -10,6 +11,12 @@ export function buildRootMessageWithChildren(
   groupMap,
   userMap
 ) {
+  const sortedMessages = [...messages].sort((m1, m2) => {
+    const millis1 = Dates.toMillis(m1.timestamp);
+    const millis2 = Dates.toMillis(m2.timestamp);
+    return millis1 - millis2;
+  });
+
   Logger.log(
     "buildingRootMessageWithChildren, messageId: " +
       messageId +
@@ -27,14 +34,16 @@ export function buildRootMessageWithChildren(
       )
   );
   let rootMessage = { children: [] };
-  const message = messages.filter((m) => m.id === messageId)[0];
+  const message = sortedMessages.filter((m) => m.id === messageId)[0];
+  //const message = messages.filter((m) => m.id === messageId)[0];
   //message = undefined;
   Logger.log("found root message: " + JSON.stringify(message));
   let rootMessageId = message.id;
   if (message.papaId != null) {
     rootMessageId = message.papaId;
   }
-  for (const m of messages) {
+  for (const m of sortedMessages) {
+    //for (const m of messages) {
     if (m.papaId == rootMessageId) {
       rootMessage.children.push(m);
     } else if (m.id == rootMessageId) {

@@ -17,6 +17,7 @@ import {
 import NewEventModal from "./NewEventModal";
 import * as Utils from "../common/Utils";
 import { Divider, CheckBox } from "react-native-elements";
+import Checkbox from "./Checkbox";
 import { IconButton } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
@@ -133,7 +134,7 @@ export default function EventPollMessageModal({
               color="black"
             />
           }
-          center={null}
+          center={<Text style={{ fontWeight: "bold" }}>Event Details</Text>}
           right={null}
         />
 
@@ -158,47 +159,18 @@ export default function EventPollMessageModal({
               style={{
                 flexDirection: "column",
                 paddingTop: 10,
-                paddingLeft: 10,
-                paddingRight: 10,
-                paddingBottom: 14,
+                paddingLeft: 0,
+                paddingRight: 0,
+                paddingBottom: 4,
                 //backgroundColor: "purple",
               }}
             >
               <View
                 style={{
-                  justifyContent: "flex-start",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingBottom: 6,
-                }}
-              >
-                {UserInfo.avatarComponent(message.user)}
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    paddingRight: 20,
-                    //backgroundColor: "white",
-                  }}
-                >
-                  <Text
-                    style={{
-                      marginLeft: 5,
-                      fontWeight: "bold",
-                      fontSize: 16,
-                    }}
-                  >
-                    {UserInfo.chatDisplayName(message.user)}
-                  </Text>
-                </View>
-              </View>
-              <View
-                style={{
-                  paddingLeft: 0,
+                  paddingLeft: 10,
                   paddingTop: 0,
                   borderRadius: 0,
+                  marginBottom: 20,
                 }}
               >
                 {Globals.dev && <Text>EventPollMessageModal</Text>}
@@ -253,7 +225,127 @@ export default function EventPollMessageModal({
                   }}
                 />
               </View>
+              <View
+                style={{
+                  justifyContent: "flex-start",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingLeft: 10,
+                  paddingBottom: 6,
+                }}
+              >
+                {UserInfo.smallAvatarComponent(message.user)}
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    paddingRight: 20,
+                    //backgroundColor: "white",
+                  }}
+                >
+                  <Text
+                    style={{
+                      marginLeft: 5,
+                      fontWeight: "bold",
+                      fontSize: 14,
+                    }}
+                  >
+                    {UserInfo.chatDisplayName(message.user)}
+                  </Text>
+                </View>
+              </View>
+              <Divider style={{ marginBottom: 0 }} width={1} color="darkgrey" />
               {/* responses */}
+              <View
+                style={{
+                  flexDirection: "column",
+                  //backgroundColor: "yellow",
+                  paddingLeft: 0,
+                }}
+              >
+                <Text style={{ paddingLeft: 10, paddingRight: 10, fontSize: 12 }}>
+                  There is no set date &amp; time for the event. Please pick one or more choices.
+                </Text>
+                {message.event_poll.options.map((option, index) => {
+                  /*
+                  return (
+                    <CheckBox
+                      checked={
+                        pollResponse.filter((response) => response.name == option.name).length > 0
+                      }
+                      onPress={() => {
+                        togglePollResponse(option);
+                      }}
+                      titleProps={{ backgroundColor: "green" }}
+                      containerStyle={{ backgroundColor: "cyan" }}
+                      title={moment(Date.toDate(option.startDate)).format("LL")}
+                    />
+                  );
+                  */
+                  const optionSummary = pollResponseSummary.filter((summary) => {
+                    return summary.poll_option.name === option.name;
+                  })[0];
+
+                  return (
+                    <View
+                      style={{
+                        paddingTop: 8,
+                        paddingBottom: 4,
+                        paddingLeft: 10,
+                        backgroundColor: "lightgrey",
+                        //marginTop: index == 0 ? 0 : 10,
+                        marginBottom: index == 0 ? 4 : 4,
+                      }}
+                    >
+                      <Checkbox
+                        checked={
+                          pollResponse.filter((response) => response.name == option.name).length > 0
+                            ? true
+                            : false
+                        }
+                        onPress={async () => {
+                          togglePollResponse(option);
+                        }}
+                        text={
+                          <Text style={{ fontWeight: "bold" }}>
+                            {moment(Date.toDate(option.startDate)).format("LLLL") +
+                              " - " +
+                              moment(Date.toDate(option.endTime)).format("LT")}
+                          </Text>
+                        }
+                      />
+                      {optionSummary.uid_list.length >= 0 && (
+                        <View style={{ marginLeft: 30 }}>
+                          <FacePile userIds={optionSummary.uid_list} border />
+                        </View>
+                      )}
+                      {optionSummary.uid_list.length == 0 && (
+                        <View style={{ marginLeft: 30, height: 24 }}></View>
+                      )}
+                    </View>
+                  );
+                })}
+                <View
+                  style={{
+                    flex: 1,
+                    alignItems: "flex-end",
+                    paddingRight: 10,
+                    //backgroundColor: "green",
+                  }}
+                >
+                  <MyButtons.FormButton
+                    text={<Text style={{ color: "white", fontSize: 12 }}>Submit</Text>}
+                    style={{ width: 100 }}
+                    onPress={async () => {
+                      await sendEventPollReply(pollResponse, "");
+                    }}
+                  />
+                </View>
+              </View>
+              {/* responses 2 */}
+              {/*
               <View>
                 {pollResponseSummary.map((option) => {
                   return (
@@ -267,57 +359,31 @@ export default function EventPollMessageModal({
                         }}
                       >
                         <Text>
-                          {moment(Date.toDate(option.poll_option.startDate)).format("L") +
-                            " " +
-                            moment(Date.toDate(option.poll_option.startTime)).format("LT") +
+                          {moment(Date.toDate(option.poll_option.startDate)).format("LL") +
                             " - " +
                             moment(Date.toDate(option.poll_option.endTime)).format("LT")}
                         </Text>
-                        {message.event_poll.creator === user.uid && (
-                          <IconButton
-                            style={{
-                              flex: 1,
-                              //backgroundColor: "purple",
-                              margin: 0,
-                              alignItems: "flex-end",
-                            }}
-                            icon="calendar-plus"
-                            onPress={() => {
-                              console.log(
-                                "setShowNewEventModal: " +
-                                  JSON.stringify(option.poll_option) +
-                                  ", text: " +
-                                  message.text
-                              );
-                              setShowNewEventModal({
-                                title: message.title,
-                                text: message.text,
-                                startDate: option.poll_option.startDate,
-                                startTime: option.poll_option.startTime,
-                                endTime: option.poll_option.endTime,
-                              });
-                            }}
-                          />
+                        {option.uid_list.length == 0 && (
+                          <View style={{ height: 30, justifyContent: "center" }}>
+                            <Text
+                              style={
+                                {
+                                  //backgroundColor: "yellow",
+                                }
+                              }
+                            >
+                            </Text>
+                          </View>
+                        )}
+                        {option.uid_list.length >= 0 && (
+                          <FacePile userIds={option.uid_list} border />
                         )}
                       </View>
-                      {option.uid_list.length == 0 && (
-                        <View style={{ height: 30, justifyContent: "center" }}>
-                          <Text
-                            style={
-                              {
-                                //backgroundColor: "yellow",
-                              }
-                            }
-                          >
-                            No responses
-                          </Text>
-                        </View>
-                      )}
-                      {option.uid_list.length >= 0 && <FacePile userIds={option.uid_list} border />}
                     </View>
                   );
                 })}
               </View>
+            */}
             </View>
             <Divider style={{}} width={1} color="darkgrey" />
             {/* comments section */}
@@ -358,7 +424,7 @@ export default function EventPollMessageModal({
                   </Text>
                 </ScrollView>
               )}
-              {message.event_poll.creator != user.uid && (
+              {/*message.event_poll.creator != user.uid && (
                 <>
                   {message.event_poll.options.map((option) => {
                     return (
@@ -371,7 +437,7 @@ export default function EventPollMessageModal({
                         }}
                         style={{ alignSelf: "center" }}
                         title={
-                          moment(Date.toDate(option.startDate)).format("L") +
+                          moment(Date.toDate(option.startDate)).format("LL") +
                           " " +
                           moment(Date.toDate(option.startTime)).format("LT") +
                           " - " +
@@ -381,7 +447,7 @@ export default function EventPollMessageModal({
                     );
                   })}
                 </>
-              )}
+                )*/}
             </View>
             <View
               style={{

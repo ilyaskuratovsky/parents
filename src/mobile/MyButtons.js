@@ -80,15 +80,37 @@ const FormButton = React.memo(({ text, icon, onPress, style }) => {
 });
 */
 
-const FormButton = React.memo(({ text, icon, onPress, style }) => {
+const FormButton = React.memo(({ text, icon, onPress, style, disabled = false }) => {
   return (
     <Elements.Button title={text} icon={icon} onPress={onPress} mode="outline" style={style}>
+      {" "}
+      disabled={true}
       {text}
     </Elements.Button>
   );
 });
 
 const LinkButton = React.memo(({ text, onPress, style, disabled }) => {
+  return (
+    <TouchableOpacity onPress={onPress} disabled={disabled != null ? disabled : false}>
+      <Text
+        style={[
+          style,
+          {
+            fontSize: 16,
+            textDecorationLine: "underline",
+            color: "blue",
+            opacity: disabled ? 0.5 : 1,
+          },
+        ]}
+      >
+        {text}
+      </Text>
+    </TouchableOpacity>
+  );
+});
+
+const RoundedButton = React.memo(({ text, onPress, style, disabled }) => {
   return (
     <TouchableOpacity onPress={onPress} disabled={disabled != null ? disabled : false}>
       <Text

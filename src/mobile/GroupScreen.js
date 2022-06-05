@@ -21,8 +21,8 @@ import * as Globals from "./Globals";
 import GroupSettingsModal from "./GroupSettingsModal";
 import MessageModal from "./MessageContainerModal";
 import * as MessageUtils from "../common/MessageUtils";
-import MessageView from "./MessageView";
-import NewEventModal from "./NewEventModal";
+import MessageViewContainer from "./MessageViewContainer";
+import NewEventModal from "./NewEventModal2";
 import Portal from "./Portal";
 import * as Actions from "../common/Actions";
 import ThreadMessageModal from "./ThreadMessageModal";
@@ -140,7 +140,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
     const onPress = () => {
       setMessagesModalVisible(item.id);
     };
-    return <MessageView item={item} onPress={onPress} />;
+    return <MessageViewContainer item={item} onPress={onPress} />;
   };
   useEffect(async () => {
     // update last viewed callback function
