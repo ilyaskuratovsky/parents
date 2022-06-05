@@ -67,6 +67,7 @@ export const mainSlice = createSlice({
     userMap: null,
     userList: null,
     userGroupMemberships: null,
+    messages: {},
     groupMessages: {},
     pushToken: null,
     toUserInvites: null,
@@ -180,9 +181,15 @@ export const mainSlice = createSlice({
       const groupMessages = { ...state.groupMessages };
       groupMessages[groupId] = orderedMessages;
 
+      const allMessages = { ...state.messages };
+      orderedMessages.forEach((message) => {
+        allMessages[message.id] = message;
+      });
+
       const newState = {
         ...state,
         groupMessages,
+        messages: allMessages,
       };
       return newState;
     },

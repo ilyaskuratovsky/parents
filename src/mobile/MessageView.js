@@ -165,6 +165,7 @@ export default function MessageView({ item, onPress, showGroup = false }) {
               }}
             >
               <View style={{ flex: 1, flexDirection: "row" }}>
+                {/*
                 {item.event != null && (
                   <Icon name="calendar" style={{ color: "black", fontSize: 24, marginRight: 6 }} />
                 )}
@@ -174,6 +175,7 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                     style={{ color: "black", fontSize: 24, marginRight: 6 }}
                   />
                 )}
+                */}
                 <Text
                   style={{
                     paddingLeft: 0,
@@ -255,13 +257,6 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                 </View>
               </View>
             </View>
-            {item.event != null && item.event.summary != null && (
-              <View style={{ flexDirection: "row" }}>
-                <Text>{item.event.summary.accepted ?? 0} Accepted</Text>
-                <Text>{item.event.summary.declined ?? 0} Declined</Text>
-                <Text>{item.event.summary.not_responded ?? 0} Not Responded</Text>
-              </View>
-            )}
           </View>
         </View>
       </View>
