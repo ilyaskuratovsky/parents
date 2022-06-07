@@ -50,7 +50,6 @@ export function buildRootMessageWithChildren(
       rootMessage = { ...m, ...rootMessage };
     }
   }
-  Logger.log("got root message: " + JSON.stringify(rootMessage));
   let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap, userMap);
   rootMessageWithStatus = addEventData(rootMessageWithStatus, userInfo, groupMembers);
   rootMessageWithStatus = addPollData(rootMessageWithStatus, userInfo, groupMembers);
@@ -58,7 +57,7 @@ export function buildRootMessageWithChildren(
   // const a = null;
   // const b = a.foo;
 
-  Logger.log("done buildingRootMessageWithChildren, messageId: " + messageId);
+  Logger.log("done buildingRootMessageWithChildren: " + messageId);
   return rootMessageWithStatus;
 }
 
@@ -188,23 +187,37 @@ export function addEventData(rootMessage, userInfo, userMessagesMap, groupMember
     event = { ...eventMessages[0].event, creator: eventMessages[0].uid };
   }
   if (event != null) {
-    const eventWithUserStatus = { ...event };
+    //accumulate the event respon
+    //event responses
+    const eventResponses = [];
+    const childResponseIndexes = {};
+
     for (const childMessage of rootMessage.children ?? []) {
-      const childEvent = childMessage.event;
-      if (childEvent != null) {
-        const childStatus = childEvent.status;
-        const userStatus = { ...eventWithUserStatus.users };
-        userStatus[childMessage.uid] = { status: childStatus };
-        const summary = { ...eventWithUserStatus.summary };
-        const statusCount = summary[childStatus] ?? 0;
-        summary[childStatus] = statusCount + 1;
-        eventWithUserStatus["users"] = userStatus;
-        eventWithUserStatus["summary"] = summary;
+      const eventResponse = childMessage.eventResponse;
+      if (eventResponse != null) {
+        const responseObj = {
+          status: eventResponse,
+          user: childMessage.user,
+          text: childMessage.text,
+          timestamp: childMessage.timestamp,
+        };
+
+        const currentUserResponseIndex = childResponseIndexes[childMessage.user.uid];
+        if (currentUserResponseIndex != null) {
+          eventResponses[currentUserResponseIndex] = responseObj;
+        } else {
+          eventResponses.push(responseObj);
+          childResponseIndexes[childMessage.user.uid] = eventResponses.length - 1;
+        }
       }
     }
 
-    return { ...rootMessage, event: eventWithUserStatus };
+    const eventWithResponses = { ...event };
+    eventWithResponses["responses"] = eventResponses;
+    return { ...rootMessage, event: eventWithResponses };
   }
+  //summary per status
+
   return rootMessage;
 }
 

@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import * as Utils from "../common/Utils";
 import { Divider, CheckBox } from "react-native-elements";
+import Checkbox from "./Checkbox";
 import { IconButton } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,6 +37,7 @@ import Autolink from "react-native-autolink";
 import { userInfo } from "../common/Actions";
 import * as Dates from "../common/Date";
 import * as Data from "../common/Data";
+import * as Message from "../common/Message";
 
 export default function EventModal({ messageId }) {
   const dispatch = useDispatch();
@@ -134,6 +136,10 @@ export default function EventModal({ messageId }) {
   const canSend =
     (text != null && text.length > 0) ||
     (!Utils.isEmptyString(eventResponse) && eventResponse != currentUserStatus);
+
+  const goingResponses = event.responses.filter((response) => response.status == "Going");
+  const notGoingResponses = event.responses.filter((response) => response.status == "Not Going");
+  const maybeResponses = event.responses.filter((response) => response.status == "Maybe");
   return (
     <Modal visible={true} animationType={"slide"}>
       <Portal>
@@ -151,7 +157,7 @@ export default function EventModal({ messageId }) {
               color="black"
             />
           }
-          center={null}
+          center={<Text>Event Details</Text>}
           right={null}
         />
 
@@ -181,35 +187,236 @@ export default function EventModal({ messageId }) {
                 //backgroundColor: "purple",
               }}
             >
+              {/* group name */}
               <View
                 style={{
+                  height: 40,
+                  paddingLeft: 0,
+                  paddingRight: 10,
                   justifyContent: "flex-start",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingBottom: 6,
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  paddingBottom: 0,
+                  //backgroundColor: "yellow",
                 }}
               >
-                {UserInfo.avatarComponent(message.user)}
+                <Text style={{ fontSize: 10, color: "grey" }}>Event Title</Text>
+                <Text style={{ fontSize: 20, color: "black" }}>{message.title}</Text>
+              </View>
+              <View
+                style={{
+                  paddingLeft: 0,
+                  paddingRight: 10,
+                  justifyContent: "flex-start",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  paddingBottom: 0,
+                  //backgroundColor: "cyan",
+                }}
+              >
+                <Text style={{ fontSize: 10, color: "grey" }}>Event Date &amp; Time</Text>
+              </View>
+              {/* date section */}
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  //backgroundColor: "green",
+                  marginBottom: 0,
+                }}
+              >
                 <View
                   style={{
-                    flex: 1,
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    paddingRight: 20,
-                    //backgroundColor: "white",
+                    width: 40,
                   }}
                 >
                   <Text
                     style={{
-                      marginLeft: 5,
-                      fontWeight: "bold",
-                      fontSize: 16,
+                      fontSize: 10,
+                      alignItems: "center",
+                      color: "grey",
                     }}
                   >
-                    {UserInfo.chatDisplayName(message.user)}
+                    Date:
                   </Text>
                 </View>
+                <View
+                  style={{
+                    flex: 1,
+                    marginRight: 10,
+                    //backgroundColor: "green",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  {/* start date */}
+                  <View
+                    style={{
+                      //backgroundColor: "white",
+                      borderColor: "grey",
+                      borderRadius: 20,
+                      //borderWidth: 1,
+                      paddingLeft: 10,
+                      paddingRight: 10,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        alignItems: "center",
+                      }}
+                    >
+                      {event.start != null ? moment(event.start).format("dddd, MMMM Do YYYY") : ""}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              {/* time start/end section */}
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  //backgroundColor: "orange",
+                }}
+              >
+                <View
+                  style={{
+                    width: 40,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 10,
+                      color: "grey",
+                      alignItems: "center",
+                    }}
+                  >
+                    Time Start:
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    width: 80,
+                    marginRight: 10,
+                  }}
+                >
+                  {/* start time to */}
+                  <View
+                    style={{
+                      borderColor: "grey",
+                      borderRadius: 20,
+                      //borderWidth: 1,
+                      paddingLeft: 10,
+                      paddingRight: 10,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        alignItems: "center",
+                      }}
+                    >
+                      {event.start != null ? moment(event.start).format("LT") : ""}
+                    </Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    width: 40,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 10,
+                      color: "grey",
+                      alignItems: "center",
+                    }}
+                  >
+                    Time End:
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    width: 80,
+                  }}
+                >
+                  {/* end time to */}
+                  <View
+                    style={{
+                      borderColor: "grey",
+                      borderRadius: 20,
+                      //borderWidth: 1,
+                      paddingLeft: 10,
+                      paddingRight: 10,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        alignItems: "center",
+                      }}
+                    >
+                      {event.end != null ? moment(event.end).format("LT") : ""}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              <View
+                style={{
+                  height: 40,
+                  paddingLeft: 0,
+                  paddingRight: 10,
+                  justifyContent: "flex-start",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  paddingBottom: 0,
+                  //backgroundColor: "yellow",
+                }}
+              >
+                <Text style={{ fontSize: 10, color: "grey" }}>Event Details</Text>
+                <Autolink
+                  // Required: the text to parse for links
+                  text={message.text}
+                  // Optional: enable email linking
+                  email
+                  // Optional: enable hashtag linking to instagram
+                  phone="sms"
+                  // Optional: enable URL linking
+                  url
+                  style={{
+                    paddingLeft: 0,
+                    paddingTop: 8,
+                    fontSize: 14,
+                    color: UIConstants.BLACK_TEXT_COLOR,
+                  }}
+                />
+              </View>
+              <View
+                style={{
+                  paddingLeft: 0,
+                  paddingRight: 10,
+                  justifyContent: "flex-start",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  paddingBottom: 0,
+                  //backgroundColor: "yellow",
+                }}
+              >
+                <Text style={{ fontSize: 10, color: "grey" }}>Created by</Text>
+                {UserInfo.tinyAvatarComponentWithName(message.user)}
               </View>
               <View
                 style={{
@@ -237,72 +444,153 @@ export default function EventModal({ messageId }) {
                     <Text style={{ fontSize: 8 }}>{JSON.stringify(message, null, 2)}</Text>
                   </ScrollView>
                 )}
-                <Text
-                  //numberOfLines={showMore[item.id] ? null : 4}
-                  style={{
-                    paddingLeft: 0,
-                    fontWeight: "bold",
-                    fontSize: 20,
-                    color: UIConstants.BLACK_TEXT_COLOR,
+              </View>
+            </View>
+            <Divider style={{}} width={1} color="darkgrey" />
+            {/* reply section */}
+            <View
+              style={{
+                flex: 1,
+                paddingLeft: 10,
+                paddingRight: 10,
+                //backgroundColor: "cyan"
+              }}
+            >
+              <View>
+                <Text>RSVP</Text>
+              </View>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  justifyContent: "space-evenly",
+                  //backgroundColor: "yellow",
+                }}
+              >
+                <Checkbox
+                  checked={eventResponse === "Going"}
+                  onPress={async () => {
+                    setEventResponse("Going");
                   }}
-                >
-                  {message.title}
-                </Text>
-                <Text>
-                  {moment(eventStart).format("LLLL")} - {moment(eventEnd).format("LT")}
-                </Text>
-                <Autolink
-                  // Required: the text to parse for links
-                  text={message.text}
-                  // Optional: enable email linking
-                  email
-                  // Optional: enable hashtag linking to instagram
-                  phone="sms"
-                  // Optional: enable URL linking
-                  url
+                  text={
+                    <Text style={{ fontWeight: "normal", fontSize: 12, color: "grey" }}>Going</Text>
+                  }
+                />
+                <Checkbox
+                  checked={eventResponse === "Not Going"}
+                  onPress={async () => {
+                    setEventResponse("Not Going");
+                  }}
+                  text={
+                    <Text style={{ fontWeight: "normal", fontSize: 12, color: "grey" }}>
+                      Not Going
+                    </Text>
+                  }
+                />
+                <Checkbox
+                  checked={eventResponse === "Maybe"}
+                  onPress={async () => {
+                    setEventResponse("Maybe");
+                  }}
+                  text={
+                    <Text style={{ fontWeight: "normal", fontSize: 12, color: "grey" }}>Maybe</Text>
+                  }
+                />
+              </View>
+              <View
+                style={{
+                  height: replyBarHeight,
+                  alignItems: "flex-start",
+                  justifyContent: "flex-start",
+                  paddingLeft: 0,
+                  paddingRight: 0,
+                  paddingBottom: 0,
+                  flexDirection: "column",
+                  //backgroundColor: "cyan",
+                }}
+              >
+                <Text style={{ fontSize: 10, color: "grey" }}>Comments</Text>
+                <TextInput
+                  value={text}
                   style={{
-                    paddingLeft: 0,
-                    paddingTop: 8,
-                    fontSize: 14,
-                    color: UIConstants.BLACK_TEXT_COLOR,
+                    flex: 1,
+                    backgroundColor: "blue",
+                    margin: 0,
+                    //paddingLeft: 10,
+                    textAlign: "left",
+                    fontSize: 16,
+                    width: "100%",
+                    backgroundColor: "white",
+                    borderRadius: 15,
+                    borderWidth: 1,
+                    borderColor: "grey",
+                  }}
+                  placeholder={""}
+                  multiline={true}
+                  autoFocus={false}
+                  onChangeText={(text) => {
+                    setText(text);
                   }}
                 />
               </View>
-              {/* accept/decline bar */}
-              {/*
-              <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-evenly" }}>
-                <TouchableOpacity
-                  onPress={() => {
-                    sendEventReply("accept", null);
+            </View>
+            {/* button */}
+            <View
+              style={{
+                //backgroundColor: "cyan",
+                height: 60,
+                width: "100%",
+                alignItems: "flex-end",
+                paddingTop: 10,
+                paddingRight: 10,
+              }}
+            >
+              <View
+                style={{
+                  width: 180,
+                  alignItems: "flex-end",
+                }}
+              >
+                <MyButtons.FormButton
+                  text="Confirm"
+                  onPress={async () => {
+                    await sendEventReply(eventResponse, text);
                   }}
-                >
-                  {(message.event.users ?? {})[user.uid]?.status === "accept" && (
-                    <Text style={{ backgroundColor: "green" }}>Going</Text>
-                  )}
-                  {(message.event.users ?? {})[user.uid]?.status != "accept" && <Text>Going</Text>}
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    sendEventReply("decline", null);
-                  }}
-                >
-                  <Text>Not Going</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    sendEventReply("tentative", null);
-                  }}
-                >
-                  <Text>Don't Know Yet</Text>
-                </TouchableOpacity>
-                <TouchableOpacity>
-                  <Text>...</Text>
-                </TouchableOpacity>
+                />
               </View>
-                */}
             </View>
             <Divider style={{}} width={1} color="darkgrey" />
+            {/* Other user responses */}
+            <Text style={{ fontSize: 10, color: "grey" }}>Going</Text>
+            {goingResponses.map((response) => {
+              return (
+                <View style={{ flexDirection: "column" }}>
+                  {UserInfo.smallAvatarComponentWithName(message.user)}
+                  <Text>{response.text}</Text>
+                </View>
+              );
+            })}
+            <Text style={{ fontSize: 10, color: "grey" }}>Not Going</Text>
+            {notGoingResponses.map((response) => {
+              return (
+                <View style={{ flexDirection: "column" }}>
+                  {UserInfo.smallAvatarComponentWithName(message.user)}
+                  <Text>{response.text}</Text>
+                </View>
+              );
+            })}
+            <Text style={{ fontSize: 10, color: "grey" }}>Maybe</Text>
+            {maybeResponses.map((response) => {
+              return (
+                <View style={{ flexDirection: "column" }}>
+                  {UserInfo.smallAvatarComponentWithName(message.user)}
+                  <Text>{response.text}</Text>
+                </View>
+              );
+            })}
+
             {/* comments section */}
+            {/*
             <View
               style={{
                 flex: 1,
@@ -318,110 +606,8 @@ export default function EventModal({ messageId }) {
                 );
               })}
             </View>
+            */}
           </ScrollView>
-          {/* reply text input section */}
-          <View
-            style={{
-              height: replyBarHeight + (user.uid != event.creator ? 60 : 0),
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "column",
-            }}
-          >
-            {user.uid != event.creator && (
-              <View style={{ flex: 1, flexDirection: "row" }}>
-                <CheckBox
-                  checked={eventResponse === "Going"}
-                  onPress={() => {
-                    const response = "Going";
-                    if (eventResponse != response) {
-                      setEventResponse(response);
-                    } else {
-                      setEventResponse("");
-                    }
-                  }}
-                  style={{ alignSelf: "center" }}
-                  title="Going"
-                />
-                <CheckBox
-                  checked={eventResponse === "Not Going"}
-                  onPress={() => {
-                    const response = "Not Going";
-                    if (eventResponse != response) {
-                      setEventResponse(response);
-                    } else {
-                      setEventResponse("");
-                    }
-                  }}
-                  style={{ alignSelf: "center" }}
-                  title="Not Going"
-                />
-                <CheckBox
-                  checked={eventResponse === "Maybe"}
-                  onPress={() => {
-                    const response = "Maybe";
-                    if (eventResponse != response) {
-                      setEventResponse(response);
-                    } else {
-                      setEventResponse("");
-                    }
-                  }}
-                  style={{ alignSelf: "center" }}
-                  title="Maybe"
-                />
-              </View>
-            )}
-            <View
-              style={{
-                height: replyBarHeight,
-                alignItems: "center",
-                justifyContent: "center",
-                paddingLeft: 10,
-                paddingRight: 10,
-                paddingBottom: 0,
-                flexDirection: "row",
-              }}
-            >
-              <TextInput
-                value={text}
-                style={{
-                  flex: 1,
-                  backgroundColor: "blue",
-                  margin: 0,
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  //paddingLeft: 10,
-                  textAlign: "left",
-                  fontSize: 16,
-                  backgroundColor: "white",
-                  borderLeftWidth: 1,
-                  borderTopWidth: 1,
-                  borderRightWidth: 1,
-                  borderBottomWidth: 1,
-                  borderTopLeftRadius: 5,
-                  borderTopRightRadius: 5,
-                  borderBottomRightRadius: 5,
-                  borderBottomLeftRadius: 5,
-                }}
-                placeholder={"Optional Reply..."}
-                multiline={true}
-                autoFocus={false}
-                onChangeText={(text) => {
-                  setText(text);
-                }}
-              />
-              {canSend && (
-                <IconButton
-                  icon="arrow-up-circle"
-                  color={"blue"}
-                  size={38}
-                  onPress={() => {
-                    sendEventReply(eventResponse, text);
-                  }}
-                />
-              )}
-            </View>
-          </View>
         </KeyboardAvoidingView>
       </Portal>
 

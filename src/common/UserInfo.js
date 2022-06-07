@@ -1,5 +1,5 @@
 import { Avatar } from "react-native-elements";
-import { TouchableOpacity, Text } from "react-native";
+import { TouchableOpacity, Text, View } from "react-native";
 import React from "react";
 import { Image } from "react-native-expo-image-cache";
 import * as Utils from "../common/Utils";
@@ -75,6 +75,62 @@ export function smallAvatarComponent(userInfo, onPress, border) {
 
 export function tinyAvatarComponent(userInfo, onPress, border) {
   return sizedAvatarComponent(userInfo, onPress, border, "tiny");
+}
+
+export function tinyAvatarComponentWithName(userInfo, onPress, border, containerStyle) {
+  return (
+    <View style={{ flex: 1, flexDirection: "row", ...containerStyle }}>
+      {tinyAvatarComponent(userInfo)}
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingRight: 20,
+          //backgroundColor: "cyan",
+        }}
+      >
+        <Text
+          style={{
+            marginLeft: 5,
+            fontWeight: "bold",
+            fontSize: 12,
+          }}
+        >
+          {chatDisplayName(userInfo)}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+export function smallAvatarComponentWithName(userInfo, onPress, border, containerStyle) {
+  return (
+    <View style={{ flex: 1, flexDirection: "row", ...containerStyle }}>
+      {smallAvatarComponent(userInfo)}
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingRight: 20,
+          //backgroundColor: "cyan",
+        }}
+      >
+        <Text
+          style={{
+            marginLeft: 5,
+            fontWeight: "bold",
+            fontSize: 16,
+          }}
+        >
+          {chatDisplayName(userInfo)}
+        </Text>
+      </View>
+    </View>
+  );
 }
 
 function sizedAvatarComponent(userInfo, onPress, border, size) {
