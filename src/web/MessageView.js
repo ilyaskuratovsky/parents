@@ -10,6 +10,8 @@ import * as Debug from "../common/Debug";
 
 export default function MessageView({ item, onPress }) {
   const timestamp = item.timestamp?.toDate();
+  const debugMode = Debug.isDebugMode();
+
   return (
     <TouchableOpacity
       onPress={() => {
@@ -125,8 +127,8 @@ export default function MessageView({ item, onPress }) {
                   {item.title ?? "[No Title]"}
                 </Text>
               </View>
-              {Globals.dev ? <Text style={{ fontSize: 10 }}>{item.id}</Text> : null}
-              {Globals.dev ? (
+              {debugMode ? <Text style={{ fontSize: 10 }}>{item.id}</Text> : null}
+              {debugMode ? (
                 <Text style={{ fontSize: 10 }}>{JSON.stringify({ ...item, children: null })}</Text>
               ) : null}
             </View>

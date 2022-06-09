@@ -109,6 +109,10 @@ export async function updateUser(userId, update) {
   DatabaseRDB.updateUser(userId, update);
 }
 
+export async function deleteGroupMembership(groupMembershipId) {
+  DatabaseRDB.deleteGroupMembership(groupMembershipId);
+}
+
 export async function logError(error, info) {
   DatabaseRDB.logError(error, info);
 }

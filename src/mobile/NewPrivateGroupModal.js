@@ -38,6 +38,7 @@ export default function NewPrivateGroupModal({ visible, createGroup, closeModal 
     );
   }
 
+  /*
   let addList = UserInfo.groupInviteeList(
     userInfo,
     null,
@@ -46,6 +47,8 @@ export default function NewPrivateGroupModal({ visible, createGroup, closeModal 
     groupMembershipMap,
     userMap
   );
+  */
+  let addList = UserInfo.allUsers(userInfo, userMap);
 
   return (
     <Modal visible={visible} animationType={"slide"}>

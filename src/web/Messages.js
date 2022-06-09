@@ -9,6 +9,7 @@ import * as Debug from "../common/Debug";
 
 export default function Messages(props) {
   const dispatch = useDispatch();
+  const debugMode = Debug.isDebugMode();
   const userInfo = useSelector((state) => state.main.userInfo);
   const { toUserInvites, groupMap } = useSelector((state) => {
     return {
@@ -72,7 +73,7 @@ export default function Messages(props) {
                 />
               </View>
               <View>
-                <Text style={{ fontSize: 10 }}>{Globals.dev ? "(" + invite.id + ")" : ""}</Text>
+                <Text style={{ fontSize: 10 }}>{debugMode ? "(" + invite.id + ")" : ""}</Text>
               </View>
             </View>
           );

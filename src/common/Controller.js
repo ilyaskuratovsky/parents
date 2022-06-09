@@ -540,3 +540,7 @@ export async function deleteGroup(userInfo, groupId) {
     status: "deleted",
   });
 }
+
+export async function deleteGroupMembership(userInfo, groupMembershipId) {
+  await Database.deleteGroupMembership(groupMembershipId);
+}

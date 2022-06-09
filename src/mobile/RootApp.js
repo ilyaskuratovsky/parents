@@ -156,7 +156,9 @@ function RootApp(props, state) {
     <View style={{ flex: 1 }}>
       {render}
       <Messages key="messages" />
-      {modal === "MY_PROFILE" && <MyProfileModal visible={true} {...modalWithParams} />}
+      {modal === "MY_PROFILE" && appState.main.userInfo != null && (
+        <MyProfileModal visible={true} {...modalWithParams} />
+      )}
       {modal === "EVENT" && <EventModal visible={true} {...modalWithParams} />}
       {modal === "EVENT_POLL" && <EventPollModal visible={true} {...modalWithParams} />}
       {modal === "NEW_EVENT_FROM_POLL" && <NewEventFromPollModal {...modalWithParams} />}
@@ -165,7 +167,7 @@ function RootApp(props, state) {
           <Text>Hi</Text>
         </Modal>
       )*/}
-      <View style={{ position: "absolute", bottom: 0, right: 0 }}>
+      <View style={{ position: "absolute", bottom: 100, right: 0 }}>
         <MyButtons.MenuButton
           icon="bug"
           color={debugMode ? "red" : "black"}

@@ -15,6 +15,7 @@ import * as Debug from "../common/Debug";
 
 export default function GroupSettingsModal({ groupId, visible, closeModal }) {
   const dispatch = useDispatch();
+  const debugMode = Debug.isDebugMode();
   const userInfo = useSelector((state) => state.main.userInfo);
   const {
     userMap,
@@ -129,9 +130,19 @@ function TabView({ tab1, tab2 }) {
 }
 
 function GroupSettings({ userInfo, group, closeModal }) {
+  const isDebugMode = Debug.isDebugMode();
   const dispatch = useDispatch();
   const [groupName, setGroupName] = useState(group.name);
   const [groupDescription, setGroupDescription] = useState(group.description);
+  const { members } = useSelector((state) => {
+    return {
+      members: state.main.groupMembershipMap[group.id],
+    };
+  });
+  const myGroupMemberships = members.filter(
+    (group_membership) => group_membership.uid === userInfo.uid
+  );
+
   return (
     <View
       style={{
@@ -186,13 +197,15 @@ function GroupSettings({ userInfo, group, closeModal }) {
         }}
       />
       <MyButtons.FormButton
-        text="Delete Group"
+        text="Leave Group"
         onPress={async () => {
-          Alert.alert("Are You Sure?", null, [
+          Alert.alert("Are You Sure?: " + JSON.stringify(myGroupMemberships), null, [
             {
               text: "Yes",
               onPress: async () => {
-                await Controller.deleteGroup(userInfo, group.id);
+                for (const groupMembership of myGroupMemberships) {
+                  await Controller.deleteGroupMembership(userInfo, groupMembership.id);
+                }
                 closeModal();
                 dispatch(
                   Actions.goToScreen({
@@ -215,6 +228,7 @@ function GroupSettings({ userInfo, group, closeModal }) {
 
 function GroupMembers({ groupId, members, userMap, fromUserInvites }) {
   const [inviteModalVisible, setInviteModalVisible] = useState(false);
+  const debugMode = Debug.isDebugMode();
 
   const memberComponents = members.map((groupMembership) => {
     const user = userMap[groupMembership.uid];
@@ -249,6 +263,7 @@ function GroupMembers({ groupId, members, userMap, fromUserInvites }) {
           >
             {UserInfo.chatDisplayName(user)}
           </Text>
+          {debugMode && <Text style={{ fontSize: 10 }}>gm: {groupMembership.id}</Text>}
         </View>
       </View>
     );
@@ -292,7 +307,7 @@ function GroupMembers({ groupId, members, userMap, fromUserInvites }) {
             return (
               <View style={{ flex: 1, padding: 10 }}>
                 {component}
-                {Globals.dev && <Text style={{ fontSize: 8 }}>{invite.id}</Text>}
+                {debugMode && <Text style={{ fontSize: 8 }}>{invite.id}</Text>}
               </View>
             );
           })}

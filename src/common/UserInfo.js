@@ -231,3 +231,7 @@ export function groupInviteeList(
 
   return addList;
 }
+
+export function allUsers(userInfo, userMap) {
+  return Object.values(userMap);
+}

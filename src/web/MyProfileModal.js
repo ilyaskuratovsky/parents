@@ -30,6 +30,7 @@ export default function MyProfileModal({ visible }) {
 
 function ModalContainer({ userInfo }) {
   const dispatch = useDispatch();
+  const debugMode = Debug.isDebugMode();
   const [firstName, setFirstName] = useState(userInfo.firstName);
   const [lastName, setLastName] = useState(userInfo.lastName);
   const [editingImage, setEditingImage] = useState(true);
@@ -122,7 +123,7 @@ function ModalContainer({ userInfo }) {
           />
         }
       />
-      {Globals.dev && <Text style={{ fontSize: 10 }}>{userInfo.uid}</Text>}
+      {debugMode && <Text style={{ fontSize: 10 }}>{userInfo.uid}</Text>}
       <View
         style={{
           paddingTop: 20,

@@ -190,6 +190,11 @@ export async function updateUser(uid, update) {
   await RDB.update(docRef, update);
 }
 
+export async function deleteGroupMembership(groupMembershipId) {
+  const docRef = RDB.ref(rdb, "/group_memberships/" + groupMembershipId);
+  await RDB.remove(docRef);
+}
+
 export async function logError(error, info) {
   console.log("loggin error to rdb: " + JSON.stringify(error));
   const newReference = await RDB.push(RDB.ref(rdb, "/errors"));

@@ -46,6 +46,7 @@ export default function EventPollModal({ messageId }) {
   const message = Data.getRootMessageWithChildrenAndUserStatus(messageId);
   const group = Data.getGroup(message.groupId);
   const user = Data.getCurrentUser();
+  const debugMode = Debug.isDebugMode();
 
   const sortedChildMessages = [...message.children] ?? [];
   sortedChildMessages.sort((m1, m2) => {
@@ -163,9 +164,9 @@ export default function EventPollModal({ messageId }) {
             //onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
           >
             {/* debug stuff*/}
-            {Globals.dev && <Text>EventPollMessageModal</Text>}
-            {Globals.dev && <Text>{message.id}</Text>}
-            {Globals.dev && (
+            {debugMode && <Text>EventPollMessageModal</Text>}
+            {debugMode && <Text>{message.id}</Text>}
+            {debugMode && (
               <View style={{ height: 240 }}>
                 {/*
                 <ScrollView style={{ height: 120 }}>
@@ -180,7 +181,7 @@ export default function EventPollModal({ messageId }) {
                 </ScrollView>
               </View>
             )}
-            {Globals.dev && (
+            {debugMode && (
               <Text
                 style={{
                   fontSize: 10,

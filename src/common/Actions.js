@@ -6,6 +6,7 @@ import {
 } from "firebase/firestore";
 import * as Logger from "./Logger";
 
+const START_IN_DEBUG = true;
 export const screenSlice = createSlice({
   name: "screen",
   initialState: {
@@ -296,7 +297,7 @@ export const debugSlice = createSlice({
   name: "debug",
   initialState: {
     debugMode: {
-      status: false,
+      status: START_IN_DEBUG,
     },
   },
   reducers: {

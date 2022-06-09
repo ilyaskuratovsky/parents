@@ -38,6 +38,7 @@ export default function GroupInviteModal({ groupId, visible, onInvite, closeModa
 
   const [invitees, setInvitees] = useState([]);
   const [processing, setProcessing] = useState(false);
+  /*
   let addList = UserInfo.groupInviteeList(
     userInfo,
     groupId,
@@ -46,6 +47,8 @@ export default function GroupInviteModal({ groupId, visible, onInvite, closeModa
     groupMembershipMap,
     userMap
   );
+  */
+  let addList = UserInfo.allUsers(userInfo, userMap);
   const [email, setEmail] = useState(null);
   if (userInfo == null) {
     return <Text>Loading Data...</Text>;

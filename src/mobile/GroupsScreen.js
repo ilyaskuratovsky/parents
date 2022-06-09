@@ -19,6 +19,7 @@ import * as Debug from "../common/Debug";
 
 export default function GroupsScreen({}) {
   const dispatch = useDispatch();
+  const debugMode = Debug.isDebugMode();
   // const x = null;
   // const a = x.foo;
   const userInfo = useSelector((state) => state.main.userInfo);
@@ -157,7 +158,7 @@ export default function GroupsScreen({}) {
                   {group.description} {/*group.id*/}
                 </Text>
               )}
-              {Debug.isDebugMode() && (
+              {debugMode && (
                 <Text style={{ fontSize: 8 }}>
                   user_group_membership: {userGroupMembership.id}
                   group: {group.id}
