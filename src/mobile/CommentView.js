@@ -8,6 +8,8 @@ import * as Date from "../common/Date";
 import Autolink from "react-native-autolink";
 import MessageTime from "./MessageTime";
 import * as Utils from "../common/Utils";
+import * as Debug from "../common/Debug";
+
 export default function CommentView({ item, user, onPress }) {
   const timeAgo = ({ children }) => {
     return (
@@ -148,8 +150,10 @@ export default function CommentView({ item, user, onPress }) {
                 }}
               />
             )}
-            {Globals.dev && <Text style={{ fontSize: 8 }}>{item.id}</Text>}
-            {Globals.dev && <Text style={{ fontSize: 8 }}>{JSON.stringify(item, null, 2)}</Text>}
+            {Debug.isDebugMode() && <Text style={{ fontSize: 8 }}>{item.id}</Text>}
+            {Debug.isDebugMode() && (
+              <Text style={{ fontSize: 8 }}>{JSON.stringify(item, null, 2)}</Text>
+            )}
           </View>
         </View>
       </View>

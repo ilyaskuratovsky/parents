@@ -85,7 +85,7 @@ export default function FeedScreen({ debug }) {
     const onPress = () => {
       setMessagesModalVisible({ messageId: item.id, groupId: item.groupId });
     };
-    return <MessageViewContainer showGroup={true} item={item} onPress={onPress} />;
+    return <MessageViewContainer user={userInfo} showGroup={true} item={item} onPress={onPress} />;
   };
   useEffect(async () => {}, [messages]);
 

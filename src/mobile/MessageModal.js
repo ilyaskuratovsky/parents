@@ -34,6 +34,7 @@ import moment from "moment-timezone";
 import JSONTree from "react-native-json-tree";
 import Autolink from "react-native-autolink";
 import { userInfo } from "../common/Actions";
+import * as Debug from "../common/Debug";
 
 export default function MessageModal({
   user,

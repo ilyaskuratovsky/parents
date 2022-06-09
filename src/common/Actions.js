@@ -292,6 +292,24 @@ export const mainSlice = createSlice({
   },
 });
 
+export const debugSlice = createSlice({
+  name: "debug",
+  initialState: {
+    debugMode: {
+      status: false,
+    },
+  },
+  reducers: {
+    toggleDebugMode: (state) => {
+      const newState = {
+        ...state,
+        debugMode: { status: !state.debugMode.status },
+      };
+      return newState;
+    },
+  },
+});
+
 // Action creators are generated for each case reducer function
 export const {
   appInitialized,
@@ -313,10 +331,13 @@ export const {
 export const { goToScreen, openModal, closeModal, goToUserScreen, goToScreenAfterLogin } =
   screenSlice.actions;
 
+export const { toggleDebugMode } = debugSlice.actions;
+
 export default configureStore({
   reducer: {
     main: mainSlice.reducer,
     screen: screenSlice.reducer,
+    debug: debugSlice.reducer,
   },
   middleware: [],
 });

@@ -6,6 +6,7 @@ import * as UserInfo from "../common/UserInfo";
 import * as Globals from "./Globals";
 import MessageTime from "./MessageTime";
 import * as UIConstants from "./UIConstants";
+import * as Debug from "../common/Debug";
 
 export default function MessageView({ item, onPress }) {
   const timestamp = item.timestamp?.toDate();

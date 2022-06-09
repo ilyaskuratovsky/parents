@@ -38,6 +38,7 @@ import { userInfo } from "../common/Actions";
 import * as Dates from "../common/Date";
 import * as Data from "../common/Data";
 import * as Message from "../common/Message";
+import * as Debug from "../common/Debug";
 
 export default function EventModal({ messageId }) {
   const dispatch = useDispatch();
@@ -176,7 +177,7 @@ export default function EventModal({ messageId }) {
             style={{ flex: 1 }}
             //onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
           >
-            {/* parent message */}
+            {/* Event Container */}
             <View
               style={{
                 flexDirection: "column",
@@ -187,7 +188,7 @@ export default function EventModal({ messageId }) {
                 //backgroundColor: "purple",
               }}
             >
-              {/* group name */}
+              {/* Event Title */}
               <View
                 style={{
                   height: 40,

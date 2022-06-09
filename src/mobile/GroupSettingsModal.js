@@ -11,6 +11,7 @@ import * as UserInfo from "../common/UserInfo";
 import * as Globals from "./Globals";
 import { Avatar, Divider } from "react-native-elements";
 import * as Logger from "../common/Logger";
+import * as Debug from "../common/Debug";
 
 export default function GroupSettingsModal({ groupId, visible, closeModal }) {
   const dispatch = useDispatch();

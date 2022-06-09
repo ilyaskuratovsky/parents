@@ -1,7 +1,9 @@
 import * as Notifications from "expo-notifications";
 import React, { useEffect, useRef } from "react";
-import { Alert, View } from "react-native";
+import { Alert, View, Text, Modal } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import * as MyButtons from "./MyButtons";
+
 import * as Actions from "../common/Actions";
 import * as Controller from "../common/Controller";
 import DebugScreen from "./DebugScreen";
@@ -28,6 +30,10 @@ import TestThreadView from "./TestThreadView";
 import * as UserInfo from "../common/UserInfo";
 import Loading from "./Loading";
 import EventModal from "./EventModal";
+import EventPollModal from "./EventPollModal";
+import NewEventFromPollModal from "./NewEventFromPollModal";
+import * as Globals from "./Globals";
+import * as Debug from "../common/Debug";
 /*
 App vision:  The local social network for parents.
 When join you put in your zip code (we also detect based on gps coordinates)
@@ -87,26 +93,21 @@ function RootApp(props, state) {
   });
   let modal = modalWithParams?.modal;
   console.log("modalWithParams: " + JSON.stringify(modalWithParams));
-
+  const debugMode = Debug.isDebugMode();
   console.log("RootApp.js:appInitialized: " + appState.main.appInitialized);
   if (!appState.main.appInitialized) {
     //return <SplashScreen appInitializedCallback={() => {}} refresh={2200} />;
     return <Loading />;
   }
 
-  //return <TestThreadView />;
-  if (screen === "LOGIN") {
-    return <LoginScreen dispatch={dispatch} />;
-  } else if (screen === "SIGNUP") {
-    return <SignupScreen />;
-  }
-
-  if (appState.main.userInfo == null) {
-    return <LoginScreen />;
-  }
-
   let render = null;
-  if (screen === "USER") {
+  if (screen === "LOGIN") {
+    render = <LoginScreen dispatch={dispatch} />;
+  } else if (screen === "SIGNUP") {
+    render = <SignupScreen />;
+  } else if (appState.main.userInfo == null) {
+    render = <LoginScreen />;
+  } else if (screen === "USER") {
     render = <UserScreen />;
   } else if (screen == "INITIAL_SELECT_SCHOOLS") {
     render = <InitialChooseSchoolsWizard />;
@@ -155,8 +156,25 @@ function RootApp(props, state) {
     <View style={{ flex: 1 }}>
       {render}
       <Messages key="messages" />
-      {modal === "MYROFILE" && <MyProfileModal visible={true} {...modalWithParams} />}
+      {modal === "MY_PROFILE" && <MyProfileModal visible={true} {...modalWithParams} />}
       {modal === "EVENT" && <EventModal visible={true} {...modalWithParams} />}
+      {modal === "EVENT_POLL" && <EventPollModal visible={true} {...modalWithParams} />}
+      {modal === "NEW_EVENT_FROM_POLL" && <NewEventFromPollModal {...modalWithParams} />}
+      {/*modal === "NEW_EVENT_FROM_POLL" && (
+        <Modal visible={true}>
+          <Text>Hi</Text>
+        </Modal>
+      )*/}
+      <View style={{ position: "absolute", bottom: 0, right: 0 }}>
+        <MyButtons.MenuButton
+          icon="bug"
+          color={debugMode ? "red" : "black"}
+          text=""
+          onPress={() => {
+            dispatch(Actions.toggleDebugMode());
+          }}
+        />
+      </View>
     </View>
   );
 }

@@ -37,6 +37,7 @@ import JSONTree from "react-native-json-tree";
 import Autolink from "react-native-autolink";
 import FacePile from "./FacePile";
 import * as Date from "../common/Date";
+import * as Debug from "../common/Debug";
 
 export default function EventPollMessageModal({
   group,
@@ -268,22 +269,9 @@ export default function EventPollMessageModal({
                 <Text style={{ paddingLeft: 10, paddingRight: 10, fontSize: 12 }}>
                   There is no set date &amp; time for the event. Please pick one or more choices.
                 </Text>
+
+                {/* poll results */}
                 {message.event_poll.options.map((option, index) => {
-                  /*
-                  return (
-                    <CheckBox
-                      checked={
-                        pollResponse.filter((response) => response.name == option.name).length > 0
-                      }
-                      onPress={() => {
-                        togglePollResponse(option);
-                      }}
-                      titleProps={{ backgroundColor: "green" }}
-                      containerStyle={{ backgroundColor: "cyan" }}
-                      title={moment(Date.toDate(option.startDate)).format("LL")}
-                    />
-                  );
-                  */
                   const optionSummary = pollResponseSummary.filter((summary) => {
                     return summary.poll_option.name === option.name;
                   })[0];

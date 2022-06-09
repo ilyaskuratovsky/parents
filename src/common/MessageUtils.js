@@ -50,9 +50,9 @@ export function buildRootMessageWithChildren(
       rootMessage = { ...m, ...rootMessage };
     }
   }
-  let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap, userMap);
+  let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap, userMap, groupMap);
   rootMessageWithStatus = addEventData(rootMessageWithStatus, userInfo, groupMembers);
-  rootMessageWithStatus = addPollData(rootMessageWithStatus, userInfo, groupMembers);
+  rootMessageWithStatus = addEventPollData(rootMessageWithStatus, userInfo, groupMembers);
 
   // const a = null;
   // const b = a.foo;
@@ -92,6 +92,7 @@ export function buildRootMessagesWithChildren(
   const messagesWithStatus = rootMessages.map((rootMessage) => {
     let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap, userMap, groupMap);
     rootMessageWithStatus = addEventData(rootMessageWithStatus, userInfo, groupMembers);
+    rootMessageWithStatus = addEventPollData(rootMessageWithStatus, userInfo, groupMembers);
     return { ...rootMessage, ...rootMessageWithStatus };
   });
   Logger.log(
@@ -221,7 +222,7 @@ export function addEventData(rootMessage, userInfo, userMessagesMap, groupMember
   return rootMessage;
 }
 
-export function addPollData(rootMessage, userInfo, userMessagesMap, groupMembers) {
+export function addEventPollData(rootMessage, userInfo, userMessagesMap, groupMembers) {
   let poll = null;
   const pollMessages = [rootMessage, ...rootMessage.children].filter(
     (message) => message.event_poll != null
@@ -264,10 +265,7 @@ function eventPollResponseSummary(rootMessage) {
       eventPollResponsesPerUser
     )) {
       const pollResponse = userEventPollResponseMessage.event_poll_response;
-      if (
-        pollResponse != null &&
-        pollResponse.find((option) => option.name === pollOption.name) != null
-      ) {
+      if (pollResponse != null && pollResponse[pollOption.name]?.status) {
         uid_list.push(userId);
       }
     }

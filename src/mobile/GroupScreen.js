@@ -31,6 +31,7 @@ import * as UserInfo from "../common/UserInfo";
 import * as MyButtons from "./MyButtons";
 import Loading from "./Loading";
 import * as Logger from "../common/Logger";
+import * as Debug from "../common/Debug";
 
 export default function GroupScreen({ groupId, messageId, debug }) {
   const dispatch = useDispatch();
@@ -140,7 +141,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
     const onPress = () => {
       setMessagesModalVisible(item.id);
     };
-    return <MessageViewContainer item={item} onPress={onPress} />;
+    return <MessageViewContainer user={userInfo} item={item} onPress={onPress} />;
   };
   useEffect(async () => {
     // update last viewed callback function
@@ -248,7 +249,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
                   >
                     {group.name}
                   </Text>
-                  {Globals.dev ? <Text style={{ fontSize: 10 }}>{group.id}</Text> : null}
+                  {Debug.isDebugMode() ? <Text style={{ fontSize: 10 }}>{group.id}</Text> : null}
                   {org != null && (
                     <Text style={{ fontWeight: "normal", fontSize: 14 }}>{org.name}</Text>
                   )}

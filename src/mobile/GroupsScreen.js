@@ -15,6 +15,8 @@ import TopBar from "./TopBar";
 import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
 import * as Utils from "../common/Utils";
+import * as Debug from "../common/Debug";
+
 export default function GroupsScreen({}) {
   const dispatch = useDispatch();
   // const x = null;
@@ -155,7 +157,7 @@ export default function GroupsScreen({}) {
                   {group.description} {/*group.id*/}
                 </Text>
               )}
-              {Globals.dev && (
+              {Debug.isDebugMode() && (
                 <Text style={{ fontSize: 8 }}>
                   user_group_membership: {userGroupMembership.id}
                   group: {group.id}

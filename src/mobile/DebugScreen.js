@@ -6,6 +6,7 @@ import * as Database from "../common/Database";
 import * as MyButtons from "./MyButtons";
 import Toolbar from "./Toolbar";
 import * as Globals from "./Globals";
+import * as Debug from "../common/Debug";
 
 export default function DebugScreen({ backAction }) {
   const dispatch = useDispatch();

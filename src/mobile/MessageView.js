@@ -6,6 +6,7 @@ import * as UserInfo from "../common/UserInfo";
 import * as Globals from "./Globals";
 import MessageTime from "./MessageTime";
 import * as UIConstants from "./UIConstants";
+import * as Debug from "../common/Debug";
 
 export default function MessageView({ item, onPress, showGroup = false }) {
   const timestamp = item.timestamp?.toDate();
@@ -187,8 +188,8 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                   {item.title ?? "[No Title]"}
                 </Text>
               </View>
-              {Globals.dev ? <Text style={{ fontSize: 10 }}>{item.id}</Text> : null}
-              {Globals.dev ? (
+              {Debug.isDebugMode() ? <Text style={{ fontSize: 10 }}>{item.id}</Text> : null}
+              {Debug.isDebugMode() ? (
                 <Text style={{ fontSize: 10 }}>{JSON.stringify({ ...item, children: null })}</Text>
               ) : null}
             </View>

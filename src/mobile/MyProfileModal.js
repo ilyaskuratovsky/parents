@@ -15,15 +15,17 @@ import * as Globals from "./Globals";
 import * as MyButtons from "./MyButtons";
 import Portal from "./Portal";
 import { profileIncomplete } from "../common/UserInfo";
+import * as Debug from "../common/Debug";
 
-export default function MyProfileModal({ visible, forceComplete }) {
+export default function MyProfileModal({ forceComplete }) {
+  console.log("Showing MyProfileModal");
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
   const insets = useSafeAreaInsets();
 
   return (
-    <Modal visible={visible} animationType={"slide"}>
-      {visible && <ModalContainer userInfo={userInfo} forceComplete={forceComplete} />}
+    <Modal visible={true} animationType={"slide"}>
+      <ModalContainer userInfo={userInfo} forceComplete={forceComplete} />
     </Modal>
   );
 }

@@ -27,6 +27,7 @@ import ThreadMessageModal from "./ThreadMessageModal";
 import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
 import * as Device from "expo-device";
+import * as Debug from "../common/Debug";
 
 export default function GroupScreen({ groupId }) {
   const dispatch = useDispatch();

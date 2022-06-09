@@ -7,9 +7,11 @@ import { auth } from "../../config/firebase";
 import * as Actions from "../common/Actions";
 import * as Globals from "./Globals";
 import * as MyButtons from "./MyButtons";
+import * as Debug from "../common/Debug";
 
 export default function Login({ afterLoginScreen }) {
   const dispatch = useDispatch();
+  const isDebugMode = Debug.isDebugMode();
 
   const [user, loading, error] = useAuthState(auth);
   const [email, setEmail] = useState("");
@@ -213,7 +215,7 @@ export default function Login({ afterLoginScreen }) {
       {/*
       <LoginButton />
       */}
-      {Globals.dev && (
+      {isDebugMode && (
         <View style={{ flexDirection: "column" }}>
           <MyButtons.LinkButton
             text="ilyaskuratovsky@gmail.com"

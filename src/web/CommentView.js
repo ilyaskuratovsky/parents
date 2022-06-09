@@ -4,6 +4,8 @@ import TimeAgo from "react-timeago";
 import * as Globals from "./Globals";
 import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
+import * as Debug from "../common/Debug";
+
 export default function CommentView({ item, user, onPress }) {
   const timeAgo = ({ children }) => {
     return (

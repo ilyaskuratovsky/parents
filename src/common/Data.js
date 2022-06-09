@@ -33,7 +33,7 @@ export function getRootMessageWithChildrenAndUserStatus(messageId) {
     user,
     userMessagesMap,
     null,
-    null,
+    groupMap,
     userMap
   );
   return result;

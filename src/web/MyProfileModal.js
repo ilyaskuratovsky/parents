@@ -14,6 +14,7 @@ import * as Controller from "../common/Controller";
 import * as Globals from "./Globals";
 import * as MyButtons from "./MyButtons";
 import Portal from "./Portal";
+import * as Debug from "../common/Debug";
 
 export default function MyProfileModal({ visible }) {
   const dispatch = useDispatch();

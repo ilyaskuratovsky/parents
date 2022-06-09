@@ -105,6 +105,7 @@ const Toolbar = ({ selected }) => {
         }}
       />
       */}
+      {/*
       <MyButtons.MenuButton
         icon="checkbox-blank-circle"
         text="Debug"
@@ -117,6 +118,7 @@ const Toolbar = ({ selected }) => {
           );
         }}
       />
+      */}
     </BottomBar>
   );
 };

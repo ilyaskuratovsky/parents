@@ -7,11 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "../common/Actions";
 import * as Debug from "../common/Debug";
 
-export default function EventMessageView({ item, showGroup = false }) {
+export default function EventPollMessageView({ item, showGroup = false }) {
   const dispatch = useDispatch();
-  const timestamp = item.timestamp?.toDate();
-  const eventStart = moment(item.event.start).toDate();
-  const eventEnd = moment(item.event.end).toDate();
 
   return (
     <View style={{ flex: 1 }}>
@@ -26,15 +23,10 @@ export default function EventMessageView({ item, showGroup = false }) {
           <Text style={{ fontSize: 10 }}>{JSON.stringify({ ...item, children: null })}</Text>
         ) : null}
         <View style={{ height: 22 }}>
-          <Text style={{ fontWeight: "bold", fontSize: 12 }}>Event</Text>
+          <Text style={{ fontWeight: "bold", fontSize: 12 }}>Event Date &amp; Time Poll</Text>
         </View>
         <View style={{ height: 30 }}>
           <Text style={{ fontWeight: "bold", fontSize: 20 }}>{item.title}</Text>
-        </View>
-        <View style={{ height: 24 }}>
-          <Text style={{ fontWeight: "bold", fontSize: 14 }}>
-            {moment(eventStart).format("LLLL")} - {moment(eventEnd).format("LT")}
-          </Text>
         </View>
 
         <View
@@ -55,14 +47,6 @@ export default function EventMessageView({ item, showGroup = false }) {
             {(item.text ?? "").replace(/(\r\n|\n|\r)/gm, " ")}
           </Text>
         </View>
-
-        {item.event.summary != null && (
-          <View style={{ flexDirection: "row" }}>
-            <Text>{item.event.summary.accepted ?? 0} Accepted</Text>
-            <Text>{item.event.summary.declined ?? 0} Declined</Text>
-            <Text>{item.event.summary.not_responded ?? 0} Not Responded</Text>
-          </View>
-        )}
       </TouchableOpacity>
       <View
         style={{
@@ -80,13 +64,13 @@ export default function EventMessageView({ item, showGroup = false }) {
           onPress={() => {
             dispatch(
               Actions.openModal({
-                modal: "EVENT",
+                modal: "EVENT_POLL",
                 messageId: item.id,
               })
             );
           }}
         >
-          <Text>Going</Text>
+          <Text>Reply</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={{
@@ -95,14 +79,6 @@ export default function EventMessageView({ item, showGroup = false }) {
           }}
         >
           <Text>Not Going</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            alignItems: "center",
-            flex: 1, //backgroundColor: "cyan"
-          }}
-        >
-          <Text>Maybe</Text>
         </TouchableOpacity>
       </View>
     </View>

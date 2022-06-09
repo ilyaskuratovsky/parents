@@ -23,6 +23,7 @@ import * as Controller from "../common/Controller";
 import { useDispatch, useSelector } from "react-redux";
 import * as Dates from "../common/Date";
 import BookCalendarEventModal from "./BookCalendarEventModal";
+
 export default function NewEventModal({
   userInfo,
   group,

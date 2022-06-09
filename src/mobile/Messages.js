@@ -6,6 +6,7 @@ import * as Controller from "../common/Controller";
 import * as MyButtons from "./MyButtons";
 import * as Globals from "./Globals";
 import * as UserInfo from "../common/UserInfo";
+import * as Debug from "../common/Debug";
 
 export default function Messages(props) {
   const dispatch = useDispatch();

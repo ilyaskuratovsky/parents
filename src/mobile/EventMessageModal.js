@@ -35,6 +35,7 @@ import JSONTree from "react-native-json-tree";
 import Autolink from "react-native-autolink";
 import { userInfo } from "../common/Actions";
 import * as Dates from "../common/Date";
+import * as Debug from "../common/Debug";
 
 export default function EventMessageModal({ group, message, user, userMap, visible, closeModal }) {
   const dispatch = useDispatch();

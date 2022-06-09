@@ -7,6 +7,7 @@ import * as Utils from "../common/Utils";
 import * as Globals from "./Globals";
 import * as MyButtons from "./MyButtons";
 import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
+import * as Debug from "../common/Debug";
 
 export default function NewPrivateGroupModal({ visible, createGroup, closeModal }) {
   const userInfo = useSelector((state) => state.main.userInfo);
