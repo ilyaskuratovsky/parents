@@ -24,6 +24,12 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Dates from "../common/Date";
 import BookCalendarEventModal from "./BookCalendarEventModal";
 import Checkbox from "./Checkbox";
+import * as Debug from "../common/Debug";
+import TimePickerModal from "./TimePickerModal";
+import DatePickerModal from "./DatePickerModal";
+import DateInput from "./DateInput";
+import TimeInput from "./TimeInput";
+import * as Actions from "../common/Actions";
 
 export default function NewEventModal({
   userInfo,
@@ -38,23 +44,17 @@ export default function NewEventModal({
   visible,
   onComplete,
 }) {
+  const debugMode = Debug.isDebugMode();
   console.log("NewEventModal: initialTitle: " + initialTitle + ", onComplete: " + onComplete);
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const [text, setText] = useState(null);
   const [title, setTitle] = useState(null);
-  const [date, setDate] = useState(new Date());
   const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-  const [startTimeFrom, setStartTimeFrom] = useState(null);
   const [startTime, setStartTime] = useState(null);
-  const [endTimeFrom, setEndTimeFrom] = useState(null);
   const [endTime, setEndTime] = useState(null);
-  const [showDatePicker, setShowDatePicker] = useState(null);
-  const [showTimePicker, setShowTimePicker] = useState(null);
-  const [showEndTimePicker, setShowEndTimePicker] = useState(false);
-  const [showBookCalendar, setShowBookCalendar] = useState(null);
 
+  /*
   useEffect(() => {
     console.log("setting title: " + initialTitle + ", text: " + initialText);
     setTitle(initialTitle);
@@ -63,6 +63,7 @@ export default function NewEventModal({
     setStartTime(Dates.toDate(initialStartTime) ?? new Date());
     setEndTime(Dates.toDate(initialEndTime) ?? new Date());
   }, [initialTitle, initialText, initialStartDate, initialStartTime, initialEndTime]);
+  */
 
   const sendEvent = useCallback(async (title, text, startDate, startTime, endTime) => {
     const groupName = group.name;
@@ -156,7 +157,7 @@ export default function NewEventModal({
   };
 
   return (
-    <Modal visible={visible} animationType={"slide"}>
+    <Modal visible={true} animationType={"slide"}>
       <Portal>
         {/* top bar */}
         <TopBarMiddleContentSideButtons
@@ -166,7 +167,7 @@ export default function NewEventModal({
             <MyButtons.LinkButton
               text="Cancel"
               onPress={() => {
-                onDismiss();
+                dispatch(Actions.closeModal());
               }}
             />
           }
@@ -182,6 +183,7 @@ export default function NewEventModal({
           keyboardVerticalOffset={40}
           enabled
         >
+          {debugMode && <Text style={{ fontSize: 10 }}>NewEventModal2</Text>}
           <ScrollView style={{ paddingTop: 10 }}>
             {/* message section */}
             <View style={{ flexGrow: 1, flexDirection: "column" }}>
@@ -278,37 +280,12 @@ export default function NewEventModal({
                       }}
                     >
                       {/* start date */}
-                      <TouchableOpacity
-                        onPress={() => {
-                          setShowDatePicker({
-                            value: startDate ?? new Date(),
-                            onChange: (value) => {
-                              setStartDate(value);
-                            },
-                          });
+                      <DateInput
+                        date={startDate}
+                        onChange={(value) => {
+                          setStartDate(value);
                         }}
-                        style={{
-                          //backgroundColor: "white",
-                          borderColor: "grey",
-                          borderRadius: 20,
-                          borderWidth: 1,
-                          paddingLeft: 10,
-                          paddingRight: 10,
-                          alignItems: "center",
-                          justifyContent: "center",
-                          paddingTop: 10,
-                          paddingBottom: 10,
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 14,
-                            alignItems: "center",
-                          }}
-                        >
-                          {startDate != null ? moment(startDate).format("dddd, MMMM Do YYYY") : ""}
-                        </Text>
-                      </TouchableOpacity>
+                      />
                     </View>
                   </View>
                   {/* time start/end section */}
@@ -335,36 +312,12 @@ export default function NewEventModal({
                       }}
                     >
                       {/* start time to */}
-                      <TouchableOpacity
-                        onPress={() => {
-                          setShowTimePicker({
-                            value: startTime ?? Dates.roundToNearest(new Date(), 15),
-                            onChange: (value) => {
-                              setStartTime(value);
-                            },
-                          });
+                      <TimeInput
+                        time={startTime}
+                        onChange={(value) => {
+                          setStartTime(value);
                         }}
-                        style={{
-                          borderColor: "grey",
-                          borderRadius: 20,
-                          borderWidth: 1,
-                          paddingLeft: 10,
-                          paddingRight: 10,
-                          alignItems: "center",
-                          justifyContent: "center",
-                          paddingTop: 10,
-                          paddingBottom: 10,
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 14,
-                            alignItems: "center",
-                          }}
-                        >
-                          {startTime != null ? moment(startTime).format("LT") : ""}
-                        </Text>
-                      </TouchableOpacity>
+                      />
                     </View>
                     <View
                       style={{
@@ -387,36 +340,12 @@ export default function NewEventModal({
                       }}
                     >
                       {/* end time to */}
-                      <TouchableOpacity
-                        onPress={() => {
-                          setShowTimePicker({
-                            value: endTime ?? new Date(),
-                            onChange: (value) => {
-                              setEndTime(value);
-                            },
-                          });
+                      <TimeInput
+                        time={endTime}
+                        onChange={(value) => {
+                          setEndTime(value);
                         }}
-                        style={{
-                          borderColor: "grey",
-                          borderRadius: 20,
-                          borderWidth: 1,
-                          paddingLeft: 10,
-                          paddingRight: 10,
-                          alignItems: "center",
-                          justifyContent: "center",
-                          paddingTop: 10,
-                          paddingBottom: 10,
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 14,
-                            alignItems: "center",
-                          }}
-                        >
-                          {endTime != null ? moment(endTime).format("LT") : ""}
-                        </Text>
-                      </TouchableOpacity>
+                      />
                     </View>
                   </View>
                 </View>
@@ -474,40 +403,12 @@ export default function NewEventModal({
                           }}
                         >
                           {/* start date */}
-                          <TouchableOpacity
-                            onPress={() => {
-                              console.log("setShowDatePicker: option: " + JSON.stringify(option));
-                              setShowDatePicker({
-                                value: option.startDate ?? new Date(),
-                                onChange: (value) => {
-                                  setOptionStartDate(option.name, value);
-                                },
-                              });
+                          <DateInput
+                            date={option.startDate}
+                            onChange={(value) => {
+                              setOptionStartDate(option.name, value);
                             }}
-                            style={{
-                              //backgroundColor: "white",
-                              borderColor: "grey",
-                              borderRadius: 20,
-                              borderWidth: 1,
-                              paddingLeft: 10,
-                              paddingRight: 10,
-                              alignItems: "center",
-                              justifyContent: "center",
-                              paddingTop: 10,
-                              paddingBottom: 10,
-                            }}
-                          >
-                            <Text
-                              style={{
-                                fontSize: 14,
-                                alignItems: "center",
-                              }}
-                            >
-                              {startDate != null
-                                ? moment(startDate).format("dddd, MMMM Do YYYY")
-                                : ""}
-                            </Text>
-                          </TouchableOpacity>
+                          />
                         </View>
                       </View>
                       {/* time start/end section */}
@@ -534,39 +435,12 @@ export default function NewEventModal({
                           }}
                         >
                           {/* start time to */}
-                          <TouchableOpacity
-                            onPress={() => {
-                              console.log("setShowDatePicker: option: " + JSON.stringify(option));
-                              setShowTimePicker({
-                                value: option.startTime ?? Dates.roundToNearest(new Date(), 15),
-                                onChange: (value) => {
-                                  setOptionStartTime(option.name, value);
-                                },
-                              });
+                          <TimeInput
+                            time={option.startTime}
+                            onChange={(value) => {
+                              setOptionStartTime(option.name, value);
                             }}
-                            style={{
-                              borderColor: "grey",
-                              borderRadius: 20,
-                              borderWidth: 1,
-                              paddingLeft: 10,
-                              paddingRight: 10,
-                              alignItems: "center",
-                              justifyContent: "center",
-                              paddingTop: 10,
-                              paddingBottom: 10,
-                            }}
-                          >
-                            <Text
-                              style={{
-                                fontSize: 14,
-                                alignItems: "center",
-                              }}
-                            >
-                              {option.startTime != null
-                                ? moment(option.startTime).format("LT")
-                                : ""}
-                            </Text>
-                          </TouchableOpacity>
+                          />
                         </View>
                         <View
                           style={{
@@ -589,37 +463,12 @@ export default function NewEventModal({
                           }}
                         >
                           {/* end time to */}
-                          <TouchableOpacity
-                            onPress={() => {
-                              console.log("setShowDatePicker: option: " + JSON.stringify(option));
-                              setShowTimePicker({
-                                value: option.endTime ?? Dates.roundToNearest(new Date(), 15),
-                                onChange: (value) => {
-                                  setOptionEndTime(option.name, value);
-                                },
-                              });
+                          <TimeInput
+                            time={option.endTime}
+                            onChange={(value) => {
+                              setOptionEndTime(option.name, value);
                             }}
-                            style={{
-                              borderColor: "grey",
-                              borderRadius: 20,
-                              borderWidth: 1,
-                              paddingLeft: 10,
-                              paddingRight: 10,
-                              alignItems: "center",
-                              justifyContent: "center",
-                              paddingTop: 10,
-                              paddingBottom: 10,
-                            }}
-                          >
-                            <Text
-                              style={{
-                                fontSize: 14,
-                                alignItems: "center",
-                              }}
-                            >
-                              {option.endTime != null ? moment(option.endTime).format("LT") : ""}
-                            </Text>
-                          </TouchableOpacity>
+                          />
                         </View>
                       </View>
                     </View>
@@ -665,17 +514,13 @@ export default function NewEventModal({
                 <TextInput
                   style={{
                     flex: 1,
-                    backgroundColor: "blue",
                     borderWidth: 1,
                     borderColor: "lightgrey",
                     borderRadius: 10,
-                    margin: 0,
                     paddingTop: 10,
-                    paddingBottom: 0,
                     paddingLeft: 10,
                     textAlign: "left",
                     fontSize: 16,
-                    backgroundColor: "white",
                     minHeight: 100,
                   }}
                   multiline={true}
@@ -722,126 +567,6 @@ export default function NewEventModal({
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
-      </Portal>
-      <TimePickerModal
-        value={showTimePicker?.value}
-        visible={showTimePicker != null}
-        onChange={showTimePicker?.onChange}
-        closeModal={() => {
-          setShowTimePicker(null);
-        }}
-      />
-      <DatePickerModal
-        visible={showDatePicker != null}
-        value={showDatePicker?.value}
-        onChange={showDatePicker?.onChange}
-        closeModal={() => {
-          setShowDatePicker(null);
-        }}
-      />
-    </Modal>
-  );
-}
-
-function DatePickerModal({ value, visible, onChange, closeModal }) {
-  console.log("DatePickerModal, value: " + value);
-  const [date, setDate] = useState(value);
-  useEffect(() => {
-    setDate(value);
-  }, [value]);
-  console.log("Time picker modal visible: " + visible);
-  return (
-    <Modal visible={visible} animationType={"slide"}>
-      <Portal
-        backgroundColor={UIConstants.DEFAULT_BACKGROUND}
-        //backgroundColor="green"
-      >
-        <TopBarMiddleContentSideButtons
-          backgroundColor={UIConstants.DEFAULT_BACKGROUND}
-          height={64}
-          left={
-            <MyButtons.MenuButton
-              icon="arrow-left"
-              text="Back"
-              onPress={() => {
-                closeModal();
-              }}
-              color="black"
-            />
-          }
-          center={null}
-          right={
-            <MyButtons.FormButton
-              text="Done"
-              onPress={() => {
-                onChange(date);
-                setDate(null);
-                closeModal();
-              }}
-            />
-          }
-        />
-        <DateTimePicker
-          display={"inline"}
-          mode={"date"}
-          value={date ?? new Date()}
-          onChange={(event, newValue) => {
-            setDate(newValue);
-          }}
-        />
-      </Portal>
-    </Modal>
-  );
-}
-
-function TimePickerModal({ value, visible, onChange, closeModal }) {
-  console.log("TimePickerModal value: " + value);
-  const [time, setTime] = useState(value ?? new Date());
-  console.log("Time picker modal visible: " + visible);
-  useEffect(() => {
-    setTime(value);
-  }, [value]);
-  return (
-    <Modal visible={visible} animationType={"slide"}>
-      <Portal
-        backgroundColor={UIConstants.DEFAULT_BACKGROUND}
-        //backgroundColor="green"
-      >
-        <TopBarMiddleContentSideButtons
-          backgroundColor={UIConstants.DEFAULT_BACKGROUND}
-          height={64}
-          left={
-            <MyButtons.MenuButton
-              icon="arrow-left"
-              text="Back"
-              onPress={() => {
-                closeModal();
-              }}
-              color="black"
-            />
-          }
-          center={null}
-          right={
-            <MyButtons.FormButton
-              text="Done"
-              onPress={() => {
-                onChange(time);
-                setTime(null);
-                closeModal();
-              }}
-            />
-          }
-        />
-        <DateTimePicker
-          display={"spinner"}
-          mode={"time"}
-          minuteInterval={15}
-          value={time ?? new Date()}
-          onChange={(event, newValue) => {
-            console.log("DateTimePicker onchange: " + newValue);
-            setTime(newValue);
-          }}
-        />
       </Portal>
     </Modal>
   );
