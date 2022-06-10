@@ -371,6 +371,7 @@ export default function GroupScreen({ groupId }) {
           setShowNewMessageModal(flag);
         }}
       />
+      {/*
       <NewEventModal
         userInfo={userInfo}
         group={group}
@@ -380,6 +381,7 @@ export default function GroupScreen({ groupId }) {
           setShowNewEventModal(flag);
         }}
       />
+      */}
     </Portal>
   );
 }

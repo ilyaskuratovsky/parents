@@ -490,6 +490,7 @@ export default function EventPollMessageModal({
             </View>
           </View>
         </KeyboardAvoidingView>
+        {/*
         <NewEventModal
           userInfo={user}
           group={group}
@@ -505,6 +506,7 @@ export default function EventPollMessageModal({
             setShowNewEventModal(null);
           }}
         />
+        */}
       </Portal>
     </Modal>
   );

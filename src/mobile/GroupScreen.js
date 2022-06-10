@@ -83,7 +83,6 @@ export default function GroupScreen({ groupId, messageId, debug }) {
   const [messagesModalVisible, setMessagesModalVisible] = useState(null);
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [showNewEventModal, setShowNewEventModal] = useState(false);
-  const [showBookCalendar, setShowBookCalendar] = useState(null);
 
   const FlatListItemSeparator = () => {
     return (
@@ -354,7 +353,8 @@ export default function GroupScreen({ groupId, messageId, debug }) {
           icon="calendar-plus"
           text="New Event"
           onPress={() => {
-            setShowNewEventModal(true);
+            //setShowNewEventModal(true);
+            dispatch(Actions.openModal({ modal: "NEW_EVENT", groupId: groupId }));
           }}
         />
       </View>
@@ -388,6 +388,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
           setShowNewMessageModal(flag);
         }}
       />
+      {/*
       <NewEventModal
         userInfo={userInfo}
         group={group}
@@ -424,18 +425,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
           }
         }}
       />
-      <BookCalendarEventModal
-        key="BookCalendarEventModal"
-        title={showBookCalendar?.title}
-        notes={showBookCalendar?.notes}
-        startDate={showBookCalendar?.start}
-        endDate={showBookCalendar?.end}
-        onComplete={() => {
-          setShowBookCalendar(null);
-        }}
-        visible={showBookCalendar != null}
-        onDismiss={showBookCalendar?.onDismiss}
-      />
+      */}
     </Portal>
   );
 }

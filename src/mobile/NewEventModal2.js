@@ -30,22 +30,11 @@ import DatePickerModal from "./DatePickerModal";
 import DateInput from "./DateInput";
 import TimeInput from "./TimeInput";
 import * as Actions from "../common/Actions";
+import * as Data from "../common/Data";
 
-export default function NewEventModal({
-  userInfo,
-  group,
-  papaId,
-  allowCreatePoll,
-  initialTitle,
-  initialText,
-  initialStartDate,
-  initialStartTime,
-  initialEndTime,
-  visible,
-  onComplete,
-}) {
+export default function NewEventModal({ groupId, allowCreatePoll = true }) {
   const debugMode = Debug.isDebugMode();
-  console.log("NewEventModal: initialTitle: " + initialTitle + ", onComplete: " + onComplete);
+  //console.log("NewEventModal: initialTitle: " + initialTitle + ", onComplete: " + onComplete);
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const [text, setText] = useState(null);
@@ -53,7 +42,10 @@ export default function NewEventModal({
   const [startDate, setStartDate] = useState(new Date());
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
+  const [showBookCalendar, setShowBookCalendar] = useState(null);
 
+  const userInfo = Data.getCurrentUser();
+  const group = Data.getGroup(groupId);
   /*
   useEffect(() => {
     console.log("setting title: " + initialTitle + ", text: " + initialText);
@@ -95,7 +87,7 @@ export default function NewEventModal({
       title,
       text,
       event,
-      papaId, //papa id
+      null, //papa id
       {
         groupName,
         fromName,
@@ -555,7 +547,34 @@ export default function NewEventModal({
                   onPress={async () => {
                     //const m = moment(date);
                     if (!poll) {
-                      await sendEvent(title, text, startDate, startTime, endTime);
+                      const event = await sendEvent(title, text, startDate, startTime, endTime);
+                      if (event != null) {
+                        Alert.alert("Book in Calendar?", null, [
+                          {
+                            text: "Yes",
+                            onPress: () => {
+                              console.log("showing book calendar: " + JSON.stringify(event));
+                              setShowBookCalendar({
+                                title: event.title,
+                                notes: event.text,
+                                start: event.start,
+                                end: event.end,
+                                onDismiss: () => {
+                                  setShowBookCalendar(null);
+                                },
+                              });
+                            },
+                          },
+                          {
+                            text: "No",
+                            onPress: () => {
+                              console.log("Cancel Pressed");
+                              setShowBookCalendar(null);
+                            },
+                            style: "cancel",
+                          },
+                        ]);
+                      }
                     } else {
                       sendPoll(title, text, pollOptions).then(() => {
                         onComplete();
@@ -567,6 +586,18 @@ export default function NewEventModal({
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
+        <BookCalendarEventModal
+          key="BookCalendarEventModal"
+          title={showBookCalendar?.title}
+          notes={showBookCalendar?.notes}
+          startDate={showBookCalendar?.start}
+          endDate={showBookCalendar?.end}
+          onComplete={() => {
+            setShowBookCalendar(null);
+          }}
+          visible={showBookCalendar != null}
+          onDismiss={showBookCalendar?.onDismiss}
+        />
       </Portal>
     </Modal>
   );
