@@ -59,6 +59,7 @@ export default function DateInput({ date, onChange }) {
           style={{
             fontSize: 14,
             alignItems: "center",
+            width: 200,
           }}
         >
           {date != null ? moment(date).format("dddd, MMMM Do YYYY") : ""}

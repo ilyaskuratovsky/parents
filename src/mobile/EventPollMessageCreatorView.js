@@ -14,8 +14,6 @@ export default function EventPollMessageCreatorView({ message, showGroup = false
 
   //show the poll results + how many comments (as in a regular message)
   //have "create meeting button" - this will go to a new "create meeting out of poll screen"
-  const pollResponseSummary = message.event_poll_response_summary;
-
   return (
     <View style={{ flex: 1 }}>
       <TouchableOpacity
@@ -57,7 +55,7 @@ export default function EventPollMessageCreatorView({ message, showGroup = false
         </View>
         {/* poll results */}
         {message.event_poll.options.map((option, index) => {
-          const optionSummary = pollResponseSummary.filter((summary) => {
+          const optionSummary = message.event_poll_response_summary.filter((summary) => {
             return summary.poll_option.name === option.name;
           })[0];
 

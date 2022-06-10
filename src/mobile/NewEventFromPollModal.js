@@ -29,26 +29,26 @@ import TimePickerModal from "./TimePickerModal";
 import DatePickerModal from "./DatePickerModal";
 import DateInput from "./DateInput";
 import TimeInput from "./TimeInput";
+import * as Data from "../common/Data";
+import * as Date from "../common/Date";
+import FacePile from "./FacePile";
+import * as Actions from "../common/Actions";
 
 export default function NewEventFromPollModal({ pollMessageId }) {
   const debugMode = Debug.isDebugMode();
-  console.log("NewEventModal: initialTitle: " + initialTitle + ", onComplete: " + onComplete);
+  const message = Data.getRootMessageWithChildrenAndUserStatus(pollMessageId);
+  const group = message.group;
+  const userInfo = Data.getCurrentUser();
+
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
-  const [text, setText] = useState(null);
-  const [title, setTitle] = useState(null);
-  const [startDate, setStartDate] = useState(new Date());
+  const [text, setText] = useState(message.text);
+  const [title, setTitle] = useState(message.title);
+  const [startDate, setStartDate] = useState(null);
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
-
-  useEffect(() => {
-    console.log("setting title: " + initialTitle + ", text: " + initialText);
-    setTitle(initialTitle);
-    setText(initialText);
-    setStartDate(Dates.toDate(initialStartDate) ?? new Date());
-    setStartTime(Dates.toDate(initialStartTime) ?? new Date());
-    setEndTime(Dates.toDate(initialEndTime) ?? new Date());
-  }, [initialTitle, initialText, initialStartDate, initialStartTime, initialEndTime]);
+  const [checkedPollOption, setCheckedPollOption] = useState(null);
+  const [booked, setBooked] = useState(false);
 
   const sendEvent = useCallback(async (title, text, startDate, startTime, endTime) => {
     const groupName = group.name;
@@ -80,66 +80,47 @@ export default function NewEventFromPollModal({ pollMessageId }) {
       title,
       text,
       event,
-      papaId, //papa id
+      pollMessageId, //papa id
       {
         groupName,
         fromName,
       }
     );
-    onComplete({ title, text, start: localStart.toDate(), end: localEnd.toDate() });
+    setBooked(true);
+
+    dispatch(Actions.closeModal());
   }, []);
 
-  const sendPoll = useCallback(async (title, text, pollOptions) => {
-    const groupName = group.name;
-    const fromName = UserInfo.chatDisplayName(userInfo);
-    await Controller.sendMessage(
-      dispatch,
-      userInfo,
-      group.id,
-      title,
-      text,
-      { event_poll: pollOptions }, // data
-      null, //papa id
-      {
-        groupName,
-        fromName,
+  useEffect(() => {
+    return () => {
+      if (booked) {
+        Alert.alert("Book in Calendar?", null, [
+          {
+            text: "Yes",
+            onPress: () => {
+              dispatch(
+                Actions.openModal({
+                  modal: "BOOK_IN_CALENDAR",
+                  title: title,
+                  notes: text,
+                  start: startDate,
+                  end: endTime,
+                })
+              );
+            },
+          },
+          {
+            text: "No",
+            onPress: () => {
+              // console.log("Cancel Pressed");
+              // setShowBookCalendar(null);
+            },
+            style: "cancel",
+          },
+        ]);
       }
-    );
-    onComplete();
-  }, []);
-
-  const [poll, setPoll] = useState(false);
-  const [pollOptions, setPollOptions] = useState([
-    { name: "Option 1", startDate: new Date() },
-    { name: "Option 2", startDate: new Date() },
-  ]);
-  const addPollOption = () => {
-    const name = "Option " + (pollOptions.length + 1);
-    const newOptions = [...pollOptions];
-    newOptions.push({ name });
-    setPollOptions(newOptions);
-  };
-
-  const setOptionStartDate = (optionName, date) => {
-    const index = pollOptions.findIndex((option) => option.name == optionName);
-    const newPollOptions = [...pollOptions];
-    newPollOptions[index] = { ...pollOptions[index], startDate: date };
-    setPollOptions(newPollOptions);
-  };
-
-  const setOptionStartTime = (optionName, time) => {
-    const index = pollOptions.findIndex((option) => option.name == optionName);
-    const newPollOptions = [...pollOptions];
-    newPollOptions[index] = { ...pollOptions[index], startTime: time };
-    setPollOptions(newPollOptions);
-  };
-
-  const setOptionEndTime = (optionName, time) => {
-    const index = pollOptions.findIndex((option) => option.name == optionName);
-    const newPollOptions = [...pollOptions];
-    newPollOptions[index] = { ...pollOptions[index], endTime: time };
-    setPollOptions(newPollOptions);
-  };
+    };
+  });
 
   return (
     <Modal visible={true} animationType={"slide"}>
@@ -168,7 +149,7 @@ export default function NewEventFromPollModal({ pollMessageId }) {
           keyboardVerticalOffset={40}
           enabled
         >
-          {debugMode && <Text style={{ fontSize: 10 }}>NewEventModal2</Text>}
+          {debugMode && <Text style={{ fontSize: 10 }}>NewEventFromPollModal</Text>}
           <ScrollView style={{ paddingTop: 10 }}>
             {/* message section */}
             <View style={{ flexGrow: 1, flexDirection: "column" }}>
@@ -225,265 +206,175 @@ export default function NewEventFromPollModal({ pollMessageId }) {
                 />
               </View>
 
-              {/* Date and Time */}
-              {!poll && (
-                <View
-                  style={{
-                    marginTop: 0,
-                    paddingLeft: 10,
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    height: 120,
-                    //backgroundColor: "cyan",
-                  }}
-                >
-                  {/* date and time header */}
-                  <Text style={{ fontSize: 10, color: "grey" }}>Event Date &amp; Time</Text>
-                  {/* date section */}
-                  <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
-                    <View
-                      style={{
-                        width: 40,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 10,
-                          alignItems: "center",
-                          color: "grey",
-                        }}
-                      >
-                        Date:
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        flex: 1,
-                        marginRight: 10,
-                        //backgroundColor: "green",
-                        alignItems: "flex-start",
-                      }}
-                    >
-                      {/* start date */}
-                      <DateInput
-                        date={startDate}
-                        onChange={(value) => {
-                          setStartDate(value);
-                        }}
-                      />
-                    </View>
-                  </View>
-                  {/* time start/end section */}
-                  <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
-                    <View
-                      style={{
-                        width: 40,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 10,
-                          color: "grey",
-                          alignItems: "center",
-                        }}
-                      >
-                        Time Start:
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        width: 80,
-                        marginRight: 10,
-                      }}
-                    >
-                      {/* start time to */}
-                      <TimeInput
-                        time={startTime}
-                        onChange={(value) => {
-                          setStartTime(value);
-                        }}
-                      />
-                    </View>
-                    <View
-                      style={{
-                        width: 40,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 10,
-                          color: "grey",
-                          alignItems: "center",
-                        }}
-                      >
-                        Time End:
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        width: 80,
-                      }}
-                    >
-                      {/* end time to */}
-                      <TimeInput
-                        time={endTime}
-                        onChange={(value) => {
-                          setEndTime(value);
-                        }}
-                      />
-                    </View>
-                  </View>
-                </View>
-              )}
-              {poll && (
-                <View
-                  style={{
-                    //marginTop: 10,
-                    paddingLeft: 10,
-                    paddingRight: 10,
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    //backgroundColor: "cyan",
-                  }}
-                >
-                  {pollOptions.map((option, index) => (
-                    <View
-                      key={"poll_option" + index}
-                      style={{
-                        //flex: 1,
-                        marginBottom: 10,
-                        flexDirection: "column",
-                        alignItems: "left",
-                        //backgroundColor: "red",
-                        height: 104,
-                      }}
-                    >
-                      {/* option header */}
+              <View
+                style={{
+                  marginTop: 0,
+                  paddingLeft: 10,
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  //backgroundColor: "cyan",
+                }}
+              >
+                <Text style={{ fontSize: 10, color: "grey" }}>Poll Results</Text>
+                {/* poll results */}
+                {message.event_poll.options.map((option, index) => {
+                  const optionSummary = message.event_poll_response_summary.filter((summary) => {
+                    return summary.poll_option.name === option.name;
+                  })[0];
 
-                      {/* date and time header */}
-                      <Text style={{ fontSize: 10, color: "grey" }}>{option.name}</Text>
-                      {/* date section */}
-                      <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
-                        <View
-                          style={{
-                            width: 40,
+                  return (
+                    <View
+                      style={{
+                        paddingTop: 8,
+                        paddingBottom: 4,
+                        paddingLeft: 10,
+                        backgroundColor: "lightgrey",
+                        //marginTop: index == 0 ? 0 : 10,
+                        marginBottom: index == 0 ? 4 : 4,
+                      }}
+                    >
+                      <View style={{ flexDirection: "row" }}>
+                        <Checkbox
+                          checked={checkedPollOption == option.name}
+                          onPress={async () => {
+                            if (checkedPollOption != option.name) {
+                              setCheckedPollOption(option.name);
+                              setStartDate(Date.toDate(option.startDate));
+                              setStartTime(Date.toDate(option.startDate));
+                              setEndTime(Date.toDate(option.endTime));
+                            } else {
+                              setCheckedPollOption(null);
+                            }
                           }}
-                        >
-                          <Text
-                            style={{
-                              fontSize: 10,
-                              alignItems: "center",
-                              color: "grey",
-                            }}
-                          >
-                            Date:
-                          </Text>
-                        </View>
-                        <View
-                          style={{
-                            flex: 1,
-                            marginRight: 10,
-                            //backgroundColor: "green",
-                            alignItems: "flex-start",
-                          }}
-                        >
-                          {/* start date */}
-                          <DateInput
-                            date={option.startDate}
-                            onChange={(value) => {
-                              setOptionStartDate(option.name, value);
-                            }}
-                          />
-                        </View>
+                          text={null}
+                        />
+                        <Text style={{ fontWeight: "bold" }}>
+                          {moment(Date.toDate(option.startDate)).format("LLLL") +
+                            " - " +
+                            moment(Date.toDate(option.endTime)).format("LT")}
+                        </Text>
                       </View>
-                      {/* time start/end section */}
-                      <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
-                        <View
-                          style={{
-                            width: 40,
-                          }}
-                        >
-                          <Text
-                            style={{
-                              fontSize: 10,
-                              color: "grey",
-                              alignItems: "center",
-                            }}
-                          >
-                            Time Start:
-                          </Text>
+                      {optionSummary.uid_list.length >= 0 && (
+                        <View style={{ marginLeft: 0 }}>
+                          <FacePile userIds={optionSummary.uid_list} border />
                         </View>
-                        <View
-                          style={{
-                            width: 80,
-                            marginRight: 10,
-                          }}
-                        >
-                          {/* start time to */}
-                          <TimeInput
-                            time={option.startTime}
-                            onChange={(value) => {
-                              setOptionStartTime(option.name, value);
-                            }}
-                          />
-                        </View>
-                        <View
-                          style={{
-                            width: 40,
-                          }}
-                        >
-                          <Text
-                            style={{
-                              fontSize: 10,
-                              color: "grey",
-                              alignItems: "center",
-                            }}
-                          >
-                            Time End:
-                          </Text>
-                        </View>
-                        <View
-                          style={{
-                            width: 80,
-                          }}
-                        >
-                          {/* end time to */}
-                          <TimeInput
-                            time={option.endTime}
-                            onChange={(value) => {
-                              setOptionEndTime(option.name, value);
-                            }}
-                          />
-                        </View>
-                      </View>
+                      )}
+                      {optionSummary.uid_list.length == 0 && (
+                        <View style={{ marginLeft: 0, height: 24 }}></View>
+                      )}
                     </View>
-                  ))}
-                  <TouchableOpacity
-                    onPress={async () => {
-                      addPollOption();
+                  );
+                })}
+              </View>
+
+              {/* Date and Time */}
+              <View
+                style={{
+                  marginTop: 0,
+                  paddingLeft: 10,
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  height: 120,
+                  //backgroundColor: "cyan",
+                }}
+              >
+                {/* date and time header */}
+                <Text style={{ fontSize: 10, color: "grey" }}>Event Date &amp; Time</Text>
+                {/* date section */}
+                <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
+                  <View
+                    style={{
+                      width: 40,
                     }}
                   >
-                    <Text style={{}}>+ add option</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-              {/* is poll */}
-              {allowCreatePoll && (
-                <View style={{ paddingLeft: 10, marginTop: 10 }}>
-                  <Checkbox
-                    checked={poll}
-                    onPress={async () => {
-                      setPoll(!poll);
+                    <Text
+                      style={{
+                        fontSize: 10,
+                        alignItems: "center",
+                        color: "grey",
+                      }}
+                    >
+                      Date:
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flex: 1,
+                      marginRight: 10,
+                      //backgroundColor: "green",
+                      alignItems: "flex-start",
                     }}
-                    text={
-                      <Text style={{ fontWeight: "normal", fontSize: 12, color: "grey" }}>
-                        Create a poll with multiple dates &amp; times
-                      </Text>
-                    }
-                  />
+                  >
+                    {/* start date */}
+                    <DateInput
+                      date={startDate}
+                      onChange={(value) => {
+                        setStartDate(value);
+                      }}
+                    />
+                  </View>
                 </View>
-              )}
-
+                {/* time start/end section */}
+                <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
+                  <View
+                    style={{
+                      width: 40,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 10,
+                        color: "grey",
+                        alignItems: "center",
+                      }}
+                    >
+                      Time Start:
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      width: 80,
+                      marginRight: 10,
+                    }}
+                  >
+                    {/* start time to */}
+                    <TimeInput
+                      time={startTime}
+                      onChange={(value) => {
+                        setStartTime(value);
+                      }}
+                    />
+                  </View>
+                  <View
+                    style={{
+                      width: 40,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 10,
+                        color: "grey",
+                        alignItems: "center",
+                      }}
+                    >
+                      Time End:
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      width: 80,
+                    }}
+                  >
+                    {/* end time to */}
+                    <TimeInput
+                      time={endTime}
+                      onChange={(value) => {
+                        setEndTime(value);
+                      }}
+                    />
+                  </View>
+                </View>
+              </View>
               {/* event details */}
               <View
                 style={{
@@ -539,13 +430,7 @@ export default function NewEventFromPollModal({ pollMessageId }) {
                   text="CREATE EVENT"
                   onPress={async () => {
                     //const m = moment(date);
-                    if (!poll) {
-                      await sendEvent(title, text, startDate, startTime, endTime);
-                    } else {
-                      sendPoll(title, text, pollOptions).then(() => {
-                        onComplete();
-                      });
-                    }
+                    await sendEvent(title, text, startDate, startTime, endTime);
                   }}
                 />
               </View>

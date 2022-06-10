@@ -30,19 +30,13 @@ import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
 import * as Logger from "../common/Logger";
+import * as Actions from "../common/Actions";
 
-export default function BookCalendarEventModal({
-  title,
-  notes,
-  startDate,
-  endDate,
-  timezone,
-  onComplete,
-  visible,
-  onDismiss,
-}) {
+export default function BookCalendarEventModal({ title, notes, startDate, endDate, timezone }) {
+  const dispatch = useDispatch();
   const [calendars, setCalendars] = useState(null);
   const [calendarMap, setCalendarMap] = useState(null);
+  const visible = true;
 
   useEffect(async () => {
     if (visible) {
@@ -83,7 +77,7 @@ export default function BookCalendarEventModal({
             <MyButtons.LinkButton
               text="Cancel"
               onPress={() => {
-                onDismiss();
+                dispatch(Actions.closeModal());
               }}
             />
           }
