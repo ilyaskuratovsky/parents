@@ -133,7 +133,7 @@ export default function NewEventFromPollModal({ pollMessageId }) {
             <MyButtons.LinkButton
               text="Cancel"
               onPress={() => {
-                onDismiss();
+                dispatch(Actions.closeModal());
               }}
             />
           }
