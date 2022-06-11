@@ -16,6 +16,8 @@ import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
 import * as Utils from "../common/Utils";
 import * as Debug from "../common/Debug";
+import * as Data from "../common/Data";
+import { Badge } from "react-native-elements";
 
 export default function GroupsScreen({}) {
   const dispatch = useDispatch();
@@ -86,19 +88,8 @@ export default function GroupsScreen({}) {
     groupsComponents = userGroupMemberships.map((userGroupMembership, index) => {
       const groupId = userGroupMembership.groupId;
       const group = groupMap[groupId];
+      const unreadCount = Data.getGroupUnreadMessageCount(groupId);
       if (group == null || group.status == "deleted") {
-        /*
-        if (Globals.dev) {
-          return (
-            <Text key={index}>
-              (null), groupId: {groupId}, group_membership_id:
-              {userGroupMembership.id}
-            </Text>
-          );
-        } else {
-          return null;
-        }
-        */
         return null;
       }
       const org = orgsMap[group.orgId];
@@ -108,7 +99,7 @@ export default function GroupsScreen({}) {
           key={index}
           style={{
             flex: 1,
-            //backgroundColor: "cyan"
+            //backgroundColor: "cyan",
           }}
         >
           <TouchableOpacity
@@ -116,7 +107,7 @@ export default function GroupsScreen({}) {
             style={{
               flexDirection: "row",
               //height: Utils.isEmptyString(group.description) ? 60 : 80,
-              alignItems: "center",
+              alignItems: "flex-start",
               paddingLeft: 10,
             }}
             onPress={() => {
@@ -138,6 +129,7 @@ export default function GroupsScreen({}) {
                   fontWeight: "bold",
                   color: UIConstants.BLACK_TEXT_COLOR,
                   height: 26,
+                  //backgroundColor: "cyan",
                   //fontFamily: "Helvetica Neue",
                 }}
               >
@@ -190,22 +182,36 @@ export default function GroupsScreen({}) {
             </View>
             <View
               style={{
-                flexBasis: 100,
-                justifyContent: "center",
-                alignItems: "flex-end",
+                flexBasis: 90,
+                justifyContent: "flex-end",
+                alignItems: "center",
+                flexDirection: "row",
+                //backgroundColor: "brown",
               }}
             >
-              <IconButton icon="chevron-right" color={"darkgrey"} size={32} />
-              {/*
-              <MyButtons.FormButton
-                text="Open"
-                onPress={() => {
-                  dispatch(
-                    Actions.goToScreen({ screen: "GROUP", groupId: group.id })
-                  );
+              <View
+                style={{
+                  paddingLeft: 2,
+                  paddingRight: 2,
+                  paddingTop: 2,
+                  alignItems: "flex-start",
+                  //backgroundColor: "purple",
                 }}
+              >
+                {(unreadCount ?? 0) > 0 ? (
+                  <Badge status="error" value={unreadCount} containerStyle={{}} />
+                ) : null}
+              </View>
+              <IconButton
+                style={{
+                  //backgroundColor: "green",
+                  padding: 0,
+                  margin: 0,
+                }}
+                icon="chevron-right"
+                color={"darkgrey"}
+                size={32}
               />
-              */}
             </View>
           </TouchableOpacity>
           <Divider style={{ marginTop: 20, marginBottom: 10 }} width={3} color="lightgrey" />

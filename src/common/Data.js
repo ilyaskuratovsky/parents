@@ -47,3 +47,14 @@ export function getGroup(groupId) {
   });
   return group;
 }
+
+export function getGroupUnreadMessageCount(groupId) {
+  const { groupMessages, userMessagesMap } = useSelector((state) => {
+    return {
+      groupMessages: state.main.groupMessages[groupId] ?? [],
+      userMessagesMap: state.main.userMessagesMap,
+    };
+  });
+
+  return MessageUtils.calculateUnreadMessages(groupMessages, userMessagesMap);
+}

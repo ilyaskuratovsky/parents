@@ -32,10 +32,12 @@ import * as MyButtons from "./MyButtons";
 import Loading from "./Loading";
 import * as Logger from "../common/Logger";
 import * as Debug from "../common/Debug";
+import * as Data from "../common/Data";
 
 export default function GroupScreen({ groupId, messageId, debug }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
+  const group = Data.getGroup(groupId);
 
   let { groupMap, orgsMap, messages, userMap, members, userMessagesMap } = useSelector((state) => {
     return {
@@ -52,19 +54,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
     };
   });
 
-  /*
-  if (messageId != null) {
-    const groupIdArr = messages.filter((m) => m.id === messageId);
-    if (groupIdArr.length === 1) {
-      groupId = groupIdArr[0].groupId;
-    } else {
-      Logger.log("Could not find group id for messageId: " + messageId);
-      groupId = null;
-    }
-  }
-  */
-
-  const group = groupMap?.[groupId];
+  //const group = groupMap?.[groupId];
   console.log(
     "GroupScreen, groupId: " +
       groupId +

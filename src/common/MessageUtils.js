@@ -17,6 +17,7 @@ export function buildRootMessageWithChildren(
     return millis1 - millis2;
   });
 
+  /*
   Logger.log(
     "buildingRootMessageWithChildren, messageId: " +
       messageId +
@@ -33,6 +34,8 @@ export function buildRootMessageWithChildren(
         2
       )
   );
+  */
+
   let rootMessage = { children: [] };
   const message = sortedMessages.filter((m) => m.id === messageId)[0];
   //const message = messages.filter((m) => m.id === messageId)[0];
@@ -101,7 +104,7 @@ export function buildRootMessagesWithChildren(
   return messagesWithStatus;
 }
 
-export function calculateUnreadMessages(groupMessagesMap, userMessagesMap) {
+export function calculateAllGroupUnreadMessages(groupMessagesMap, userMessagesMap) {
   let unreadMessages = 0;
   for (const groupId of Object.keys(groupMessagesMap)) {
     const groupMessages = groupMessagesMap[groupId];
@@ -110,6 +113,17 @@ export function calculateUnreadMessages(groupMessagesMap, userMessagesMap) {
       if (userMessage == null || userMessage.status != "read") {
         unreadMessages += 1;
       }
+    }
+  }
+  return unreadMessages;
+}
+
+export function calculateUnreadMessages(messages, userMessagesMap) {
+  let unreadMessages = 0;
+  for (const message of messages) {
+    const userMessage = userMessagesMap[message.id];
+    if (userMessage == null || userMessage.status != "read") {
+      unreadMessages += 1;
     }
   }
   return unreadMessages;

@@ -17,7 +17,10 @@ const Toolbar = ({ selected }) => {
     };
   });
 
-  const unreadMessages = MessageUtils.calculateUnreadMessages(groupMessagesMap, userMessagesMap);
+  const unreadMessages = MessageUtils.calculateAllGroupUnreadMessages(
+    groupMessagesMap,
+    userMessagesMap
+  );
   return (
     <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
       <MyButtons.MenuButton
