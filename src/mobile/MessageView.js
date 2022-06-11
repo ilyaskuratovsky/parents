@@ -10,6 +10,7 @@ import * as Debug from "../common/Debug";
 
 export default function MessageView({ item, onPress, showGroup = false }) {
   const timestamp = item.timestamp?.toDate();
+  const debugMode = Debug.isDebugMode();
   return (
     <TouchableOpacity
       onPress={() => {
@@ -27,13 +28,8 @@ export default function MessageView({ item, onPress, showGroup = false }) {
             //backgroundColor: "cyan",
           }}
         >
-          {(item.status != "read" || (item.unreadChildCount ?? 0) > 0) && (
-            <Badge
-              status="primary"
-              //value={item.unreadChildCount ?? 0 > 0 ? item.unreadChildCount : " "}
-              value={""}
-              containerStyle={{ width: 12, height: 12 }}
-            />
+          {item.userStatus?.status != "read" && (
+            <Badge status="primary" value={""} containerStyle={{ width: 12, height: 12 }} />
           )}
         </View>
         <View
@@ -188,9 +184,11 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                   {item.title ?? "[No Title]"}
                 </Text>
               </View>
-              {Debug.isDebugMode() ? <Text style={{ fontSize: 10 }}>{item.id}</Text> : null}
-              {Debug.isDebugMode() ? (
-                <Text style={{ fontSize: 10 }}>{JSON.stringify({ ...item, children: null })}</Text>
+              {debugMode ? <Text style={{ fontSize: 10 }}>{item.id}</Text> : null}
+              {debugMode ? (
+                <Text style={{ fontSize: 10 }}>
+                  {JSON.stringify({ ...item, children: null }, null, 2)}
+                </Text>
               ) : null}
             </View>
 

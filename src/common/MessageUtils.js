@@ -54,8 +54,8 @@ export function buildRootMessageWithChildren(
     }
   }
   let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap, userMap, groupMap);
-  rootMessageWithStatus = addEventData(rootMessageWithStatus, userInfo, groupMembers);
-  rootMessageWithStatus = addEventPollData(rootMessageWithStatus, userInfo, groupMembers);
+  rootMessageWithStatus = addEventData(rootMessageWithStatus);
+  rootMessageWithStatus = addEventPollData(rootMessageWithStatus);
 
   // const a = null;
   // const b = a.foo;
@@ -94,8 +94,8 @@ export function buildRootMessagesWithChildren(
   const rootMessages = Object.values(messageMap).filter((m) => m.papaId == null);
   const messagesWithStatus = rootMessages.map((rootMessage) => {
     let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap, userMap, groupMap);
-    rootMessageWithStatus = addEventData(rootMessageWithStatus, userInfo, groupMembers);
-    rootMessageWithStatus = addEventPollData(rootMessageWithStatus, userInfo, groupMembers);
+    rootMessageWithStatus = addEventData(rootMessageWithStatus);
+    rootMessageWithStatus = addEventPollData(rootMessageWithStatus);
     return { ...rootMessage, ...rootMessageWithStatus };
   });
   Logger.log(
@@ -108,7 +108,7 @@ export function calculateAllGroupUnreadMessages(groupMessagesMap, userMessagesMa
   let unreadMessages = 0;
   for (const groupId of Object.keys(groupMessagesMap)) {
     const groupMessages = groupMessagesMap[groupId];
-    for (const message of groupMessages) {
+    for (const message of groupMessages.filter((message) => message.papaId == null)) {
       const userMessage = userMessagesMap[message.id];
       if (userMessage == null || userMessage.status != "read") {
         unreadMessages += 1;
@@ -120,7 +120,7 @@ export function calculateAllGroupUnreadMessages(groupMessagesMap, userMessagesMa
 
 export function calculateUnreadMessages(messages, userMessagesMap) {
   let unreadMessages = 0;
-  for (const message of messages) {
+  for (const message of messages.filter((message) => message.papaId == null)) {
     const userMessage = userMessagesMap[message.id];
     if (userMessage == null || userMessage.status != "read") {
       unreadMessages += 1;
@@ -129,20 +129,31 @@ export function calculateUnreadMessages(messages, userMessagesMap) {
   return unreadMessages;
 }
 
+export function filterUnreadMessages(messages, userMessagesMap) {
+  let unreadMessages = [];
+  for (const message of messages.filter((message) => message.papaId == null)) {
+    const userMessage = userMessagesMap[message.id];
+    if (userMessage == null || userMessage.status != "read") {
+      unreadMessages.push(message);
+    }
+  }
+  return unreadMessages;
+}
+
 export function addMeta(rootMessage, userInfo, userMessagesMap, userMap, groupMap) {
+  const user = userMap[rootMessage.uid];
+
   /* status */
-  let status = null;
+  let userStatus = {};
   let userMessageId = null;
+  let rootMessageStatus = null;
   if (userInfo.uid !== rootMessage.uid) {
     const userMessage = userMessagesMap[rootMessage.id];
-    status = userMessage?.status;
-    userMessageId = userMessage?.id;
+    rootMessageStatus = userMessage?.status;
+    userStatus["userMessageId"] = userMessage?.id;
   } else {
-    status = "read";
+    rootMessageStatus = "read";
   }
-
-  /* user */
-  const user = userMap[rootMessage.uid];
 
   /* unread child count */
   const unreadChildCount = (rootMessage.children ?? []).filter((c) => {
@@ -152,6 +163,10 @@ export function addMeta(rootMessage, userInfo, userMessagesMap, userMap, groupMa
     const status = userMessagesMap[c.id]?.status != "read";
     return status;
   }).length;
+
+  userStatus["unreadChildCount"] = unreadChildCount;
+  userStatus["rootMessageStatus"] = rootMessageStatus;
+  userStatus["status"] = rootMessageStatus === "read" && unreadChildCount == 0 ? "read" : "unread";
 
   /* group */
   let group = null;
@@ -183,9 +198,7 @@ export function addMeta(rootMessage, userInfo, userMessagesMap, userMap, groupMa
 
   return {
     ...rootMessage,
-    status,
-    userMessageId,
-    unreadChildCount,
+    userStatus,
     lastUpdated,
     children,
     user,
@@ -193,7 +206,7 @@ export function addMeta(rootMessage, userInfo, userMessagesMap, userMap, groupMa
   };
 }
 
-export function addEventData(rootMessage, userInfo, userMessagesMap, groupMembers) {
+export function addEventData(rootMessage) {
   let event = null;
   const eventMessages = [rootMessage, ...rootMessage.children].filter(
     (message) => message.event != null
@@ -236,7 +249,7 @@ export function addEventData(rootMessage, userInfo, userMessagesMap, groupMember
   return rootMessage;
 }
 
-export function addEventPollData(rootMessage, userInfo, userMessagesMap, groupMembers) {
+export function addEventPollData(rootMessage) {
   let poll = null;
   const pollMessages = [rootMessage, ...rootMessage.children].filter(
     (message) => message.event_poll != null

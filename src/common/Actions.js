@@ -5,6 +5,7 @@ import {
   //} from "firebase/firestore/lite";
 } from "firebase/firestore";
 import * as Logger from "./Logger";
+import * as MessageUtils from "./MessageUtils";
 
 const START_IN_DEBUG = true;
 export const screenSlice = createSlice({
@@ -70,6 +71,7 @@ export const mainSlice = createSlice({
     userGroupMemberships: null,
     messages: {},
     groupMessages: {},
+    groupRootUserMessages: {},
     pushToken: null,
     toUserInvites: null,
     fromUserInvites: null,
@@ -187,10 +189,23 @@ export const mainSlice = createSlice({
         allMessages[message.id] = message;
       });
 
+      // add group root user messages
+      const allGroupRootUserMessages = { ...state.groupRootUserMessages };
+      const groupRootUserMessages = MessageUtils.buildRootMessagesWithChildren(
+        orderedMessages,
+        state.userInfo,
+        state.userMessagesMap,
+        null,
+        state.groupMap,
+        state.userMap
+      );
+      allGroupRootUserMessages[groupId] = groupRootUserMessages;
+
       const newState = {
         ...state,
         groupMessages,
         messages: allMessages,
+        groupRootUserMessages: allGroupRootUserMessages,
       };
       return newState;
     },

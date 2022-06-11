@@ -9,6 +9,7 @@ import * as Debug from "../common/Debug";
 
 export default function EventMessageView({ item, showGroup = false }) {
   const dispatch = useDispatch();
+  const debugMode = Debug.isDebugMode();
   const timestamp = item.timestamp?.toDate();
   const eventStart = moment(item.event.start).toDate();
   const eventEnd = moment(item.event.end).toDate();
@@ -21,9 +22,11 @@ export default function EventMessageView({ item, showGroup = false }) {
           //onPress();
         }}
       >
-        {Globals.dev ? <Text style={{ fontSize: 10 }}>{item.id}</Text> : null}
-        {Globals.dev ? (
-          <Text style={{ fontSize: 10 }}>{JSON.stringify({ ...item, children: null })}</Text>
+        {debugMode ? <Text style={{ fontSize: 10 }}>{item.id}</Text> : null}
+        {debugMode ? (
+          <Text style={{ fontSize: 10 }}>
+            {JSON.stringify({ ...item, children: null }, null, 2)}
+          </Text>
         ) : null}
         <View style={{ height: 22 }}>
           <Text style={{ fontWeight: "bold", fontSize: 12 }}>Event</Text>

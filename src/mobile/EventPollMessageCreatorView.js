@@ -11,6 +11,7 @@ import * as Debug from "../common/Debug";
 
 export default function EventPollMessageCreatorView({ message, showGroup = false }) {
   const dispatch = useDispatch();
+  const debugMode = Debug.isDebugMode();
 
   //show the poll results + how many comments (as in a regular message)
   //have "create meeting button" - this will go to a new "create meeting out of poll screen"
@@ -22,9 +23,11 @@ export default function EventPollMessageCreatorView({ message, showGroup = false
           //onPress();
         }}
       >
-        {Globals.dev ? <Text style={{ fontSize: 10 }}>{message.id}</Text> : null}
-        {Globals.dev ? (
-          <Text style={{ fontSize: 10 }}>{JSON.stringify({ ...message, children: null })}</Text>
+        {debugMode ? <Text style={{ fontSize: 10 }}>{message.id}</Text> : null}
+        {debugMode ? (
+          <Text style={{ fontSize: 10 }}>
+            {JSON.stringify({ ...message, children: null }, null, 2)}
+          </Text>
         ) : null}
         <View style={{ height: 22 }}>
           <Text style={{ fontWeight: "bold", fontSize: 12 }}>

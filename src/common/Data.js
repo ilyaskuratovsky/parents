@@ -58,3 +58,14 @@ export function getGroupUnreadMessageCount(groupId) {
 
   return MessageUtils.calculateUnreadMessages(groupMessages, userMessagesMap);
 }
+
+export function getGroupUnreadMessages(groupId) {
+  const { groupMessages, userMessagesMap } = useSelector((state) => {
+    return {
+      groupMessages: state.main.groupMessages[groupId] ?? [],
+      userMessagesMap: state.main.userMessagesMap,
+    };
+  });
+
+  return MessageUtils.filterUnreadMessages(groupMessages, userMessagesMap);
+}

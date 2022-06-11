@@ -89,6 +89,7 @@ export default function GroupsScreen({}) {
       const groupId = userGroupMembership.groupId;
       const group = groupMap[groupId];
       const unreadCount = Data.getGroupUnreadMessageCount(groupId);
+      const unreadMessages = Data.getGroupUnreadMessages(groupId);
       if (group == null || group.status == "deleted") {
         return null;
       }
@@ -102,6 +103,19 @@ export default function GroupsScreen({}) {
             //backgroundColor: "cyan",
           }}
         >
+          {debugMode && (
+            <Text style={{ fontSize: 8 }}>
+              {JSON.stringify(
+                {
+                  user_group_membership: userGroupMembership.id,
+                  group: group.id,
+                  unreadMessages: JSON.stringify(unreadMessages.map((m) => m.id)),
+                },
+                null,
+                2
+              )}
+            </Text>
+          )}
           <TouchableOpacity
             key={group.id}
             style={{
@@ -148,12 +162,6 @@ export default function GroupsScreen({}) {
                   }}
                 >
                   {group.description} {/*group.id*/}
-                </Text>
-              )}
-              {debugMode && (
-                <Text style={{ fontSize: 8 }}>
-                  user_group_membership: {userGroupMembership.id}
-                  group: {group.id}
                 </Text>
               )}
               {org != null && (
