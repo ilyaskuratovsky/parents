@@ -68,3 +68,22 @@ export function getGroupUnreadMessages(groupId) {
 
   return MessageUtils.filterUnreadMessages(groupMessages, userMessagesMap);
 }
+
+export function getUserGroupMemberships() {
+  const user = getCurrentUser();
+  const { userGroupMemberships } = useSelector((state) => {
+    return {
+      userGroupMemberships: state.main.userGroupMemberships,
+    };
+  });
+  return userGroupMemberships;
+}
+
+export function getAllUserRootMessages() {
+  const userGroupMemberships = getUserGroupMemberships();
+  let allMessages = [];
+  userGroupMemberships.forEach((groupMembership) => {
+    allMessages = allMessages.concat(getGroupUserRootMessages(groupMembership.groupId));
+  });
+  return allMessages;
+}

@@ -104,7 +104,7 @@ export function buildRootMessagesWithChildren(
   return messagesWithStatus;
 }
 
-export function calculateAllGroupUnreadMessages(groupMessagesMap, userMessagesMap) {
+export function calculateAllUserGroupsUnreadMessages(groupMessagesMap, userMessagesMap) {
   let unreadMessages = 0;
   for (const groupId of Object.keys(groupMessagesMap)) {
     const groupMessages = groupMessagesMap[groupId];

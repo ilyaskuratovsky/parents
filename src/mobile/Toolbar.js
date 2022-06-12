@@ -7,6 +7,7 @@ import * as Actions from "../common/Actions";
 import BottomBar from "./BottomBar";
 import * as UIConstants from "./UIConstants";
 import * as Logger from "../common/Logger";
+import * as Data from "../common/Data";
 
 const Toolbar = ({ selected }) => {
   const dispatch = useDispatch();
@@ -17,10 +18,9 @@ const Toolbar = ({ selected }) => {
     };
   });
 
-  const unreadMessages = MessageUtils.calculateAllGroupUnreadMessages(
-    groupMessagesMap,
-    userMessagesMap
-  );
+  const allUserRootMessages = Data.getAllUserRootMessages();
+  const unreadMessages = MessageUtils.calculateUnreadMessages(allUserRootMessages);
+
   return (
     <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
       <MyButtons.MenuButton
@@ -51,10 +51,10 @@ const Toolbar = ({ selected }) => {
           );
         }}
         badge={
-          (unreadMessages ?? 0) > 0 ? (
+          unreadMessages.length > 0 ? (
             <Badge
               status="error"
-              value={unreadMessages}
+              value={unreadMessages.length}
               containerStyle={{ position: "absolute", top: -4, right: -4 }}
             />
           ) : null
