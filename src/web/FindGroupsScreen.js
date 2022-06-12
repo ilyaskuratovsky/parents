@@ -56,7 +56,7 @@ Activities
     <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
       <TopBarLeftContentSideButton
         style={{}}
-        content={<Text style={{ fontWeight: "bold", fontSize: 20 }}>Find Parent Groups</Text>}
+        content={<Text style={{ fontWeight: "bold", fontSize: 20 }}>Find</Text>}
         side={
           <MyButtons.MenuButton
             icon="plus"

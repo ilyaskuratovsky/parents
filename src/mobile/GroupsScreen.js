@@ -242,22 +242,14 @@ export default function GroupsScreen({}) {
         key="topbar"
         style={{}}
         left={
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Text
-              style={{
-                flexGrow: 1,
-                paddingLeft: 6,
-                fontWeight: "bold",
-                fontSize: 20,
-                color: UIConstants.BLACK_TEXT_COLOR,
-                //fontFamily: "Helvetica Neue",
-                //color: "grey",
-                //backgroundColor: "yellow",
-              }}
-            >
-              {/*My Groups*/}
-            </Text>
-            <View style={{ width: 80, alignItems: "flex-end" }}>
+          <View
+            style={{
+              //backgroundColor: "cyan",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <View style={{ alignItems: "flex-start", marginRight: 6 }}>
               {UserInfo.avatarComponent(userInfo, () => {
                 dispatch(
                   Actions.openModal({
@@ -266,10 +258,28 @@ export default function GroupsScreen({}) {
                 );
               })}
             </View>
+            <Text
+              style={{
+                paddingLeft: 6,
+                fontWeight: "bold",
+                fontSize: 20,
+                color: UIConstants.BLACK_TEXT_COLOR,
+              }}
+            >
+              {"My Groups"}
+            </Text>
           </View>
         }
-        center={null}
-        right={null}
+        center={<Text>{""}</Text>}
+        right={
+          <MyButtons.MenuButton
+            icon="plus"
+            text="New Group"
+            onPress={() => {
+              setNewPrivateGroupModalVisible(true);
+            }}
+          />
+        }
       />
       <View key="main_content" style={{ flex: 1, backgroundColor: "white", paddingTop: 20 }}>
         <ScrollView key="messages">

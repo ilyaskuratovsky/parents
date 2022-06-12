@@ -80,10 +80,15 @@ export function getUserGroupMemberships() {
 }
 
 export function getAllUserRootMessages() {
+  const { groupRootUserMessages } = useSelector((state) => {
+    return {
+      groupRootUserMessages: state.main.groupRootUserMessages,
+    };
+  });
   const userGroupMemberships = getUserGroupMemberships();
   let allMessages = [];
   userGroupMemberships.forEach((groupMembership) => {
-    allMessages = allMessages.concat(getGroupUserRootMessages(groupMembership.groupId));
+    allMessages = allMessages.concat(groupRootUserMessages[groupMembership.groupId] ?? []);
   });
   return allMessages;
 }

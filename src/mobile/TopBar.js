@@ -5,7 +5,13 @@ import { Avatar, Divider } from "react-native-elements";
 
 const TopBar = ({ left, center, right, style, leftWidth }) => {
   return (
-    <View style={{ backgroundColor: "whitesmoke", flexDirection: "column" }}>
+    <View
+      style={{
+        //backgroundColor: "whitesmoke",
+        flexDirection: "column",
+        //backgroundColor: "yellow",
+      }}
+    >
       <View
         style={[
           style,
@@ -17,15 +23,17 @@ const TopBar = ({ left, center, right, style, leftWidth }) => {
             paddingBottom: 8,
             flexDirection: "row",
             //zIndex: Number.MAX_VALUE,
+            //backgroundColor: "orange",
           },
         ]}
       >
         <View
           style={{
-            flexBasis: "100%",
+            //flexBasis: "100%",
             flexGrow: 0,
             alignItems: "flex-start",
             justifyContent: "flex-end",
+            //backgroundColor: "brown",
           }}
         >
           {left}

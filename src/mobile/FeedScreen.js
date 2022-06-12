@@ -33,6 +33,7 @@ import Loading from "./Loading";
 import * as Logger from "../common/Logger";
 import TopBar from "./TopBar";
 import Toolbar from "./Toolbar";
+import TopBarLeftContentSideButton from "./TopBarLeftContentSideButton";
 
 export default function FeedScreen({ debug }) {
   const dispatch = useDispatch();
@@ -98,11 +99,20 @@ export default function FeedScreen({ debug }) {
       backgroundColor={UIConstants.DEFAULT_BACKGROUND}
       //backgroundColor="green"
     >
-      <TopBar
+      <TopBarLeftContentSideButton
         key="topbar"
         style={{}}
         left={
           <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{ width: 80, alignItems: "flex-end" }}>
+              {UserInfo.avatarComponent(userInfo, () => {
+                dispatch(
+                  Actions.openModal({
+                    modal: "MY_PROFILE",
+                  })
+                );
+              })}
+            </View>
             <Text
               style={{
                 flexGrow: 1,
@@ -115,17 +125,8 @@ export default function FeedScreen({ debug }) {
                 //backgroundColor: "yellow",
               }}
             >
-              {""}
+              {"Feed"}
             </Text>
-            <View style={{ width: 80, alignItems: "flex-end" }}>
-              {UserInfo.avatarComponent(userInfo, () => {
-                dispatch(
-                  Actions.openModal({
-                    modal: "MY_PROFILE",
-                  })
-                );
-              })}
-            </View>
           </View>
         }
         center={null}

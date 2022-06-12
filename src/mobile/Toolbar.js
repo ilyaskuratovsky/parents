@@ -22,7 +22,9 @@ const Toolbar = ({ selected }) => {
   const unreadMessages = MessageUtils.calculateUnreadMessages(allUserRootMessages);
 
   return (
-    <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
+    <BottomBar
+      style={{ paddingLeft: 24, paddingRight: 24, backgroundColor: UIConstants.DEFAULT_BACKGROUND }}
+    >
       <MyButtons.MenuButton
         icon="content-copy"
         color={selected == "groups" ? "mediumblue" : "black"}
@@ -41,7 +43,7 @@ const Toolbar = ({ selected }) => {
       <MyButtons.MenuButton
         icon="account-group"
         color={selected == "groups" ? "mediumblue" : "black"}
-        text="Groups"
+        text="My Groups"
         onPress={() => {
           Logger.log("Toolbar: groups clicked");
           dispatch(

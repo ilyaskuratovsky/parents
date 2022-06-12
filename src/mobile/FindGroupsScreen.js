@@ -56,16 +56,17 @@ Activities
     <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
       <TopBarLeftContentSideButton
         style={{}}
-        content={<Text style={{ fontWeight: "bold", fontSize: 20 }}>Find Parent Groups</Text>}
-        side={
-          <MyButtons.MenuButton
-            icon="plus"
-            text="Create Private Group"
-            onPress={() => {
-              setNewPrivateGroupModalVisible(true);
-            }}
-          />
-        }
+        content={<Text style={{ fontWeight: "bold", fontSize: 20 }}>Find</Text>}
+        // side={
+        //   <MyButtons.MenuButton
+        //     icon="plus"
+        //     text="Create Private Group"
+        //     onPress={() => {
+        //       setNewPrivateGroupModalVisible(true);
+        //     }}
+        //   />
+        // }
+        side={null}
       />
       <NewPrivateGroupModal
         visible={newPrivateGroupModalVisible}
