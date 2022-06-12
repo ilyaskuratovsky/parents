@@ -13,6 +13,7 @@ export function getMessage(messageId) {
   });
   return message;
 }
+``;
 
 export function getRootMessageWithChildrenAndUserStatus(messageId) {
   const message = getMessage(messageId);
@@ -39,6 +40,15 @@ export function getRootMessageWithChildrenAndUserStatus(messageId) {
   return result;
 }
 
+export function getGroupUserRootMessages(groupId) {
+  const { groupRootUserMessages } = useSelector((state) => {
+    return {
+      groupRootUserMessages: state.main.groupRootUserMessages[groupId],
+    };
+  });
+  return groupRootUserMessages;
+}
+
 export function getGroup(groupId) {
   const { group } = useSelector((state) => {
     return {
@@ -46,17 +56,6 @@ export function getGroup(groupId) {
     };
   });
   return group;
-}
-
-export function getGroupUnreadMessageCount(groupId) {
-  const { groupMessages, userMessagesMap } = useSelector((state) => {
-    return {
-      groupMessages: state.main.groupMessages[groupId] ?? [],
-      userMessagesMap: state.main.userMessagesMap,
-    };
-  });
-
-  return MessageUtils.calculateUnreadMessages(groupMessages, userMessagesMap);
 }
 
 export function getGroupUnreadMessages(groupId) {

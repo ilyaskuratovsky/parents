@@ -17,6 +17,7 @@ import * as UserInfo from "../common/UserInfo";
 import * as Utils from "../common/Utils";
 import * as Debug from "../common/Debug";
 import * as Data from "../common/Data";
+import * as MessageUtils from "../common/MessageUtils";
 import { Badge } from "react-native-elements";
 
 export default function GroupsScreen({}) {
@@ -33,6 +34,8 @@ export default function GroupsScreen({}) {
     userGroupMemberships,
     orgsMap,
     groupMembershipMap,
+    group,
+    groupRootUserMessages,
   } = useSelector((state) => {
     return {
       schoolList: state.main.schoolList,
@@ -42,6 +45,7 @@ export default function GroupsScreen({}) {
       userGroupMemberships: state.main.userGroupMemberships,
       groupMembershipMap: state.main.groupMembershipMap,
       orgsMap: state.main.orgsMap,
+      groupRootUserMessages: state.main.groupRootUserMessages,
     };
   });
   const [visibleSchoolGroupModal, setVisibleSchoolGroupModal] = useState(null);
@@ -88,11 +92,15 @@ export default function GroupsScreen({}) {
     groupsComponents = userGroupMemberships.map((userGroupMembership, index) => {
       const groupId = userGroupMembership.groupId;
       const group = groupMap[groupId];
-      const unreadCount = Data.getGroupUnreadMessageCount(groupId);
+      const userRootMessages = groupRootUserMessages[groupId];
+      const unreadMessages = MessageUtils.calculateUnreadMessages(userRootMessages);
+      const unreadCount = unreadMessages.length;
+      /*
       const unreadMessages = Data.getGroupUnreadMessages(groupId);
       if (group == null || group.status == "deleted") {
         return null;
       }
+      */
       const org = orgsMap[group.orgId];
       const members = groupMembershipMap[group.id];
       return (
@@ -109,7 +117,7 @@ export default function GroupsScreen({}) {
                 {
                   user_group_membership: userGroupMembership.id,
                   group: group.id,
-                  unreadMessages: JSON.stringify(unreadMessages.map((m) => m.id)),
+                  unreadRootMessages: JSON.stringify(unreadMessages.map((m) => m.id)),
                 },
                 null,
                 2

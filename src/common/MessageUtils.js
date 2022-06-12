@@ -118,14 +118,18 @@ export function calculateAllGroupUnreadMessages(groupMessagesMap, userMessagesMa
   return unreadMessages;
 }
 
-export function calculateUnreadMessages(messages, userMessagesMap) {
+export function calculateUnreadMessages(userRootMessages) {
+  const unreadMessages = userRootMessages.filter(
+    (rootMessage) => rootMessage.userStatus?.status != "read"
+  );
+  /*
   let unreadMessages = 0;
-  for (const message of messages.filter((message) => message.papaId == null)) {
-    const userMessage = userMessagesMap[message.id];
-    if (userMessage == null || userMessage.status != "read") {
+  for (const message of userRootMessages) {
+    if (message.userStatus?.status != "read") {
       unreadMessages += 1;
     }
   }
+  */
   return unreadMessages;
 }
 

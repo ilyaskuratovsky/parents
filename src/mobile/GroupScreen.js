@@ -38,6 +38,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
   const group = Data.getGroup(groupId);
+  const userRootMessages = Data.getGroupUserRootMessages(groupId);
 
   let { groupMap, orgsMap, messages, userMap, members, userMessagesMap } = useSelector((state) => {
     return {
@@ -87,24 +88,12 @@ export default function GroupScreen({ groupId, messageId, debug }) {
   };
 
   const sortedMessages = useMemo(() => {
-    if (isLoaded) {
-      const rootMessages = MessageUtils.buildRootMessagesWithChildren(
-        messages,
-        userInfo,
-        userMessagesMap,
-        null,
-        groupMap,
-        userMap
-      );
-
-      const sortedMessages = [...rootMessages] ?? [];
-      sortedMessages.sort((m1, m2) => {
-        return m2.lastUpdated - m1.lastUpdated;
-      });
-      return sortedMessages;
-    }
-    return null;
-  }, [messages, userInfo, userMessagesMap, null, userMap]);
+    const sortedMessages = [...userRootMessages] ?? [];
+    sortedMessages.sort((m1, m2) => {
+      return m2.lastUpdated - m1.lastUpdated;
+    });
+    return sortedMessages;
+  }, [userRootMessages]);
 
   const org = orgsMap[group?.orgId];
   // send message callback function
