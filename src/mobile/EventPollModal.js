@@ -105,16 +105,7 @@ export default function EventPollModal({ messageId }) {
   const topBarHeight = 64;
   const replyBarHeight = 80;
 
-  useEffect(async () => {
-    let markRead = [];
-    if (message.status != "read") {
-      markRead.push(message.id);
-    }
-    const unreadChildMessages = (message.children ?? []).filter((m) => m.status != "read");
-    markRead = markRead.concat(unreadChildMessages.map((m) => m.id));
-    Controller.markMessagesRead(user, markRead);
-  }, [message]);
-
+  Data.useMarkRead(message);
   const togglePollResponse = (option) => {
     const newPollResponse = { ...pollResponse };
     const currentPollResponse = pollResponse[option.name];

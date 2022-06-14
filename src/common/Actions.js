@@ -71,7 +71,7 @@ export const mainSlice = createSlice({
     userGroupMemberships: null,
     messages: {},
     groupMessages: {},
-    groupRootUserMessages: {},
+    //rootUserMessages: {},
     pushToken: null,
     toUserInvites: null,
     fromUserInvites: null,
@@ -190,6 +190,7 @@ export const mainSlice = createSlice({
       });
 
       // add group root user messages
+      /*
       const allGroupRootUserMessages = { ...state.groupRootUserMessages };
       const groupRootUserMessages = MessageUtils.buildRootMessagesWithChildren(
         orderedMessages,
@@ -199,13 +200,13 @@ export const mainSlice = createSlice({
         state.groupMap,
         state.userMap
       );
-      allGroupRootUserMessages[groupId] = groupRootUserMessages;
+      */
 
       const newState = {
         ...state,
         groupMessages,
         messages: allMessages,
-        groupRootUserMessages: allGroupRootUserMessages,
+        //rootUserMessages: {...state.rootUserMessages, ...groupRootUserMessages},
       };
       return newState;
     },
@@ -216,9 +217,21 @@ export const mainSlice = createSlice({
       for (const message of messages) {
         userMessagesMap[message.id] = message;
       }
+      /*
+      const rootUserMessages = MessageUtils.buildRootMessagesWithChildren(
+        messages,
+        state.userInfo,
+        userMessagesMap,
+        null,
+        state.groupMap,
+        state.userMap
+      );
+      */
+
       return {
         ...state,
         userMessagesMap,
+        //rootUserMessages,
       };
     },
     groups: (state, obj) => {

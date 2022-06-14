@@ -36,6 +36,7 @@ import Autolink from "react-native-autolink";
 import { userInfo } from "../common/Actions";
 import * as Dates from "../common/Date";
 import * as Debug from "../common/Debug";
+import { useMarkMessageRead } from "../common/Data";
 
 export default function EventMessageModal({ group, message, user, userMap, visible, closeModal }) {
   const dispatch = useDispatch();
@@ -109,22 +110,13 @@ export default function EventMessageModal({ group, message, user, userMap, visib
     }
   }, []);
 
+  Data.useMarkRead(message);
   const [text, setText] = useState("");
   const [eventResponse, setEventResponse] = useState(currentUserStatus);
   const [showCalendarSelection, setShowCalendarSelection] = useState(false);
   const scrollViewRef = useRef();
   const topBarHeight = 64;
   const replyBarHeight = 80;
-
-  useEffect(async () => {
-    let markRead = [];
-    if (message.status != "read") {
-      markRead.push(message.id);
-    }
-    const unreadChildMessages = (message.children ?? []).filter((m) => m.status != "read");
-    markRead = markRead.concat(unreadChildMessages.map((m) => m.id));
-    Controller.markMessagesRead(user, markRead);
-  }, [message]);
 
   console.log("event response is empty string: " + Utils.isEmptyString(eventResponse));
   const canSend =

@@ -1,5 +1,7 @@
 import { useSelector } from "react-redux";
 import * as MessageUtils from "../common/MessageUtils";
+import { useEffect, useMemo } from "react";
+import * as Controller from "../common/Controller";
 
 export function getCurrentUser() {
   const user = useSelector((state) => state.main.userInfo);
@@ -27,26 +29,68 @@ export function getRootMessageWithChildrenAndUserStatus(messageId) {
     };
   });
   const user = useSelector((state) => state.main.userInfo);
-
-  const result = MessageUtils.buildRootMessageWithChildren(
-    messageId,
-    messages,
-    user,
-    userMessagesMap,
-    null,
-    groupMap,
-    userMap
-  );
-  return result;
+  return useMemo(() => {
+    const result = MessageUtils.buildRootMessageWithChildren(
+      messageId,
+      messages,
+      user,
+      userMessagesMap,
+      null,
+      groupMap,
+      userMap
+    );
+    return result;
+  }, [messageId, messages, user, userMessagesMap, groupMap, userMap]);
 }
 
 export function getGroupUserRootMessages(groupId) {
-  const { groupRootUserMessages } = useSelector((state) => {
+  const user = getCurrentUser();
+  const { groupMessages, userMessagesMap, groupMap, userMap } = useSelector((state) => {
     return {
-      groupRootUserMessages: state.main.groupRootUserMessages[groupId],
+      groupMessages: state.main.groupMessages[groupId],
+      userMessagesMap: state.main.userMessagesMap,
+      groupMap: state.main.groupMap,
+      userMap: state.main.userMap,
     };
   });
-  return groupRootUserMessages;
+  /*
+  export function buildRootMessagesWithChildren(
+    messages,
+    userInfo,
+    userMessagesMap,
+    groupMembers,
+    groupMap,
+    userMap
+  */
+
+  return useMemo(() => {
+    return MessageUtils.buildRootMessagesWithChildren(
+      groupMessages,
+      user,
+      userMessagesMap,
+      null,
+      groupMap,
+      userMap
+    );
+  }, [groupMessages, user, userMessagesMap, groupMap, userMap]);
+}
+
+export function getGroupUserRootUnreadMessages(groupId) {
+  const userGroupRootMessages = getGroupUserRootMessages(groupId);
+  const unread = useMemo(
+    () => MessageUtils.calculateUnreadMessages(userGroupRootMessages),
+    [userGroupRootMessages]
+  );
+  return unread;
+}
+
+export function getGroupUserRootMessageUnreadCount(groupId) {
+  const userGroupRootMessages = getGroupUserRootMessages(groupId);
+  const unread = useMemo(
+    () => MessageUtils.calculateUnreadMessages(userGroupRootMessages),
+    [userGroupRootMessages]
+  );
+  return unread.length;
 }
 
 export function getGroup(groupId) {
@@ -79,16 +123,62 @@ export function getUserGroupMemberships() {
   return userGroupMemberships;
 }
 
+export function getUserUnreadMessageCount() {
+  const allUserRootMessages = getAllUserRootMessages();
+  const unreadMessages = MessageUtils.calculateUnreadMessages(allUserRootMessages);
+  return unreadMessages.length;
+}
+
 export function getAllUserRootMessages() {
-  const { groupRootUserMessages } = useSelector((state) => {
+  const user = getCurrentUser();
+  const { groupMessagesMap, userMessagesMap, groupMap, userMap } = useSelector((state) => {
     return {
-      groupRootUserMessages: state.main.groupRootUserMessages,
+      groupMessagesMap: state.main.groupMessages,
+      userMessagesMap: state.main.userMessagesMap,
+      groupMap: state.main.groupMap,
+      userMap: state.main.userMap,
     };
   });
-  const userGroupMemberships = getUserGroupMemberships();
-  let allMessages = [];
-  userGroupMemberships.forEach((groupMembership) => {
-    allMessages = allMessages.concat(groupRootUserMessages[groupMembership.groupId] ?? []);
-  });
-  return allMessages;
+  return useMemo(() => {
+    let allMessages = [];
+    for (groupId in groupMessagesMap) {
+      const groupMessages = groupMessagesMap[groupId];
+      if (groupMessages != null && groupMessages.length > 0) {
+        allMessages = allMessages.concat(groupMessages);
+      }
+    }
+    if (allMessages.length > 0) {
+      /*
+      export function buildRootMessagesWithChildren(
+        messages,
+        userInfo,
+        userMessagesMap,
+        groupMembers,
+        groupMap,
+        userMap
+      */
+      return MessageUtils.buildRootMessagesWithChildren(
+        allMessages,
+        user,
+        userMessagesMap,
+        null,
+        groupMap,
+        userMap
+      );
+    }
+    return [];
+  }, [groupMessagesMap, user, userMessagesMap]);
+}
+
+export function useMarkRead(message) {
+  const user = getCurrentUser();
+  return useEffect(async () => {
+    let markRead = [];
+    if (message.userStatus?.status != "read") {
+      markRead.push(message.id);
+    }
+    const unreadChildMessages = (message.children ?? []).filter((m) => m.status != "read");
+    markRead = markRead.concat(unreadChildMessages.map((m) => m.id));
+    Controller.markMessagesRead(user, markRead);
+  }, [message]);
 }

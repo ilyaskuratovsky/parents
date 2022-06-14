@@ -39,6 +39,7 @@ import * as Dates from "../common/Date";
 import * as Data from "../common/Data";
 import * as Message from "../common/Message";
 import * as Debug from "../common/Debug";
+import * as Actions from "../common/Actions";
 
 export default function EventModal({ messageId }) {
   const dispatch = useDispatch();
@@ -123,15 +124,7 @@ export default function EventModal({ messageId }) {
   const topBarHeight = 64;
   const replyBarHeight = 80;
 
-  useEffect(async () => {
-    let markRead = [];
-    if (message.status != "read") {
-      markRead.push(message.id);
-    }
-    const unreadChildMessages = (message.children ?? []).filter((m) => m.status != "read");
-    markRead = markRead.concat(unreadChildMessages.map((m) => m.id));
-    Controller.markMessagesRead(user, markRead);
-  }, [message]);
+  Data.useMarkRead(message);
 
   console.log("event response is empty string: " + Utils.isEmptyString(eventResponse));
   const canSend =
@@ -153,7 +146,7 @@ export default function EventModal({ messageId }) {
               icon="arrow-left"
               text="Back"
               onPress={() => {
-                closeModal();
+                dispatch(Actions.closeModal());
               }}
               color="black"
             />
@@ -611,20 +604,21 @@ export default function EventModal({ messageId }) {
           </ScrollView>
         </KeyboardAvoidingView>
       </Portal>
-
-      <BookCalendarEventModal
-        key="BookCalendarEventModal"
-        title={message.title}
-        startDate={eventStart}
-        endDate={eventEnd}
-        onComplete={() => {
-          setShowCalendarSelection(false);
-        }}
-        visible={showCalendarSelection}
-        onDismiss={() => {
-          setShowCalendarSelection(false);
-        }}
-      />
+      {showCalendarSelection && (
+        <BookCalendarEventModal
+          key="BookCalendarEventModal"
+          title={message.title}
+          startDate={eventStart}
+          endDate={eventEnd}
+          onComplete={() => {
+            setShowCalendarSelection(false);
+          }}
+          visible={showCalendarSelection}
+          onDismiss={() => {
+            setShowCalendarSelection(false);
+          }}
+        />
+      )}
     </Modal>
   );
 }

@@ -84,15 +84,7 @@ export default function EventPollMessageModal({
   const topBarHeight = 64;
   const replyBarHeight = 80;
 
-  useEffect(async () => {
-    let markRead = [];
-    if (message.status != "read") {
-      markRead.push(message.id);
-    }
-    const unreadChildMessages = (message.children ?? []).filter((m) => m.status != "read");
-    markRead = markRead.concat(unreadChildMessages.map((m) => m.id));
-    Controller.markMessagesRead(user, markRead);
-  }, [message]);
+  Data.useMarkRead(message);
 
   const canSend =
     (text != null && text.length > 0) ||

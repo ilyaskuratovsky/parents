@@ -24,7 +24,12 @@ export default function EventMessageView({ item, showGroup = false }) {
       <TouchableOpacity
         style={{ flex: 1, padding: 20, backgroundColor: "rgba(204, 255, 255, 0.5)" }}
         onPress={() => {
-          //onPress();
+          dispatch(
+            Actions.openModal({
+              modal: "EVENT",
+              messageId: item.id,
+            })
+          );
         }}
       >
         <View style={{ flex: 1, flexDirection: "row", paddingRight: 20 }}>

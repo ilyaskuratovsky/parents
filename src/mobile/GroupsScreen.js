@@ -92,15 +92,8 @@ export default function GroupsScreen({}) {
     groupsComponents = userGroupMemberships.map((userGroupMembership, index) => {
       const groupId = userGroupMembership.groupId;
       const group = groupMap[groupId];
-      const userRootMessages = groupRootUserMessages[groupId];
-      const unreadMessages = MessageUtils.calculateUnreadMessages(userRootMessages);
-      const unreadCount = unreadMessages.length;
-      /*
-      const unreadMessages = Data.getGroupUnreadMessages(groupId);
-      if (group == null || group.status == "deleted") {
-        return null;
-      }
-      */
+      const unreadRootMessages = Data.getGroupUserRootUnreadMessages(groupId);
+      const unreadCount = unreadRootMessages.length;
       const org = orgsMap[group.orgId];
       const members = groupMembershipMap[group.id];
       return (
@@ -117,7 +110,7 @@ export default function GroupsScreen({}) {
                 {
                   user_group_membership: userGroupMembership.id,
                   group: group.id,
-                  unreadRootMessages: JSON.stringify(unreadMessages.map((m) => m.id)),
+                  unreadRootMessages: JSON.stringify(unreadRootMessages.map((m) => m.id)),
                 },
                 null,
                 2
@@ -292,12 +285,14 @@ export default function GroupsScreen({}) {
               justifyContent: "center",
             }}
           >
+            {/*
             <MyButtons.LinkButton
               text="Start a new Group"
               onPress={async () => {
                 setNewPrivateGroupModalVisible(true);
               }}
             />
+            */}
           </View>
         </ScrollView>
         <Toolbar key="toolbar" />

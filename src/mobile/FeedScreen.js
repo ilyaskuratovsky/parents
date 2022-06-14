@@ -99,12 +99,18 @@ export default function FeedScreen({ debug }) {
       backgroundColor={UIConstants.DEFAULT_BACKGROUND}
       //backgroundColor="green"
     >
-      <TopBarLeftContentSideButton
+      <TopBar
         key="topbar"
         style={{}}
         left={
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <View style={{ width: 80, alignItems: "flex-end" }}>
+          <View
+            style={{
+              //backgroundColor: "cyan",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <View style={{ alignItems: "flex-start", marginRight: 6 }}>
               {UserInfo.avatarComponent(userInfo, () => {
                 dispatch(
                   Actions.openModal({
@@ -115,21 +121,17 @@ export default function FeedScreen({ debug }) {
             </View>
             <Text
               style={{
-                flexGrow: 1,
                 paddingLeft: 6,
                 fontWeight: "bold",
                 fontSize: 20,
                 color: UIConstants.BLACK_TEXT_COLOR,
-                //fontFamily: "Helvetica Neue",
-                //color: "grey",
-                //backgroundColor: "yellow",
               }}
             >
               {"Feed"}
             </Text>
           </View>
         }
-        center={null}
+        center={<Text>{""}</Text>}
         right={null}
       />
       {/* messages section */}

@@ -18,9 +18,7 @@ const Toolbar = ({ selected }) => {
     };
   });
 
-  const allUserRootMessages = Data.getAllUserRootMessages();
-  const unreadMessages = MessageUtils.calculateUnreadMessages(allUserRootMessages);
-
+  const unreadMessageCount = Data.getUserUnreadMessageCount();
   return (
     <BottomBar
       style={{ paddingLeft: 24, paddingRight: 24, backgroundColor: UIConstants.DEFAULT_BACKGROUND }}
@@ -53,10 +51,10 @@ const Toolbar = ({ selected }) => {
           );
         }}
         badge={
-          unreadMessages.length > 0 ? (
+          unreadMessageCount > 0 ? (
             <Badge
               status="error"
-              value={unreadMessages.length}
+              value={unreadMessageCount}
               containerStyle={{ position: "absolute", top: -4, right: -4 }}
             />
           ) : null
