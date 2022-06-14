@@ -120,7 +120,7 @@ export function calculateAllUserGroupsUnreadMessages(groupMessagesMap, userMessa
 
 export function calculateUnreadMessages(userRootMessages) {
   const unreadMessages = userRootMessages.filter(
-    (rootMessage) => rootMessage.userStatus?.status != "read"
+    (rootMessage) => rootMessage.userStatus?.rootMessageStatus != "read"
   );
   /*
   let unreadMessages = 0;
