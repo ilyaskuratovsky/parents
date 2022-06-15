@@ -10,6 +10,8 @@ import * as Search from "./Search";
 import moment from "moment";
 import * as UserInfo from "./UserInfo";
 import * as Logger from "./Logger";
+import { storage } from "../../config/firebase";
+import { getDownloadURL, ref, uploadBytes, uploadString } from "firebase/storage";
 
 //import { Database } from "firebase-firestore-lite";
 
@@ -543,4 +545,39 @@ export async function deleteGroup(userInfo, groupId) {
 
 export async function deleteGroupMembership(userInfo, groupMembershipId) {
   await Database.deleteGroupMembership(groupMembershipId);
+}
+
+export async function createSharedCalendar(groupId) {
+  const ics = require("ics"); //https://www.npmjs.com/package/ics
+
+  ics.createEvent(
+    {
+      title: "Dinner",
+      description: "Nightly thing I do",
+      busyStatus: "FREE",
+      start: [2022, 6, 16, 6, 30],
+      duration: { minutes: 50 },
+    },
+    async (error, value) => {
+      if (error) {
+        console.log(error);
+      }
+
+      const metadata = {
+        contentType: "text/calendar",
+      };
+
+      const fileRef = ref(storage, "calendars/test/test_calendar4.ics");
+      let blob = new Blob([value], { type: "text/calendar" });
+      console.log("uploading");
+      const result = uploadBytes(fileRef, blob).then((snapshot) => {
+        console.log("Uploaded a blob or file!");
+        console.log("snapshpt: " + JSON.stringify(snapshot));
+      });
+      console.log("result: " + JSON.stringify(result));
+      // We're done with the blob, close and release it
+      //blob.close();
+    }
+  );
+  ics;
 }

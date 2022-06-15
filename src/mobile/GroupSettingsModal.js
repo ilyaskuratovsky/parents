@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { Alert, Modal, Text, View, ScrollView, TouchableOpacity, TextInput } from "react-native";
+import {
+  Alert,
+  Modal,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  Linking,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as Controller from "../common/Controller";
 import GroupInviteModal from "./GroupInviteModal";
@@ -184,6 +193,25 @@ function GroupSettings({ userInfo, group, closeModal }) {
         placeholder={"Description"}
         value={groupDescription ?? ""}
         selectTextOnFocus={true}
+      />
+      <Text>Shared Calendar</Text>
+      <Text
+        style={{ color: "blue" }}
+        onPress={() =>
+          Linking.openURL(
+            "https://firebasestorage.googleapis.com/v0/b/parents-749dd.appspot.com/o/calendars%2Ftest%2Ftest_calendar4.ics?alt=media&token=1bc2b780-e16e-4751-80fb-732c0399f90f"
+          )
+        }
+      >
+        Shared Calendar Link
+      </Text>
+
+      <MyButtons.FormButton
+        text="Create Shared Calendar"
+        onPress={async () => {
+          await Controller.createSharedCalendar();
+          closeModal();
+        }}
       />
       <MyButtons.FormButton
         text="Save"

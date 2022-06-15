@@ -33,6 +33,7 @@
     "expo-status-bar": "~1.1.0",
     "expo-updates": "~0.10.15",
     "firebase": "^9.6.0",
+    "ics": "^2.35.0",
     "install": "^0.13.0",
     "moment": "^2.29.2",
     "moment-timezone": "^0.5.34",
