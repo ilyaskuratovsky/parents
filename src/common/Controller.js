@@ -555,7 +555,7 @@ export async function createSharedCalendar(groupId) {
       title: "Dinner",
       description: "Nightly thing I do",
       busyStatus: "FREE",
-      start: [2022, 6, 16, 6, 30],
+      start: [2022, 6, 23, 6, 30],
       duration: { minutes: 50 },
     },
     async (error, value) => {

@@ -19,6 +19,7 @@ import * as Debug from "../common/Debug";
 import * as Data from "../common/Data";
 import * as MessageUtils from "../common/MessageUtils";
 import { Badge } from "react-native-elements";
+import GroupView from "./GroupView";
 
 export default function GroupsScreen({}) {
   const dispatch = useDispatch();
@@ -31,21 +32,23 @@ export default function GroupsScreen({}) {
     schoolMap,
     groupList,
     groupMap,
-    userGroupMemberships,
+    manualUserGroupMemberships,
     orgsMap,
     groupMembershipMap,
     group,
     groupRootUserMessages,
+    groups,
   } = useSelector((state) => {
     return {
       schoolList: state.main.schoolList,
       schoolMap: state.main.schoolMap,
       groupList: state.main.groupList,
       groupMap: state.main.groupMap,
-      userGroupMemberships: state.main.userGroupMemberships,
+      manualUserGroupMemberships: state.main.userGroupMemberships,
       groupMembershipMap: state.main.groupMembershipMap,
       orgsMap: state.main.orgsMap,
       groupRootUserMessages: state.main.groupRootUserMessages,
+      groups: state.main.groupList,
     };
   });
   const [visibleSchoolGroupModal, setVisibleSchoolGroupModal] = useState(null);
@@ -88,146 +91,19 @@ export default function GroupsScreen({}) {
   //   (groupMembership) => groupMembership.groupId
   // );
   let groupsComponents = null;
+  const userGroupMemberships = [...manualUserGroupMemberships];
+
   if (userGroupMemberships.length > 0) {
     groupsComponents = userGroupMemberships.map((userGroupMembership, index) => {
       const groupId = userGroupMembership.groupId;
-      const group = groupMap[groupId];
-      const unreadRootMessages = Data.getGroupUserRootUnreadMessages(groupId);
-      const unreadCount = unreadRootMessages.length;
-      const org = orgsMap[group.orgId];
-      const members = groupMembershipMap[group.id];
-      return (
-        <View
-          key={index}
-          style={{
-            flex: 1,
-            //backgroundColor: "cyan",
-          }}
-        >
-          {debugMode && (
-            <Text style={{ fontSize: 8 }}>
-              {JSON.stringify(
-                {
-                  user_group_membership: userGroupMembership.id,
-                  group: group.id,
-                  unreadRootMessages: JSON.stringify(unreadRootMessages.map((m) => m.id)),
-                },
-                null,
-                2
-              )}
-            </Text>
-          )}
-          <TouchableOpacity
-            key={group.id}
-            style={{
-              flexDirection: "row",
-              //height: Utils.isEmptyString(group.description) ? 60 : 80,
-              alignItems: "flex-start",
-              paddingLeft: 10,
-            }}
-            onPress={() => {
-              dispatch(Actions.goToScreen({ screen: "GROUP", groupId: group.id }));
-            }}
-          >
-            <View
-              style={{
-                flexGrow: 1,
-                flexDirection: "column",
-                //backgroundColor: "green",
-              }}
-            >
-              <Text
-                style={{
-                  justifyContent: "center",
-                  alignItems: "flex-start",
-                  fontSize: 18,
-                  fontWeight: "bold",
-                  color: UIConstants.BLACK_TEXT_COLOR,
-                  height: 26,
-                  //backgroundColor: "cyan",
-                  //fontFamily: "Helvetica Neue",
-                }}
-              >
-                {group.name} {/*group.id*/}
-              </Text>
-              {!Utils.isEmptyString(group.description) && (
-                <Text
-                  style={{
-                    justifyContent: "center",
-                    alignItems: "flex-start",
-                    fontSize: 14,
-                    fontWeight: "normal",
-                    color: UIConstants.BLACK_TEXT_COLOR,
-                    height: 20,
-                    //fontFamily: "Helvetica Neue",
-                  }}
-                >
-                  {group.description} {/*group.id*/}
-                </Text>
-              )}
-              {org != null && (
-                <Text
-                  style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    fontSize: 14,
-                  }}
-                >
-                  {org.name ?? "[No organization]"}
-                </Text>
-              )}
-              <View style={{ flex: 1, paddingTop: 8 }}>
-                <FacePile
-                  userIds={[userInfo.uid].concat(
-                    members
-                      .filter((groupMembership) => {
-                        return userInfo.uid != groupMembership.uid;
-                      })
-                      .map((groupMembership) => groupMembership.uid)
-                  )}
-                  border
-                />
-              </View>
-            </View>
-            <View
-              style={{
-                flexBasis: 90,
-                justifyContent: "flex-end",
-                alignItems: "center",
-                flexDirection: "row",
-                //backgroundColor: "brown",
-              }}
-            >
-              <View
-                style={{
-                  paddingLeft: 2,
-                  paddingRight: 2,
-                  paddingTop: 2,
-                  alignItems: "flex-start",
-                  //backgroundColor: "purple",
-                }}
-              >
-                {(unreadCount ?? 0) > 0 ? (
-                  <Badge status="error" value={unreadCount} containerStyle={{}} />
-                ) : null}
-              </View>
-              <IconButton
-                style={{
-                  //backgroundColor: "green",
-                  padding: 0,
-                  margin: 0,
-                }}
-                icon="chevron-right"
-                color={"darkgrey"}
-                size={32}
-              />
-            </View>
-          </TouchableOpacity>
-          <Divider style={{ marginTop: 20, marginBottom: 10 }} width={3} color="lightgrey" />
-        </View>
-      );
+      return <GroupView groupId={groupId} />;
     });
   }
+
+  const superPublicGroups = Data.getSuperPublicGroups();
+  const superPublicGroupsComponents = superPublicGroups.map((group) => {
+    return <GroupView groupId={group.id} />;
+  });
 
   return (
     <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
@@ -277,6 +153,7 @@ export default function GroupsScreen({}) {
       <View key="main_content" style={{ flex: 1, backgroundColor: "white", paddingTop: 20 }}>
         <ScrollView key="messages">
           {groupsComponents}
+          {superPublicGroupsComponents}
           <View
             style={{
               flex: 1,

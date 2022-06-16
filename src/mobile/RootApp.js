@@ -1,6 +1,6 @@
 import * as Notifications from "expo-notifications";
 import React, { useEffect, useRef } from "react";
-import { Alert, View, Text, Modal } from "react-native";
+import { Alert, View, Text, Modal, ScrollView } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as MyButtons from "./MyButtons";
 
@@ -36,6 +36,8 @@ import * as Globals from "./Globals";
 import * as Debug from "../common/Debug";
 import NewEventModal from "./NewEventModal2";
 import BookCalendarEventModal from "./BookCalendarEventModal";
+import Constants from "expo-constants";
+
 /*
 App vision:  The local social network for parents.
 When join you put in your zip code (we also detect based on gps coordinates)
@@ -100,6 +102,26 @@ function RootApp(props, state) {
   if (!appState.main.appInitialized) {
     //return <SplashScreen appInitializedCallback={() => {}} refresh={2200} />;
     return <Loading />;
+  }
+  {
+    /*
+  return (
+    <View
+      style={{
+        flex: 1,
+        height: "100%",
+        width: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "white",
+      }}
+    >
+      <ScrollView style={{ marginTop: 100 }}>
+        <Text style={{ fontSize: 8 }}>{JSON.stringify(Constants.manifest.extra, null, 2)}</Text>
+      </ScrollView>
+    </View>
+  );
+    */
   }
 
   let render = null;

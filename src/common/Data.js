@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import * as MessageUtils from "../common/MessageUtils";
 import { useEffect, useMemo } from "react";
 import * as Controller from "../common/Controller";
+import { groupMemberships } from "./Actions";
 
 export function getCurrentUser() {
   const user = useSelector((state) => state.main.userInfo);
@@ -15,7 +16,31 @@ export function getMessage(messageId) {
   });
   return message;
 }
-``;
+export function getAllUsers() {
+  const { users } = useSelector((state) => {
+    return {
+      users: state.main.userList,
+    };
+  });
+  return users;
+}
+export function getGroupMemberships(groupId) {
+  const group = getGroup(groupId);
+  if (group.type == "super_public") {
+    const allUsers = getAllUsers();
+    const groupMemberships = allUsers.map((user) => {
+      return { uid: user.uid, groupId: group.id };
+    });
+    return groupMemberships;
+  }
+  const { groupMemberships } = useSelector((state) => {
+    return {
+      groupMemberships: state.main.groupMembershipMap[groupId],
+    };
+  });
+
+  return groupMemberships;
+}
 
 export function getRootMessageWithChildrenAndUserStatus(messageId) {
   const message = getMessage(messageId);
@@ -64,14 +89,18 @@ export function getGroupUserRootMessages(groupId) {
   */
 
   return useMemo(() => {
-    return MessageUtils.buildRootMessagesWithChildren(
-      groupMessages,
-      user,
-      userMessagesMap,
-      null,
-      groupMap,
-      userMap
-    );
+    if (groupMessages != null) {
+      return MessageUtils.buildRootMessagesWithChildren(
+        groupMessages,
+        user,
+        userMessagesMap,
+        null,
+        groupMap,
+        userMap
+      );
+    } else {
+      return [];
+    }
   }, [groupMessages, user, userMessagesMap, groupMap, userMap]);
 }
 
@@ -102,6 +131,15 @@ export function getGroup(groupId) {
   return group;
 }
 
+export function getSuperPublicGroups(groupId) {
+  const { groups } = useSelector((state) => {
+    return {
+      groups: state.main.groupList,
+    };
+  });
+  return groups.filter((group) => group.type === "super_public");
+}
+
 export function getGroupUnreadMessages(groupId) {
   const { groupMessages, userMessagesMap } = useSelector((state) => {
     return {
@@ -121,6 +159,17 @@ export function getUserGroupMemberships() {
     };
   });
   return userGroupMemberships;
+}
+
+export function getUserGroupMembership(groupId) {
+  const user = getCurrentUser();
+  const { userGroupMemberships } = useSelector((state) => {
+    return {
+      userGroupMemberships: state.main.userGroupMemberships,
+    };
+  });
+  const arr = userGroupMemberships.filter((m) => m.groupId === groupId);
+  return arr.length == 1 ? arr[0] : null;
 }
 
 export function getUserUnreadMessageCount() {
@@ -181,4 +230,12 @@ export function useMarkRead(message) {
     markRead = markRead.concat(unreadChildMessages.map((m) => m.id));
     Controller.markMessagesRead(user, markRead);
   }, [message]);
+}
+
+function single(list) {
+  if (list != null && list.length === 1) {
+    return list[0];
+  } else {
+    return null;
+  }
 }

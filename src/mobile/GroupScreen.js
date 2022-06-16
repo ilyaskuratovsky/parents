@@ -36,10 +36,12 @@ import * as Data from "../common/Data";
 
 export default function GroupScreen({ groupId, messageId, debug }) {
   const dispatch = useDispatch();
-  const userInfo = useSelector((state) => state.main.userInfo);
+  const userInfo = Data.getCurrentUser();
   const group = Data.getGroup(groupId);
   const userRootMessages = Data.getGroupUserRootMessages(groupId);
+  const members = Data.getGroupMemberships(groupId);
 
+  /*
   let { groupMap, orgsMap, messages, userMap, members, userMessagesMap } = useSelector((state) => {
     return {
       userinfo: state.main.userInfo,
@@ -54,7 +56,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
       userMessagesMap: state.main.userMessagesMap,
     };
   });
-
+  */
   //const group = groupMap?.[groupId];
   console.log(
     "GroupScreen, groupId: " +
@@ -64,12 +66,13 @@ export default function GroupScreen({ groupId, messageId, debug }) {
       ", group: " +
       JSON.stringify(group)
   );
+  /*
   const isLoaded =
     group != null &&
     (messageId != null
       ? messages != null && messages.filter((m) => m.id === messageId).length > 0
       : true);
-
+  */
   const [groupSettingsModalVisible, setGroupSettingsModalVisible] = useState(false);
   const [messagesModalVisible, setMessagesModalVisible] = useState(null);
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
@@ -95,7 +98,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
     return sortedMessages;
   }, [userRootMessages]);
 
-  const org = orgsMap[group?.orgId];
+  //const org = orgsMap[group?.orgId];
   // send message callback function
   const sendMessage = useCallback(async (title, text) => {
     const groupName = group.name;
@@ -121,28 +124,6 @@ export default function GroupScreen({ groupId, messageId, debug }) {
     };
     return <MessageViewContainer user={userInfo} item={item} onPress={onPress} />;
   };
-  useEffect(async () => {
-    // update last viewed callback function
-    /* commenting out this code to check if we need it
-    if (messages.length > 0) {
-      const maxTimestampMessage = messages.reduce((prev, current) => {
-        return Date.compare(prev.timestamp, current.timestamp) == 1 ? prev : current;
-      });
-      console.log(
-        "setting user group last viewed timestamp: " + JSON.stringify(maxTimestampMessage.timestamp)
-      );
-      await Controller.setUserGroupLastViewedTimestamp(
-        userInfo,
-        group.id,
-        Date.toDate(maxTimestampMessage.timestamp)
-      );
-    }
-    Controller.markMessagesRead(
-      userInfo,
-      messages.map((m) => m.id)
-    );
-    */
-  }, [messages]);
 
   // show message modal if there's a messageId prop
   useEffect(async () => {
@@ -158,8 +139,12 @@ export default function GroupScreen({ groupId, messageId, debug }) {
   const bottomBarHeight = 64;
 
   //Alert.alert("rendering GroupScreen: " + JSON.stringify({ groupId, messageId }));
+  {
+    /*
   if (!isLoaded) {
     return <Loading />;
+  }
+*/
   }
   return (
     <Portal
@@ -228,9 +213,9 @@ export default function GroupScreen({ groupId, messageId, debug }) {
                     {group.name}
                   </Text>
                   {Debug.isDebugMode() ? <Text style={{ fontSize: 10 }}>{group.id}</Text> : null}
-                  {org != null && (
+                  {/*org != null && (
                     <Text style={{ fontWeight: "normal", fontSize: 14 }}>{org.name}</Text>
-                  )}
+                  )*/}
                 </TouchableOpacity>
               </View>
             </View>
