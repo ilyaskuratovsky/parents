@@ -22,3 +22,44 @@ export default function FacePile({ userIds }) {
 
   return <View style={{ flexDirection: "row" }}>{components}</View>;
 }
+
+export function SquareFacePile({ userIds }) {
+  const dispatch = useDispatch();
+  const { userMap } = useSelector((state) => {
+    return {
+      userMap: state.main.userMap,
+    };
+  });
+
+  const user1 = userIds.length > 0 ? userIds[0] : null;
+  const user2 = userIds.length > 1 ? userIds[1] : null;
+
+  let components = null;
+  if (user1 != null && user2 == null) {
+    components = [UserInfo.smallAvatarComponent(user1, null, true)];
+  } else {
+    components = [
+      <View key={0} style={{ position: "absolute", top: 0, left: 0, zIndex: 0 }}>
+        {UserInfo.smallAvatarComponent(user1, null, true)}
+      </View>,
+      <View key={1} style={{ position: "absolute", right: 0, bottom: 0, zIndex: -1 }}>
+        {UserInfo.smallAvatarComponent(user2, null, true)}
+      </View>,
+    ];
+  }
+
+  return (
+    <View
+      style={{
+        width: 42,
+        height: 42,
+        //backgroundColor: "cyan",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      {components}
+    </View>
+  );
+}

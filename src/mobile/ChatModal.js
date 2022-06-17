@@ -37,11 +37,17 @@ import { userInfo } from "../common/Actions";
 import * as Debug from "../common/Debug";
 import * as Data from "../common/Data";
 import * as Actions from "../common/Actions";
+import TopBar from "./TopBar";
+import { styles } from "./Styles";
+import { SquareFacePile } from "../web/FacePile";
 
 export default function ChatModal({ chatId, scrollToEnd = true }) {
   const debugMode = Debug.isDebugMode();
   const dispatch = useDispatch();
   const user = Data.getCurrentUser();
+  const chat = Data.getChat(chatId);
+  const members = Data.getUsers(chat?.participants ?? []);
+  const otherMembers = members.filter((u) => u.uid !== user.uid);
   const messages = Data.getChatUserMessages(chatId);
 
   const sortedChildMessages = messages ?? [];
@@ -87,20 +93,47 @@ export default function ChatModal({ chatId, scrollToEnd = true }) {
       >
         {debugMode && <Text>ChatModal</Text>}
         {/* top bar */}
-        <TopBarMiddleContentSideButtons
-          backgroundColor={UIConstants.DEFAULT_BACKGROUND}
-          height={topBarHeight}
+        <TopBar
+          key="topbar"
+          style={{ height: 56 }}
           left={
-            <MyButtons.MenuButton
-              icon="arrow-left"
-              text="Back"
-              onPress={() => {
-                dispatch(Actions.closeModal());
+            <View
+              style={{
+                //backgroundColor: "cyan",
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
               }}
-              color="black"
-            />
+            >
+              <IconButton
+                style={{
+                  //backgroundColor: "green",
+                  padding: 0,
+                  margin: 0,
+                }}
+                icon="chevron-left"
+                color={"darkgrey"}
+                size={32}
+                onPress={() => {
+                  dispatch(Actions.closeModal());
+                }}
+              />
+              <View style={{ alignItems: "flex-start", marginRight: 2 }}>
+                <SquareFacePile userIds={otherMembers} />
+              </View>
+              <Text
+                style={[
+                  {
+                    paddingLeft: 2,
+                  },
+                  styles.topBarHeaderText,
+                ]}
+              >
+                {UserInfo.commaSeparatedChatThread(otherMembers)}
+              </Text>
+            </View>
           }
-          center={null}
+          center={<Text>{""}</Text>}
           right={null}
         />
 
