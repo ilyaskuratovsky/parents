@@ -21,6 +21,7 @@ import * as MessageUtils from "../common/MessageUtils";
 import { Badge } from "react-native-elements";
 import { styles } from "./Styles";
 import Loading from "./Loading";
+import { SquareFacePile } from "../web/FacePile";
 
 export default function ChatThreadView({ chatId }) {
   const dispatch = useDispatch();
@@ -38,8 +39,8 @@ export default function ChatThreadView({ chatId }) {
     <View
       key={chat.id}
       style={{
-        flex: 1,
-        //backgroundColor: "cyan",
+        //backgroundColor: "green",
+        justifyContent: "center",
       }}
     >
       {debugMode && (
@@ -59,9 +60,10 @@ export default function ChatThreadView({ chatId }) {
         key={"view"}
         style={{
           flexDirection: "row",
+          //backgroundColor: "cyan",
           //height: Utils.isEmptyString(group.description) ? 60 : 80,
           alignItems: "flex-start",
-          paddingLeft: 10,
+          paddingLeft: 4,
         }}
         onPress={() => {
           dispatch(Actions.openModal({ modal: "CHAT", chatId: chat.id }));
@@ -74,35 +76,47 @@ export default function ChatThreadView({ chatId }) {
             //backgroundColor: "green",
           }}
         >
-          <Text
-            style={[
-              {
-                justifyContent: "center",
-                alignItems: "flex-start",
-                height: 22,
-                //backgroundColor: "cyan",
-                //fontFamily: "Helvetica Neue",
-              },
-              styles.header1,
-            ]}
-          >
-            {UserInfo.commaSeparatedChatThread(otherMembers)}
-          </Text>
-          <Text
+          <View
             style={{
-              justifyContent: "center",
-              alignItems: "flex-start",
-              fontSize: 11,
-              fontWeight: "normal",
-              color: UIConstants.BLACK_TEXT_COLOR,
-              height: 16,
-              //fontFamily: "Helvetica Neue",
+              flexDirection: "row",
+              alignItems: "center",
+              //backgroundColor: "green",
             }}
           >
-            Last message goes here
-          </Text>
-          <View style={{ flex: 1, paddingTop: 4 }}>
-            <FacePile userIds={otherMembers.map((u) => u.uid)} border />
+            <SquareFacePile userIds={otherMembers} />
+            <View
+              style={{
+                flexDirection: "column",
+              }}
+            >
+              <Text
+                style={[
+                  {
+                    justifyContent: "center",
+                    alignItems: "flex-start",
+                    height: 22,
+                    //backgroundColor: "cyan",
+                    //fontFamily: "Helvetica Neue",
+                  },
+                  styles.header1,
+                ]}
+              >
+                {UserInfo.commaSeparatedChatThread(otherMembers)}
+              </Text>
+              <Text
+                style={{
+                  justifyContent: "center",
+                  alignItems: "flex-start",
+                  fontSize: 11,
+                  fontWeight: "normal",
+                  color: UIConstants.BLACK_TEXT_COLOR,
+                  height: 16,
+                  //fontFamily: "Helvetica Neue",
+                }}
+              >
+                Last message goes here
+              </Text>
+            </View>
           </View>
         </View>
         <View
@@ -139,7 +153,7 @@ export default function ChatThreadView({ chatId }) {
           />
         </View>
       </TouchableOpacity>
-      <Divider style={{ marginTop: 20, marginBottom: 10 }} width={3} color="lightgrey" />
+      <Divider style={{ marginTop: 6, marginBottom: 6 }} width={3} color="lightgrey" />
     </View>
   );
 }
