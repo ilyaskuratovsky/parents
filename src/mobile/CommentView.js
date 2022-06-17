@@ -11,6 +11,8 @@ import * as Utils from "../common/Utils";
 import * as Debug from "../common/Debug";
 
 export default function CommentView({ item, user, onPress }) {
+  const debugMode = Debug.isDebugMode();
+
   const timeAgo = ({ children }) => {
     return (
       <Text
@@ -150,10 +152,8 @@ export default function CommentView({ item, user, onPress }) {
                 }}
               />
             )}
-            {Debug.isDebugMode() && <Text style={{ fontSize: 8 }}>{item.id}</Text>}
-            {Debug.isDebugMode() && (
-              <Text style={{ fontSize: 8 }}>{JSON.stringify(item, null, 2)}</Text>
-            )}
+            {debugMode && <Text style={{ fontSize: 8 }}>{item.id}</Text>}
+            {debugMode && <Text style={{ fontSize: 8 }}>{JSON.stringify(item, null, 2)}</Text>}
           </View>
         </View>
       </View>
@@ -264,10 +264,10 @@ export default function CommentView({ item, user, onPress }) {
               }}
             />
 
-            {Globals.dev && (
+            {debugMode && (
               <Text style={{ fontSize: 8 }}>(not from parent message uid) {item.id}</Text>
             )}
-            {Globals.dev && <Text style={{ fontSize: 8 }}>{JSON.stringify(item, null, 2)}</Text>}
+            {debugMode && <Text style={{ fontSize: 8 }}>{JSON.stringify(item, null, 2)}</Text>}
           </View>
         </View>
       </View>

@@ -306,6 +306,12 @@ export async function markMessagesRead(userInfo, messageIds) {
   }
 }
 
+export async function markChatMessagesRead(userInfo, chatMessageIds) {
+  for (const chatMessageId of chatMessageIds) {
+    Database.updateUserChatMessage(userInfo.uid, chatMessageId, { status: "read" });
+  }
+}
+
 export async function createPrivateGroupAndJoin(
   dispatch,
   userInfo,

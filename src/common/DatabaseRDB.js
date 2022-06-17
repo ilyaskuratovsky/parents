@@ -221,6 +221,11 @@ export async function updateUserMessage(uid, messageId, update) {
   await RDB.update(docRef, update);
 }
 
+export async function updateUserChatMessage(uid, chatMessageId, update) {
+  const docRef = RDB.ref(rdb, "/user_chat_messages/" + uid + "/" + chatMessageId);
+  await RDB.update(docRef, update);
+}
+
 export async function updateGroup(groupId, update) {
   const docRef = RDB.ref(rdb, "/groups/" + groupId);
   await RDB.update(docRef, update);

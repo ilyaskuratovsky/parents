@@ -158,7 +158,7 @@ export function getGroupUserRootUnreadMessages(groupId) {
 export function getChatUserUnreadMessages(chatId) {
   const userChatMessages = getChatUserMessages(chatId);
   const unread = useMemo(
-    () => MessageUtils.calculateUnreadMessages(userChatMessages),
+    () => MessageUtils.calculateUnreadChatMessages(userChatMessages),
     [userChatMessages]
   );
   return unread;
@@ -292,9 +292,14 @@ export function useMarkRead(message) {
   }, [message]);
 }
 
-export function useMarkChatRead(chatId) {
+export function useMarkChatMessagesRead(chatMessages) {
   const user = getCurrentUser();
-  return useEffect(async () => {}, []);
+  return useEffect(async () => {
+    Controller.markChatMessagesRead(
+      user,
+      chatMessages.map((m) => m.id)
+    );
+  }, []);
 }
 
 function single(list) {

@@ -69,7 +69,7 @@ export default function ChatModal({ chatId, scrollToEnd = true }) {
   const topBarHeight = 40;
   const replyBarHeight = 80;
 
-  Data.useMarkChatRead(chatId);
+  Data.useMarkChatMessagesRead(childMessages.filter((m) => m.userStatus?.status != "read"));
 
   // if the the message id is a comment (e.g. this view was opened to a comment, scroll all the way down
   // fix this later to scroll to the specific message

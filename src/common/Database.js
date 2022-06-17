@@ -133,6 +133,10 @@ export async function updateUserMessage(uid, messageId, update) {
   DatabaseRDB.updateUserMessage(uid, messageId, update);
 }
 
+export async function updateUserChatMessage(uid, chatMessageId, update) {
+  DatabaseRDB.updateUserChatMessage(uid, chatMessageId, update);
+}
+
 export async function updateUser(userId, update) {
   DatabaseRDB.updateUser(userId, update);
 }

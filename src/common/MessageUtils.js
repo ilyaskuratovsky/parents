@@ -133,6 +133,19 @@ export function calculateUnreadMessages(userRootMessages) {
   return unreadMessages;
 }
 
+export function calculateUnreadChatMessages(chatMessages) {
+  const unreadMessages = chatMessages.filter((message) => message.userStatus?.status != "read");
+  /*
+  let unreadMessages = 0;
+  for (const message of userRootMessages) {
+    if (message.userStatus?.status != "read") {
+      unreadMessages += 1;
+    }
+  }
+  */
+  return unreadMessages;
+}
+
 export function filterUnreadMessages(messages, userMessagesMap) {
   let unreadMessages = [];
   for (const message of messages.filter((message) => message.papaId == null)) {
