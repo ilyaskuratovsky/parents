@@ -229,12 +229,12 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
 
   //observe user messages
   Database.observeUserMessages(uid, (userMessages) => {
-    dispatch(Actions.userChatMessages(userMessages));
+    dispatch(Actions.userMessages(userMessages));
   });
 
   //observe user chat messages
   Database.observeUserChatMessages(uid, (userMessages) => {
-    dispatch(Actions.userMessages(userMessages));
+    dispatch(Actions.userChatMessages(userMessages));
   });
 
   //observe org changes
