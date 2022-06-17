@@ -19,6 +19,7 @@ import * as Debug from "../common/Debug";
 import * as Data from "../common/Data";
 import * as MessageUtils from "../common/MessageUtils";
 import { Badge } from "react-native-elements";
+import { styles } from "./Styles";
 
 export default function GroupView({ groupId }) {
   const dispatch = useDispatch();
@@ -70,16 +71,16 @@ export default function GroupView({ groupId }) {
           }}
         >
           <Text
-            style={{
-              justifyContent: "center",
-              alignItems: "flex-start",
-              fontSize: 18,
-              fontWeight: "bold",
-              color: UIConstants.BLACK_TEXT_COLOR,
-              height: 26,
-              //backgroundColor: "cyan",
-              //fontFamily: "Helvetica Neue",
-            }}
+            style={[
+              {
+                justifyContent: "center",
+                alignItems: "flex-start",
+                height: 22,
+                //backgroundColor: "cyan",
+                //fontFamily: "Helvetica Neue",
+              },
+              styles.header1,
+            ]}
           >
             {group.name} {/*group.id*/}
           </Text>
@@ -88,30 +89,17 @@ export default function GroupView({ groupId }) {
               style={{
                 justifyContent: "center",
                 alignItems: "flex-start",
-                fontSize: 14,
+                fontSize: 11,
                 fontWeight: "normal",
                 color: UIConstants.BLACK_TEXT_COLOR,
-                height: 20,
+                height: 16,
                 //fontFamily: "Helvetica Neue",
               }}
             >
-              {group.description} {/*group.id*/}
+              {group.description}
             </Text>
           )}
-          {/*
-          {org != null && (
-            <Text
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                fontSize: 14,
-              }}
-            >
-              {org.name ?? "[No organization]"}
-            </Text>
-          )}
-            */}
-          <View style={{ flex: 1, paddingTop: 8 }}>
+          <View style={{ flex: 1, paddingTop: 4 }}>
             <FacePile
               userIds={[userInfo.uid].concat(
                 members

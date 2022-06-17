@@ -69,6 +69,8 @@ export const mainSlice = createSlice({
     userMap: null,
     userList: null,
     userGroupMemberships: null,
+    userChatMemberships: [],
+    chatMap: {},
     messages: {},
     groupMessages: {},
     //rootUserMessages: {},
@@ -172,6 +174,26 @@ export const mainSlice = createSlice({
       const newState = {
         ...state,
         userGroupMemberships,
+      };
+      return newState;
+    },
+    userChatMemberships: (state, obj) => {
+      const userChatMemberships = obj.payload;
+      const newState = {
+        ...state,
+        userChatMemberships,
+      };
+      return newState;
+    },
+    chat: (state, obj) => {
+      const chat = obj.payload;
+      const newChatMap = { ...state.chatMap };
+      if (chat != null) {
+        newChatMap[chat.id] = chat;
+      }
+      const newState = {
+        ...state,
+        chatMap: newChatMap,
       };
       return newState;
     },
@@ -346,7 +368,9 @@ export const {
   userInfo,
   locationDataInit,
   orgsUpdated,
+  chat,
   userGroupMemberships,
+  userChatMemberships,
   groupMessages,
   groups,
   groupMemberships,

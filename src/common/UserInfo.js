@@ -52,7 +52,7 @@ export function avatarComponent(userInfo, onPress) {
   } else {
     avatar = (
       <Avatar
-        size={28}
+        size={40}
         rounded
         title={displayName.charAt(0).toUpperCase()}
         containerStyle={{

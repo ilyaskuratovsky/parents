@@ -24,6 +24,7 @@ export default function FriendsScreen({}) {
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
   const allUsers = Data.getAllUsers();
+  const userChatMemberships = Data.getUserChatMemberships();
 
   return (
     <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
@@ -55,12 +56,20 @@ export default function FriendsScreen({}) {
                 styles.topBarHeaderText,
               ]}
             >
-              {"People"}
+              {"Chats"}
             </Text>
           </View>
         }
         center={<Text>{""}</Text>}
-        right={null}
+        right={
+          <MyButtons.MenuButton
+            icon="plus"
+            text="New Chat"
+            onPress={() => {
+              dispatch(Actions.openModal({ modal: "NEW_CHAT" }));
+            }}
+          />
+        }
       />
       <View key="main_content" style={{ flex: 1, backgroundColor: "white", paddingTop: 20 }}>
         <ScrollView
@@ -71,31 +80,12 @@ export default function FriendsScreen({}) {
             }
           }
         >
-          {allUsers.map((user) => {
-            if (user.uid === userInfo.uid) {
-              return null;
-            }
+          {userChatMemberships.map((m) => {
+            const chat = Data.getChat(m.chatId);
             return (
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: "flex-start",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingBottom: 5,
-                }}
-              >
-                {UserInfo.avatarComponent(user)}
-                <Text
-                  style={{
-                    flexGrow: 1,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    paddingLeft: 10,
-                  }}
-                >
-                  {UserInfo.chatDisplayName(user)}
-                </Text>
+              <View>
+                <Text>{JSON.stringify(m)}</Text>
+                <Text>participants: {JSON.stringify(chat)}</Text>
               </View>
             );
           })}

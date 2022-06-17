@@ -37,7 +37,9 @@ import * as Debug from "../common/Debug";
 import NewEventModal from "./NewEventModal2";
 import BookCalendarEventModal from "./BookCalendarEventModal";
 import Constants from "expo-constants";
-
+import ChatsScreen from "./ChatsScreen";
+import ChatModal from "./ChatModal";
+import NewChatModal from "./NewChatModal";
 /*
 App vision:  The local social network for parents.
 When join you put in your zip code (we also detect based on gps coordinates)
@@ -143,6 +145,8 @@ function RootApp(props, state) {
     render = <FeedScreen />;
   } else if (screen == "FRIENDS") {
     render = <FriendsScreen />;
+  } else if (screen == "CHATS") {
+    render = <ChatsScreen />;
   } else if (screen == "GROUP") {
     render = (
       <GroupScreen
@@ -190,8 +194,10 @@ function RootApp(props, state) {
       {modal === "BOOK_IN_CALENDAR" && (
         <BookCalendarEventModal visible={true} {...modalWithParams} />
       )}
+      {modal === "NEW_CHAT" && <NewChatModal visible={true} {...modalWithParams} />}
+      {modal === "CHAT" && <ChatModal {...modalWithParams} />}
 
-      <View style={{ position: "absolute", bottom: 100, right: 0 }}>
+      <View style={{ position: "absolute", bottom: 400, right: 0 }}>
         <MyButtons.MenuButton
           icon="bug"
           color={debugMode ? "red" : "black"}

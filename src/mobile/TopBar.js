@@ -7,7 +7,7 @@ const TopBar = ({ left, center, right, style, leftWidth }) => {
   return (
     <View
       style={{
-        //backgroundColor: "whitesmoke",
+        backgroundColor: "whitesmoke",
         flexDirection: "column",
         //backgroundColor: "yellow",
       }}
@@ -74,3 +74,18 @@ const styles = StyleSheet.create({
 });
 
 export default React.memo(TopBar);
+
+/*
+Group View
+  Show how many members like facebook
+
+Event view
+  Copy what that App has with the user there
+  Add how many comments
+
+Add calendar 
+
+Pop events with 
+
+
+*/

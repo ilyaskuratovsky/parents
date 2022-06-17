@@ -53,16 +53,34 @@ export function observeUserGroupMemberships(uid, callback) {
   return DatabaseRDB.observeUserGroupMemberships(uid, callback);
 }
 
+export function observeUserChatMemberships(uid, callback) {
+  return DatabaseRDB.observeUserChatMemberships(uid, callback);
+}
+
 export function observeGroupMessages(groupId, callback) {
   return DatabaseFS.observeGroupMessages(groupId, callback);
+}
+
+export function observeChatMessages(chatId, callback) {}
+
+export function observeChat(chatId, callback) {
+  DatabaseRDB.observeChat(chatId, callback);
 }
 
 export async function joinGroup(userInfo, groupId) {
   return DatabaseRDB.joinGroup(userInfo, groupId);
 }
 
+export async function joinChat(uid, chatId) {
+  return DatabaseRDB.joinChat(uid, chatId);
+}
+
 export async function createGroup(data) {
   return DatabaseRDB.createGroup(data);
+}
+
+export async function createChat(data) {
+  return DatabaseRDB.createChat(data);
 }
 
 export async function updateGroup(groupId, data) {

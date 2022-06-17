@@ -20,6 +20,7 @@ import * as Data from "../common/Data";
 import * as MessageUtils from "../common/MessageUtils";
 import { Badge } from "react-native-elements";
 import GroupView from "./GroupView";
+import { styles } from "./Styles";
 
 export default function GroupsScreen({}) {
   const dispatch = useDispatch();
@@ -128,12 +129,12 @@ export default function GroupsScreen({}) {
               })}
             </View>
             <Text
-              style={{
-                paddingLeft: 6,
-                fontWeight: "bold",
-                fontSize: 20,
-                color: UIConstants.BLACK_TEXT_COLOR,
-              }}
+              style={[
+                {
+                  paddingLeft: 6,
+                },
+                styles.topBarHeaderText,
+              ]}
             >
               {"My Groups"}
             </Text>
@@ -143,7 +144,7 @@ export default function GroupsScreen({}) {
         right={
           <MyButtons.MenuButton
             icon="plus"
-            text="New Group"
+            text="Create Group"
             onPress={() => {
               setNewPrivateGroupModalVisible(true);
             }}
@@ -157,20 +158,12 @@ export default function GroupsScreen({}) {
           <View
             style={{
               flex: 1,
-              /*backgroundColor: "cyan",*/ height: 60,
+              /*backgroundColor: "cyan",*/
+              height: 60,
               alignItems: "center",
               justifyContent: "center",
             }}
-          >
-            {/*
-            <MyButtons.LinkButton
-              text="Start a new Group"
-              onPress={async () => {
-                setNewPrivateGroupModalVisible(true);
-              }}
-            />
-            */}
-          </View>
+          ></View>
         </ScrollView>
         <Toolbar key="toolbar" />
       </View>

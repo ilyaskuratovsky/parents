@@ -16,6 +16,8 @@ import { getDownloadURL, ref, uploadBytes, uploadString } from "firebase/storage
 //import { Database } from "firebase-firestore-lite";
 
 const groupMessageSubscriptions = {};
+const chatMessageSubscriptions = {};
+const chatSubscriptions = {};
 
 export async function initializeApp(dispatch, notificationListener, responseListener) {
   Logger.log("initializing App");
@@ -195,6 +197,36 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
     });
   });
 
+  Database.observeUserChatMemberships(uid, (userChatMemberships) => {
+    dispatch(Actions.userChatMemberships(userChatMemberships));
+    userChatMemberships.forEach(async (chatMembership) => {
+      //Loop through group_memberships and set up a subscriber for its messages
+      if (!(chatMembership.chatId in chatSubscriptions)) {
+        const unsubscribeChat = Database.observeChat(chatMembership.chatId, (chat) => {
+          dispatch(Actions.chat(chat));
+        });
+        chatSubscriptions[chatMembership.chatId] = unsubscribeChat;
+
+        const unsubscribeChatMessages = Database.observeChatMessages(
+          chatMembership.chatId,
+          (messagesSnapshot) => {
+            const messages = [];
+            messagesSnapshot.forEach((message) => {
+              messages.push(message);
+            });
+            dispatch(
+              Actions.chatMessages({
+                chatId: chatMembership.chatId,
+                messages: messages,
+              })
+            );
+          }
+        );
+        chatMessageSubscriptions[chatMembership.chatId] = unsubscribeChatMessages;
+      }
+    });
+  });
+
   //observe user messages
   Database.observeUserMessages(uid, (userMessages) => {
     dispatch(Actions.userMessages(userMessages));
@@ -291,6 +323,18 @@ export async function createPrivateGroupAndJoin(
   }
 
   return groupId;
+}
+
+export async function createChat(userInfo, participants) {
+  console.log("calling Database.createChat");
+  const chatId = await Database.createChat({ organizerUid: userInfo.uid, participants });
+  //await Database.joinChat(userInfo.uid, chatId);
+  participants.forEach(async (uid) => {
+    console.log("calling Database.joinChat");
+    await Database.joinChat(uid, chatId);
+  });
+
+  return chatId;
 }
 
 export async function createOrgGroupAndJoin(dispatch, userInfo, orgId, groupName) {

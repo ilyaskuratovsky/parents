@@ -42,6 +42,16 @@ export function getGroupMemberships(groupId) {
   return groupMemberships;
 }
 
+export function getUserChatMemberships() {
+  const { userChatMemberships } = useSelector((state) => {
+    return {
+      userChatMemberships: state.main.userChatMemberships,
+    };
+  });
+
+  return userChatMemberships;
+}
+
 export function getRootMessageWithChildrenAndUserStatus(messageId) {
   const message = getMessage(messageId);
   const groupId = message.groupId;
@@ -129,6 +139,15 @@ export function getGroup(groupId) {
     };
   });
   return group;
+}
+
+export function getChat(chatId) {
+  const { chat } = useSelector((state) => {
+    return {
+      chat: state.main.chatMap[chatId],
+    };
+  });
+  return chat;
 }
 
 export function getSuperPublicGroups(groupId) {

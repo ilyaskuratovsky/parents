@@ -150,7 +150,27 @@ export function observeUserGroupMemberships(uid, userCallback) {
   observeAllGroupMembershipChangesHelper(callback, uid, userCallback);
 }
 
+export function observeUserChatMemberships(uid, callback) {
+  const ref = RDB.ref(rdb, "chat_memberships/" + uid);
+  const unsubscribe = RDB.onValue(ref, (snapshot) => {
+    const data = snapshot.val();
+    const ret = toArray(data);
+    callback(ret);
+  });
+}
+
 export function observeGroupMessages(groupId, callback) {}
+
+export function observeChatMessages(chatId, callback) {}
+
+export function observeChat(chatId, callback) {
+  //realtime-database
+  const chatRef = RDB.ref(rdb, "chats/" + chatId);
+  RDB.onValue(chatRef, (snapshot) => {
+    const chat = snapshot.val();
+    callback({ id: snapshot.key, ...chat });
+  });
+}
 
 export async function createGroup(data) {
   const newReference = await RDB.push(RDB.ref(rdb, "/groups"));
@@ -161,6 +181,18 @@ export async function createGroup(data) {
 export async function joinGroup(userInfo, groupId) {
   const newReference = await RDB.push(RDB.ref(rdb, "/group_memberships"));
   await RDB.set(newReference, { uid: userInfo.uid, groupId });
+  return newReference.key;
+}
+
+export async function createChat(data) {
+  const newReference = await RDB.push(RDB.ref(rdb, "/chats"));
+  await RDB.set(newReference, data);
+  return newReference.key;
+}
+
+export async function joinChat(uid, chatId) {
+  const newReference = await RDB.push(RDB.ref(rdb, "/chat_memberships/" + uid));
+  await RDB.set(newReference, { uid: uid, chatId });
   return newReference.key;
 }
 
