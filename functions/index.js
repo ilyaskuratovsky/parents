@@ -274,6 +274,59 @@ exports.messagePushNotifications = functions.firestore
     };
   });
 
+exports.chatMessagePushNotifications = functions.firestore
+  .document("/chats/{chatId}/messages/{messageId}")
+  .onCreate(async (snap, context) => {
+    const chatId = context.params.chatId;
+    const message = snap.data();
+    const messageId = snap.id;
+    console.log("ilya_chat_message:" + JSON.stringify(message));
+    console.log(
+      "ilyalog chat message detected created: " +
+        snap.id +
+        ", chatId: " +
+        chatId +
+        ", data():" +
+        JSON.stringify(snap.data())
+    );
+    const fetch = require("node-fetch");
+
+    const chatSnapshot = await db.ref("chats/" + chatId).once("value");
+    const chat = chatSnapshot.val();
+    const participants = (chat?.participants ?? []).filter((p) => p !== message.uid);
+    for (const participantUid of participants) {
+      const userRef = db.ref("users/" + participantUid);
+      const userSnapshot = await userRef.once("value");
+      const user = userSnapshot.val();
+      const pushToken = user["pushToken"];
+      const fromName = message.notificationInfo != null ? message.notificationInfo.fromName : null;
+      const pushMessage = {
+        to: pushToken,
+        sound: "default",
+        title: fromName,
+        body: message.text,
+        data: { chatId, message, messageId },
+      };
+      console.log("(messagePushNotifications) ilya calling fetch: " + JSON.stringify(pushMessage));
+      fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Accept-encoding": "gzip, deflate",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(pushMessage),
+      }).then((response) => {
+        console.log(
+          "(messagePushNotifications)ilya done calling fetch: response: " + JSON.stringify(response)
+        );
+      });
+    }
+    return {
+      status: "success",
+    };
+  });
+
 exports.emailNotifications = functions.firestore
   .document("/email_notifications/{notificationId}")
   .onCreate((snap, context) => {
