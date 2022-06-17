@@ -288,6 +288,11 @@ export function useMarkRead(message) {
   }, [message]);
 }
 
+export function useMarkChatRead(chatId) {
+  const user = getCurrentUser();
+  return useEffect(async () => {}, []);
+}
+
 function single(list) {
   if (list != null && list.length === 1) {
     return list[0];

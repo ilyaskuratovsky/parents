@@ -45,6 +45,7 @@ export default function MessageModal({
   closeModal,
   userMap,
 }) {
+  const debugMode = Debug.isDebugMode();
   const dispatch = useDispatch();
   const sortedChildMessages = [...message.children] ?? [];
   sortedChildMessages.sort((m1, m2) => {
@@ -97,6 +98,7 @@ export default function MessageModal({
         backgroundColor={UIConstants.DEFAULT_BACKGROUND}
         //backgroundColor="green"
       >
+        {debugMode && <Text>MessageModal</Text>}
         {/* top bar */}
         <TopBarMiddleContentSideButtons
           backgroundColor={UIConstants.DEFAULT_BACKGROUND}
