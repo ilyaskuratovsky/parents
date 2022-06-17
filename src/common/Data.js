@@ -238,6 +238,12 @@ export function getUserUnreadMessageCount() {
   return unreadMessages.length;
 }
 
+export function getUserUnreadChatMessageCount() {
+  const allChatMessages = getAllUserChatMessages();
+  const unreadMessages = MessageUtils.calculateUnreadChatMessages(allChatMessages);
+  return unreadMessages.length;
+}
+
 export function getAllUserRootMessages() {
   const user = getCurrentUser();
   const { groupMessagesMap, userMessagesMap, groupMap, userMap } = useSelector((state) => {
@@ -277,6 +283,68 @@ export function getAllUserRootMessages() {
     }
     return [];
   }, [groupMessagesMap, user, userMessagesMap]);
+}
+
+export function getAllUserChatMessages() {
+  const user = getCurrentUser();
+  const { chatMessages, userChatMessagesMap, userMap } = useSelector((state) => {
+    return {
+      chatMessages: Object.values(state.main.chatMessages).flat(),
+      userChatMessagesMap: state.main.userChatMessagesMap,
+      userMap: state.main.userMap,
+    };
+  });
+
+  return useMemo(() => {
+    if (chatMessages != null) {
+      const userChatMessages = [];
+      chatMessages.forEach((message) => {
+        const userChatMessage = userChatMessagesMap[message.id];
+        userChatMessages.push({
+          ...message,
+          userStatus: {
+            status: userChatMessage?.status,
+          },
+          user: {
+            ...userMap[message.uid],
+          },
+        });
+      });
+      return userChatMessages;
+    } else {
+      return [];
+    }
+  }, [chatMessages, userChatMessagesMap, userMap]);
+  /*
+  const { groupMessagesMap, userMessagesMap, groupMap, userMap } = useSelector((state) => {
+    return {
+      groupMessagesMap: state.main.groupMessages,
+      userMessagesMap: state.main.userMessagesMap,
+      groupMap: state.main.groupMap,
+      userMap: state.main.userMap,
+    };
+  });
+  return useMemo(() => {
+    let allMessages = [];
+    for (groupId in groupMessagesMap) {
+      const groupMessages = groupMessagesMap[groupId];
+      if (groupMessages != null && groupMessages.length > 0) {
+        allMessages = allMessages.concat(groupMessages);
+      }
+    }
+    if (allMessages.length > 0) {
+      return MessageUtils.buildRootMessagesWithChildren(
+        allMessages,
+        user,
+        userMessagesMap,
+        null,
+        groupMap,
+        userMap
+      );
+    }
+    return [];
+  }, [groupMessagesMap, user, userMessagesMap]);
+  */
 }
 
 export function useMarkRead(message) {

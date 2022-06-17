@@ -19,6 +19,7 @@ const Toolbar = ({ selected }) => {
   });
 
   const unreadMessageCount = Data.getUserUnreadMessageCount();
+  const unreadChatMessageCount = Data.getUserUnreadChatMessageCount();
   return (
     <BottomBar
       style={{ paddingLeft: 24, paddingRight: 24, backgroundColor: UIConstants.DEFAULT_BACKGROUND }}
@@ -108,6 +109,15 @@ const Toolbar = ({ selected }) => {
             })
           );
         }}
+        badge={
+          unreadChatMessageCount > 0 ? (
+            <Badge
+              status="error"
+              value={unreadChatMessageCount}
+              containerStyle={{ position: "absolute", top: -4, right: -4 }}
+            />
+          ) : null
+        }
       />
 
       {/*
