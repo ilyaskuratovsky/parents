@@ -20,15 +20,20 @@ import * as Data from "../common/Data";
 import * as MessageUtils from "../common/MessageUtils";
 import { Badge } from "react-native-elements";
 import { styles } from "./Styles";
+import Loading from "./Loading";
 
-export default function ChatThreadView({ chat }) {
+export default function ChatThreadView({ chatId }) {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
   const userInfo = Data.getCurrentUser();
-  const members = Data.getUsers(chat.participants);
+  const chat = Data.getChat(chatId);
+  const members = Data.getUsers(chat?.participants ?? []);
   const otherMembers = members.filter((u) => u.uid !== userInfo.uid);
-  const unreadMessages = Data.getChatUserUnreadMessages(chat.id);
+  const unreadMessages = Data.getChatUserUnreadMessages(chat?.id);
   const unreadCount = unreadMessages.length;
+  if (chat == null) {
+    return <Loading />;
+  }
   return (
     <View
       key={chat.id}

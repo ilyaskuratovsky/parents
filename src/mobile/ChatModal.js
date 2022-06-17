@@ -36,6 +36,7 @@ import Autolink from "react-native-autolink";
 import { userInfo } from "../common/Actions";
 import * as Debug from "../common/Debug";
 import * as Data from "../common/Data";
+import * as Actions from "../common/Actions";
 
 export default function ChatModal({ chatId, scrollToEnd = true }) {
   const debugMode = Debug.isDebugMode();
@@ -53,10 +54,10 @@ export default function ChatModal({ chatId, scrollToEnd = true }) {
 
   // send message callback function
   const sendMessage = useCallback(async (text) => {
-    const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(user);
     setText("");
-    await Controller.sendChatMessage(dispatch, user, chatId, text, {
+    //export async function sendChatMessage(dispatch, userInfo, chatId, text, papaId, notificationInfo) {
+    await Controller.sendChatMessage(dispatch, user, chatId, text, null, {
       fromName,
     });
     scrollViewRef.current.scrollToEnd({ animated: true });
@@ -94,7 +95,7 @@ export default function ChatModal({ chatId, scrollToEnd = true }) {
               icon="arrow-left"
               text="Back"
               onPress={() => {
-                closeModal();
+                dispatch(Actions.closeModal());
               }}
               color="black"
             />

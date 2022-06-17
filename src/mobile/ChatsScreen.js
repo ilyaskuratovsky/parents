@@ -20,7 +20,7 @@ import * as Debug from "../common/Debug";
 import { styles } from "./Styles";
 import ChatThreadView from "./ChatThreadView";
 
-export default function FriendsScreen({}) {
+export default function ChatsScreen({}) {
   const debugMode = Debug.isDebugMode();
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
@@ -82,18 +82,7 @@ export default function FriendsScreen({}) {
           }
         >
           {userChatMemberships.map((m) => {
-            const chat = Data.getChat(m.chatId);
-            {
-              /*
-            return (
-              <View>
-                <Text>{JSON.stringify(m)}</Text>
-                <Text>participants: {JSON.stringify(chat)}</Text>
-              </View>
-            );
-            */
-            }
-            return <ChatThreadView chat={chat} />;
+            return <ChatThreadView key={m.chatId} chatId={m.chatId} />;
           })}
         </ScrollView>
         <Toolbar key="toolbar" />

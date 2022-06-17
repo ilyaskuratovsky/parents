@@ -97,6 +97,10 @@ export async function sendMessage(groupId, uid, title, text, data, papaId, notif
   return DatabaseFS.sendMessage(groupId, uid, title, text, data, papaId, notificationInfo);
 }
 
+export async function sendChatMessage(chatId, uid, text, data, papaId, notificationInfo) {
+  return DatabaseFS.sendChatMessage(chatId, uid, text, data, papaId, notificationInfo);
+}
+
 export async function createOrg(name, type) {
   return DatabaseRDB.createOrg(name, type);
 }

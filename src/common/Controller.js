@@ -338,8 +338,8 @@ export async function createChat(userInfo, participants) {
     console.log("calling Database.joinChat");
     await Database.joinChat(uid, chatId);
   });
-
   return chatId;
+  //return "-N4k2FapubvpeyHgFY_g";
 }
 
 export async function createOrgGroupAndJoin(dispatch, userInfo, orgId, groupName) {
@@ -383,55 +383,17 @@ export async function sendReply(dispatch, userInfo, groupId, text, papaId, notif
   );
 }
 
-/*
-export async function sendEventMessage(
-  dispatch,
-  userInfo,
-  groupId,
-  title,
-  text,
-  event,
-  papaId,
-  notificationInfo
-) {
-  return await Database.sendMessage(
-    groupId,
+export async function sendChatMessage(dispatch, userInfo, chatId, text, papaId, notificationInfo) {
+  //export async function sendChatMessage(chatId, uid, text, data, papaId, notificationInfo) {
+  return await Database.sendChatMessage(
+    chatId,
     userInfo.uid,
-    title == undefined ? null : title,
     text,
-    {
-      event: event,
-    },
+    null,
     papaId == undefined ? null : papaId,
-    notificationInfo == undefined ? null : notificationInfo
+    notificationInfo
   );
 }
-
-export async function sendEventPollMessage(
-  dispatch,
-  userInfo,
-  groupId,
-  title,
-  text,
-  eventPoll,
-  papaId,
-  notificationInfo
-) {
-  const { date, startTime, endTime, timezone } = eventTime;
-
-  return await Database.sendMessage(
-    groupId,
-    userInfo.uid,
-    title == undefined ? null : title,
-    text,
-    {
-      event_poll: eventPoll,
-    },
-    papaId == undefined ? null : papaId,
-    notificationInfo == undefined ? null : notificationInfo
-  );
-}
-*/
 
 export async function sendEventReply(
   dispatch,

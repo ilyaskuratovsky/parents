@@ -116,10 +116,11 @@ export function getGroupUserRootMessages(groupId) {
 
 export function getChatUserMessages(chatId) {
   const user = getCurrentUser();
-  const { chatMessages, userChatMessagesMap } = useSelector((state) => {
+  const { chatMessages, userChatMessagesMap, userMap } = useSelector((state) => {
     return {
-      chatMessages: state.main.groupMessages[chatId],
+      chatMessages: chatId != null ? state.main.chatMessages[chatId] : [],
       userChatMessagesMap: state.main.userChatMessagesMap,
+      userMap: state.main.userMap,
     };
   });
 
@@ -131,7 +132,10 @@ export function getChatUserMessages(chatId) {
         userChatMessages.push({
           ...message,
           userStatus: {
-            status: userChatMessage.status,
+            status: userChatMessage?.status,
+          },
+          user: {
+            ...userMap[message.uid],
           },
         });
       });

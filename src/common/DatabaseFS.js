@@ -293,6 +293,21 @@ export async function sendMessage(groupId, uid, title, text, data, papaId, notif
   return await addDoc(messagesRef, message);
 }
 
+//return DatabaseFS.sendChatMessage(chatId, uid, text, data, papaId, notificationInfo);
+export async function sendChatMessage(chatId, uid, text, data, papaId, notificationInfo) {
+  const message = {
+    uid: uid,
+    chatId,
+    text,
+    ...data,
+    papaId,
+    timestamp: serverTimestamp(),
+    notificationInfo,
+  };
+  const messagesRef = collection(doc(collection(db, "chats"), chatId), "messages");
+  return await addDoc(messagesRef, message);
+}
+
 export async function createInvite(fromUid, groupId, uid, email) {
   console.log("creating invite");
   const invitesRef = collection(db, "invites");
