@@ -31,6 +31,15 @@ export function observeUserMessages(uid, callback) {
   });
 }
 
+export function observeUserChatMessages(uid, callback) {
+  const userMessagesRef = RDB.ref(rdb, "user_chat_messages/" + uid);
+  RDB.onValue(userMessagesRef, (snapshot) => {
+    const data = snapshot.val();
+    const ret = toArray(data);
+    callback(ret);
+  });
+}
+
 export async function updateOrCreateUser(uid, data) {
   const dbRef = RDB.ref(rdb);
   const userRef = RDB.child(dbRef, "users/" + uid);

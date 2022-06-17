@@ -232,6 +232,12 @@ export function groupInviteeList(
   return addList;
 }
 
+export function commaSeparatedChatThread(users) {
+  const shortNames = users.map((user) => user.firstName);
+  const ret = shortNames.join(", ");
+  return ret;
+}
+
 export function allUsers(userInfo, userMap) {
   return Object.values(userMap);
 }

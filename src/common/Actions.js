@@ -72,12 +72,14 @@ export const mainSlice = createSlice({
     userChatMemberships: [],
     chatMap: {},
     messages: {},
+    allChatMessages: {},
     groupMessages: {},
-    //rootUserMessages: {},
+    chatMessages: {},
     pushToken: null,
     toUserInvites: null,
     fromUserInvites: null,
     userMessagesMap: null,
+    userChatMessagesMap: null,
     unreadMessages: [],
     deviceType: null,
   },
@@ -211,23 +213,32 @@ export const mainSlice = createSlice({
         allMessages[message.id] = message;
       });
 
-      // add group root user messages
-      /*
-      const allGroupRootUserMessages = { ...state.groupRootUserMessages };
-      const groupRootUserMessages = MessageUtils.buildRootMessagesWithChildren(
-        orderedMessages,
-        state.userInfo,
-        state.userMessagesMap,
-        null,
-        state.groupMap,
-        state.userMap
-      );
-      */
-
       const newState = {
         ...state,
         groupMessages,
         messages: allMessages,
+        //rootUserMessages: {...state.rootUserMessages, ...groupRootUserMessages},
+      };
+      return newState;
+    },
+    chatMessages: (state, obj) => {
+      const { chatId, messages } = obj.payload;
+      Logger.log("Actions.chatMessages, chatId:" + chatId);
+      const orderedMessages = messages.sort((message1, message2) => {
+        return message2.timestamp - message1.timestamp;
+      });
+      const chatMessages = { ...state.chatMessages };
+      chatMessages[chatId] = orderedMessages;
+
+      const allChatMessages = { ...state.allChatMessages };
+      orderedMessages.forEach((message) => {
+        allChatMessages[message.id] = message;
+      });
+
+      const newState = {
+        ...state,
+        chatMessages,
+        allChatMessages,
         //rootUserMessages: {...state.rootUserMessages, ...groupRootUserMessages},
       };
       return newState;
@@ -239,20 +250,24 @@ export const mainSlice = createSlice({
       for (const message of messages) {
         userMessagesMap[message.id] = message;
       }
-      /*
-      const rootUserMessages = MessageUtils.buildRootMessagesWithChildren(
-        messages,
-        state.userInfo,
-        userMessagesMap,
-        null,
-        state.groupMap,
-        state.userMap
-      );
-      */
 
       return {
         ...state,
         userMessagesMap,
+        //rootUserMessages,
+      };
+    },
+    userChatMessages: (state, obj) => {
+      const messages = obj.payload;
+      Logger.log("Actions.userChatMessages");
+      const userChatMessagesMap = { ...state.userChatMessagesMap };
+      for (const message of messages) {
+        userChatMessagesMap[message.id] = message;
+      }
+
+      return {
+        ...state,
+        userChatMessagesMap,
         //rootUserMessages,
       };
     },
@@ -372,12 +387,14 @@ export const {
   userGroupMemberships,
   userChatMemberships,
   groupMessages,
+  chatMessages,
   groups,
   groupMemberships,
   toUserInvites,
   fromUserInvites,
   searchIndex,
   userMessages,
+  userChatMessages,
   clearUserData,
   deviceType,
 } = mainSlice.actions;

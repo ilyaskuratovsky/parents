@@ -8,6 +8,15 @@ export function getCurrentUser() {
   const user = useSelector((state) => state.main.userInfo);
   return user;
 }
+export function getUsers(uids) {
+  const userMap = useSelector((state) => state.main.userMap);
+  const users = [];
+  uids.forEach((uid) => {
+    users.push(userMap[uid]);
+  });
+  return users;
+}
+
 export function getMessage(messageId) {
   let { message } = useSelector((state) => {
     return {
@@ -88,15 +97,6 @@ export function getGroupUserRootMessages(groupId) {
       userMap: state.main.userMap,
     };
   });
-  /*
-  export function buildRootMessagesWithChildren(
-    messages,
-    userInfo,
-    userMessagesMap,
-    groupMembers,
-    groupMap,
-    userMap
-  */
 
   return useMemo(() => {
     if (groupMessages != null) {
@@ -114,11 +114,48 @@ export function getGroupUserRootMessages(groupId) {
   }, [groupMessages, user, userMessagesMap, groupMap, userMap]);
 }
 
+export function getChatUserMessages(chatId) {
+  const user = getCurrentUser();
+  const { chatMessages, userChatMessagesMap } = useSelector((state) => {
+    return {
+      chatMessages: state.main.groupMessages[chatId],
+      userChatMessagesMap: state.main.userChatMessagesMap,
+    };
+  });
+
+  return useMemo(() => {
+    if (chatMessages != null) {
+      const userChatMessages = [];
+      chatMessages.forEach((message) => {
+        const userChatMessage = userChatMessagesMap[message.id];
+        userChatMessages.push({
+          ...message,
+          userStatus: {
+            status: userChatMessage.status,
+          },
+        });
+      });
+      return userChatMessages;
+    } else {
+      return [];
+    }
+  }, [chatMessages, userChatMessagesMap]);
+}
+
 export function getGroupUserRootUnreadMessages(groupId) {
   const userGroupRootMessages = getGroupUserRootMessages(groupId);
   const unread = useMemo(
     () => MessageUtils.calculateUnreadMessages(userGroupRootMessages),
     [userGroupRootMessages]
+  );
+  return unread;
+}
+
+export function getChatUserUnreadMessages(chatId) {
+  const userChatMessages = getChatUserMessages(chatId);
+  const unread = useMemo(
+    () => MessageUtils.calculateUnreadMessages(userChatMessages),
+    [userChatMessages]
   );
   return unread;
 }

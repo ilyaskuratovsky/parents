@@ -13,6 +13,10 @@ export function observeUserMessages(uid, callback) {
   return DatabaseRDB.observeUserMessages(uid, callback);
 }
 
+export function observeUserChatMessages(uid, callback) {
+  return DatabaseRDB.observeUserChatMessages(uid, callback);
+}
+
 export async function updateOrCreateUser(uid, data) {
   return DatabaseRDB.updateOrCreateUser(uid, data);
 }
@@ -61,7 +65,9 @@ export function observeGroupMessages(groupId, callback) {
   return DatabaseFS.observeGroupMessages(groupId, callback);
 }
 
-export function observeChatMessages(chatId, callback) {}
+export function observeChatMessages(chatId, callback) {
+  DatabaseFS.observeChatMessages(chatId, callback);
+}
 
 export function observeChat(chatId, callback) {
   DatabaseRDB.observeChat(chatId, callback);

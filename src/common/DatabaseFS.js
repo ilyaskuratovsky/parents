@@ -233,6 +233,26 @@ export function observeGroupMessages(groupId, callback) {
   });
 }
 
+export function observeChatMessages(chatId, callback) {
+  const ref = collection(doc(collection(db, "chats"), chatId), "messages");
+  return onSnapshot(ref, (snapshot) => {
+    const list = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      const message = {
+        id: doc.id,
+        title: data.title,
+        text: data.text,
+        uid: data.uid,
+        timestamp: data.timestamp,
+        papaId: data.papaId,
+        ...data,
+      };
+      return message;
+    });
+    callback(list);
+  });
+}
+
 export async function joinGroup(userInfo, groupId) {
   const groupMembershipCollectionRef = collection(db, "group_memberships");
   const existingGroupMembershipQuery = query(
