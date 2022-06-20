@@ -15,6 +15,7 @@ import {
   Modal,
 } from "react-native";
 import { storage } from "../../config/firebase";
+import uuid from "uuid";
 
 // Firebase sets some timeers for a long period, which will trigger some warnings. Let's turn that off for this example
 LogBox.ignoreLogs([`Setting a timer for a long period`]);
@@ -59,7 +60,7 @@ export default class App extends React.Component {
   async _uploadImageToFirebase() {
     // don't upload yet
     const { image } = this.state;
-    const uploadUrl = await uploadImageAsync(image);
+    const uploadUrl = await uploadImageAsync(image, "images/" + uuid.v4());
     this.setState({ remoteImage: uploadUrl });
   }
 
@@ -181,10 +182,9 @@ export default class App extends React.Component {
   };
 }
 
-async function uploadImageAsync(uri) {
+async function uploadImageAsync(uri, path) {
   // Why are we using XMLHttpRequest? See:
   // https://github.com/expo/expo/issues/2402#issuecomment-443726662
-  /*
   const blob = await new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -198,16 +198,14 @@ async function uploadImageAsync(uri) {
     xhr.open("GET", uri, true);
     xhr.send(null);
   });
-  console.log("blob:" + JSON.stringify(blob));
 
-  //const fileRef = ref(getStorage(), uuid.v4());
-  //const fileRef = ref(getStorage(), "images/file1.jpg");
-  const fileRef = ref(storage, "images/file1.jpg");
+  //const fileRef = ref(storage, "images/file1.jpg");
+  const fileRef = ref(storage, path);
   console.log("uploading");
   const result = await uploadBytes(fileRef, blob);
-  // We're done with the blob, close and release it
-  blob.close();
 
+  /*
+  blob.close();
   return await getDownloadURL(fileRef);
   */
   return "https://firebasestorage.googleapis.com/v0/b/parents-749dd.appspot.com/o/images%2Ffile1.jpg?alt=media&token=762e5797-7488-45e7-aadf-26f89516d19b";
