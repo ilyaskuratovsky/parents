@@ -1,8 +1,19 @@
 import * as ImagePicker from "expo-image-picker";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useState, useCallback } from "react";
-import { ActivityIndicator, Button, Modal, StyleSheet, Text, TextInput, View } from "react-native";
+//import * as Permissions from "expo-permissions";
+import {
+  ActivityIndicator,
+  Alert,
+  Button,
+  Modal,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { Image } from "react-native-expo-image-cache";
+import Loading from "./Loading";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import uuid from "uuid";
@@ -37,23 +48,11 @@ function ModalContainer({ userInfo, forceComplete }) {
   const [editingImage, setEditingImage] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [image, setImage] = useState(userInfo.image);
+  const [status, requestPermission] = ImagePicker.useCameraPermissions();
 
   const _maybeRenderUploadingOverlay = () => {
     if (uploading) {
-      return (
-        <View
-          style={[
-            StyleSheet.absoluteFill,
-            {
-              backgroundColor: "rgba(0,0,0,0.4)",
-              alignItems: "center",
-              justifyContent: "center",
-            },
-          ]}
-        >
-          <ActivityIndicator color="#fff" animating size="large" />
-        </View>
-      );
+      return <Loading />;
     }
   };
 
@@ -85,12 +84,18 @@ function ModalContainer({ userInfo, forceComplete }) {
   };
 
   const _takePhoto = async () => {
-    let pickerResult = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [4, 3],
-    });
+    Alert.alert("launching camera");
+    const { granted } = await requestPermission();
+    if (granted) {
+      let pickerResult = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [4, 3],
+      }).catch((error) => {
+        Alert.alert("got error launching camera: " + JSON.stringify(error));
+      });
 
-    _handleImagePicked(pickerResult);
+      _handleImagePicked(pickerResult);
+    }
   };
 
   const isProfileComplete = useCallback(() => {

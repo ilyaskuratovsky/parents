@@ -232,20 +232,37 @@ export default function MessageModal({
           <View
             style={{
               //height: replyBarHeight,
-              height: replyBarHeight,
-              alignItems: "center",
-              justifyContent: "center",
+              height: 50,
               paddingLeft: 10,
               paddingRight: 10,
               paddingBottom: 0,
               //backgroundColor: "cyan",
               flexDirection: "row",
+              alignItems: "center",
             }}
           >
+            <IconButton
+              icon="camera"
+              color={"blue"}
+              size={32}
+              onPress={() => {
+                sendEventReply(eventResponse, text);
+              }}
+            />
+            <IconButton
+              icon="image"
+              color={"blue"}
+              backgroundColor="green"
+              size={32}
+              onPress={() => {
+                sendEventReply(eventResponse, text);
+              }}
+            />
+
             <TextInput
               value={text}
               style={{
-                flex: 1,
+                flexGrow: 1,
                 backgroundColor: "blue",
                 margin: 0,
                 paddingTop: 10,

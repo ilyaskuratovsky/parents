@@ -29,7 +29,7 @@ export default {
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.skuratovsky.greenwichparents2",
-      buildNumber: "46",
+      buildNumber: "59",
     },
     android: {
       adaptiveIcon: {

@@ -10,7 +10,7 @@ expo build:web
 npm run deploy-hosting 
 
 # How to deploy the mobile app (addl documentaation: https://docs.expo.dev/submit/ios/)
-1. increment the build number in app.json
+1. increment the build number in app.config.json
 2. run: expo build:ios (choose 'archive' when asked)
 3. Make note of the build url: Successfully built standalone app, e.g:
     https://expo.dev/artifacts/4ba34e34-c174-4fe3-afe7-c6ad307c4653

@@ -20,14 +20,14 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you share them with your friends."
+          "photosPermission": "The app accesses your photos to let you share them with your group."
         }
       ]
     ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.skuratovsky.greenwichparents2",
-      "buildNumber": "46"
+      "buildNumber": "49"
     },
     "android": {
       "adaptiveIcon": {

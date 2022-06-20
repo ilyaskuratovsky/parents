@@ -40,6 +40,8 @@ import Constants from "expo-constants";
 import ChatsScreen from "./ChatsScreen";
 import ChatModal from "./ChatModal";
 import NewChatModal from "./NewChatModal";
+import TestImagePicker from "./TestImagePicker";
+import TestImagePickerFirebase from "./TestImagePickerFirebase";
 /*
 App vision:  The local social network for parents.
 When join you put in your zip code (we also detect based on gps coordinates)
@@ -123,6 +125,7 @@ function RootApp(props, state) {
       </ScrollView>
     </View>
   );
+    return <TestImagePicker />;
     */
   }
 
@@ -196,6 +199,7 @@ function RootApp(props, state) {
       )}
       {modal === "NEW_CHAT" && <NewChatModal visible={true} {...modalWithParams} />}
       {modal === "CHAT" && <ChatModal {...modalWithParams} />}
+      {modal === "TEST_IMAGE_PICKER" && <TestImagePickerFirebase {...modalWithParams} />}
 
       <View style={{ position: "absolute", bottom: 400, right: 0 }}>
         <MyButtons.MenuButton
@@ -203,7 +207,8 @@ function RootApp(props, state) {
           color={debugMode ? "red" : "black"}
           text=""
           onPress={() => {
-            dispatch(Actions.toggleDebugMode());
+            //dispatch(Actions.toggleDebugMode());
+            dispatch(Actions.openModal({ modal: "TEST_IMAGE_PICKER" }));
           }}
         />
       </View>
