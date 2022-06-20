@@ -100,24 +100,6 @@ export default function GroupScreen({ groupId, messageId, debug }) {
 
   //const org = orgsMap[group?.orgId];
   // send message callback function
-  const sendMessage = useCallback(async (title, text) => {
-    const groupName = group.name;
-    const fromName = UserInfo.chatDisplayName(userInfo);
-    return await Controller.sendMessage(
-      dispatch,
-      userInfo,
-      groupId,
-      title,
-      text,
-      null, // data
-      null, // papa id
-      {
-        groupName,
-        fromName,
-      }
-    );
-  }, []);
-
   const renderMessage = ({ item }) => {
     const onPress = () => {
       setMessagesModalVisible(item.id);
@@ -309,7 +291,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
           icon="plus"
           text="New Post"
           onPress={() => {
-            setShowNewMessageModal(true);
+            dispatch(Actions.openModal({ modal: "NEW_POST", groupId: group.id }));
           }}
           containerStyle={{ paddingRight: 24 }}
         />
@@ -341,15 +323,6 @@ export default function GroupScreen({ groupId, messageId, debug }) {
         visible={groupSettingsModalVisible}
         closeModal={() => {
           setGroupSettingsModalVisible(false);
-        }}
-      />
-      <ThreadMessageModal
-        userInfo={userInfo}
-        group={group}
-        visible={showNewMessageModal}
-        sendMessage={sendMessage}
-        showModal={(flag) => {
-          setShowNewMessageModal(flag);
         }}
       />
       {/*

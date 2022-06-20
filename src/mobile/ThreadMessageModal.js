@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Image,
   Modal,
@@ -19,17 +19,40 @@ import * as ImagePicker from "expo-image-picker";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../config/firebase";
 import ImageUpload from "./ImageUpload";
+import * as Data from "../common/Data";
+import { useDispatch } from "react-redux";
+import * as Actions from "../common/Actions";
 
-export default function ThreadMessageModal({ userInfo, group, visible, sendMessage, showModal }) {
+export default function ThreadMessageModal({ groupId }) {
+  const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const [images, setImages] = useState([]);
   const [text, setText] = useState(null);
   const [title, setTitle] = useState(null);
+  const userInfo = Data.getCurrentUser();
+  const group = Data.getGroup(groupId);
   //<KeyboardAvoidingView behavior="padding" style={{ flex: 1, backgroundColor: "white" }}>
   //</KeyboardAvoidingView>
+  const sendMessage = useCallback(async (title, text) => {
+    const groupName = group.name;
+    const fromName = UserInfo.chatDisplayName(userInfo);
+    return await Controller.sendMessage(
+      dispatch,
+      userInfo,
+      groupId,
+      title,
+      text,
+      null, // data
+      null, // papa id
+      {
+        groupName,
+        fromName,
+      }
+    );
+  }, []);
 
   return (
-    <Modal visible={visible} animationType={"slide"}>
+    <Modal visible={true} animationType={"slide"}>
       <Portal>
         {/* top close section */}
         <View
@@ -42,7 +65,7 @@ export default function ThreadMessageModal({ userInfo, group, visible, sendMessa
         >
           <TouchableOpacity
             onPress={() => {
-              showModal(false);
+              dispatch(Actions.closeModal());
             }}
           >
             <Text style={{ fontSize: 20, color: "blue" }}>Close</Text>
@@ -87,7 +110,7 @@ export default function ThreadMessageModal({ userInfo, group, visible, sendMessa
                 text="POST"
                 onPress={async () => {
                   sendMessage(title, text).then(() => {
-                    showModal(false);
+                    dispatch(Actions.closeModal());
                   });
                 }}
               />
