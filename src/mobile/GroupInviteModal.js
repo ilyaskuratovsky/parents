@@ -8,47 +8,17 @@ import * as Controller from "../common/Controller";
 import Portal from "./Portal";
 import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import { CheckBox } from "react-native-elements";
+import * as Data from "../common/Data";
+import * as Actions from "../common/Actions";
 
 import * as UserInfo from "../common/UserInfo";
 
-export default function GroupInviteModal({ groupId, visible, onInvite, closeModal }) {
+export default function GroupInviteModal({ groupId }) {
   const dispatch = useDispatch();
-  const userInfo = useSelector((state) => state.main.userInfo);
-  const {
-    userList,
-    schoolList,
-    schoolMap,
-    groupList,
-    groupMap,
-    userMap,
-    userGroupMemberships,
-    groupMembershipMap,
-  } = useSelector((state) => {
-    return {
-      schoolList: state.main.schoolList,
-      userList: state.main.userList,
-      schoolMap: state.main.schoolMap,
-      groupList: state.main.groupList,
-      groupMap: state.main.groupMap,
-      userGroupMemberships: state.main.userGroupMemberships,
-      groupMembershipMap: state.main.groupMembershipMap,
-      userMap: state.main.userMap,
-    };
-  });
-
+  const userInfo = Data.getCurrentUser();
   const [invitees, setInvitees] = useState([]);
   const [processing, setProcessing] = useState(false);
-  /*
-  let addList = UserInfo.groupInviteeList(
-    userInfo,
-    groupId,
-    userGroupMemberships,
-    groupMap,
-    groupMembershipMap,
-    userMap
-  );
-  */
-  let addList = UserInfo.allUsers(userInfo, userMap);
+  let addList = Data.getAllUsers();
   const [email, setEmail] = useState(null);
   if (userInfo == null) {
     return <Text>Loading Data...</Text>;
@@ -62,7 +32,7 @@ export default function GroupInviteModal({ groupId, visible, onInvite, closeModa
   }
 
   return (
-    <Modal visible={visible} animationType={"slide"}>
+    <Modal visible={true} animationType={"slide"}>
       <Portal>
         <TopBarMiddleContentSideButtons
           style={{}}
@@ -71,7 +41,7 @@ export default function GroupInviteModal({ groupId, visible, onInvite, closeModa
               icon="arrow-left"
               text="Back"
               onPress={() => {
-                closeModal();
+                dispatch(Actions.closeModal());
               }}
               color="black"
             />
@@ -181,7 +151,7 @@ export default function GroupInviteModal({ groupId, visible, onInvite, closeModa
             for (const inviteeUid of invitees) {
               Controller.sendGroupInviteToUser(userInfo, groupId, inviteeUid);
             }
-            closeModal();
+            dispatch(Actions.closeModal());
           }}
         />
         {/*

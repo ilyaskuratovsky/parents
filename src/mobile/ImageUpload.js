@@ -54,14 +54,16 @@ export default class App extends React.Component {
     }
     */
     this.setState({ uploading: true });
-    await this._uploadImageToFirebase();
-    this.setState({ uploading: false });
+    const remoteImage = await this._uploadImageToFirebase();
+    this.setState({ uploading: false, remoteImage });
+    this.props.onUploadRemote(remoteImage);
   }
   async _uploadImageToFirebase() {
     // don't upload yet
     const { image } = this.state;
     const uploadUrl = await uploadImageAsync(image, "images/" + uuid.v4());
-    this.setState({ remoteImage: uploadUrl });
+    //this.setState({ remoteImage: uploadUrl });
+    return uploadUrl;
   }
 
   render() {
@@ -100,10 +102,7 @@ export default class App extends React.Component {
     return (
       <View
         style={{
-          marginTop: 30,
-          width: 250,
-          borderRadius: 3,
-          elevation: 2,
+          width: 80,
         }}
       >
         <View
@@ -120,12 +119,12 @@ export default class App extends React.Component {
           {remoteImage != null ? (
             <>
               <Image source={{ uri: remoteImage }} style={{ width: 80, height: 80 }} />
-              <Text>Uploaded</Text>
+              {/*<Text style={{ fontSize: 7 }}>{remoteImage}</Text>*/}
             </>
           ) : (
             <>
               <Image source={{ uri: image }} style={{ width: 80, height: 80 }} />
-              <Text>Local ({this.state.uploading ? "uploading..." : "not uploading"})</Text>
+              {/*<Text>Local ({this.state.uploading ? "uploading..." : "done uploading"})</Text>*/}
             </>
           )}
         </View>
@@ -206,7 +205,8 @@ async function uploadImageAsync(uri, path) {
 
   /*
   blob.close();
-  return await getDownloadURL(fileRef);
   */
-  return "https://firebasestorage.googleapis.com/v0/b/parents-749dd.appspot.com/o/images%2Ffile1.jpg?alt=media&token=762e5797-7488-45e7-aadf-26f89516d19b";
+  const url = await getDownloadURL(fileRef);
+  return url;
+  //return "https://firebasestorage.googleapis.com/v0/b/parents-749dd.appspot.com/o/images%2Ffile1.jpg?alt=media&token=762e5797-7488-45e7-aadf-26f89516d19b";
 }

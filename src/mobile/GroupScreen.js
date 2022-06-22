@@ -9,6 +9,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import { Icon } from "react-native-elements";
 import { Divider } from "react-native-elements";
 import { IconButton } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -41,23 +42,6 @@ export default function GroupScreen({ groupId, messageId, debug }) {
   const userRootMessages = Data.getGroupUserRootMessages(groupId);
   const members = Data.getGroupMemberships(groupId);
 
-  /*
-  let { groupMap, orgsMap, messages, userMap, members, userMessagesMap } = useSelector((state) => {
-    return {
-      userinfo: state.main.userInfo,
-      schoolList: state.main.schoolList,
-      schoolMap: state.main.schoolMap,
-      groupList: state.main.groupList,
-      groupMap: state.main.groupMap,
-      orgsMap: state.main.orgsMap,
-      userMap: state.main.userMap,
-      messages: state.main.groupMessages[groupId] ?? [],
-      members: state.main.groupMembershipMap[groupId],
-      userMessagesMap: state.main.userMessagesMap,
-    };
-  });
-  */
-  //const group = groupMap?.[groupId];
   console.log(
     "GroupScreen, groupId: " +
       groupId +
@@ -75,8 +59,6 @@ export default function GroupScreen({ groupId, messageId, debug }) {
   */
   const [groupSettingsModalVisible, setGroupSettingsModalVisible] = useState(false);
   const [messagesModalVisible, setMessagesModalVisible] = useState(null);
-  const [showNewMessageModal, setShowNewMessageModal] = useState(false);
-  const [showNewEventModal, setShowNewEventModal] = useState(false);
 
   const FlatListItemSeparator = () => {
     return (
@@ -138,51 +120,66 @@ export default function GroupScreen({ groupId, messageId, debug }) {
         style={{
           //backgroundColor: "whitesmoke",
           flexDirection: "column",
-          height: topBarHeight,
         }}
       >
-        {/*
-        <Text>
-          debug: {debug}, messagesModalVisible: {messagesModalVisible}
-        </Text>
-      */}
         {/* group name and members row */}
         <View
           style={[
             {
-              height: topBarHeight - 1,
               paddingLeft: 4,
               paddingRight: 4,
               paddingTop: 8,
-              paddingBottom: 8,
+              paddingBottom: 0,
               flexDirection: "row",
-              alignItems: "center",
+              alignItems: "flex-start",
+              justifyContent: "center",
               //backgroundColor: "cyan",
             },
           ]}
         >
-          <IconButton
-            icon={"chevron-left"}
-            style={{ width: 18, color: UIConstants.BLACK_TEXT_COLOR }}
-            onPress={() => {
-              dispatch(Actions.goToScreen({ screen: "GROUPS" }));
-            }}
-          />
           {/* group name */}
           <View
             style={{
               flexGrow: 1,
               flexDirection: "row",
-              alignItems: "flex-start",
+              alignItems: "center",
               justifyContent: "flex-start",
               //backgroundColor: "cyan",
             }}
           >
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <View style={{ flexDirection: "column" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                //backgroundColor: "yellow",
+                alignItems: "flex-start",
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  dispatch(Actions.goToScreen({ screen: "GROUPS" }));
+                }}
+              >
+                <Icon name="chevron-left" />
+              </TouchableOpacity>
+              {/*
+              <IconButton
+                icon={"chevron-left"}
+                style={{ backgroundColor: "green", color: UIConstants.BLACK_TEXT_COLOR }}
+                onPress={() => {
+                  dispatch(Actions.goToScreen({ screen: "GROUPS" }));
+                }}
+              />
+              */}
+              <View
+                style={{
+                  flexDirection: "column",
+                  //backgroundColor: "yellow"
+                }}
+              >
                 <TouchableOpacity
                   onPress={() => {
-                    setGroupSettingsModalVisible(true);
+                    //setGroupSettingsModalVisible(true);
+                    dispatch(Actions.openModal({ modal: "GROUP_SETTINGS", groupId: group.id }));
                   }}
                 >
                   <Text
@@ -190,6 +187,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
                       fontWeight: "bold",
                       fontSize: 20,
                       color: UIConstants.BLACK_TEXT_COLOR,
+                      //backgroundColor: "cyan",
                     }}
                   >
                     {group.name}
@@ -198,6 +196,46 @@ export default function GroupScreen({ groupId, messageId, debug }) {
                   {/*org != null && (
                     <Text style={{ fontWeight: "normal", fontSize: 14 }}>{org.name}</Text>
                   )*/}
+                </TouchableOpacity>
+                <View
+                  style={[
+                    {
+                      paddingLeft: 4,
+                      paddingRight: 4,
+                      paddingTop: 0,
+                      paddingBottom: 4,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      //backgroundColor: "green",
+                    },
+                  ]}
+                >
+                  <Text>Private Group</Text>
+                  <Text style={{ paddingLeft: 4, paddingRight: 4 }}>•</Text>
+                  <Text style={{ paddingRight: 4 }}>5 members</Text>
+                  <MyButtons.LinkButton
+                    text="Invite"
+                    onPress={() => {
+                      dispatch(Actions.openModal({ modal: "GROUP_INVITE", groupId: group.id }));
+                    }}
+                  />
+                </View>
+                <TouchableOpacity
+                  style={{ paddingBottom: 4 }}
+                  onPress={() => {
+                    dispatch(Actions.openModal({ modal: "GROUP_SETTINGS", groupId: group.id }));
+                  }}
+                >
+                  <FacePile
+                    userIds={[userInfo.uid].concat(
+                      members
+                        .filter((groupMembership) => {
+                          return userInfo.uid != groupMembership.uid;
+                        })
+                        .map((groupMembership) => groupMembership.uid)
+                    )}
+                    border
+                  />
                 </TouchableOpacity>
               </View>
             </View>
@@ -224,22 +262,6 @@ export default function GroupScreen({ groupId, messageId, debug }) {
               }}
             />
             */}
-            <TouchableOpacity
-              onPress={() => {
-                setGroupSettingsModalVisible(true);
-              }}
-            >
-              <FacePile
-                userIds={[userInfo.uid].concat(
-                  members
-                    .filter((groupMembership) => {
-                      return userInfo.uid != groupMembership.uid;
-                    })
-                    .map((groupMembership) => groupMembership.uid)
-                )}
-                border
-              />
-            </TouchableOpacity>
           </View>
         </View>
         <Divider style={{}} width={1} color="lightgrey" />
@@ -316,53 +338,6 @@ export default function GroupScreen({ groupId, messageId, debug }) {
           containerStyle={{ paddingLeft: 24 }}
         />
       )}
-      {/* MODALS */}
-      {/* group members modal */}
-      <GroupSettingsModal
-        groupId={groupId}
-        visible={groupSettingsModalVisible}
-        closeModal={() => {
-          setGroupSettingsModalVisible(false);
-        }}
-      />
-      {/*
-      <NewEventModal
-        userInfo={userInfo}
-        group={group}
-        allowCreatePoll={true}
-        visible={showNewEventModal}
-        onComplete={(event) => {
-          setShowNewEventModal(false);
-          if (event != null) {
-            Alert.alert("Book in Calendar?", null, [
-              {
-                text: "Yes",
-                onPress: () => {
-                  console.log("showing book calendar: " + JSON.stringify(event));
-                  setShowBookCalendar({
-                    title: event.title,
-                    notes: event.text,
-                    start: event.start,
-                    end: event.end,
-                    onDismiss: () => {
-                      setShowBookCalendar(null);
-                    },
-                  });
-                },
-              },
-              {
-                text: "No",
-                onPress: () => {
-                  console.log("Cancel Pressed");
-                  setShowBookCalendar(null);
-                },
-                style: "cancel",
-              },
-            ]);
-          }
-        }}
-      />
-      */}
     </Portal>
   );
 }

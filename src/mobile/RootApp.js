@@ -43,6 +43,8 @@ import NewChatModal from "./NewChatModal";
 import TestImagePicker from "./TestImagePicker";
 import TestImagePickerFirebase from "./TestImagePickerFirebase";
 import ThreadMessageModal from "./ThreadMessageModal";
+import GroupInviteModal from "./GroupInviteModal";
+import GroupSettingsModal from "./GroupSettingsModal";
 /*
 App vision:  The local social network for parents.
 When join you put in your zip code (we also detect based on gps coordinates)
@@ -202,14 +204,16 @@ function RootApp(props, state) {
       {modal === "CHAT" && <ChatModal {...modalWithParams} />}
       {modal === "TEST_IMAGE_PICKER" && <TestImagePickerFirebase {...modalWithParams} />}
       {modal === "NEW_POST" && <ThreadMessageModal {...modalWithParams} />}
+      {modal === "GROUP_INVITE" && <GroupInviteModal {...modalWithParams} />}
+      {modal === "GROUP_SETTINGS" && <GroupSettingsModal {...modalWithParams} />}
       <View style={{ position: "absolute", bottom: 400, right: 0 }}>
         <MyButtons.MenuButton
           icon="bug"
           color={debugMode ? "red" : "black"}
           text=""
           onPress={() => {
-            //dispatch(Actions.toggleDebugMode());
-            dispatch(Actions.openModal({ modal: "TEST_IMAGE_PICKER" }));
+            dispatch(Actions.toggleDebugMode());
+            //dispatch(Actions.openModal({ modal: "TEST_IMAGE_PICKER" }));
           }}
         />
       </View>

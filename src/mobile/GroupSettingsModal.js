@@ -21,11 +21,12 @@ import * as Globals from "./Globals";
 import { Avatar, Divider } from "react-native-elements";
 import * as Logger from "../common/Logger";
 import * as Debug from "../common/Debug";
+import * as Data from "../common/Data";
 
-export default function GroupSettingsModal({ groupId, visible, closeModal }) {
+export default function GroupSettingsModal({ groupId }) {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
-  const userInfo = useSelector((state) => state.main.userInfo);
+  const userInfo = Data.getCurrentUser();
   const {
     userMap,
     userList,
@@ -51,7 +52,7 @@ export default function GroupSettingsModal({ groupId, visible, closeModal }) {
   //console.log("fromUserInviets: " + (fromUserInvites ? fromUserInvites.length : "null"));
 
   const [processing, setProcessing] = useState(false);
-  const group = groupMap[groupId];
+  const group = Data.getGroup(groupId);
   if (userInfo == null) {
     return <Text>Loading Data...</Text>;
   }
@@ -66,7 +67,7 @@ export default function GroupSettingsModal({ groupId, visible, closeModal }) {
   const invitees = userList;
 
   return (
-    <Modal visible={visible} animationType={"slide"}>
+    <Modal visible={true} animationType={"slide"}>
       <Portal>
         <TopBarMiddleContentSideButtons
           style={{}}
@@ -75,7 +76,7 @@ export default function GroupSettingsModal({ groupId, visible, closeModal }) {
               icon="arrow-left"
               text="Back"
               onPress={() => {
-                closeModal();
+                dispatch(Actions.closeModal());
               }}
               color="black"
             />
@@ -92,7 +93,15 @@ export default function GroupSettingsModal({ groupId, visible, closeModal }) {
               fromUserInvites={fromUserInvites}
             />
           }
-          tab2={<GroupSettings userInfo={userInfo} group={group} closeModal={closeModal} />}
+          tab2={
+            <GroupSettings
+              userInfo={userInfo}
+              group={group}
+              closeModal={() => {
+                dispatch(Actions.closeModal());
+              }}
+            />
+          }
         />
       </Portal>
     </Modal>
@@ -344,16 +353,8 @@ function GroupMembers({ groupId, members, userMap, fromUserInvites }) {
       <MyButtons.FormButton
         text="Invite"
         onPress={async () => {
-          setInviteModalVisible(true);
+          dispatch(Actions.openModal({ modal: "GROUP_SETTINGS", groupId: group.id }));
         }}
-      />
-      <GroupInviteModal
-        groupId={groupId}
-        visible={inviteModalVisible}
-        closeModal={() => {
-          setInviteModalVisible(false);
-        }}
-        onInvite={async () => {}}
       />
     </View>
   );

@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, Image } from "react-native";
 import { Badge } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import * as UserInfo from "../common/UserInfo";
@@ -7,10 +7,14 @@ import * as Globals from "./Globals";
 import MessageTime from "./MessageTime";
 import * as UIConstants from "./UIConstants";
 import * as Debug from "../common/Debug";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as Utils from "../common/Utils";
 
 export default function MessageView({ item, onPress, showGroup = false }) {
   const timestamp = item.timestamp?.toDate();
   const debugMode = Debug.isDebugMode();
+  const insets = useSafeAreaInsets();
+
   return (
     <TouchableOpacity
       onPress={() => {
@@ -158,21 +162,9 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                 paddingLeft: 0,
                 paddingTop: 0,
                 borderRadius: 0,
-                //backgroundColor: "white",
               }}
             >
               <View style={{ flex: 1, flexDirection: "row" }}>
-                {/*
-                {item.event != null && (
-                  <Icon name="calendar" style={{ color: "black", fontSize: 24, marginRight: 6 }} />
-                )}
-                {item.event_poll != null && (
-                  <Icon
-                    name="calendar-multiple"
-                    style={{ color: "black", fontSize: 24, marginRight: 6 }}
-                  />
-                )}
-                */}
                 <Text
                   style={{
                     paddingLeft: 0,
@@ -205,23 +197,33 @@ export default function MessageView({ item, onPress, showGroup = false }) {
             >
               <View
                 style={{
-                  width: 200,
-                  //backgroundColor: "cyan"
+                  width: "100%",
+                  //backgroundColor: "yellow",
                 }}
               >
-                <Text
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                  style={{
-                    fontSize: 16,
-                    color: UIConstants.BLACK_TEXT_COLOR,
-                    flexGrow: 1,
-                  }}
-                >
-                  {(item.text ?? "").replace(/(\r\n|\n|\r)/gm, " ")}
-                </Text>
+                {!Utils.isEmptyString(item.text) && (
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={{
+                      fontSize: 16,
+                      color: UIConstants.BLACK_TEXT_COLOR,
+                      flexGrow: 1,
+                    }}
+                  >
+                    {(item.text ?? "").replace(/(\r\n|\n|\r)/gm, " ")}
+                  </Text>
+                )}
+                {(item.attachments ?? []).map((attachment) => {
+                  return (
+                    <Image
+                      source={{ uri: attachment.uri }}
+                      //resizeMode={"contain"}
+                      style={{ width: "100%", height: null, aspectRatio: 4 / 3 }}
+                    />
+                  );
+                })}
               </View>
-              <View style={{ flexGrow: 1 }}></View>
               {/* replies */}
               <View
                 style={{

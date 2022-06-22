@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
   KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
 import { Divider } from "react-native-elements";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -22,35 +23,59 @@ import ImageUpload from "./ImageUpload";
 import * as Data from "../common/Data";
 import { useDispatch } from "react-redux";
 import * as Actions from "../common/Actions";
+import * as Controller from "../common/Controller";
 
 export default function ThreadMessageModal({ groupId }) {
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const [images, setImages] = useState([]);
-  const [text, setText] = useState(null);
-  const [title, setTitle] = useState(null);
+  const [text, setText] = useState("");
+  const [title, setTitle] = useState("");
   const userInfo = Data.getCurrentUser();
   const group = Data.getGroup(groupId);
   //<KeyboardAvoidingView behavior="padding" style={{ flex: 1, backgroundColor: "white" }}>
   //</KeyboardAvoidingView>
-  const sendMessage = useCallback(async (title, text) => {
-    const groupName = group.name;
-    const fromName = UserInfo.chatDisplayName(userInfo);
-    return await Controller.sendMessage(
-      dispatch,
-      userInfo,
-      groupId,
-      title,
-      text,
-      null, // data
-      null, // papa id
-      {
-        groupName,
-        fromName,
+  const sendMessage = useCallback(
+    async (title, text) => {
+      const groupName = group.name;
+      const fromName = UserInfo.chatDisplayName(userInfo);
+      const data = {};
+      const attachments =
+        images.length > 0
+          ? images.map((image) => {
+              return { type: "image", uri: image.remoteUri };
+            })
+          : null;
+      if (attachments != null) {
+        data["attachments"] = attachments;
       }
-    );
-  }, []);
 
+      return await Controller.sendMessage(
+        dispatch,
+        userInfo,
+        groupId,
+        title,
+        text,
+        data,
+        null, // papa id
+        {
+          groupName,
+          fromName,
+        }
+      );
+    },
+    [title, text, images]
+  );
+
+  const canPost = () => {
+    const notUploadedImages = images.filter(
+      (image) => image.remoteUri == null && image.localUri != null
+    );
+    const hasText = title.length > 0 || text.length > 0;
+    const hasImages = images.length > 0;
+    const hasUnuploaded = hasImages ? notUploadedImages.length > 0 : 0;
+    return (hasText && !hasImages) || (hasImages && !hasUnuploaded);
+  };
   return (
     <Modal visible={true} animationType={"slide"}>
       <Portal>
@@ -108,6 +133,7 @@ export default function ThreadMessageModal({ groupId }) {
             >
               <MyButtons.FormButton
                 text="POST"
+                disabled={!canPost()}
                 onPress={async () => {
                   sendMessage(title, text).then(() => {
                     dispatch(Actions.closeModal());
@@ -129,41 +155,6 @@ export default function ThreadMessageModal({ groupId }) {
           enabled
         >
           <View style={{ flexGrow: 1 }}>
-            {/* avatar */}
-            <View
-              style={{
-                height: 40,
-                paddingLeft: 10,
-                paddingRight: 10,
-                justifyContent: "flex-start",
-                flexDirection: "row",
-                alignItems: "center",
-                paddingBottom: 0,
-                //backgroundColor: "green",
-              }}
-            >
-              {UserInfo.smallAvatarComponent(userInfo)}
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingRight: 20,
-                }}
-              >
-                <Text
-                  style={{
-                    marginLeft: 5,
-                    fontWeight: "bold",
-                    fontSize: 16,
-                  }}
-                >
-                  {UserInfo.chatDisplayName(userInfo)}
-                </Text>
-              </View>
-            </View>
-
             {/* title */}
             <View style={{ height: 50, paddingLeft: 10, paddingRight: 10 }}>
               <TextInput
@@ -220,28 +211,49 @@ export default function ThreadMessageModal({ groupId }) {
                 }}
               />
               <View style={{}}>
-                <Text style={{ fontSize: 7 }}>{images.length > 0 ? images[0] : "0"}</Text>
-                {images.map((image) => {
-                  return <ImageUpload uri={image} style={{ width: 80, height: 80 }} />;
-                })}
+                <ScrollView
+                  contentContainerStyle={{ flexDirection: "row", justifyContent: "flex-start" }}
+                  horizontal={true}
+                >
+                  {images.map((image, index) => {
+                    const localUri = image.localUri;
+                    return (
+                      <View style={{ margin: 4 }}>
+                        <ImageUpload
+                          uri={localUri}
+                          style={{ width: 80, height: 80 }}
+                          onUploadRemote={(remoteUri) => {
+                            const newImages = [...images];
+                            newImages[index] = { ...images[index], uploaded: true, remoteUri };
+                            setImages(newImages);
+                          }}
+                        />
+                      </View>
+                    );
+                  })}
+                </ScrollView>
               </View>
               <View style={{ flexDirection: "row" }}>
                 <IconButton
                   icon="camera"
                   color={"blue"}
+                  backgroundColor="green"
                   size={32}
                   onPress={async () => {
-                    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                    const { status } = await ImagePicker.requestCameraPermissionsAsync();
                     if (status !== "granted") {
                       alert("Sorry, we need camera roll permissions to make this work!");
                     }
-                    let pickerResult = await ImagePicker.launchImageLibraryAsync({
+                    let pickerResult = await ImagePicker.launchCameraAsync({
                       allowsEditing: true,
                       aspect: [4, 3],
                     });
 
-                    console.log({ pickerResult });
-                    setImages([...images].concat([pickerResult.uri]));
+                    if (!pickerResult.cancelled) {
+                      let newImages = [...images];
+                      newImages.push({ localUri: pickerResult.uri });
+                      setImages(newImages);
+                    }
                   }}
                 />
                 <IconButton
@@ -259,8 +271,11 @@ export default function ThreadMessageModal({ groupId }) {
                       aspect: [4, 3],
                     });
 
-                    console.log({ pickerResult });
-                    setImages([...images].concat([pickerResult.uri]));
+                    if (!pickerResult.cancelled) {
+                      let newImages = [...images];
+                      newImages.push({ localUri: pickerResult.uri });
+                      setImages(newImages);
+                    }
                   }}
                 />
               </View>
