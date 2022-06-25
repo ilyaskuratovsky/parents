@@ -22,6 +22,7 @@ import { Avatar, Divider } from "react-native-elements";
 import * as Logger from "../common/Logger";
 import * as Debug from "../common/Debug";
 import * as Data from "../common/Data";
+import TabView from "./TabView";
 
 export default function GroupSettingsModal({ groupId }) {
   const dispatch = useDispatch();
@@ -85,65 +86,25 @@ export default function GroupSettingsModal({ groupId }) {
           right={null}
         />
         <TabView
-          tab1={
+          tabHeadings={["Members", "Settings"]}
+          tabs={[
             <GroupMembers
               groupId={groupId}
               members={members}
               userMap={userMap}
               fromUserInvites={fromUserInvites}
-            />
-          }
-          tab2={
+            />,
             <GroupSettings
               userInfo={userInfo}
               group={group}
               closeModal={() => {
                 dispatch(Actions.closeModal());
               }}
-            />
-          }
+            />,
+          ]}
         />
       </Portal>
     </Modal>
-  );
-}
-
-function TabView({ tab1, tab2 }) {
-  const [visibleTab, setVisibleTab] = useState(0);
-  return (
-    <View style={{ flex: 1 }}>
-      <View
-        style={{
-          height: 40,
-          flexDirection: "row",
-          //, backgroundColor: "yellow"
-        }}
-      >
-        <TouchableOpacity
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          onPress={() => {
-            setVisibleTab(0);
-          }}
-        >
-          <Text style={{ fontSize: 18, textDecorationLine: visibleTab == 0 ? "underline" : null }}>
-            Members
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          onPress={() => {
-            setVisibleTab(1);
-          }}
-        >
-          <Text style={{ fontSize: 18, textDecorationLine: visibleTab == 1 ? "underline" : null }}>
-            Settings
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <Divider style={{ marginBottom: 10 }} width={1} color="darkgrey" />
-      {visibleTab == 0 && tab1}
-      {visibleTab == 1 && tab2}
-    </View>
   );
 }
 

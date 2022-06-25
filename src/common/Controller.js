@@ -489,8 +489,10 @@ export async function createOrgAndAssignToUser(dispatch, userInfo, name, type) {
   await Database.updateUserAddToArrayField(userInfo.uid, "orgs", orgId);
 }
 
-export async function sendGroupInviteToEmail(userInfo, groupId, email) {
-  await Database.createInvite(userInfo.uid, groupId, null, email);
+export async function sendGroupInviteToEmails(userInfo, groupId, emails) {
+  for (const email of emails) {
+    await Database.createInvite(userInfo.uid, groupId, null, email);
+  }
 }
 
 export async function sendGroupInviteToUser(userInfo, groupId, uid) {
