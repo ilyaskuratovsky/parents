@@ -5,10 +5,10 @@ import { Avatar, Divider } from "react-native-elements";
 import { IconButton } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-const Checkbox = ({ size, checked, onPress, style, text }) => {
+const Checkbox = ({ size, checked, onPress, style, containerStyle, text }) => {
   return (
     <TouchableOpacity onPress={onPress}>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <View style={{ flexDirection: "row", alignItems: "center", ...containerStyle }}>
         <View
           style={{
             height: 18,

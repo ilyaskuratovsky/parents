@@ -87,7 +87,7 @@ const FormButton = React.memo(({ text, icon, onPress, style, disabled = false })
       icon={icon}
       onPress={onPress}
       mode="outline"
-      style={style}
+      style={style ?? { width: 160 }}
       disabled={disabled}
     >
       {text}

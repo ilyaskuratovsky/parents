@@ -146,7 +146,7 @@ export default function GroupsScreen({}) {
             icon="plus"
             text="Create Group"
             onPress={() => {
-              setNewPrivateGroupModalVisible(true);
+              dispatch(Actions.openModal({ modal: "NEW_GROUP" }));
             }}
           />
         }
@@ -167,12 +167,6 @@ export default function GroupsScreen({}) {
         </ScrollView>
         <Toolbar key="toolbar" />
       </View>
-      <NewPrivateGroupModal
-        key="new-group-modal"
-        visible={newPrivateGroupModalVisible}
-        createGroup={createPrivateGroup}
-        closeModal={() => setNewPrivateGroupModalVisible(false)}
-      />
     </Portal>
   );
 }

@@ -245,19 +245,13 @@ export default function GroupsScreen({}) {
             <MyButtons.LinkButton
               text="Start a new Group"
               onPress={async () => {
-                setNewPrivateGroupModalVisible(true);
+                dispatch(Actions.openModal({ modal: "NEW_GROUP" }));
               }}
             />
           </View>
         </ScrollView>
         <Toolbar key="toolbar" />
       </View>
-      <NewPrivateGroupModal
-        key="new-group-modal"
-        visible={newPrivateGroupModalVisible}
-        createGroup={createPrivateGroup}
-        closeModal={() => setNewPrivateGroupModalVisible(false)}
-      />
     </Portal>
   );
 }

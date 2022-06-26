@@ -312,19 +312,24 @@ export async function markChatMessagesRead(userInfo, chatMessageIds) {
   }
 }
 
-export async function createPrivateGroupAndJoin(
-  dispatch,
-  userInfo,
-  groupName,
-  invitees,
-  emailInvitees
-) {
+/*
+            const groupId = await Controller.createPrivateGroupAndJoin(
+              userInfo,
+              groupName,
+              groupDescription
+            );
+*/
+
+export async function createPrivateGroupAndJoin(userInfo, groupName, groupDescription) {
   const groupId = await Database.createGroup({
     name: groupName,
+    description: groupDescription,
     orgId: null,
+    type: "private",
   });
   await Database.joinGroup(userInfo, groupId);
 
+  /*
   for (const inviteeUid of invitees) {
     sendGroupInviteToUser(userInfo, groupId, inviteeUid);
   }
@@ -332,6 +337,7 @@ export async function createPrivateGroupAndJoin(
   for (const inviteeEmail of emailInvitees) {
     sendGroupInviteToEmail(userInfo, groupId, inviteeEmail);
   }
+  */
 
   return groupId;
 }

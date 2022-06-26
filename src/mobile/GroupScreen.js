@@ -41,6 +41,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
   const group = Data.getGroup(groupId);
   const userRootMessages = Data.getGroupUserRootMessages(groupId);
   const members = Data.getGroupMemberships(groupId);
+  const otherMembers = members.filter((member) => member.uid !== userInfo.uid);
 
   console.log(
     "GroupScreen, groupId: " +
@@ -266,6 +267,27 @@ export default function GroupScreen({ groupId, messageId, debug }) {
         </View>
         <Divider style={{}} width={1} color="lightgrey" />
       </View>
+      {/* invite if only you're a member */}
+      {otherMembers.length === 0 && (
+        <View
+          style={{
+            flexDirection: "column",
+            backgroundColor: "white",
+            alignItems: "center",
+            justifyContent: "center",
+            //backgroundColor: "yellow",
+            height: 140,
+          }}
+        >
+          <Text style={{ padding: 8 }}>There are no other members in this group</Text>
+          <MyButtons.FormButton
+            text="Invite"
+            onPress={() => {
+              dispatch(Actions.openModal({ modal: "GROUP_INVITE", groupId: group.id }));
+            }}
+          />
+        </View>
+      )}
       {/* messages section */}
       <View
         style={{
