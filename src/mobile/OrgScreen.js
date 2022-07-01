@@ -9,6 +9,7 @@ import * as Actions from "../common/Actions";
 import BottomBar from "./BottomBar";
 import TopBar from "./TopBar";
 import * as UIConstants from "./UIConstants";
+import * as Data from "../common/Data";
 
 export default function OrgScreen({ orgId }) {
   const dispatch = useDispatch();
@@ -24,6 +25,8 @@ export default function OrgScreen({ orgId }) {
   });
 
   const org = orgsMap[orgId];
+  const defaultOrgGroup = Data.getDefaultOrgGroup(orgId);
+
   const orgGroups = groupList.filter((group) => {
     return group.orgId == orgId;
   });
@@ -51,7 +54,6 @@ export default function OrgScreen({ orgId }) {
         center={<Text>{org.name}</Text>}
         right={null}
       />
-
       <View
         style={{
           flex: 1,
@@ -59,6 +61,11 @@ export default function OrgScreen({ orgId }) {
           alignItems: "flex-start",
         }}
       >
+        {/* default group */}
+        {defaultOrgGroup != null && <GroupView group={defaultOrgGroup} />}
+        {defaultOrgGroup == null && <ActivityIndicator color="#fff" animating size="large" />}
+
+        {/* other org groups */}
         {orgGroups.map((group) => {
           return (
             <View

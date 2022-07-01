@@ -45,7 +45,7 @@ import TestImagePickerFirebase from "./TestImagePickerFirebase";
 import ThreadMessageModal from "./ThreadMessageModal";
 import GroupInviteModal from "./GroupInviteModal";
 import GroupSettingsModal from "./GroupSettingsModal";
-import NewPrivateGroupModal from "./NewPrivateGroupModal";
+import NewGroupModal from "./NewGroupModal";
 /*
 App vision:  The local social network for parents.
 When join you put in your zip code (we also detect based on gps coordinates)
@@ -207,7 +207,8 @@ function RootApp(props, state) {
       {modal === "NEW_POST" && <ThreadMessageModal {...modalWithParams} />}
       {modal === "GROUP_INVITE" && <GroupInviteModal {...modalWithParams} />}
       {modal === "GROUP_SETTINGS" && <GroupSettingsModal {...modalWithParams} />}
-      {modal === "NEW_GROUP" && <NewPrivateGroupModal {...modalWithParams} />}
+      {modal === "NEW_GROUP" && <NewGroupModal {...modalWithParams} />}
+      {modal === "GROUP" && <GroupScreen {...modalWithParams} />}
       <View style={{ position: "absolute", bottom: 400, right: 0 }}>
         <MyButtons.MenuButton
           icon="bug"

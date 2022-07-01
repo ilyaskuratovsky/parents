@@ -98,8 +98,8 @@ export default function SchoolScreen({ schoolId }) {
                     text="Open"
                     onPress={() => {
                       dispatch(
-                        Actions.goToScreen({
-                          screen: "GROUP",
+                        Actions.openModal({
+                          modal: "GROUP",
                           groupId: group.id,
                         })
                       );

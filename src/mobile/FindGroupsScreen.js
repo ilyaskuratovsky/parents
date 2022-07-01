@@ -5,15 +5,16 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "../common/Actions";
 import * as Controller from "../common/Controller";
 import * as MyButtons from "./MyButtons";
-import NewPrivateGroupModal from "./NewPrivateGroupModal";
+import NewPrivateGroupModal from "./NewGroupModal";
 import Portal from "./Portal";
 import Toolbar from "./Toolbar";
 import TopBarLeftContentSideButton from "./TopBarLeftContentSideButton";
 import * as UIConstants from "./UIConstants";
+import * as Data from "../common/Data";
 
 export default function FindGroupsScreens({ navigation }) {
   const dispatch = useDispatch();
-  const userInfo = useSelector((state) => state.main.userInfo);
+  const userInfo = Data.getCurrentUser();
   const [searchResults, setSearchResults] = useState(null);
   const { orgsList, orgsMap, groupList, groupMap, userGroupMemberships } = useSelector((state) => {
     return {
@@ -47,7 +48,6 @@ Activities
   });
   const [searchText, setSearchText] = useState("");
   const [visibleNewOrgModal, setVisibleNewOrgModal] = useState(false);
-  const [newPrivateGroupModalVisible, setNewPrivateGroupModalVisible] = useState(false);
   const createPrivateGroup = async (groupName) => {
     const groupId = await Controller.createPrivateGroupAndJoin(dispatch, userInfo, groupName);
     dispatch(Actions.goToScreen({ screen: "GROUP", groupId: groupId }));
@@ -67,11 +67,6 @@ Activities
         //   />
         // }
         side={null}
-      />
-      <NewPrivateGroupModal
-        visible={newPrivateGroupModalVisible}
-        createGroup={createPrivateGroup}
-        closeModal={() => setNewPrivateGroupModalVisible(false)}
       />
       <View style={{ flex: 1, flexDirection: "column", backgroundColor: "white" }}>
         <View style={{ flexBasis: 80 }}>

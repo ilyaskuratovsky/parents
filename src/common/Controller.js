@@ -12,6 +12,7 @@ import * as UserInfo from "./UserInfo";
 import * as Logger from "./Logger";
 import { storage } from "../../config/firebase";
 import { getDownloadURL, ref, uploadBytes, uploadString } from "firebase/storage";
+import { useSelector } from "react-redux";
 
 //import { Database } from "firebase-firestore-lite";
 
@@ -296,6 +297,48 @@ export async function createSchoolGroupAndJoin(
   await Database.joinGroup(userInfo, groupId);
 }
 
+export async function createGroup(groupName, groupDescription, type, orgId) {
+  const group = {
+    name: groupName,
+    description: groupDescription,
+    orgId,
+    type: type,
+  };
+  console.log("controller creating group: " + JSON.stringify(group) + ", type: " + type);
+  const groupId = await Database.createGroup(group);
+  return groupId;
+}
+
+export async function createDefaultOrgGroupIfNotExists(orgId) {
+  console.log(
+    "Controller.createDefaultOrgGroupIfNotExists: orgId: " + orgId + ", groupName: " + groupName
+  );
+  const groupList = await Database.getAllGroups();
+  const org = await Database.getOrg(orgId);
+
+  const defaultGroup = single(
+    groupList.filter((group) => {
+      group.orgId == orgId && group.type === "default_org_group";
+    })
+  );
+
+  if (defaultGroup == null) {
+    let groupId = null;
+    try {
+      const groupName = org.name;
+      const groupDescription = groupName + " General Discussion";
+      groupId = await createGroup(groupName, groupDescription, "default_org_group", orgId);
+    } catch (e) {
+      console.log("could not create group: " + JSON.stringify(e));
+    }
+    console.log("group created: " + groupId);
+    return groupId;
+  } else {
+    console.log("group already exists: " + defaultGroup.id);
+    return defaultGroup.id;
+  }
+}
+
 export async function markMessageRead(userInfo, messageId) {
   markMessagesRead(userInfo, [messageId]);
 }
@@ -361,6 +404,8 @@ export async function createOrgGroupAndJoin(dispatch, userInfo, orgId, groupName
   });
   await Database.joinGroup(userInfo, groupId);
 }
+
+export async function subscribeToGroup(userInfo, groupId) {}
 
 export async function sendMessage(
   dispatch,
@@ -605,4 +650,12 @@ export async function createSharedCalendar(groupId) {
     }
   );
   ics;
+}
+
+function single(list) {
+  if (list != null && list.length > 0) {
+    return list[list.length - 1];
+  } else {
+    return null;
+  }
 }

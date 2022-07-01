@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "../common/Actions";
 import * as Controller from "../common/Controller";
 import * as MyButtons from "./MyButtons";
-import NewPrivateGroupModal from "./NewPrivateGroupModal";
 import Portal from "./Portal";
 import Toolbar from "./Toolbar";
 import TopBarLeftContentSideButton from "./TopBarLeftContentSideButton";
@@ -66,11 +65,6 @@ Activities
             }}
           />
         }
-      />
-      <NewPrivateGroupModal
-        visible={newPrivateGroupModalVisible}
-        createGroup={createPrivateGroup}
-        closeModal={() => setNewPrivateGroupModalVisible(false)}
       />
       <View style={{ flex: 1, flexDirection: "column", backgroundColor: "white" }}>
         <View style={{ flexBasis: 80 }}>

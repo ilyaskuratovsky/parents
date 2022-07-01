@@ -35,13 +35,6 @@ export function getAllUsers() {
 }
 export function getGroupMemberships(groupId) {
   const group = getGroup(groupId);
-  if (group.type == "super_public") {
-    const allUsers = getAllUsers();
-    const groupMemberships = allUsers.map((user) => {
-      return { uid: user.uid, groupId: group.id };
-    });
-    return groupMemberships;
-  }
   const { groupMemberships } = useSelector((state) => {
     return {
       groupMemberships: state.main.groupMembershipMap[groupId],
@@ -180,6 +173,17 @@ export function getGroup(groupId) {
     };
   });
   return group;
+}
+
+export function getOrg(orgId) {
+  const { orgsMap } = useSelector((state) => {
+    return {
+      orgsMap: state.main.orgsMap,
+    };
+  });
+
+  const org = orgsMap[orgId];
+  return org;
 }
 
 export function getChat(chatId) {
@@ -370,9 +374,25 @@ export function useMarkChatMessagesRead(chatMessages) {
   }, []);
 }
 
+export function getDefaultOrgGroup(orgId) {
+  const { orgsList, orgsMap, groupList, groupMap, userGroupMemberships } = useSelector((state) => {
+    return {
+      orgsList: state.main.orgsList,
+      orgsMap: state.main.orgsMap,
+      groupList: state.main.groupList,
+      groupMap: state.main.groupMap,
+      userGroupMemberships: state.main.userGroupMemberships,
+    };
+  });
+  const defaultOrgGroup = groupList.filter((group) => {
+    return group.orgId == orgId && group.type === "default_org_group";
+  });
+  return single(defaultOrgGroup);
+}
+
 function single(list) {
-  if (list != null && list.length === 1) {
-    return list[0];
+  if (list != null && list.length > 0) {
+    return list[list.length - 1];
   } else {
     return null;
   }

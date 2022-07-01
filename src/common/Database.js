@@ -5,6 +5,16 @@ export async function getAllOrgs() {
   return DatabaseRDB.getAllOrgs();
 }
 
+export async function getOrg(orgId) {
+  const allOrgs = await DatabaseRDB.getAllOrgs();
+  return single(allOrgs.filter((org) => org.id == orgId));
+}
+
+export async function getGroup(groupId) {
+  const allGroups = await DatabaseRDB.getAllGroups();
+  return single(allGroups.filter((group) => group.id == groupId));
+}
+
 export function observeOrgChanges(callback) {
   return DatabaseRDB.observeOrgChanges(callback);
 }
@@ -147,4 +157,12 @@ export async function deleteGroupMembership(groupMembershipId) {
 
 export async function logError(error, info) {
   DatabaseRDB.logError(error, info);
+}
+
+function single(list) {
+  if (list != null && list.length === 1) {
+    return list[0];
+  } else {
+    return null;
+  }
 }

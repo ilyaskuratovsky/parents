@@ -9,6 +9,28 @@ import * as MyButtons from "./MyButtons";
 import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as Debug from "../common/Debug";
 
+/*
+  Screen 0 (org only): Select the organization - if school, the list is only schools otherwise its only activities.
+    Can also open a new modal to create a new organization. (By default this organization will not be searchable until it is approved - so for now no)
+
+  Screen 1: Name/Description 
+    Group Type:
+    (if School - add the grade - (Skip - this is the default choice default), 
+      PTA
+      Pre-K, K, 1st, 2nd, 3rd, 4th, 5th, 6th, 7th, 8th, 9th, 10th, 11th, 12th, Undergraduate, Graduate)
+    Group expire?
+      Summer 2021, Winter 2022, Spring 2023, Custom Date
+  Screen 2: Type
+    Private (Invite Only)
+      This group is completely secret and only users invited to the group will become members
+    Private (Request to Join)
+      Users need to request to join to see your group
+    Public (Posts by members only)
+      Everyone can read your group but only members can post
+    Public (Open to all)
+      Anyone can read and post
+
+*/
 export default function NewPrivateGroupModal({ visible, createGroup, closeModal }) {
   const userInfo = useSelector((state) => state.main.userInfo);
   const [groupName, setGroupName] = useState(null);

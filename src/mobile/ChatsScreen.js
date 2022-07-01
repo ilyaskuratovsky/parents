@@ -8,7 +8,6 @@ import * as Controller from "../common/Controller";
 import FacePile from "./FacePile";
 import * as Globals from "./Globals";
 import * as MyButtons from "./MyButtons";
-import NewPrivateGroupModal from "./NewPrivateGroupModal";
 import Portal from "./Portal";
 import Toolbar from "./Toolbar";
 import TopBar from "./TopBar";

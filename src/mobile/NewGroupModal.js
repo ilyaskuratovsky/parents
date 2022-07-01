@@ -23,7 +23,7 @@ import Portal from "./Portal";
 import TabView from "./TabView";
 import * as Controller from "../common/Controller";
 
-export default function NewPrivateGroupModal({}) {
+export default function NewGroupModal({}) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
   const [processing, setProcessing] = useState(false);
