@@ -24,8 +24,8 @@ export default function GroupView({ groupId }) {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
   const group = Data.getGroup(groupId);
-  const members = Data.getGroupMemberships(groupId);
-  const userGroupMembership = Data.getUserGroupMemberships(groupId);
+  const members = Data.getGroupMemberships(groupId) ?? [];
+  const userGroupMembership = Data.getUserGroupMemberships(groupId) ?? [];
   const userInfo = Data.getCurrentUser();
   const unreadRootMessages = Data.getGroupUserRootUnreadMessages(groupId);
   const unreadCount = unreadRootMessages.length;
@@ -59,7 +59,7 @@ export default function GroupView({ groupId }) {
           paddingLeft: 10,
         }}
         onPress={() => {
-          dispatch(Actions.goToScreen({ screen: "GROUP", groupId: group.id }));
+          dispatch(Actions.openModal({ modal: "GROUP", groupId: group.id }));
         }}
       >
         <View

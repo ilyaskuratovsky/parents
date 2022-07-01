@@ -23,82 +23,70 @@ import Portal from "./Portal";
 import TabView from "./TabView";
 import * as Controller from "../common/Controller";
 
-export default function NewGroupModal({}) {
+export default function NewGroupModal({ type, orgId }) {
   const dispatch = useDispatch();
-  const userInfo = useSelector((state) => state.main.userInfo);
-  const [processing, setProcessing] = useState(false);
+  const userInfo = Data.getCurrentUser();
+  const org = orgId != null ? Data.getOrg(orgId) : null;
 
-  const { groupMap, userGroupMemberships, groupMembershipMap, userMap } = useSelector((state) => {
-    return {
-      groupMap: state.main.groupMap,
-      userGroupMemberships: state.main.userGroupMemberships,
-      groupMembershipMap: state.main.groupMembershipMap,
-      userMap: state.main.userMap,
-    };
-  });
-
-  if (userInfo == null) {
-    return <Text>Loading Data...</Text>;
-  }
-  if (processing) {
-    return (
-      <Modal visible={true}>
-        <Text>Creating group...</Text>
-      </Modal>
-    );
-  }
-
-  /*
-  let addList = UserInfo.groupInviteeList(
-    userInfo,
-    null,
-    userGroupMemberships,
-    groupMap,
-    groupMembershipMap,
-    userMap
-  );
-  */
-  const [page, setPage] = useState("GROUP_TYPE");
+  const [groupType, setGroupType] = useState(type);
+  const [groupOrgId, setGroupOrgId] = useState(orgId);
   const [groupName, setGroupName] = useState(null);
   const [groupDescription, setGroupDescription] = useState(null);
-  const [type, setType] = useState(null);
 
-  const createGroup = async () => {
-    await createGroup(groupName, invitees, invitesByEmailList);
-    dispatch(Actions.closeModal());
-  };
+  let startPage = null;
+  if (page == null) {
+    if (groupType === "school" || groupType == "activity") {
+      startPage = "ORG";
+    } else if (groupType == "private" || groupType == "public") {
+      startPage = "DETAILS";
+    } else {
+      startPage = "TYPE";
+    }
+  }
+  const [page, setPage] = useState(startPage);
+
   return (
     <Modal visible={true} animationType={"slide"}>
-      {page === "GROUP_TYPE" && (
+      {page === "TYPE" && (
         <GroupType
           onNext={(type) => {
+            setGroupType(type);
             if (type === "school") {
+              setPage("ORG");
             } else if (type === "activity") {
             } else if (type === "private") {
-              setType(type);
               setPage("MAIN_INFO");
             } else if (type === "public") {
             }
           }}
         />
       )}
-      {page === "MAIN_INFO" && (
+      {page === "DETAILS" && (
         <GroupMainInfo
           groupName={groupName}
           groupDescription={groupDescription}
           type={type}
-          onNext={(groupName, groupDescription, type) => {
-            setGroupName(groupName);
-            setGroupDescription(groupDescription);
-            if (type === "public" || type === "private_discoverable") {
-              setPage("ORGANIZATION");
-            } else {
-              setPage("INVITE");
-            }
+          orgId={groupOrgId}
+          onCreate={async (name, description) => {
+            setGroupName(name);
+            setGroupDescription(description);
+            //export async function createGroup(groupName, groupDescription, type, orgId) {
+            const groupId = await Controller.createGroup(name, description, groupType, groupOrgId);
+            dispatch(Actions.openModal({ modal: "GROUP", groupId: groupId }));
+            dispatch(Actions.closeModal());
           }}
         />
       )}
-      {page === "ORGANIZATION" && <Organization />}
+      {page === "ORG" && (
+        <Organization
+          type={groupType}
+          initialOrgId={groupOrgId}
+          onNext={(orgId) => {
+            setGroupOrgId(orgId);
+            setPage("DETAILS");
+          }}
+        />
+      )}
     </Modal>
   );
 }
@@ -149,7 +137,7 @@ function GroupType({ onNext }) {
             //backgroundColor: "cyan",
           }}
         >
-          <View
+          <TouchableOpacity
             style={{
               borderWidth: 1,
               borderRadius: 10,
@@ -159,6 +147,9 @@ function GroupType({ onNext }) {
               justifyContent: "center",
               alignItems: "center",
             }}
+            onPress={() => {
+              onNext("school");
+            }}
           >
             <View style={{ alignItems: "center", flexDirection: "column" }}>
               <Text style={{ textAlign: "center", fontSize: 16 }}>School Group</Text>
@@ -166,7 +157,7 @@ function GroupType({ onNext }) {
                 e.g. Mrs. Smith's 4th Grade Class
               </Text>
             </View>
-          </View>
+          </TouchableOpacity>
           <View
             style={{
               borderWidth: 1,
@@ -226,7 +217,7 @@ function GroupType({ onNext }) {
             }}
           >
             <View style={{ alignItems: "center", flexDirection: "column" }}>
-              <Text style={{ textAlign: "center", fontSize: 16 }}>General Public Group</Text>
+              <Text style={{ textAlign: "center", fontSize: 16 }}>Public Group</Text>
               <Text style={{ textAlign: "center", height: 60, padding: 10, fontSize: 10 }}>
                 Accessible to everyone
               </Text>
@@ -238,11 +229,11 @@ function GroupType({ onNext }) {
   );
 }
 
-function GroupMainInfo({ groupName, groupDescription, type, onNext }) {
-  console.log("onNext: " + onNext);
+function GroupMainInfo({ groupName, groupDescription, orgId, type, onCreate }) {
   const userInfo = Data.getCurrentUser();
   const dispatch = useDispatch();
   const [name, setName] = useState(groupName);
+  const org = Data.getOrg(orgId);
   const [description, setDescription] = useState(groupDescription);
 
   let nextButton = null;
@@ -278,6 +269,7 @@ function GroupMainInfo({ groupName, groupDescription, type, onNext }) {
         right={nextButton}
       />
       <View style={{ paddingTop: 20, alignItems: "center" }}>
+        {org != null && <Text>{org.name}</Text>}
         <View
           style={{
             paddingTop: 4,
@@ -321,70 +313,11 @@ function GroupMainInfo({ groupName, groupDescription, type, onNext }) {
             selectTextOnFocus={true}
           />
         </View>
-        {/*
-        <View
-          style={{
-            marginTop: 4,
-            marginBottom: 4,
-            paddingLeft: 10,
-            paddingRight: 10,
-            flexDirection: "column",
-            justifyContent: "space-evenly",
-            //backgroundColor: "cyan",
-          }}
-        >
-          <Checkbox
-            containerStyle={{ paddingBottom: 10 }}
-            checked={type?.startsWith("private_")}
-            onPress={() => {
-              setType("private_");
-            }}
-            //style={}
-            text={
-              <Text style={{ fontWeight: "normal", fontSize: 16, color: "grey" }}>Private</Text>
-            }
-          />
-          <View style={{ paddingLeft: 30 }}>
-            <Checkbox
-              containerStyle={{ paddingBottom: 10 }}
-              checked={type === "private_secret"}
-              onPress={() => {
-                setType("private_secret");
-              }}
-              text={
-                <Text style={{ fontWeight: "normal", fontSize: 16, color: "grey" }}>Secret</Text>
-              }
-            />
-            <Checkbox
-              containerStyle={{ paddingBottom: 10 }}
-              checked={type === "private_discoverable"}
-              onPress={() => {
-                setType("private_discoverable");
-              }}
-              text={
-                <Text style={{ fontWeight: "normal", fontSize: 16, color: "grey" }}>
-                  Discoverable
-                </Text>
-              }
-            />
-          </View>
-          <Checkbox
-            containerStyle={{ paddingBottom: 10 }}
-            checked={type === "public"}
-            onPress={() => {
-              setType("public");
-            }}
-            //style={}
-            text={<Text style={{ fontWeight: "normal", fontSize: 16, color: "grey" }}>Public</Text>}
-          />
-        </View>
-          */}
+
         <MyButtons.FormButton
           text="Create Group"
-          onPress={async () => {
-            const groupId = await Controller.createPrivateGroupAndJoin(userInfo, name, description);
-            dispatch(Actions.goToScreen({ screen: "GROUP", groupId: groupId }));
-            dispatch(Actions.closeModal());
+          onPress={() => {
+            onCreate(name, description);
           }}
         />
       </View>
@@ -540,11 +473,87 @@ function Invite() {
   );
 }
 */
-function Organization() {
+function Organization({ type, initialOrgId, onNext }) {
+  const dispatch = useDispatch();
+  let orgList = Data.getAllOrgs();
+  if (type === "school") {
+    orgList = orgList.filter((org) => org.type === "school");
+  }
+  const [orgId, setOrgId] = useState(initialOrgId);
   return (
-    <>
-      <Text>Organization</Text>
-    </>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        //backgroundColor: "yellow"
+      }}
+    >
+      <TopBarMiddleContentSideButtons
+        left={
+          <MyButtons.LinkButton
+            text="Cancel"
+            onPress={async () => {
+              dispatch(Actions.closeModal());
+            }}
+          />
+        }
+        center={
+          <View style={{ flex: 1 }}>
+            <Text>Choose School</Text>
+            {Globals.dev && <Text>NewPrivateGroupModal.js</Text>}
+          </View>
+        }
+        right={
+          <MyButtons.FormButton
+            text={"Next"}
+            style={{ width: 80 }}
+            disabled={orgId == null}
+            onPress={() => {
+              onNext(orgId);
+            }}
+          />
+        }
+      />
+      <View style={{ flex: 1, marginTop: 0, paddingLeft: 20, paddingRight: 20 }}>
+        <ScrollView style={{ height: 100, flexDirection: "row" }}>
+          {orgList.map((org) => {
+            return (
+              <View
+                key={org.id}
+                style={{
+                  height: 60,
+                  justifyContent: "flex-start",
+                  alignContent: "center",
+                  borderWidth: 0,
+                  flexDirection: "row",
+                }}
+              >
+                <CheckBox
+                  checked={org.id === orgId}
+                  onPress={() => {
+                    setOrgId(org.id);
+                  }}
+                />
+                <View
+                  style={{
+                    flexDirection: "column",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text
+                    style={{
+                      alignItems: "center",
+                      //backgroundColor: "orange",
+                    }}
+                  >
+                    {org.name}
+                  </Text>
+                </View>
+              </View>
+            );
+          })}
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
 

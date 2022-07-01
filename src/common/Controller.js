@@ -306,6 +306,7 @@ export async function createGroup(groupName, groupDescription, type, orgId) {
   };
   console.log("controller creating group: " + JSON.stringify(group) + ", type: " + type);
   const groupId = await Database.createGroup(group);
+  console.log("controller created group: " + groupId);
   return groupId;
 }
 

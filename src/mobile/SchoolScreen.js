@@ -40,17 +40,8 @@ export default function SchoolScreen({ schoolId }) {
   const debugMode = Debug.isDebugMode();
   const userInfo = useSelector((state) => state.main.userInfo);
   const [loading, setLoading] = useState(false);
-  const { orgsList, orgsMap, groupList, groupMap, userGroupMemberships } = useSelector((state) => {
-    return {
-      orgsList: state.main.orgsList,
-      orgsMap: state.main.orgsMap,
-      groupList: state.main.groupList,
-      groupMap: state.main.groupMap,
-      userGroupMemberships: state.main.userGroupMemberships,
-    };
-  });
-
-  const school = orgsMap[schoolId];
+  const schoolGroups = Data.getOrgGroups(schoolId);
+  const school = Data.getOrg(schoolId);
 
   let defaultOrgGroup = Data.getDefaultOrgGroup(schoolId);
   if (defaultOrgGroup == null) {
@@ -62,41 +53,13 @@ export default function SchoolScreen({ schoolId }) {
     };
   }
 
-  let schoolGroups = groupList.filter((group) => {
-    return group.orgId == schoolId;
-  });
-
-  if (schoolGroups.length == 0) {
-    schoolGroups = [defaultOrgGroup];
-  }
-
-  const publicGroups = schoolGroups.filter((group) => {
-    group.type === "default_org_group" || group.type === "public";
-  });
-
   const otherGroups = schoolGroups.filter((group) => {
-    group.type === "private_request_to_join";
+    return group.type != "default_org_group";
   });
 
   otherGroups.sort((group1, group2) => {
     return 1; // todo sort these by grade
   });
-
-  const userGroupMembershipList = userGroupMemberships.map(
-    (groupMembership) => groupMembership.groupId
-  );
-  const [visibleSchoolGroupModal, setVisibleSchoolGroupModal] = useState(null);
-
-  const createSchoolGroup = async function (groupName, grade, year) {
-    return Controller.createSchoolGroupAndJoin(
-      dispatch,
-      userInfo,
-      school.id,
-      groupName,
-      grade,
-      year
-    );
-  };
 
   /*
   useEffect(() => {

@@ -41,15 +41,9 @@ export default function GroupScreen({ groupId, messageId, debug }) {
   const userInfo = Data.getCurrentUser();
   const group = Data.getGroup(groupId);
   const [messagesModalVisible, setMessagesModalVisible] = useState(null);
-  let userRootMessages = [];
-  let members = [];
-  let otherMembers = [];
-
-  /*
-  userRootMessages = Data.getGroupUserRootMessages(groupId);
-  members = Data.getGroupMemberships(groupId);
-  otherMembers = (members ?? []).filter((member) => member.uid !== userInfo.uid);
-  */
+  const userRootMessages = Data.getGroupUserRootMessages(groupId);
+  const members = Data.getGroupMemberships(groupId) ?? [];
+  const otherMembers = (members ?? []).filter((member) => member.uid !== userInfo.uid);
 
   console.log(
     "GroupScreen, groupId: " +
@@ -149,7 +143,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
               >
                 <TouchableOpacity
                   onPress={() => {
-                    dispatch(Actions.goToScreen({ screen: "GROUPS" }));
+                    dispatch(Actions.closeModal());
                   }}
                 >
                   <Icon name="chevron-left" />

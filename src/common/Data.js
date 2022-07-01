@@ -33,6 +33,24 @@ export function getAllUsers() {
   });
   return users;
 }
+export function getAllOrgs() {
+  const { orgsList } = useSelector((state) => {
+    return {
+      orgsList: state.main.orgsList,
+    };
+  });
+  return orgsList;
+}
+
+export function getOrgGroups(orgId) {
+  const { groupList } = useSelector((state) => {
+    return {
+      groupList: state.main.groupList,
+    };
+  });
+  return groupList.filter((group) => group.orgId === orgId);
+}
+
 export function getGroupMemberships(groupId) {
   const group = getGroup(groupId);
   const { groupMemberships } = useSelector((state) => {
