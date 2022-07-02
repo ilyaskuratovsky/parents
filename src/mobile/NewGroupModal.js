@@ -23,21 +23,23 @@ import Portal from "./Portal";
 import TabView from "./TabView";
 import * as Controller from "../common/Controller";
 
-export default function NewGroupModal({ type, orgId }) {
+export default function NewGroupModal({ scheme, orgId }) {
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
   const org = orgId != null ? Data.getOrg(orgId) : null;
 
-  const [groupType, setGroupType] = useState(type);
+  const [groupType, setGroupType] = useState();
   const [groupOrgId, setGroupOrgId] = useState(orgId);
   const [groupName, setGroupName] = useState(null);
   const [groupDescription, setGroupDescription] = useState(null);
 
   let startPage = null;
   if (page == null) {
-    if (groupType === "school" || groupType == "activity") {
+    if (orgId != null) {
+      startPage = "DETAILS";
+    } else if (scheme === "school" || scheme == "activity") {
       startPage = "ORG";
-    } else if (groupType == "private" || groupType == "public") {
+    } else if (scheme == "private" || scheme == "public") {
       startPage = "DETAILS";
     } else {
       startPage = "TYPE";
@@ -48,15 +50,14 @@ export default function NewGroupModal({ type, orgId }) {
   return (
     <Modal visible={true} animationType={"slide"}>
       {page === "TYPE" && (
-        <GroupType
-          onNext={(type) => {
-            setGroupType(type);
-            if (type === "school") {
+        <GroupScheme
+          onNext={(scheme) => {
+            if (scheme === "school") {
               setPage("ORG");
-            } else if (type === "activity") {
-            } else if (type === "private") {
+            } else if (scheme === "activity") {
+            } else if (scheme === "private") {
               setPage("MAIN_INFO");
-            } else if (type === "public") {
+            } else if (scheme === "public") {
             }
           }}
         />
@@ -65,21 +66,28 @@ export default function NewGroupModal({ type, orgId }) {
         <GroupMainInfo
           groupName={groupName}
           groupDescription={groupDescription}
-          type={type}
+          groupType={groupType}
           orgId={groupOrgId}
-          onCreate={async (name, description) => {
+          onCreate={async (name, description, type) => {
             setGroupName(name);
             setGroupDescription(description);
+            setGroupType(type);
             //export async function createGroup(groupName, groupDescription, type, orgId) {
-            const groupId = await Controller.createGroup(name, description, groupType, groupOrgId);
-            dispatch(Actions.openModal({ modal: "GROUP", groupId: groupId }));
+            const groupId = await Controller.createGroupAndJoin(
+              userInfo,
+              name,
+              description,
+              type,
+              groupOrgId
+            );
             dispatch(Actions.closeModal());
+            dispatch(Actions.openModal({ modal: "GROUP", groupId: groupId }));
           }}
         />
       )}
       {page === "ORG" && (
         <Organization
-          type={groupType}
+          scheme={scheme}
           initialOrgId={groupOrgId}
           onNext={(orgId) => {
             setGroupOrgId(orgId);
@@ -97,7 +105,7 @@ export default function NewGroupModal({ type, orgId }) {
   Private Group (Secret group that you invite people to)
   General Public Group (open to all)
 */
-function GroupType({ onNext }) {
+function GroupScheme({ onNext }) {
   const dispatch = useDispatch();
   const [type, setType] = useState(null);
 
@@ -229,13 +237,15 @@ function GroupType({ onNext }) {
   );
 }
 
-function GroupMainInfo({ groupName, groupDescription, orgId, type, onCreate }) {
+function GroupMainInfo({ groupName, groupDescription, orgId, groupType, onCreate }) {
   const userInfo = Data.getCurrentUser();
   const dispatch = useDispatch();
   const [name, setName] = useState(groupName);
   const org = Data.getOrg(orgId);
   const [description, setDescription] = useState(groupDescription);
+  const [type, setType] = useState(groupType);
 
+  /*
   let nextButton = null;
   if (type === "private" || type === "public") {
   } else {
@@ -248,6 +258,7 @@ function GroupMainInfo({ groupName, groupDescription, orgId, type, onCreate }) {
       />
     );
   }
+  */
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -266,7 +277,7 @@ function GroupMainInfo({ groupName, groupDescription, orgId, type, onCreate }) {
             {Globals.dev && <Text>NewPrivateGroupModal.js</Text>}
           </View>
         }
-        right={nextButton}
+        right={null}
       />
       <View style={{ paddingTop: 20, alignItems: "center" }}>
         {org != null && <Text>{org.name}</Text>}
@@ -313,13 +324,82 @@ function GroupMainInfo({ groupName, groupDescription, orgId, type, onCreate }) {
             selectTextOnFocus={true}
           />
         </View>
-
-        <MyButtons.FormButton
-          text="Create Group"
-          onPress={() => {
-            onCreate(name, description);
+        <View
+          style={{
+            paddingTop: 4,
+            paddingLeft: 10,
+            paddingRight: 10,
+            flexDirection: "column",
+            width: "100%",
+            //backgroundColor: "cyan",
           }}
-        />
+        >
+          <View style={{ flexDirection: "row" }}>
+            <Checkbox
+              checked={type === "private"}
+              onPress={async () => {
+                setType("private");
+              }}
+              text={null}
+            />
+            <View style={{ flexDirection: "column" }}>
+              <Text style={{ fontSize: 18, fontWeight: "bold" }}>Private (Invite Only)</Text>
+              <Text style={{ fontSize: 14 }}>
+                Others cannot see your group. Members are by invite only.
+              </Text>
+            </View>
+          </View>
+          <View style={{ flexDirection: "row", marginTop: 14 }}>
+            <Checkbox
+              checked={type === "private_requesttojoin"}
+              onPress={async () => {
+                setType("private_requesttojoin");
+              }}
+              text={null}
+            />
+            <View style={{ flexDirection: "column" }}>
+              <Text style={{ fontSize: 18, fontWeight: "bold" }}>Private (Request to Join)</Text>
+              <Text style={{ fontSize: 14 }}>Others can see your group and request to join.</Text>
+            </View>
+          </View>
+          <View style={{ flexDirection: "row", marginTop: 14 }}>
+            <Checkbox
+              checked={type === "public_membersonly"}
+              onPress={async () => {
+                setType("public_membersonly");
+              }}
+              text={null}
+            />
+            <View style={{ flexDirection: "column" }}>
+              <Text style={{ fontSize: 18, fontWeight: "bold" }}>Public (Members only)</Text>
+              <Text style={{ fontSize: 14 }}>
+                Everyone can see posts in your group, but can only contribute if they become
+                members.
+              </Text>
+            </View>
+          </View>
+          <View style={{ flexDirection: "row", marginTop: 14 }}>
+            <Checkbox
+              checked={type === "public"}
+              onPress={async () => {
+                setType("public");
+              }}
+              text={null}
+            />
+            <View style={{ flexDirection: "column" }}>
+              <Text style={{ fontSize: 18, fontWeight: "bold" }}>Public (Open to all)</Text>
+              <Text style={{ fontSize: 14 }}>Everyone can see and post in your group.</Text>
+            </View>
+          </View>
+        </View>
+        <View style={{ marginTop: 20 }}>
+          <MyButtons.FormButton
+            text="Create Group"
+            onPress={() => {
+              onCreate(name, description, type);
+            }}
+          />
+        </View>
       </View>
     </SafeAreaView>
   );

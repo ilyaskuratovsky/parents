@@ -44,7 +44,16 @@ export default function GroupScreen({ groupId, messageId, debug }) {
   const userRootMessages = Data.getGroupUserRootMessages(groupId);
   const members = Data.getGroupMemberships(groupId) ?? [];
   const otherMembers = (members ?? []).filter((member) => member.uid !== userInfo.uid);
-
+  const groupTypeDescription =
+    group.type === "private"
+      ? "Private (Invite Only)"
+      : group.type === "private_requesttojoin"
+      ? "Private (Request To Join)"
+      : group.type === "public_membersonly"
+      ? "Public (Members Only)"
+      : group.type === "public"
+      ? "Public (Open to All)"
+      : group.type;
   console.log(
     "GroupScreen, groupId: " +
       groupId +
@@ -197,9 +206,9 @@ export default function GroupScreen({ groupId, messageId, debug }) {
                       },
                     ]}
                   >
-                    <Text>Private Group</Text>
+                    <Text>{groupTypeDescription}</Text>
                     <Text style={{ paddingLeft: 4, paddingRight: 4 }}>•</Text>
-                    <Text style={{ paddingRight: 4 }}>5 members</Text>
+                    <Text style={{ paddingRight: 4 }}>{members.length} members</Text>
                     <MyButtons.LinkButton
                       text="Invite"
                       onPress={() => {

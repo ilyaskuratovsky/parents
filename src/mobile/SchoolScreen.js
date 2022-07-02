@@ -140,7 +140,7 @@ export default function SchoolScreen({ schoolId }) {
 
           <TouchableOpacity
             onPress={() => {
-              dispatch(Actions.goToScreen({ screen: "CREATE_GROUP" }));
+              dispatch(Actions.openModal({ modal: "NEW_GROUP", orgId: school.id }));
             }}
           >
             <Text

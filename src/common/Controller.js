@@ -297,7 +297,7 @@ export async function createSchoolGroupAndJoin(
   await Database.joinGroup(userInfo, groupId);
 }
 
-export async function createGroup(groupName, groupDescription, type, orgId) {
+export async function createGroupAndJoin(userInfo, groupName, groupDescription, type, orgId) {
   const group = {
     name: groupName,
     description: groupDescription,
@@ -306,6 +306,7 @@ export async function createGroup(groupName, groupDescription, type, orgId) {
   };
   console.log("controller creating group: " + JSON.stringify(group) + ", type: " + type);
   const groupId = await Database.createGroup(group);
+  await Database.joinGroup(userInfo, groupId);
   console.log("controller created group: " + groupId);
   return groupId;
 }
