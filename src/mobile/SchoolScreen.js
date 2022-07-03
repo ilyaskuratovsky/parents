@@ -40,9 +40,11 @@ export default function SchoolScreen({ schoolId }) {
   const debugMode = Debug.isDebugMode();
   const userInfo = useSelector((state) => state.main.userInfo);
   const [loading, setLoading] = useState(false);
-  const schoolGroups = Data.getOrgGroups(schoolId);
+  const group = Data.getOrgGroup(schoolId);
   const school = Data.getOrg(schoolId);
+  const subGroups = Data.getSubGroups(group.id);
 
+  /*
   let defaultOrgGroup = Data.getDefaultOrgGroup(schoolId);
   if (defaultOrgGroup == null) {
     defaultOrgGroup = {
@@ -52,7 +54,8 @@ export default function SchoolScreen({ schoolId }) {
       description: school.name + " general discussion",
     };
   }
-
+  */
+  /*
   const otherGroups = schoolGroups.filter((group) => {
     return group.type != "default_org_group";
   });
@@ -60,6 +63,7 @@ export default function SchoolScreen({ schoolId }) {
   otherGroups.sort((group1, group2) => {
     return 1; // todo sort these by grade
   });
+  */
 
   /*
   useEffect(() => {
@@ -99,27 +103,27 @@ export default function SchoolScreen({ schoolId }) {
         right={null}
       />
       <View style={{ flexDirection: "row" }}>
-        <MyButtons.FormButton text={"Follow"} />
+        <MyButtons.FormButton
+          text={"Follow"}
+          onPress={async () => {
+            await Controller.joinOrg(userInfo, school.id);
+          }}
+        />
         <MyButtons.FormButton text={"Invite"} />
       </View>
       {/* default group */}
       {debugMode ? <Text style={{ fontSize: 10 }}>{JSON.stringify(school)}</Text> : null}
-      {debugMode ? (
-        <Text style={{ fontSize: 10 }}>
-          Default School Group: {JSON.stringify(defaultOrgGroup)}
-        </Text>
-      ) : null}
       <ScrollView
         style={{
           marginTop: 20,
           paddingLeft: 8,
           paddingRight: 8,
-          flex: 1,
+          height: 200,
           flexDirection: "column",
+          backgroundColor: "cyan",
         }}
       >
-        <GroupView group={defaultOrgGroup} defaultOrgGroup={true} setLoading={setLoading} />
-        {otherGroups.map((group) => {
+        {subGroups.map((group) => {
           return <GroupView group={group} />;
         })}
         <View

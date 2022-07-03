@@ -193,6 +193,12 @@ export async function joinGroup(userInfo, groupId) {
   return newReference.key;
 }
 
+export async function joinOrg(userInfo, orgId) {
+  const newReference = await RDB.push(RDB.ref(rdb, "/org_memberships"));
+  await RDB.set(newReference, { uid: userInfo.uid, orgId });
+  return newReference.key;
+}
+
 export async function createChat(data) {
   const newReference = await RDB.push(RDB.ref(rdb, "/chats"));
   await RDB.set(newReference, data);
@@ -238,6 +244,11 @@ export async function updateUser(uid, update) {
 
 export async function deleteGroupMembership(groupMembershipId) {
   const docRef = RDB.ref(rdb, "/group_memberships/" + groupMembershipId);
+  await RDB.remove(docRef);
+}
+
+export async function deleteGroup(groupId) {
+  const docRef = RDB.ref(rdb, "/groups/" + groupId);
   await RDB.remove(docRef);
 }
 

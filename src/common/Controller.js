@@ -280,6 +280,10 @@ export async function joinGroup(dispatch, userInfo, groupId) {
   await Database.joinGroup(userInfo, groupId);
 }
 
+export async function joinOrg(userInfo, orgId) {
+  await Database.joinOrg(userInfo, orgId);
+}
+
 export async function createSchoolGroupAndJoin(
   dispatch,
   userInfo,
@@ -301,7 +305,7 @@ export async function createGroupAndJoin(userInfo, groupName, groupDescription, 
   const group = {
     name: groupName,
     description: groupDescription,
-    orgId,
+    orgId: orgId ?? null,
     type: type,
   };
   console.log("controller creating group: " + JSON.stringify(group) + ", type: " + type);
@@ -609,10 +613,14 @@ export async function updateGroup(userInfo, groupId, update) {
   await Database.updateGroup(groupId, update);
 }
 
-export async function deleteGroup(userInfo, groupId) {
+export async function markDeleteGroup(userInfo, groupId) {
   await Database.updateGroup(groupId, {
     status: "deleted",
   });
+}
+
+export async function deleteGroup(groupId) {
+  await Database.deleteGroup(groupId);
 }
 
 export async function deleteGroupMembership(userInfo, groupMembershipId) {

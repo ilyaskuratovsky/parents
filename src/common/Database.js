@@ -87,6 +87,10 @@ export async function joinGroup(userInfo, groupId) {
   return DatabaseRDB.joinGroup(userInfo, groupId);
 }
 
+export async function joinOrg(userInfo, orgId) {
+  return DatabaseRDB.joinOrg(userInfo, orgId);
+}
+
 export async function joinChat(uid, chatId) {
   return DatabaseRDB.joinChat(uid, chatId);
 }
@@ -153,6 +157,10 @@ export async function updateUser(userId, update) {
 
 export async function deleteGroupMembership(groupMembershipId) {
   DatabaseRDB.deleteGroupMembership(groupMembershipId);
+}
+
+export async function deleteGroup(groupId) {
+  DatabaseRDB.deleteGroup(groupId);
 }
 
 export async function logError(error, info) {

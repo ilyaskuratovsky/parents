@@ -42,6 +42,15 @@ export function getAllOrgs() {
   return orgsList;
 }
 
+export function getAllOrgsMap() {
+  const { orgsMap } = useSelector((state) => {
+    return {
+      orgsMap: state.main.orgsMap,
+    };
+  });
+  return orgsMap;
+}
+
 export function getOrgGroups(orgId) {
   const { groupList } = useSelector((state) => {
     return {
@@ -49,6 +58,62 @@ export function getOrgGroups(orgId) {
     };
   });
   return groupList.filter((group) => group.orgId === orgId);
+}
+
+export function getSubGroups(groupId) {
+  const { groupList } = useSelector((state) => {
+    return {
+      groupList: state.main.groupList,
+    };
+  });
+  return groupList.filter((group) => group.parentGroupId === groupId);
+}
+
+export function getOrgGroup(orgId) {
+  const { groupList } = useSelector((state) => {
+    return {
+      groupList: state.main.groupList,
+    };
+  });
+  return single(groupList.filter((group) => group.orgId === orgId));
+}
+
+export function getAllOrgGroups() {
+  const { groupList } = useSelector((state) => {
+    return {
+      groupList: state.main.groupList,
+    };
+  });
+  const orgGroupList = groupList.filter((group) => group.orgId != null);
+  return orgGroupList;
+}
+
+export function getAllGroups() {
+  const { groupList } = useSelector((state) => {
+    return {
+      groupList: state.main.groupList,
+    };
+  });
+  return groupList;
+}
+
+export function getAllOrgGroupMap() {
+  const { groupList } = useSelector((state) => {
+    return {
+      groupList: state.main.groupList,
+    };
+  });
+  const orgGroupList = groupList.filter((group) => group.orgId != null);
+  const orgMap = orgGroupList.reduce((map, group) => {
+    const orgId = group.orgId;
+    const val = map[orgId];
+    if (val != null) {
+      map[orgId] = [...val, group];
+    } else {
+      map[orgId] = [group];
+    }
+  }, {});
+  return orgMap;
 }
 
 export function getGroupMemberships(groupId) {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View, Alert } from "react-native";
 import { Divider, SearchBar } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "../common/Actions";
@@ -11,19 +11,31 @@ import Toolbar from "./Toolbar";
 import TopBarLeftContentSideButton from "./TopBarLeftContentSideButton";
 import * as UIConstants from "./UIConstants";
 import * as Data from "../common/Data";
+import * as Debug from "../common/Debug";
 
 export default function FindGroupsScreens({ navigation }) {
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
   const [searchResults, setSearchResults] = useState(null);
-  const { orgsList, orgsMap, groupList, groupMap, userGroupMemberships } = useSelector((state) => {
-    return {
-      orgsList: state.main.orgsList,
-      orgsMap: state.main.orgsMap,
-      groupList: state.main.groupList,
-      groupMap: state.main.groupMap,
-      userGroupMemberships: state.main.userGroupMemberships,
-    };
+  const groups = Data.getAllOrgGroups();
+  const orgsMap = Data.getAllOrgsMap();
+  const schoolGroups = groups.filter((group) => {
+    if (group.orgId != null) {
+      const org = orgsMap[group.orgId];
+      if (org != null && org.type === "school") {
+        return true;
+      }
+    }
+    return false;
+  });
+  const otherOrgGroups = groups.filter((group) => {
+    if (group.orgId != null) {
+      const org = orgsMap[group.orgId];
+      if (org != null && org.type != "school") {
+        return true;
+      }
+    }
+    return false;
   });
 
   /* search bar at the top */
@@ -37,35 +49,12 @@ Activities
  - Greenwich Dance Studio
 
  */
-  const createOrg = async function (name, type) {
-    return Controller.createOrgAndAssignToUser(dispatch, userInfo, name, type);
-  };
-  const schoolList = orgsList.filter((org) => {
-    return org.type == "school";
-  });
-  const otherOrgsList = orgsList.filter((org) => {
-    return org.type != "school";
-  });
   const [searchText, setSearchText] = useState("");
-  const [visibleNewOrgModal, setVisibleNewOrgModal] = useState(false);
-  const createPrivateGroup = async (groupName) => {
-    const groupId = await Controller.createPrivateGroupAndJoin(dispatch, userInfo, groupName);
-    dispatch(Actions.goToScreen({ screen: "GROUP", groupId: groupId }));
-  };
   return (
     <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
       <TopBarLeftContentSideButton
         style={{}}
         content={<Text style={{ fontWeight: "bold", fontSize: 20 }}>Find</Text>}
-        // side={
-        //   <MyButtons.MenuButton
-        //     icon="plus"
-        //     text="Create Private Group"
-        //     onPress={() => {
-        //       setNewPrivateGroupModalVisible(true);
-        //     }}
-        //   />
-        // }
         side={null}
       />
       <View style={{ flex: 1, flexDirection: "column", backgroundColor: "white" }}>
@@ -93,8 +82,11 @@ Activities
             containerStyle={{ backgroundColor: "white" }}
           />
         </View>
+        {/* search results */}
         {searchResults != null && searchResultsSection(dispatch, searchResults, orgsMap, groupMap)}
-        {searchResults == null && directorySection(dispatch, schoolList, otherOrgsList)}
+
+        {/* 'all schools/activities/groups' section */}
+        {searchResults == null && directorySection(dispatch, schoolGroups, otherOrgGroups, orgsMap)}
       </View>
       <Toolbar />
     </Portal>
@@ -157,7 +149,9 @@ function searchResultsSection(dispatch, searchResults, orgsMap, groupMap) {
   );
 }
 
-function directorySection(dispatch, schoolList, otherOrgsList) {
+function directorySection(dispatch, schoolGroups, otherOrgGroups, orgsMap) {
+  const user = Data.getCurrentUser();
+  const isDebugMode = Debug.isDebugMode();
   return (
     <ScrollView
       style={{
@@ -167,15 +161,23 @@ function directorySection(dispatch, schoolList, otherOrgsList) {
       }}
     >
       <Text style={{ fontSize: 20, fontWeight: "bold" }}>Schools</Text>
+      {isDebugMode && (
+        <Text style={{ fontSize: 8 }}>
+          School groups count: {schoolGroups.length}, Other groups count: {otherOrgGroups.length}
+        </Text>
+      )}
       <Divider style={{ marginTop: 10, marginBottom: 10 }} width={1} color="lightgrey" />
-      {schoolList
-        .sort(function (a, b) {
-          return a.name.toUpperCase().localeCompare(b.name.toUpperCase());
+      {schoolGroups
+        .sort(function (g1, g2) {
+          const org1 = orgsMap[g1.orgId];
+          const org2 = orgsMap[g2.orgId];
+          return org1.name.toUpperCase().localeCompare(org2.name.toUpperCase());
         })
-        .map((school) => {
+        .map((schoolGroup) => {
+          const school = orgsMap[schoolGroup.orgId];
           return (
             <TouchableOpacity
-              onPress={() => {
+              onPress={async () => {
                 dispatch(
                   Actions.goToScreen({
                     screen: "SCHOOL",
@@ -203,12 +205,36 @@ function directorySection(dispatch, schoolList, otherOrgsList) {
               >
                 {school.name}
               </Text>
+              {isDebugMode && (
+                <Text>{JSON.stringify({ groupId: schoolGroup.id, schoolId: school.id })}</Text>
+              )}
+              {isDebugMode && user.superUser && (
+                <MyButtons.LinkButton
+                  text="(Admin) Delete Group"
+                  onPress={async () => {
+                    Alert.alert("Delete Group?", null, [
+                      {
+                        text: "Yes",
+                        onPress: async () => {
+                          await Controller.deleteGroup(schoolGroup.id);
+                        },
+                      },
+                      {
+                        text: "No",
+                        onPress: () => console.log("Cancel Pressed"),
+                        style: "cancel",
+                      },
+                    ]);
+                  }}
+                />
+              )}
             </TouchableOpacity>
           );
         })}
       <Text style={{ marginTop: 20, fontSize: 20, fontWeight: "bold" }}>Activities</Text>
       <Divider style={{ marginTop: 10, marginBottom: 10 }} width={1} color="lightgrey" />
-      {otherOrgsList.map((org) => {
+      {otherOrgGroups.map((orgGroup) => {
+        const org = orgsMap[orgGroup.orgId];
         return (
           <TouchableOpacity
             onPress={() => {
@@ -234,6 +260,27 @@ function directorySection(dispatch, schoolList, otherOrgsList) {
             >
               {org.name}
             </Text>
+            {isDebugMode && <Text>{JSON.stringify({ groupId: orgGroup.id, orgId: org.id })}</Text>}
+            {isDebugMode && user.superUser && (
+              <MyButtons.LinkButton
+                text="(Admin) Delete Group"
+                onPress={async () => {
+                  Alert.alert("Delete Group?", null, [
+                    {
+                      text: "Yes",
+                      onPress: async () => {
+                        await Controller.deleteGroup(orgGroup.id);
+                      },
+                    },
+                    {
+                      text: "No",
+                      onPress: () => console.log("Cancel Pressed"),
+                      style: "cancel",
+                    },
+                  ]);
+                }}
+              />
+            )}
           </TouchableOpacity>
         );
       })}
