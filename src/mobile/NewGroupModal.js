@@ -23,14 +23,16 @@ import Portal from "./Portal";
 import TabView from "./TabView";
 import * as Controller from "../common/Controller";
 
-export default function NewGroupModal({ scheme, orgId }) {
+export default function NewGroupModal({ scheme, parentGroupId }) {
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
-  const org = orgId != null ? Data.getOrg(orgId) : null;
+  const parentGroup = Data.getGroup(parentGroupId);
+  const org = parentGroup != null ? Data.getOrg(parentGroup.orgId) : null;
+  const orgId = org.id;
 
   const [groupType, setGroupType] = useState();
   const [selectedScheme, setSelectedScheme] = useState(scheme);
-  const [groupOrgId, setGroupOrgId] = useState(orgId);
+  const [groupOrgId, setGroupOrgId] = useState(org.id);
   const [groupName, setGroupName] = useState(null);
   const [groupDescription, setGroupDescription] = useState(null);
 
@@ -49,6 +51,13 @@ export default function NewGroupModal({ scheme, orgId }) {
   const [page, setPage] = useState(startPage);
 
   return (
+    /*
+    <Modal visible={true}>
+      <View style={{ flex: 1 }}>
+        <Text style={{ fontSize: 32 }}>Hello World</Text>
+      </View>
+    </Modal>
+    */
     <Modal visible={true} animationType={"slide"}>
       {page === "TYPE" && (
         <GroupScheme
@@ -84,7 +93,7 @@ export default function NewGroupModal({ scheme, orgId }) {
               name,
               description,
               type,
-              groupOrgId
+              parentGroupId
             );
             dispatch(Actions.closeModal());
             dispatch(Actions.openModal({ modal: "GROUP", groupId: groupId }));

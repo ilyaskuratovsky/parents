@@ -13,6 +13,7 @@ import * as Logger from "./Logger";
 import { storage } from "../../config/firebase";
 import { getDownloadURL, ref, uploadBytes, uploadString } from "firebase/storage";
 import { useSelector } from "react-redux";
+import { createGroup } from "./DatabaseRDB";
 
 //import { Database } from "firebase-firestore-lite";
 
@@ -301,11 +302,17 @@ export async function createSchoolGroupAndJoin(
   await Database.joinGroup(userInfo, groupId);
 }
 
-export async function createGroupAndJoin(userInfo, groupName, groupDescription, type, orgId) {
+export async function createGroupAndJoin(
+  userInfo,
+  groupName,
+  groupDescription,
+  type,
+  parentGroupId
+) {
   const group = {
     name: groupName,
     description: groupDescription,
-    orgId: orgId ?? null,
+    parentGroupId: parentGroupId ?? null,
     type: type,
   };
   console.log("controller creating group: " + JSON.stringify(group) + ", type: " + type);
@@ -343,6 +350,18 @@ export async function createDefaultOrgGroupIfNotExists(orgId) {
     console.log("group already exists: " + defaultGroup.id);
     return defaultGroup.id;
   }
+}
+
+export async function createOrgGroup(orgName, orgDescription, orgType /* school or activity */) {
+  const orgId = await Database.createOrg(orgName, orgType);
+  const group = {
+    name: orgName,
+    description: orgName,
+    orgId: orgId,
+    type: "default_org_group",
+  };
+  console.log("controller creating group: " + JSON.stringify(group));
+  const groupId = await Database.createGroup(group);
 }
 
 export async function markMessageRead(userInfo, messageId) {

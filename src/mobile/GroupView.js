@@ -29,6 +29,16 @@ export default function GroupView({ groupId }) {
   const userInfo = Data.getCurrentUser();
   const unreadRootMessages = Data.getGroupUserRootUnreadMessages(groupId);
   const unreadCount = unreadRootMessages.length;
+
+  if (group == null) {
+    if (debugMode) {
+      return (
+        <Text>Group is null for group_memberships: {JSON.stringify(userGroupMembership)}</Text>
+      );
+    } else {
+      return null;
+    }
+  }
   return (
     <View
       key={groupId}

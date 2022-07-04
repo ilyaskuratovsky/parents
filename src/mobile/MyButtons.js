@@ -80,10 +80,11 @@ const FormButton = React.memo(({ text, icon, onPress, style }) => {
 });
 */
 
-const FormButton = React.memo(({ text, icon, onPress, style, disabled = false }) => {
+const FormButton = React.memo(({ text, icon, onPress, style, titleStyle, disabled = false }) => {
   return (
     <Elements.Button
       title={text}
+      titleStyle={titleStyle}
       icon={icon}
       onPress={onPress}
       mode="outline"

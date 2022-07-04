@@ -46,6 +46,7 @@ import ThreadMessageModal from "./ThreadMessageModal";
 import GroupInviteModal from "./GroupInviteModal";
 import GroupSettingsModal from "./GroupSettingsModal";
 import NewGroupModal from "./NewGroupModal";
+import SchoolGroup from "./SchoolScreen";
 /*
 App vision:  The local social network for parents.
 When join you put in your zip code (we also detect based on gps coordinates)
@@ -209,6 +210,7 @@ function RootApp(props, state) {
       {modal === "GROUP_SETTINGS" && <GroupSettingsModal {...modalWithParams} />}
       {modal === "NEW_GROUP" && <NewGroupModal {...modalWithParams} />}
       {modal === "GROUP" && <GroupScreen {...modalWithParams} />}
+      {modal === "SCHOOL_GROUP" && <SchoolGroup {...modalWithParams} />}
       <View style={{ position: "absolute", bottom: 400, right: 0 }}>
         <MyButtons.MenuButton
           icon="bug"

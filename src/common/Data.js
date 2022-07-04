@@ -84,7 +84,9 @@ export function getAllOrgGroups() {
       groupList: state.main.groupList,
     };
   });
-  const orgGroupList = groupList.filter((group) => group.orgId != null);
+  const orgGroupList = groupList.filter(
+    (group) => group.orgId != null && group.type === "default_org_group"
+  );
   return orgGroupList;
 }
 

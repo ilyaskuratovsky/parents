@@ -24,7 +24,6 @@ import GroupSettingsModal from "./GroupSettingsModal";
 import MessageModal from "./MessageContainerModal";
 import * as MessageUtils from "../common/MessageUtils";
 import MessageViewContainer from "./MessageViewContainer";
-import NewEventModal from "./NewEventModal2";
 import Portal from "./Portal";
 import * as Actions from "../common/Actions";
 import ThreadMessageModal from "./ThreadMessageModal";

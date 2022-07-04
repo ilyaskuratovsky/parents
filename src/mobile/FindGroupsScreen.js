@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View, Alert } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View, Alert, TextInput } from "react-native";
 import { Divider, SearchBar } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "../common/Actions";
@@ -15,6 +15,7 @@ import * as Debug from "../common/Debug";
 
 export default function FindGroupsScreens({ navigation }) {
   const dispatch = useDispatch();
+  const debugMode = Debug.isDebugMode();
   const userInfo = Data.getCurrentUser();
   const [searchResults, setSearchResults] = useState(null);
   const groups = Data.getAllOrgGroups();
@@ -58,6 +59,7 @@ Activities
         side={null}
       />
       <View style={{ flex: 1, flexDirection: "column", backgroundColor: "white" }}>
+        <NewSchool />
         <View style={{ flexBasis: 80 }}>
           <SearchBar
             key="search"
@@ -178,9 +180,17 @@ function directorySection(dispatch, schoolGroups, otherOrgGroups, orgsMap) {
           return (
             <TouchableOpacity
               onPress={async () => {
+                /*
                 dispatch(
                   Actions.goToScreen({
                     screen: "SCHOOL",
+                    schoolId: school.id,
+                  })
+                );
+                */
+                dispatch(
+                  Actions.openModal({
+                    modal: "SCHOOL_GROUP",
                     schoolId: school.id,
                   })
                 );
@@ -205,9 +215,7 @@ function directorySection(dispatch, schoolGroups, otherOrgGroups, orgsMap) {
               >
                 {school.name}
               </Text>
-              {isDebugMode && (
-                <Text>{JSON.stringify({ groupId: schoolGroup.id, schoolId: school.id })}</Text>
-              )}
+              {isDebugMode && <Text>{JSON.stringify(schoolGroup)}</Text>}
               {isDebugMode && user.superUser && (
                 <MyButtons.LinkButton
                   text="(Admin) Delete Group"
@@ -285,5 +293,63 @@ function directorySection(dispatch, schoolGroups, otherOrgGroups, orgsMap) {
         );
       })}
     </ScrollView>
+  );
+}
+
+function NewSchool() {
+  const [name, setName] = useState(null);
+  const [description, setDescription] = useState(null);
+
+  return (
+    <View
+      style={{
+        paddingTop: 4,
+        paddingLeft: 10,
+        paddingRight: 10,
+        flexDirection: "column",
+        height: 100,
+        width: "100%",
+        //backgroundColor: "cyan",
+      }}
+    >
+      <TextInput
+        key="group_name_input"
+        style={{
+          borderWidth: 1,
+          paddingLeft: 10,
+          height: 30,
+          fontSize: 12,
+        }}
+        onChangeText={(value) => {
+          setName(value);
+        }}
+        placeholder={"Group Name"}
+        value={name ?? ""}
+        selectTextOnFocus={true}
+      />
+      <TextInput
+        key="group_description"
+        style={{
+          borderWidth: 1,
+          paddingLeft: 10,
+          height: 30,
+          fontSize: 12,
+        }}
+        onChangeText={(value) => {
+          setDescription(value);
+        }}
+        placeholder={"Description"}
+        value={description ?? ""}
+        selectTextOnFocus={true}
+      />
+      <MyButtons.FormButton
+        text="Create School"
+        style={{ width: 100 }}
+        titleStyle={{ fontSize: 10 }}
+        onPress={async () => {
+          await Controller.createOrgGroup(name, description, "school");
+        }}
+      />
+    </View>
   );
 }

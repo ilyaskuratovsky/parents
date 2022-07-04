@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View, ActivityIndicator, Modal } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "../common/Actions";
 import * as Controller from "../common/Controller";
@@ -14,7 +14,7 @@ import * as Debug from "../common/Debug";
 import { styles } from "./Styles";
 import * as Utils from "../common/Utils";
 import FacePile from "./FacePile";
-import { Divider } from "react-native-elements";
+import { Divider, Icon } from "react-native-elements";
 import { IconButton } from "react-native-paper";
 
 /* 
@@ -41,39 +41,9 @@ export default function SchoolScreen({ schoolId }) {
   const userInfo = useSelector((state) => state.main.userInfo);
   const [loading, setLoading] = useState(false);
   const group = Data.getOrgGroup(schoolId);
+  const members = Data.getGroupMemberships(schoolId) ?? [];
   const school = Data.getOrg(schoolId);
   const subGroups = Data.getSubGroups(group.id);
-
-  /*
-  let defaultOrgGroup = Data.getDefaultOrgGroup(schoolId);
-  if (defaultOrgGroup == null) {
-    defaultOrgGroup = {
-      orgId: schoolId,
-      id: "__placeholder_default_group_id_" + schoolId,
-      name: school.name,
-      description: school.name + " general discussion",
-    };
-  }
-  */
-  /*
-  const otherGroups = schoolGroups.filter((group) => {
-    return group.type != "default_org_group";
-  });
-
-  otherGroups.sort((group1, group2) => {
-    return 1; // todo sort these by grade
-  });
-  */
-
-  /*
-  useEffect(() => {
-    Controller.createDefaultOrgGroupIfNotExists(
-      schoolId,
-      school.name,
-      school.name + " General Discussion"
-    );
-  });
-  */
 
   /* search bar at the top */
   /* School Screen - 
@@ -83,86 +53,165 @@ export default function SchoolScreen({ schoolId }) {
  */
 
   return (
-    <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
-      <TopBar
-        key="topbar"
-        style={{}}
-        left={
-          <View
-            style={{
-              //backgroundColor: "cyan",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <View style={{ alignItems: "flex-start" }}></View>
-            <Text style={[{}, styles.topBarHeaderText]}>{school.name}</Text>
-          </View>
-        }
-        center={<Text>{""}</Text>}
-        right={null}
-      />
-      <View style={{ flexDirection: "row" }}>
-        <MyButtons.FormButton
-          text={"Follow"}
-          onPress={async () => {
-            await Controller.joinOrg(userInfo, school.id);
-          }}
-        />
-        <MyButtons.FormButton text={"Invite"} />
-      </View>
-      {/* default group */}
-      {debugMode ? <Text style={{ fontSize: 10 }}>{JSON.stringify(school)}</Text> : null}
-      <ScrollView
-        style={{
-          marginTop: 20,
-          paddingLeft: 8,
-          paddingRight: 8,
-          height: 200,
-          flexDirection: "column",
-          backgroundColor: "cyan",
-        }}
+    <Modal visible={true} animationType={"slide"}>
+      <Portal
+        backgroundColor={UIConstants.DEFAULT_BACKGROUND}
+        //backgroundColor="green"
       >
-        {subGroups.map((group) => {
-          return <GroupView group={group} />;
-        })}
+        {/* top bar section */}
         <View
-          key={"school_" + school.id}
           style={{
-            height: 150,
-            width: "100%",
+            //backgroundColor: "whitesmoke",
             flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
           }}
         >
-          {/*
+          {/* group name and members row */}
+          <View
+            style={[
+              {
+                paddingLeft: 4,
+                paddingRight: 4,
+                paddingTop: 8,
+                paddingBottom: 0,
+                flexDirection: "row",
+                alignItems: "flex-start",
+                justifyContent: "center",
+                //backgroundColor: "cyan",
+              },
+            ]}
+          >
+            {/* group name */}
+            <View
+              style={{
+                flexGrow: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                //backgroundColor: "cyan",
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  //backgroundColor: "yellow",
+                  alignItems: "flex-start",
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    dispatch(Actions.closeModal());
+                  }}
+                >
+                  <Icon name="chevron-left" />
+                </TouchableOpacity>
+                <View
+                  style={{
+                    flexDirection: "column",
+                    //backgroundColor: "yellow"
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      //setGroupSettingsModalVisible(true);
+                      dispatch(Actions.openModal({ modal: "GROUP_SETTINGS", groupId: group.id }));
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: 20,
+                        color: UIConstants.BLACK_TEXT_COLOR,
+                        //backgroundColor: "cyan",
+                      }}
+                    >
+                      {group.name}
+                    </Text>
+                    {Debug.isDebugMode() ? <Text style={{ fontSize: 10 }}>{group.id}</Text> : null}
+                    {/*org != null && (
+                    <Text style={{ fontWeight: "normal", fontSize: 14 }}>{org.name}</Text>
+                  )*/}
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{ paddingBottom: 4 }}
+                    onPress={() => {
+                      dispatch(Actions.openModal({ modal: "GROUP_SETTINGS", groupId: group.id }));
+                    }}
+                  >
+                    <FacePile
+                      userIds={[userInfo.uid].concat(
+                        members
+                          .filter((groupMembership) => {
+                            return userInfo.uid != groupMembership.uid;
+                          })
+                          .map((groupMembership) => groupMembership.uid)
+                      )}
+                      border
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </View>
+          <Divider style={{}} width={1} color="lightgrey" />
+        </View>
+        <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
+          <MyButtons.FormButton
+            text={"Follow"}
+            titleStyle={{ fontSize: 14 }}
+            style={{ width: 120, fontSize: 10 }}
+            onPress={async () => {
+              await Controller.joinOrg(userInfo, school.id);
+            }}
+          />
+          <MyButtons.FormButton
+            titleStyle={{ fontSize: 14 }}
+            style={{ width: 100, fontSize: 10 }}
+            text={"Invite"}
+          />
+          <MyButtons.FormButton
+            text={"Create Group"}
+            titleStyle={{ fontSize: 14 }}
+            style={{ width: 120, fontSize: 10 }}
+            onPress={() => {
+              dispatch(Actions.openModal({ modal: "NEW_GROUP", parentGroupId: group.id }));
+            }}
+          />
+        </View>
+        {/* default group */}
+        {debugMode ? <Text style={{ fontSize: 10 }}>Group: {JSON.stringify(group)}</Text> : null}
+        {debugMode ? <Text style={{ fontSize: 10 }}>Org: {JSON.stringify(school)}</Text> : null}
+        <ScrollView
+          style={{
+            marginTop: 20,
+            paddingLeft: 8,
+            paddingRight: 8,
+            height: 200,
+            flexDirection: "column",
+            //backgroundColor: "cyan",
+          }}
+        >
+          {subGroups.map((group) => {
+            return <GroupView group={group} />;
+          })}
+          <View
+            key={"school_" + school.id}
+            style={{
+              height: 150,
+              width: "100%",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {/*
           {otherGroups.length == 0 && (
             <Text style={{ width: 160 }}>There are no specialized groups for {school.name}</Text>
           )}
           */}
-
-          <TouchableOpacity
-            onPress={() => {
-              dispatch(Actions.openModal({ modal: "NEW_GROUP", orgId: school.id }));
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 20,
-                textDecorationLine: "underline",
-                color: "blue",
-                fontWeight: "bold",
-                textAlign: "center",
-              }}
-            >
-              Create New Group
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-      <Toolbar />
-    </Portal>
+          </View>
+        </ScrollView>
+      </Portal>
+    </Modal>
   );
 }
 
