@@ -345,7 +345,7 @@ export function getAllUserRootMessages() {
   });
   return useMemo(() => {
     let allMessages = [];
-    for (groupId in groupMessagesMap) {
+    for (let groupId in groupMessagesMap) {
       const groupMessages = groupMessagesMap[groupId];
       if (groupMessages != null && groupMessages.length > 0) {
         allMessages = allMessages.concat(groupMessages);
