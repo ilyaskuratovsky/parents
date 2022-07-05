@@ -38,7 +38,7 @@ import TopBarLeftContentSideButton from "./TopBarLeftContentSideButton";
 export default function FeedScreen({ debug }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const [messagesModalVisible, setMessagesModalVisible] = useState(null);
+  //const [messagesModalVisible, setMessagesModalVisible] = useState(null);
 
   let { messages, userMap, userMessagesMap, groupMap } = useSelector((state) => {
     return {
@@ -84,15 +84,12 @@ export default function FeedScreen({ debug }) {
 
   const renderMessage = ({ item }) => {
     const onPress = () => {
-      setMessagesModalVisible({ messageId: item.id, groupId: item.groupId });
+      //setMessagesModalVisible({ messageId: item.id, groupId: item.groupId });
+      //dispatch(Actions.openModal({ modal: "MESSAGES", messageId: item.id }));
     };
     return <MessageViewContainer user={userInfo} showGroup={true} item={item} onPress={onPress} />;
   };
   useEffect(async () => {}, [messages]);
-
-  const insets = useSafeAreaInsets();
-  const topBarHeight = 64;
-  const bottomBarHeight = 64;
 
   return (
     <Portal
@@ -169,7 +166,7 @@ export default function FeedScreen({ debug }) {
       <Toolbar key="toolbar" />
 
       {/* MODALS */}
-      {messagesModalVisible != null && (
+      {/*messagesModalVisible != null && (
         <MessageModalContainer
           groupId={messagesModalVisible.groupId}
           messageId={messagesModalVisible.messageId}
@@ -179,7 +176,7 @@ export default function FeedScreen({ debug }) {
           }}
           containerStyle={{ paddingLeft: 24 }}
         />
-      )}
+        )*/}
     </Portal>
   );
 }

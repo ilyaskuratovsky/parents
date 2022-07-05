@@ -1,5 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View, ActivityIndicator, Modal } from "react-native";
+import React, { useEffect, useState, useMemo } from "react";
+import {
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+  Modal,
+  FlatList,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "../common/Actions";
 import * as Controller from "../common/Controller";
@@ -16,6 +24,7 @@ import * as Utils from "../common/Utils";
 import FacePile from "./FacePile";
 import { Divider, Icon } from "react-native-elements";
 import { IconButton } from "react-native-paper";
+import MessageViewContainer from "./MessageViewContainer";
 
 /* 
 People can "follow" orgs, this is a new relationship
@@ -51,6 +60,9 @@ export default function SchoolScreen({ schoolId }) {
 - below has all of the groups in a list (with join button)
 - At the bottom have: Don't see your group? Create a new one
  */
+  useEffect(() => {
+    Controller.observeGroupMessages(dispatch, group.id);
+  }, []);
 
   return (
     <Modal visible={true} animationType={"slide"}>
@@ -185,7 +197,7 @@ export default function SchoolScreen({ schoolId }) {
             marginTop: 20,
             paddingLeft: 8,
             paddingRight: 8,
-            height: 200,
+            flexGrow: 1,
             flexDirection: "column",
             //backgroundColor: "cyan",
           }}
@@ -193,23 +205,37 @@ export default function SchoolScreen({ schoolId }) {
           {subGroups.map((group) => {
             return <GroupView group={group} />;
           })}
-          <View
-            key={"school_" + school.id}
-            style={{
-              height: 150,
-              width: "100%",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {/*
-          {otherGroups.length == 0 && (
-            <Text style={{ width: 160 }}>There are no specialized groups for {school.name}</Text>
-          )}
-          */}
-          </View>
+          <MessagesSection groupId={group.id} user={userInfo} />
         </ScrollView>
+        {/* messages section */}
+        <Divider style={{}} width={1} color="darkgrey" />
+        {/* toolbar section */}
+        <View
+          style={{
+            //backgroundColor: "purple",
+            alignItems: "flex-end",
+            justifyContent: "center",
+            flexDirection: "row",
+            height: 40,
+          }}
+        >
+          <MyButtons.MenuButton
+            icon="plus"
+            text="New Post"
+            onPress={() => {
+              dispatch(Actions.openModal({ modal: "NEW_POST", groupId: group.id }));
+            }}
+            containerStyle={{ paddingRight: 24 }}
+          />
+          <MyButtons.MenuButton
+            icon="calendar-plus"
+            text="New Event"
+            onPress={() => {
+              //setShowNewEventModal(true);
+              dispatch(Actions.openModal({ modal: "NEW_EVENT", groupId: group.id }));
+            }}
+          />
+        </View>
       </Portal>
     </Modal>
   );
@@ -365,5 +391,66 @@ function GroupView({ group, defaultOrgGroup, setLoading }) {
         </View>
       </TouchableOpacity>
     </View>
+  );
+}
+
+function MessagesSection({ groupId, user }) {
+  const renderMessage = ({ item }) => {
+    const onPress = () => {
+      dispatch(Actions.openModal({ modal: "MESSAGES", id: item.id }));
+    };
+    return <MessageViewContainer user={user} item={item} onPress={onPress} />;
+  };
+
+  const userRootMessages = Data.getGroupUserRootMessages(groupId);
+
+  const sortedMessages = useMemo(() => {
+    if (userRootMessages == null) {
+      return null;
+    }
+    const sortedMessages = [...(userRootMessages ?? [])] ?? [];
+    sortedMessages.sort((m1, m2) => {
+      return m2.lastUpdated - m1.lastUpdated;
+    });
+    return sortedMessages;
+  }, [userRootMessages]);
+
+  if (sortedMessages == null) {
+    return <Text>Loading...</Text>;
+  }
+  return (
+    <View
+      style={{
+        flexGrow: 1,
+        flexDirection: "column",
+        backgroundColor: "white",
+      }}
+    >
+      <View style={{ flex: 1 }}>
+        <View
+          style={{
+            flexDirection: "column",
+            flex: 1,
+            //backgroundColor: "green"
+          }}
+        >
+          {sortedMessages.map((message) => {
+            return renderMessage({ item: message });
+          })}
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function FlatListItemSeparator() {
+  return (
+    <View
+      style={{
+        height: 6,
+        width: "100%",
+        backgroundColor: "lightgrey",
+      }}
+    />
   );
 }

@@ -33,20 +33,17 @@ import BookCalendarEventModal from "./BookCalendarEventModal";
 import moment from "moment-timezone";
 import JSONTree from "react-native-json-tree";
 import Autolink from "react-native-autolink";
-import { userInfo } from "../common/Actions";
+import * as Actions from "../common/Actions";
 import * as Debug from "../common/Debug";
+import * as Data from "../common/Data";
 
-export default function MessageModal({
-  user,
-  group,
-  message,
-  scrollToEnd,
-  visible,
-  closeModal,
-  userMap,
-}) {
+export default function MessageModal({ messageId, scrollToEnd }) {
   const debugMode = Debug.isDebugMode();
   const dispatch = useDispatch();
+  const user = Data.getCurrentUser();
+  const messageObj = Data.getMessage(messageId);
+  const message = Data.getRootMessageWithChildrenAndUserStatus(messageId);
+  const group = Data.getGroup(message.groupId);
   const sortedChildMessages = [...message.children] ?? [];
   sortedChildMessages.sort((m1, m2) => {
     return m1.timestamp - m2.timestamp;
@@ -70,9 +67,7 @@ export default function MessageModal({
   const [text, setText] = useState("");
   const scrollViewRef = useRef();
   const insets = useSafeAreaInsets();
-  const windowHeight = Dimensions.get("window").height - insets.top - insets.bottom;
   const topBarHeight = 40;
-  const replyBarHeight = 80;
 
   useEffect(async () => {
     let markRead = [];
@@ -93,7 +88,7 @@ export default function MessageModal({
   }, []);
 
   return (
-    <Modal visible={visible} animationType={"slide"}>
+    <Modal visible={true} animationType={"slide"}>
       <Portal
         backgroundColor={UIConstants.DEFAULT_BACKGROUND}
         //backgroundColor="green"
@@ -108,7 +103,7 @@ export default function MessageModal({
               icon="arrow-left"
               text="Back"
               onPress={() => {
-                closeModal();
+                dispatch(Actions.closeModal());
               }}
               color="black"
             />
@@ -127,6 +122,7 @@ export default function MessageModal({
           keyboardVerticalOffset={40}
           enabled
         >
+          {debugMode && <Text style={{ fontSize: 10 }}>{JSON.stringify(messageObj)}</Text>}
           <ScrollView
             ref={scrollViewRef}
             style={{ flex: 1 }}

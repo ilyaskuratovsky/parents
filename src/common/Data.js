@@ -2,7 +2,6 @@ import { useSelector } from "react-redux";
 import * as MessageUtils from "../common/MessageUtils";
 import { useEffect, useMemo } from "react";
 import * as Controller from "../common/Controller";
-import { groupMemberships } from "./Actions";
 
 export function getCurrentUser() {
   const user = useSelector((state) => state.main.userInfo);
@@ -75,7 +74,9 @@ export function getOrgGroup(orgId) {
       groupList: state.main.groupList,
     };
   });
-  return single(groupList.filter((group) => group.orgId === orgId));
+  return single(
+    groupList.filter((group) => group.orgId === orgId && group.type === "default_org_group")
+  );
 }
 
 export function getAllOrgGroups() {

@@ -86,7 +86,8 @@ export default function GroupScreen({ groupId, messageId, debug }) {
   // send message callback function
   const renderMessage = ({ item }) => {
     const onPress = () => {
-      setMessagesModalVisible(item.id);
+      //setMessagesModalVisible(item.id);
+      dispatch(Actions.openModal({ modal: "MESSAGES", id: item.id }));
     };
     return <MessageViewContainer user={userInfo} item={item} onPress={onPress} />;
   };
@@ -343,7 +344,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
           />
         </View>
         {/* messages modal */}
-        {messagesModalVisible != null && (
+        {/*messagesModalVisible != null && (
           <MessageModal
             groupId={groupId}
             messageId={messagesModalVisible}
@@ -353,7 +354,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
             }}
             containerStyle={{ paddingLeft: 24 }}
           />
-        )}
+        )*/}
       </Portal>
     </Modal>
   );

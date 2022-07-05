@@ -178,24 +178,7 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
     dispatch(Actions.userGroupMemberships(userGroupMemberships));
     userGroupMemberships.forEach(async (groupMembership) => {
       //Loop through group_memberships and set up a subscriber for its messages
-      if (!(groupMembership.groupId in groupMessageSubscriptions)) {
-        const unsubscribe = Database.observeGroupMessages(
-          groupMembership.groupId,
-          (messagesSnapshot) => {
-            const messages = [];
-            messagesSnapshot.forEach((message) => {
-              messages.push(message);
-            });
-            dispatch(
-              Actions.groupMessages({
-                groupId: groupMembership.groupId,
-                messages: messages,
-              })
-            );
-          }
-        );
-        groupMessageSubscriptions[groupMembership.groupId] = unsubscribe;
-      }
+      observeGroupMessages(dispatch, groupMembership.groupId);
     });
   });
 
@@ -259,6 +242,24 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
   }
 
   Logger.log("Logged in complete");
+}
+
+export function observeGroupMessages(dispatch, groupId) {
+  if (!(groupId in groupMessageSubscriptions)) {
+    const unsubscribe = Database.observeGroupMessages(groupId, (messagesSnapshot) => {
+      const messages = [];
+      messagesSnapshot.forEach((message) => {
+        messages.push(message);
+      });
+      dispatch(
+        Actions.groupMessages({
+          groupId: groupId,
+          messages: messages,
+        })
+      );
+    });
+    groupMessageSubscriptions[groupId] = unsubscribe;
+  }
 }
 
 export async function loggedOut(dispatch) {

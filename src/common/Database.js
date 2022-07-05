@@ -15,6 +15,11 @@ export async function getGroup(groupId) {
   return single(allGroups.filter((group) => group.id == groupId));
 }
 
+export async function getGroupMessages(groupId) {
+  const groupMessages = await DatabaseFS.getGroupMessages(groupId);
+  return groupMessages;
+}
+
 export function observeOrgChanges(callback) {
   return DatabaseRDB.observeOrgChanges(callback);
 }
