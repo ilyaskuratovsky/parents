@@ -252,6 +252,11 @@ export async function deleteGroup(groupId) {
   await RDB.remove(docRef);
 }
 
+export async function deleteUser(uid) {
+  const docRef = RDB.ref(rdb, "/users/" + uid);
+  await RDB.remove(docRef);
+}
+
 export async function logError(error, info) {
   console.log("loggin error to rdb: " + JSON.stringify(error));
   const newReference = await RDB.push(RDB.ref(rdb, "/errors"));

@@ -20,6 +20,7 @@ import { createGroup } from "./DatabaseRDB";
 const groupMessageSubscriptions = {};
 const chatMessageSubscriptions = {};
 const chatSubscriptions = {};
+let loggedInUnsubscribe;
 
 export async function initializeApp(dispatch, notificationListener, responseListener) {
   Logger.log("initializing App");
@@ -104,7 +105,7 @@ export async function initializeApp(dispatch, notificationListener, responseList
     Logger.log("auth state change: " + JSON.stringify(authenticatedUser));
     if (authenticatedUser != null) {
       Logger.log("loggedIN: " + pushToken);
-      loggedIn(dispatch, authenticatedUser, pushToken);
+      loggedInUnsubscribe = await loggedIn(dispatch, authenticatedUser, pushToken);
     } else {
       loggedOut(dispatch);
     }
@@ -228,9 +229,13 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
   });
 
   // observe invites
-  Database.observeToUserInvites(userInfo.uid, userInfo.email, (invites) => {
-    dispatch(Actions.toUserInvites(invites));
-  });
+  const userInvitesUnsubscribe = Database.observeToUserInvites(
+    userInfo.uid,
+    userInfo.email,
+    (invites) => {
+      dispatch(Actions.toUserInvites(invites));
+    }
+  );
 
   Database.observeFromUserInvites(userInfo.uid, (invites) => {
     dispatch(Actions.fromUserInvites(invites));
@@ -242,6 +247,10 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
   }
 
   Logger.log("Logged in complete");
+  const unsubscribe = () => {
+    userInvitesUnsubscribe();
+  };
+  return unsubscribe;
 }
 
 export function observeGroupMessages(dispatch, groupId) {
@@ -263,6 +272,9 @@ export function observeGroupMessages(dispatch, groupId) {
 }
 
 export async function loggedOut(dispatch) {
+  if (loggedInUnsubscribe != null) {
+    loggedInUnsubscribe();
+  }
   dispatch(Actions.goToScreen({ screen: "LOGIN" }));
 }
 
@@ -641,6 +653,15 @@ export async function markDeleteGroup(userInfo, groupId) {
 
 export async function deleteGroup(groupId) {
   await Database.deleteGroup(groupId);
+}
+
+export async function deleteUser(uid) {
+  const allGroupMemberships = await Database.getAllGroupMemberships();
+  const userGroupMemberships = allGroupMemberships.filter((gm) => gm.uid === uid);
+  for (const gm of userGroupMemberships) {
+    await Database.deleteGroupMembership(gm.id);
+  }
+  await Database.deleteUser(uid);
 }
 
 export async function deleteGroupMembership(userInfo, groupMembershipId) {

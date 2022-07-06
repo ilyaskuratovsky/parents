@@ -50,7 +50,8 @@ export default function SchoolScreen({ schoolId }) {
   const userInfo = useSelector((state) => state.main.userInfo);
   const [loading, setLoading] = useState(false);
   const group = Data.getOrgGroup(schoolId);
-  const members = Data.getGroupMemberships(schoolId) ?? [];
+  const members = Data.getGroupMemberships(group.id) ?? [];
+  const isMember = members.filter((gm) => gm.uid === userInfo.uid).length > 0;
   const school = Data.getOrg(schoolId);
   const subGroups = Data.getSubGroups(group.id);
 
@@ -167,18 +168,25 @@ export default function SchoolScreen({ schoolId }) {
           <Divider style={{}} width={1} color="lightgrey" />
         </View>
         <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
-          <MyButtons.FormButton
-            text={"Follow"}
-            titleStyle={{ fontSize: 14 }}
-            style={{ width: 120, fontSize: 10 }}
-            onPress={async () => {
-              await Controller.joinOrg(userInfo, school.id);
-            }}
-          />
+          {!isMember ? (
+            <MyButtons.FormButton
+              text={"Follow"}
+              titleStyle={{ fontSize: 14 }}
+              style={{ width: 120, fontSize: 10 }}
+              onPress={async () => {
+                await Controller.joinGroup(dispatch, userInfo, group.id);
+              }}
+            />
+          ) : (
+            <Text>Following</Text>
+          )}
           <MyButtons.FormButton
             titleStyle={{ fontSize: 14 }}
             style={{ width: 100, fontSize: 10 }}
             text={"Invite"}
+            onPress={() => {
+              dispatch(Actions.openModal({ modal: "GROUP_INVITE", groupId: group.id }));
+            }}
           />
           <MyButtons.FormButton
             text={"Create Group"}
@@ -417,6 +425,21 @@ function MessagesSection({ groupId, user }) {
 
   if (sortedMessages == null) {
     return <Text>Loading...</Text>;
+  }
+  if (sortedMessages.length == 0) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          height: 500,
+          alignItems: "center",
+          justifyContent: "center",
+          //backgroundColor: "yellow",
+        }}
+      >
+        <Text>No messages in this group</Text>
+      </View>
+    );
   }
   return (
     <View

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View, Alert } from "react-native";
 import { Divider } from "react-native-elements";
 import { IconButton } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
@@ -61,6 +61,7 @@ export default function FriendsScreen({}) {
         center={<Text>{""}</Text>}
         right={null}
       />
+      {debugMode && <Text>FriendScreen</Text>}
       <View key="main_content" style={{ flex: 1, backgroundColor: "white", paddingTop: 20 }}>
         <ScrollView
           key="messages"
@@ -75,27 +76,55 @@ export default function FriendsScreen({}) {
               return null;
             }
             return (
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: "flex-start",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingBottom: 5,
-                }}
-              >
-                {UserInfo.avatarComponent(user)}
-                <Text
+              <>
+                <View
                   style={{
-                    flexGrow: 1,
-                    justifyContent: "center",
+                    flex: 1,
+                    justifyContent: "flex-start",
+                    flexDirection: "row",
                     alignItems: "center",
-                    paddingLeft: 10,
+                    paddingBottom: 5,
                   }}
                 >
-                  {UserInfo.chatDisplayName(user)}
-                </Text>
-              </View>
+                  {UserInfo.avatarComponent(user)}
+                  <Text
+                    style={{
+                      flexGrow: 1,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      paddingLeft: 10,
+                    }}
+                  >
+                    {UserInfo.chatDisplayName(user)}
+                  </Text>
+                </View>
+                {debugMode && (
+                  <Text style={{ fontSize: 9, marginBottom: 10 }}>
+                    {JSON.stringify(user, null, 2)}
+                  </Text>
+                )}
+                {debugMode && userInfo.superUser && (
+                  <MyButtons.LinkButton
+                    style={{ fontSize: 8, marginBottom: 20 }}
+                    text="(Admin) Delete User"
+                    onPress={async () => {
+                      Alert.alert("Delete User?", null, [
+                        {
+                          text: "Yes",
+                          onPress: async () => {
+                            await Controller.deleteUser(user.uid);
+                          },
+                        },
+                        {
+                          text: "No",
+                          onPress: () => console.log("Cancel Pressed"),
+                          style: "cancel",
+                        },
+                      ]);
+                    }}
+                  />
+                )}
+              </>
             );
           })}
         </ScrollView>

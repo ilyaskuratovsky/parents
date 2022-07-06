@@ -101,12 +101,12 @@ const LinkButton = React.memo(({ text, onPress, style, disabled }) => {
     <TouchableOpacity onPress={onPress} disabled={disabled != null ? disabled : false}>
       <Text
         style={[
-          style,
           {
             fontSize: 16,
             textDecorationLine: "underline",
             color: "blue",
             opacity: disabled ? 0.5 : 1,
+            ...style,
           },
         ]}
       >
@@ -121,9 +121,8 @@ const RoundedButton = React.memo(({ text, onPress, style, disabled }) => {
     <TouchableOpacity onPress={onPress} disabled={disabled != null ? disabled : false}>
       <Text
         style={[
-          style,
           {
-            fontSize: 16,
+            //fontSize: 16,
             textDecorationLine: "underline",
             color: "blue",
             opacity: disabled ? 0.5 : 1,

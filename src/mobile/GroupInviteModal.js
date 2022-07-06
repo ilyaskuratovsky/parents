@@ -51,7 +51,28 @@ export default function GroupInviteModal({ groupId }) {
         />
         <TabView
           tabHeadings={["People", "Contacts", "Email"]}
-          tabs={[<People />, <Contacts />, <Email />]}
+          tabs={[
+            <People
+              onSend={(invitees) => {
+                for (const inviteeUid of invitees) {
+                  Controller.sendGroupInviteToUser(userInfo, groupId, inviteeUid);
+                }
+                dispatch(Actions.closeModal());
+              }}
+            />,
+            <Contacts
+              onSend={() => {
+                dispatch(Actions.closeModal());
+              }}
+            />,
+            <Email
+              onSend={async (emails) => {
+                await Controller.sendGroupInviteToEmails(userInfo, groupId, emails);
+                Alert.alert("Invites sent");
+                dispatch(Actions.closeModal());
+              }}
+            />,
+          ]}
         />
 
         {/*
@@ -69,7 +90,7 @@ export default function GroupInviteModal({ groupId }) {
     </Modal>
   );
 }
-function People() {
+function People({ onSend }) {
   const userInfo = Data.getCurrentUser();
   const dispatch = useDispatch();
   const [invitees, setInvitees] = useState([]);
@@ -144,10 +165,7 @@ function People() {
           style={{ width: 200, padding: 8 }}
           text="Send Invite"
           onPress={async () => {
-            for (const inviteeUid of invitees) {
-              Controller.sendGroupInviteToUser(userInfo, groupId, inviteeUid);
-            }
-            dispatch(Actions.closeModal());
+            onSend(invitees);
           }}
         />
       </View>
@@ -155,7 +173,7 @@ function People() {
   );
 }
 
-function Email() {
+function Email({ onSend }) {
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
   const [email, setEmail] = useState(null);
@@ -218,9 +236,7 @@ function Email() {
           text="Send Invite"
           onPress={async () => {
             const emails = Utils.parseEmails(email);
-            await Controller.sendGroupInviteToEmails(userInfo, groupId, emails);
-            Alert.alert("Invites sent");
-            dispatch(Actions.closeModal());
+            onSend(emails);
           }}
         />
       </View>

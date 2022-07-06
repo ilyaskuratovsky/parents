@@ -132,7 +132,7 @@ export async function createEvent(uid, groupId, title, text, startDate, endDate)
   return DatabaseFS.createEvent(uid, groupId, title, text, startDate, endDate);
 }
 
-export async function observeToUserInvites(toUid, toEmail, callback) {
+export function observeToUserInvites(toUid, toEmail, callback) {
   return DatabaseFS.observeToUserInvites(toUid, toEmail, callback);
 }
 
@@ -162,6 +162,10 @@ export async function updateUser(userId, update) {
 
 export async function deleteGroupMembership(groupMembershipId) {
   DatabaseRDB.deleteGroupMembership(groupMembershipId);
+}
+
+export async function deleteUser(uid) {
+  DatabaseRDB.deleteUser(uid);
 }
 
 export async function deleteGroup(groupId) {

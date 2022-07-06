@@ -178,7 +178,7 @@ export function observeToUserInvites(toUid, toEmail, callback) {
     where("status", "==", "new")
   );
 
-  onSnapshot(snapshotQuery, (snapshot) => {
+  const unsubscribe = onSnapshot(snapshotQuery, (snapshot) => {
     const list = snapshot.docs
       .filter((doc) => {
         const data = doc.data();
@@ -195,6 +195,7 @@ export function observeToUserInvites(toUid, toEmail, callback) {
       });
     callback(list);
   });
+  return unsubscribe;
 }
 
 export function observeFromUserInvites(fromUid, callback) {
@@ -204,13 +205,15 @@ export function observeFromUserInvites(fromUid, callback) {
     where("status", "==", "new")
   );
 
-  onSnapshot(snapshotQuery, (snapshot) => {
+  const unsubscribe = onSnapshot(snapshotQuery, (snapshot) => {
     const list = snapshot.docs.map((doc) => {
       const data = doc.data();
       return { id: doc.id, ...data };
     });
     callback(list);
   });
+
+  return unsubscribe;
 }
 
 export function observeGroupMessages(groupId, callback) {
