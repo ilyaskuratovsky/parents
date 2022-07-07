@@ -35,6 +35,14 @@ export async function initializeApp(dispatch, notificationListener, responseList
   //all group memberships
   const groupMemberships = await Database.getAllGroupMemberships();
 
+  //observe super public group messages
+  groups
+    .filter((g) => g.type === "super_public")
+    .forEach(async (group) => {
+      //Loop through group_memberships and set up a subscriber for its messages
+      observeGroupMessages(dispatch, group.id);
+    });
+
   dispatch(
     Actions.locationDataInit({
       orgs,
@@ -182,6 +190,8 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
       observeGroupMessages(dispatch, groupMembership.groupId);
     });
   });
+
+  /* observe public group messages */
 
   Database.observeUserChatMemberships(uid, (userChatMemberships) => {
     dispatch(Actions.userChatMemberships(userChatMemberships));
