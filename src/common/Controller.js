@@ -395,7 +395,7 @@ export async function createGroupAndJoin(
   };
   console.log("controller creating group: " + JSON.stringify(group) + ", type: " + type);
   const groupId = await Database.createGroup(group);
-  await Database.joinGroup(userInfo, groupId);
+  await Database.joinGroup(userInfo.uid, groupId);
   console.log("controller created group: " + groupId);
   return groupId;
 }
