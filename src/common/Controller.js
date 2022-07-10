@@ -188,11 +188,18 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
     userGroupMemberships.forEach(async (groupMembership) => {
       //Loop through group_memberships and set up a subscriber for its messages
       observeGroupMessages(dispatch, groupMembership.groupId);
+
+      //Also observe any requests to join on this group
+      Database.observeGroupMembershipRequests(
+        groupMembership.groupId,
+        (groupMembershipRequests) => {
+          dispatch(Actions.groupMembershipRequests(groupMembershipRequests));
+        }
+      );
     });
   });
 
-  /* observe public group messages */
-
+  /* observe user chat memberships */
   Database.observeUserChatMemberships(uid, (userChatMemberships) => {
     dispatch(Actions.userChatMemberships(userChatMemberships));
     userChatMemberships.forEach(async (chatMembership) => {
@@ -300,8 +307,56 @@ export async function initialUserProfileSchools(dispatch, userInfo, schools) {
   }
 }
 
-export async function joinGroup(dispatch, userInfo, groupId) {
-  await Database.joinGroup(userInfo, groupId);
+export async function joinGroup(uid, groupId) {
+  await Database.joinGroup(uid, groupId);
+}
+
+export async function requestToJoin(userInfo, groupId) {
+  await Database.createGroupMembershipRequest(userInfo, groupId);
+}
+
+export async function acceptGroupMembershipRequest(userInfo, groupMembershipRequest) {
+  //have the user join the group
+  await joinGroup(groupMembershipRequest.uid, groupMembershipRequest.groupId);
+
+  //delete the group membership request
+  await Database.deleteGroupMembershipRequest(
+    userInfo,
+    groupMembershipRequest.groupId,
+    groupMembershipRequest.id
+  );
+}
+export async function rejectGroupMembershipRequest(userInfo, groupId, groupMembershipRequest) {
+  //get the latest group membership request then update it indicating this particular user dismissed it
+  /*
+  const groupMembershipRequest = await Database.getGroupMembershipRequest(
+    groupMembershipRequest.groupId
+  );
+  */
+
+  const update = {};
+  update[userInfo.uid] = "rejected";
+  await Database.updateGroupMembershipRequest(
+    groupMembershipRequest.groupId,
+    groupMembershipRequest.id,
+    update
+  );
+}
+export async function dismissGroupMembershipRequest(userInfo, groupMembershipRequest) {
+  //get the latest group membership request then update it indicating this particular user dismissed it
+  /*
+  const groupMembershipRequest = await Database.getGroupMembershipRequest(
+    groupMembershipRequest.groupId
+  );
+  */
+
+  const update = {};
+  update[userInfo.uid] = "dismissed";
+  await Database.updateGroupMembershipRequest(
+    groupMembershipRequest.groupId,
+    groupMembershipRequest.id,
+    update
+  );
 }
 
 export async function joinOrg(userInfo, orgId) {

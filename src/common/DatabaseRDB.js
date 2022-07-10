@@ -168,6 +168,15 @@ export function observeUserChatMemberships(uid, callback) {
   });
 }
 
+export function observeGroupMembershipRequests(groupId, callback) {
+  const ref = RDB.ref(rdb, "group_membership_requests/" + groupId);
+  const unsubscribe = RDB.onValue(ref, (snapshot) => {
+    const data = snapshot.val();
+    const ret = toArray(data);
+    callback(ret);
+  });
+}
+
 export function observeGroupMessages(groupId, callback) {}
 
 export function observeChatMessages(chatId, callback) {}
@@ -187,12 +196,33 @@ export async function createGroup(data) {
   return newReference.key;
 }
 
-export async function joinGroup(userInfo, groupId) {
+export async function joinGroup(uid, groupId) {
   const newReference = await RDB.push(RDB.ref(rdb, "/group_memberships"));
+  await RDB.set(newReference, { uid: uid, groupId });
+  return newReference.key;
+}
+
+export async function createGroupMembershipRequest(userInfo, groupId) {
+  const newReference = await RDB.push(RDB.ref(rdb, "/group_membership_requests/" + groupId));
   await RDB.set(newReference, { uid: userInfo.uid, groupId });
   return newReference.key;
 }
 
+export async function deleteGroupMembershipRequest(userInfo, groupId, groupMembershipRequestId) {
+  const docRef = RDB.ref(
+    rdb,
+    "/group_membership_requests/" + groupId + "/" + groupMembershipRequestId
+  );
+  await RDB.remove(docRef);
+}
+
+export async function updateGroupMembershipRequest(groupId, groupMembershipRequestId, update) {
+  const docRef = RDB.ref(
+    rdb,
+    "/group_membership_requests/" + groupId + "/" + groupMembershipRequestId
+  );
+  await RDB.update(docRef, update);
+}
 export async function joinOrg(userInfo, orgId) {
   const newReference = await RDB.push(RDB.ref(rdb, "/org_memberships"));
   await RDB.set(newReference, { uid: userInfo.uid, orgId });

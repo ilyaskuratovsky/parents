@@ -110,7 +110,7 @@ export default function SchoolScreen({ schoolId }) {
                   <MyButtons.FormButton
                     text="Join"
                     onPress={() => {
-                      Controller.joinGroup(dispatch, userInfo, group.id);
+                      Controller.joinGroup(userInfo.uid, group.id);
                     }}
                   />
                 )}

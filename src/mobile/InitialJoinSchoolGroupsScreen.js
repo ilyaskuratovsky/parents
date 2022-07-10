@@ -78,7 +78,7 @@ export default function InitialJoinSchoolGroupsScreen() {
               <MyButtons.FormButton
                 text="Join"
                 onPress={() => {
-                  Controller.joinGroup(dispatch, userInfo, group.id);
+                  Controller.joinGroup(userInfo.uid, group.id);
                 }}
               />
             )}

@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Modal,
   FlatList,
+  Alert,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "../common/Actions";
@@ -174,7 +175,7 @@ export default function SchoolScreen({ schoolId }) {
               titleStyle={{ fontSize: 14 }}
               style={{ width: 120, fontSize: 10 }}
               onPress={async () => {
-                await Controller.joinGroup(dispatch, userInfo, group.id);
+                await Controller.joinGroup(user.uid, group.id);
               }}
             />
           ) : (
@@ -249,7 +250,7 @@ export default function SchoolScreen({ schoolId }) {
   );
 }
 
-function GroupView({ group, defaultOrgGroup, setLoading }) {
+function GroupView({ group, setLoading }) {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
   const groupId = group.id;
@@ -265,21 +266,10 @@ function GroupView({ group, defaultOrgGroup, setLoading }) {
       key={groupId}
       style={{
         flex: 1,
-        //backgroundColor: "cyan",
+        backgroundColor: "cyan",
+        marginBottom: 2,
       }}
     >
-      {debugMode && (
-        <Text style={{ fontSize: 8 }}>
-          {JSON.stringify(
-            {
-              user_group_membership: userGroupMembership?.id,
-              group: group.id,
-            },
-            null,
-            2
-          )}
-        </Text>
-      )}
       <TouchableOpacity
         key={group.id}
         style={{
@@ -290,12 +280,6 @@ function GroupView({ group, defaultOrgGroup, setLoading }) {
         }}
         onPress={async () => {
           let groupId = group.id;
-          if (groupId.startsWith("__placeholder_default_group_id_")) {
-            const orgId = groupId.substring("__placeholder_default_group_id_".length);
-            setLoading(true);
-            groupId = await Controller.createDefaultOrgGroupIfNotExists(orgId);
-          }
-
           dispatch(Actions.openModal({ modal: "GROUP", groupId: groupId }));
         }}
       >
@@ -345,58 +329,61 @@ function GroupView({ group, defaultOrgGroup, setLoading }) {
               border
             />
           </View>
+          {debugMode && <Text style={{ fontSize: 10 }}>{JSON.stringify(group, null, 2)}</Text>}
+          {debugMode && userInfo.superUser && (
+            <MyButtons.LinkButton
+              text="(Admin) Delete Group"
+              onPress={async () => {
+                Alert.alert("Delete Group?", null, [
+                  {
+                    text: "Yes",
+                    onPress: async () => {
+                      await Controller.deleteGroup(group.id);
+                    },
+                  },
+                  {
+                    text: "No",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel",
+                  },
+                ]);
+              }}
+            />
+          )}
         </View>
+        {/*
         <View
           style={{
-            flexBasis: 90,
+            flexBasis: 120,
             justifyContent: "flex-end",
             alignItems: "center",
             flexDirection: "row",
+            padding: 10,
             //backgroundColor: "brown",
           }}
         >
-          <View
-            style={{
-              paddingLeft: 2,
-              paddingRight: 2,
-              paddingTop: 2,
-              alignItems: "flex-start",
-              //backgroundColor: "purple",
-            }}
-          ></View>
-          {!defaultOrgGroup && (
+          {group.type === "public_membersonly" && (
             <MyButtons.FormButton
-              style={{ width: 100 }}
-              text="Subscribe"
+              style={{ width: 120 }}
+              titleStyle={{ fontSize: 12 }}
+              text="Request to Join"
               onPress={async () => {
-                if (groupId.startsWith("__placeholder_default_group_id_")) {
-                  console.log("creating new default group");
-                  const newGroupId = await Controller.createGroup(
-                    group.name,
-                    group.description,
-                    "default_org_group",
-                    group.orgId
-                  );
-                  await Controller.subscribeToGroup(userInfo, groupId);
-                } else {
-                  await Controller.subscribeToGroup(userInfo, group.id);
-                }
+                await Controller.subscribeToGroup(userInfo, group.id);
               }}
             />
           )}
-          {defaultOrgGroup && (
-            <IconButton
-              style={{
-                //backgroundColor: "green",
-                padding: 0,
-                margin: 0,
+          {group.type === "private_requesttojoin" && (
+            <MyButtons.FormButton
+              style={{ width: 120 }}
+              titleStyle={{ fontSize: 12 }}
+              text="Request to Join"
+              onPress={async () => {
+                await Controller.subscribeToGroup(userInfo, group.id);
               }}
-              icon="chevron-right"
-              color={"darkgrey"}
-              size={32}
             />
           )}
         </View>
+            */}
       </TouchableOpacity>
     </View>
   );

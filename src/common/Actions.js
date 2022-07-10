@@ -77,6 +77,7 @@ export const mainSlice = createSlice({
     chatMessages: {},
     pushToken: null,
     toUserInvites: null,
+    groupMembershipRequests: null,
     fromUserInvites: null,
     userMessagesMap: null,
     userChatMessagesMap: null,
@@ -303,6 +304,15 @@ export const mainSlice = createSlice({
       };
       return newState;
     },
+    groupMembershipRequests: (state, obj) => {
+      const groupMembershipRequests = obj.payload;
+      Logger.log("Actions.groupMembershipRequests");
+      const newState = {
+        ...state,
+        groupMembershipRequests,
+      };
+      return newState;
+    },
     orgsUpdated: (state, obj) => {
       const orgs = obj.payload;
       const orgsList = [];
@@ -392,6 +402,7 @@ export const {
   groupMemberships,
   toUserInvites,
   fromUserInvites,
+  groupMembershipRequests,
   searchIndex,
   userMessages,
   userChatMessages,

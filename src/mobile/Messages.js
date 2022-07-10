@@ -5,23 +5,25 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Controller from "../common/Controller";
 import * as MyButtons from "./MyButtons";
 import * as Globals from "./Globals";
-import * as UserInfo from "../common/UserInfo";
 import * as Debug from "../common/Debug";
+import * as UserInfo from "../common/UserInfo";
 
 export default function Messages(props) {
   const dispatch = useDispatch();
+  const debugMode = Debug.isDebugMode();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const { toUserInvites, groupMap, userMap } = useSelector((state) => {
+  const { toUserInvites, groupMap, userMap, groupMembershipRequests } = useSelector((state) => {
     return {
-      toUserInvites: state.main.toUserInvites,
+      toUserInvites: state.main.toUserInvites ?? [],
       groupMap: state.main.groupMap,
+      groupMembershipRequests: state.main.groupMembershipRequests ?? [],
       userMap: state.main.userMap,
     };
   });
 
   const insets = useSafeAreaInsets();
 
-  if (toUserInvites != null && toUserInvites.length > 0) {
+  if (toUserInvites.length > 0 || groupMembershipRequests.length > 0) {
     return (
       <View
         style={{
@@ -110,6 +112,88 @@ export default function Messages(props) {
                   </Text>
                 </View>
               )}
+            </View>
+          );
+        })}
+        {groupMembershipRequests.map((request) => {
+          const group = groupMap[request.groupId];
+          const fromUser = userMap[request.uid];
+          return (
+            <View
+              key={"request_" + group.id}
+              style={{
+                flexDirection: "column",
+                alignItems: "center",
+                paddingLeft: 10,
+                width: "100%",
+              }}
+            >
+              <View
+                style={{
+                  flex: 1,
+                  //backgroundColor: "cyan",
+                  flexDirection: "row",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  {UserInfo.smallAvatarComponent(fromUser)}
+                  <Text
+                    style={{
+                      flexGrow: 1,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      paddingLeft: 6,
+                    }}
+                  >
+                    {UserInfo.chatDisplayName(fromUser)} would like to join
+                  </Text>
+                </View>
+              </View>
+              <View
+                style={{
+                  flex: 1,
+                  //backgroundColor: "cyan",
+                  flexDirection: "row",
+                  paddingTop: 6,
+                  paddingBottom: 10,
+                  justifyContent: "flex-end",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>{group.name}</Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <MyButtons.FormButton
+                  style={{ width: 100 }}
+                  text="Accept"
+                  onPress={async () => {
+                    await Controller.acceptGroupMembershipRequest(userInfo, request);
+                  }}
+                />
+                <MyButtons.FormButton
+                  style={{ width: 100 }}
+                  text="Reject"
+                  onPress={async () => {
+                    await Controller.rejectGroupMembershipRequest(userInfo, request);
+                  }}
+                />
+                <MyButtons.FormButton
+                  style={{ width: 100 }}
+                  text="Dismiss"
+                  onPress={async () => {
+                    await Controller.dismissGroupMembershipRequest(dispatch, userInfo, invite.id);
+                  }}
+                />
+              </View>
+              <View>
+                <Text style={{ fontSize: 10 }}>{debugMode ? JSON.stringify(request) : ""}</Text>
+              </View>
             </View>
           );
         })}

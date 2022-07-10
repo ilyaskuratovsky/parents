@@ -39,10 +39,10 @@ export default function GroupScreen({ groupId, messageId, debug }) {
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
   const group = Data.getGroup(groupId);
-  const [messagesModalVisible, setMessagesModalVisible] = useState(null);
   const userRootMessages = Data.getGroupUserRootMessages(groupId);
   const members = Data.getGroupMemberships(groupId) ?? [];
   const otherMembers = (members ?? []).filter((member) => member.uid !== userInfo.uid);
+  const iAmInviter = members.filter((gm) => gm.uid === userInfo.uid).length > 0;
   const groupTypeDescription =
     group.type === "private"
       ? "Private (Invite Only)"
@@ -87,7 +87,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
   const renderMessage = ({ item }) => {
     const onPress = () => {
       //setMessagesModalVisible(item.id);
-      dispatch(Actions.openModal({ modal: "MESSAGES", id: item.id }));
+      dispatch(Actions.openModal({ modal: "MESSAGES", messageId: item.id }));
     };
     return <MessageViewContainer user={userInfo} item={item} onPress={onPress} />;
   };
@@ -97,12 +97,10 @@ export default function GroupScreen({ groupId, messageId, debug }) {
     //Alert.alert("setting messageId: " + messageId);
     // only show if the message has been loaded and exists in the message map
     if (messageId != null) {
-      setMessagesModalVisible(messageId);
+      dispatch(Actions.openModal({ modal: "MESSAGES", messageId: item.id }));
     }
   }, [messageId]);
 
-  const insets = useSafeAreaInsets();
-  const topBarHeight = 64;
   const bottomBarHeight = 64;
 
   return (
@@ -193,6 +191,8 @@ export default function GroupScreen({ groupId, messageId, debug }) {
                     <Text style={{ fontWeight: "normal", fontSize: 14 }}>{org.name}</Text>
                   )*/}
                   </TouchableOpacity>
+
+                  {/* group details section */}
                   <View
                     style={[
                       {
@@ -206,33 +206,71 @@ export default function GroupScreen({ groupId, messageId, debug }) {
                       },
                     ]}
                   >
-                    <Text>{groupTypeDescription}</Text>
-                    <Text style={{ paddingLeft: 4, paddingRight: 4 }}>•</Text>
-                    <Text style={{ paddingRight: 4 }}>{members.length} members</Text>
-                    <MyButtons.LinkButton
-                      text="Invite"
-                      onPress={() => {
-                        dispatch(Actions.openModal({ modal: "GROUP_INVITE", groupId: group.id }));
-                      }}
-                    />
+                    {group.type !== "super_public" && (
+                      <>
+                        <Text>{groupTypeDescription}</Text>
+                        <Text style={{ paddingLeft: 4, paddingRight: 4 }}>•</Text>
+                        <Text style={{ paddingRight: 4 }}>{members.length} members</Text>
+                      </>
+                    )}
                   </View>
-                  <TouchableOpacity
-                    style={{ paddingBottom: 4 }}
-                    onPress={() => {
-                      dispatch(Actions.openModal({ modal: "GROUP_SETTINGS", groupId: group.id }));
-                    }}
-                  >
-                    <FacePile
-                      userIds={[userInfo.uid].concat(
-                        members
+                  {/* member facepile */}
+                  {group.type !== "super_public" && (
+                    <TouchableOpacity
+                      style={{ paddingBottom: 4 }}
+                      onPress={() => {
+                        dispatch(Actions.openModal({ modal: "GROUP_SETTINGS", groupId: group.id }));
+                      }}
+                    >
+                      <FacePile
+                        userIds={members
                           .filter((groupMembership) => {
                             return userInfo.uid != groupMembership.uid;
                           })
-                          .map((groupMembership) => groupMembership.uid)
-                      )}
-                      border
-                    />
-                  </TouchableOpacity>
+                          .map((groupMembership) => groupMembership.uid)}
+                        border
+                      />
+                    </TouchableOpacity>
+                  )}
+                  {/* invite/join section */}
+                  <View
+                    style={[
+                      {
+                        paddingLeft: 4,
+                        paddingRight: 4,
+                        paddingTop: 0,
+                        paddingBottom: 4,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        //backgroundColor: "green",
+                      },
+                    ]}
+                  >
+                    {group.type !== "super_public" && (
+                      <>
+                        {iAmInviter && (
+                          <MyButtons.LinkButton
+                            text="Invite"
+                            onPress={() => {
+                              dispatch(
+                                Actions.openModal({ modal: "GROUP_INVITE", groupId: group.id })
+                              );
+                            }}
+                          />
+                        )}
+                        {!iAmInviter && (
+                          <MyButtons.LinkButton
+                            text="Request to Join"
+                            onPress={() => {
+                              Controller.requestToJoin(userInfo, group.id).then(() => {
+                                Alert.alert("Your request has been submitted");
+                              });
+                            }}
+                          />
+                        )}
+                      </>
+                    )}
+                  </View>
                 </View>
               </View>
             </View>
@@ -263,7 +301,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
           <Divider style={{}} width={1} color="lightgrey" />
         </View>
         {/* invite if only you're a member */}
-        {otherMembers.length === 0 && (
+        {otherMembers.length === 0 && group.type !== "super_public" && (
           <View
             style={{
               flexDirection: "column",
