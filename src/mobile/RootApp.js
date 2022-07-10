@@ -48,6 +48,7 @@ import GroupSettingsModal from "./GroupSettingsModal";
 import NewGroupModal from "./NewGroupModal";
 import SchoolGroup from "./SchoolScreen";
 import MessageModal from "./MessageModal";
+import GroupScreenContainer from "./GroupScreenContainer";
 /*
 App vision:  The local social network for parents.
 When join you put in your zip code (we also detect based on gps coordinates)
@@ -164,15 +165,7 @@ function RootApp(props, state) {
   } else if (screen == "CHATS") {
     render = <ChatsScreen />;
   } else if (screen == "GROUP") {
-    render = (
-      <GroupScreen
-        groupId={screenWithParams.groupId}
-        messageId={screenWithParams.messageId}
-        //groupId={"-N2kmR4mYVvaPUHUX11e"}
-        //messageId={"SsFzz8lpH4VOpyy8ZLdj"}
-        debug={JSON.stringify(screenWithParams)}
-      />
-    );
+    render = <GroupScreenContainer {...screenWithParams} />;
   } else if (screen == "FIND_GROUPS") {
     render = <FindGroupsScreen />;
   } else if (screen == "SCHOOL") {
@@ -217,7 +210,7 @@ function RootApp(props, state) {
       {modal === "GROUP_INVITE" && <GroupInviteModal {...modalWithParams} />}
       {modal === "GROUP_SETTINGS" && <GroupSettingsModal {...modalWithParams} />}
       {modal === "NEW_GROUP" && <NewGroupModal {...modalWithParams} />}
-      {modal === "GROUP" && <GroupScreen {...modalWithParams} />}
+      {modal === "GROUP" && <GroupScreenContainer {...modalWithParams} />}
       {modal === "MESSAGES" && <MessageModal {...modalWithParams} />}
       {modal === "SCHOOL_GROUP" && <SchoolGroup {...modalWithParams} />}
       <View style={{ position: "absolute", bottom: 400, right: 0 }}>
