@@ -45,6 +45,6 @@ export default function GroupScreenContainer({ groupId, messageId, debug }) {
   if (org != null) {
     return <SchoolScreen schoolId={org.id} />;
   } else {
-    return <GroupScreen groupId={group.id} />;
+    return <GroupScreen groupId={group.id} messageId={messageId} />;
   }
 }

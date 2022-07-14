@@ -103,9 +103,10 @@ function RootApp(props, state) {
   let screen = screenWithParams?.screen;
   console.log("screenWithParams: " + JSON.stringify(screenWithParams));
 
-  const modalWithParams = useSelector((state) => {
-    return state.screen?.modal;
+  const modalStack = useSelector((state) => {
+    return state.screen?.modalStack;
   });
+  const modalWithParams = modalStack.length > 0 ? modalStack[modalStack.length - 1] : null;
   let modal = modalWithParams?.modal;
   console.log("modalWithParams: " + JSON.stringify(modalWithParams));
   const debugMode = Debug.isDebugMode();
@@ -188,7 +189,14 @@ function RootApp(props, state) {
     render = <ErrorScreen error={{ message: "No screen" }} />;
   }
 
-  console.log("root app rendering");
+  console.log(
+    "root app rendering: modal: " +
+      modal +
+      "(" +
+      JSON.stringify(modalWithParams, null, 2) +
+      "), stack: " +
+      JSON.stringify(modalStack, null, 2)
+  );
   return (
     <View style={{ flex: 1 }}>
       {render}
@@ -210,7 +218,9 @@ function RootApp(props, state) {
       {modal === "GROUP_INVITE" && <GroupInviteModal {...modalWithParams} />}
       {modal === "GROUP_SETTINGS" && <GroupSettingsModal {...modalWithParams} />}
       {modal === "NEW_GROUP" && <NewGroupModal {...modalWithParams} />}
-      {modal === "GROUP" && <GroupScreenContainer {...modalWithParams} />}
+      {modal === "GROUP" && (
+        <GroupScreenContainer key={modalWithParams["groupId"]} {...modalWithParams} />
+      )}
       {modal === "MESSAGES" && <MessageModal {...modalWithParams} />}
       {modal === "SCHOOL_GROUP" && <SchoolGroup {...modalWithParams} />}
       <View style={{ position: "absolute", bottom: 400, right: 0 }}>

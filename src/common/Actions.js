@@ -14,9 +14,7 @@ export const screenSlice = createSlice({
     screen: {
       screen: null,
     },
-    modal: {
-      modal: null,
-    },
+    modalStack: [],
     userScreen: {
       screen: null,
     },
@@ -33,17 +31,22 @@ export const screenSlice = createSlice({
     },
     openModal: (state, modal) => {
       Logger.log("Actions.openModal: " + JSON.stringify(modal));
+      // const newModalStack = [...state.modalStack];
+      // newModalStack.push(modal.payload);
       const newState = {
         ...state,
-        modal: modal.payload,
+        modalStack: [...state.modalStack, modal.payload],
       };
       return newState;
     },
     closeModal: (state, modal) => {
       Logger.log("Actions.closeModal: " + JSON.stringify(modal));
+      const newModalStack = [...state.modalStack];
+      newModalStack.pop();
+
       const newState = {
         ...state,
-        modal: null,
+        modalStack: [...state.modalStack].slice(0, state.modalStack.length - 1),
       };
       return newState;
     },
