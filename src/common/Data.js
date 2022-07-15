@@ -50,6 +50,15 @@ export function getAllOrgsMap() {
   return orgsMap;
 }
 
+export function getAllGroupsMap() {
+  const { groupMap } = useSelector((state) => {
+    return {
+      groupMap: state.main.groupMap,
+    };
+  });
+  return groupMap;
+}
+
 export function getOrgGroups(orgId) {
   const { groupList } = useSelector((state) => {
     return {

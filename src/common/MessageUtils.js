@@ -53,7 +53,13 @@ export function buildRootMessageWithChildren(
       rootMessage = { ...m, ...rootMessage };
     }
   }
-  let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap, userMap, groupMap);
+  let rootMessageWithStatus = addMeta(
+    rootMessage,
+    userInfo,
+    userMessagesMap ?? {},
+    userMap ?? {},
+    groupMap ?? {}
+  );
   rootMessageWithStatus = addEventData(rootMessageWithStatus);
   rootMessageWithStatus = addEventPollData(rootMessageWithStatus);
 

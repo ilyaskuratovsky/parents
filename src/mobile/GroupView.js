@@ -48,7 +48,7 @@ export default function GroupView({ groupId }) {
       }}
     >
       {debugMode && (
-        <Text style={{ fontSize: 8 }}>
+        <Text key="debug" style={{ fontSize: 8 }}>
           {JSON.stringify(
             {
               user_group_membership: userGroupMembership.id,
@@ -80,6 +80,7 @@ export default function GroupView({ groupId }) {
           }}
         >
           <Text
+            key={"header"}
             style={[
               {
                 justifyContent: "center",
@@ -95,6 +96,7 @@ export default function GroupView({ groupId }) {
           </Text>
           {!Utils.isEmptyString(group.description) && (
             <Text
+              key={"description"}
               style={{
                 justifyContent: "center",
                 alignItems: "flex-start",
@@ -108,7 +110,7 @@ export default function GroupView({ groupId }) {
               {group.description}
             </Text>
           )}
-          <View style={{ flex: 1, paddingTop: 4 }}>
+          <View key={"members"} style={{ flex: 1, paddingTop: 4 }}>
             <FacePile
               userIds={[userInfo.uid].concat(
                 members

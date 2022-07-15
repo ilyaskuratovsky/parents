@@ -78,6 +78,7 @@ export default function FriendsScreen({}) {
             return (
               <>
                 <View
+                  key={user.uid}
                   style={{
                     flex: 1,
                     justifyContent: "flex-start",

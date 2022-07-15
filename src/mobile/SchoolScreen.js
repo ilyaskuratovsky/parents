@@ -54,7 +54,12 @@ export default function SchoolScreen({ schoolId }) {
   const members = Data.getGroupMemberships(group.id) ?? [];
   const isMember = members.filter((gm) => gm.uid === userInfo.uid).length > 0;
   const school = Data.getOrg(schoolId);
-  const subGroups = Data.getSubGroups(group.id);
+  const subGroups = Data.getSubGroups(group.id).filter(
+    (group) =>
+      group.type === "public_membersonly" ||
+      group.type === "private_requesttojoin" ||
+      group.type === "public"
+  );
 
   /* search bar at the top */
   /* School Screen - 
@@ -394,7 +399,7 @@ function MessagesSection({ groupId, user }) {
     const onPress = () => {
       dispatch(Actions.openModal({ modal: "MESSAGES", id: item.id }));
     };
-    return <MessageViewContainer user={user} item={item} onPress={onPress} />;
+    return <MessageViewContainer key={item.id} user={user} item={item} onPress={onPress} />;
   };
 
   const userRootMessages = Data.getGroupUserRootMessages(groupId);

@@ -39,10 +39,10 @@ export function SquareFacePile({ userIds }) {
     components = [UserInfo.smallAvatarComponent(user1, null, true)];
   } else {
     components = [
-      <View key={0} style={{ position: "absolute", top: 0, left: 0, zIndex: 0 }}>
+      <View key={"user1"} style={{ position: "absolute", top: 0, left: 0, zIndex: 0 }}>
         {UserInfo.smallAvatarComponent(user1, null, true)}
       </View>,
-      <View key={1} style={{ position: "absolute", right: 0, bottom: 0, zIndex: -1 }}>
+      <View key={"user2"} style={{ position: "absolute", right: 0, bottom: 0, zIndex: -1 }}>
         {UserInfo.smallAvatarComponent(user2, null, true)}
       </View>,
     ];

@@ -20,6 +20,7 @@ export default function FindGroupsScreens({ navigation }) {
   const [searchResults, setSearchResults] = useState(null);
   const groups = Data.getAllOrgGroups();
   const orgsMap = Data.getAllOrgsMap();
+  const groupMap = Data.getAllGroupsMap();
   const schoolGroups = groups.filter((group) => {
     if (group.orgId != null) {
       const org = orgsMap[group.orgId];
@@ -88,7 +89,15 @@ Activities
         {searchResults != null && searchResultsSection(dispatch, searchResults, orgsMap, groupMap)}
 
         {/* 'all schools/activities/groups' section */}
-        {searchResults == null && directorySection(dispatch, schoolGroups, otherOrgGroups, orgsMap)}
+        {searchResults == null &&
+          directorySection(
+            dispatch,
+            userInfo,
+            schoolGroups,
+            otherOrgGroups,
+            orgsMap,
+            Debug.isDebugMode
+          )}
       </View>
       <Toolbar />
     </Portal>
@@ -115,7 +124,7 @@ function searchResultsSection(dispatch, searchResults, orgsMap, groupMap) {
                   textDecorationLine: "underline",
                   color: "blue",
                   fontWeight: "bold",
-                  textAlign: "start",
+                  textAlign: "left",
                   //backgroundColor: "cyan",
                 }}
               >
@@ -136,7 +145,7 @@ function searchResultsSection(dispatch, searchResults, orgsMap, groupMap) {
                   textDecorationLine: "underline",
                   color: "blue",
                   fontWeight: "normal",
-                  textAlign: "start",
+                  textAlign: "left",
                   //backgroundColor: "cyan",
                 }}
               >
@@ -151,9 +160,7 @@ function searchResultsSection(dispatch, searchResults, orgsMap, groupMap) {
   );
 }
 
-function directorySection(dispatch, schoolGroups, otherOrgGroups, orgsMap) {
-  const user = Data.getCurrentUser();
-  const isDebugMode = Debug.isDebugMode();
+function directorySection(dispatch, user, schoolGroups, otherOrgGroups, orgsMap, isDebugMode) {
   return (
     <ScrollView
       style={{
@@ -209,7 +216,7 @@ function directorySection(dispatch, schoolGroups, otherOrgGroups, orgsMap) {
                   textDecorationLine: "underline",
                   color: "blue",
                   fontWeight: "bold",
-                  textAlign: "start",
+                  textAlign: "left",
                   //backgroundColor: "cyan",
                 }}
               >
@@ -262,7 +269,6 @@ function directorySection(dispatch, schoolGroups, otherOrgGroups, orgsMap) {
                 textDecorationLine: "underline",
                 color: "blue",
                 fontWeight: "bold",
-                textAlign: "start",
                 //backgroundColor: "cyan",
               }}
             >
