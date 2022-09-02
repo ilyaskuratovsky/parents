@@ -11,6 +11,7 @@ import * as Data from "../common/Data";
 
 const Toolbar = ({ selected }) => {
   const dispatch = useDispatch();
+  const userInfo = Data.getCurrentUser();
   const { groupMessagesMap, userMessagesMap } = useSelector((state) => {
     return {
       groupMessagesMap: state.main.groupMessages,
@@ -119,7 +120,19 @@ const Toolbar = ({ selected }) => {
           ) : null
         }
       />
-
+      {userInfo.superUser && (
+        <MyButtons.MenuButton
+          icon="flower-poppy"
+          text="Admin"
+          onPress={() => {
+            dispatch(
+              Actions.goToScreen({
+                screen: "ADMIN",
+              })
+            );
+          }}
+        />
+      )}
       {/*
       <MyButtons.MenuButton
         icon="logout"

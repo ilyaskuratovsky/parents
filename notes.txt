@@ -1,8 +1,4 @@
-When you create a new group - there'll be a dropdown "Parent group" - by default it's Greenwich Parents, 
-but will be a listing of all public groups underneath Greenwich Parents? 
 
-1: When creating a fresh group - (from the My Group Screen)
-    don't have the group creation template squares, just have the existing choices that are the same as when you create a sub group but the parent group will be "Greenwich Parents"
-
+1: Create a new root group
 2: Have a "view all" link from the group screen to view sub groups - initial sort will be the date added and only the top 3 groups.
 

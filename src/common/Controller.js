@@ -54,6 +54,7 @@ export async function initializeApp(dispatch, notificationListener, responseList
 
   //observe group_membership_changes
   Database.observeAllGroupMembershipChanges((groupMemberships) => {
+    console.log("all group memberships: " + JSON.stringify(groupMemberships));
     dispatch(Actions.groupMemberships(groupMemberships));
   });
 

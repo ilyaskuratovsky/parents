@@ -48,6 +48,7 @@ import GroupSettingsModal from "./GroupSettingsModal";
 import NewGroupModal from "./NewGroupModal";
 import SchoolGroup from "./SchoolScreen";
 import MessageModal from "./MessageModal";
+import AdminScreen from "./AdminScreen";
 import GroupScreenContainer from "./GroupScreenContainer";
 /*
 App vision:  The local social network for parents.
@@ -183,6 +184,8 @@ function RootApp(props, state) {
     );
   } else if (screen == "DEBUG") {
     render = <DebugScreen backAction={screenWithParams.backAction} />;
+  } else if (screen == "ADMIN") {
+    render = <AdminScreen />;
   } else if (screen == "ERROR") {
     render = <ErrorScreen error={screenWithParams.error} />;
   } else {

@@ -112,13 +112,15 @@ export default function GroupView({ groupId }) {
           )}
           <View key={"members"} style={{ flex: 1, paddingTop: 4 }}>
             <FacePile
-              userIds={[userInfo.uid].concat(
-                members
-                  .filter((groupMembership) => {
-                    return userInfo.uid != groupMembership.uid;
-                  })
-                  .map((groupMembership) => groupMembership.uid)
-              )}
+              userIds={
+                /*[userInfo.uid]*/ [].concat(
+                  members
+                    .filter((groupMembership) => {
+                      return userInfo.uid != groupMembership.uid;
+                    })
+                    .map((groupMembership) => groupMembership.uid)
+                )
+              }
               border
             />
           </View>
