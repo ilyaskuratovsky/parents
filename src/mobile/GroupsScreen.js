@@ -111,32 +111,35 @@ export default function GroupsScreen({}) {
         key="topbar"
         style={{}}
         left={
-          <View
-            style={{
-              //backgroundColor: "cyan",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <View style={{ alignItems: "flex-start", marginRight: 6 }}>
-              {UserInfo.avatarComponent(userInfo, () => {
-                dispatch(
-                  Actions.openModal({
-                    modal: "MY_PROFILE",
-                  })
-                );
-              })}
-            </View>
-            <Text
-              style={[
-                {
-                  paddingLeft: 6,
-                },
-                styles.topBarHeaderText,
-              ]}
+          <View>
+            <View
+              style={{
+                //backgroundColor: "cyan",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
             >
-              {"My Groups"}
-            </Text>
+              <View style={{ alignItems: "flex-start", marginRight: 6 }}>
+                {UserInfo.avatarComponent(userInfo, () => {
+                  dispatch(
+                    Actions.openModal({
+                      modal: "MY_PROFILE",
+                    })
+                  );
+                })}
+              </View>
+              <Text
+                style={[
+                  {
+                    paddingLeft: 6,
+                  },
+                  styles.topBarHeaderText,
+                ]}
+              >
+                {"My Groups"}
+              </Text>
+            </View>
+            {debugMode && <Text style={{ fontSize: 8 }}>GroupsScreen.js</Text>}
           </View>
         }
         center={<Text>{""}</Text>}

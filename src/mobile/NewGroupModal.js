@@ -28,11 +28,12 @@ export default function NewGroupModal({ scheme, parentGroupId }) {
   const userInfo = Data.getCurrentUser();
   const parentGroup = Data.getGroup(parentGroupId);
   const org = parentGroup != null ? Data.getOrg(parentGroup.orgId) : null;
-  const orgId = org.id;
+  const orgId = org?.id;
+  const debugMode = Debug.isDebugMode();
 
   const [groupType, setGroupType] = useState();
   const [selectedScheme, setSelectedScheme] = useState(scheme);
-  const [groupOrgId, setGroupOrgId] = useState(org.id);
+  const [groupOrgId, setGroupOrgId] = useState(orgId);
   const [groupName, setGroupName] = useState(null);
   const [groupDescription, setGroupDescription] = useState(null);
 
@@ -51,13 +52,6 @@ export default function NewGroupModal({ scheme, parentGroupId }) {
   const [page, setPage] = useState(startPage);
 
   return (
-    /*
-    <Modal visible={true}>
-      <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: 32 }}>Hello World</Text>
-      </View>
-    </Modal>
-    */
     <Modal visible={true} animationType={"slide"}>
       {page === "TYPE" && (
         <GroupScheme
@@ -122,6 +116,7 @@ export default function NewGroupModal({ scheme, parentGroupId }) {
 */
 function GroupScheme({ onNext }) {
   const dispatch = useDispatch();
+  const debugMode = Debug.isDebugMode();
   const [type, setType] = useState(null);
 
   return (
@@ -137,7 +132,7 @@ function GroupScheme({ onNext }) {
         }
         center={
           <View style={{ flex: 1 }}>
-            <Text>New Group</Text>
+            <Text>New Group{debugMode ? " (Group Scheme)" : ""}</Text>
             {Globals.dev && <Text>NewPrivateGroupModal.js</Text>}
           </View>
         }
@@ -260,6 +255,7 @@ function GroupScheme({ onNext }) {
 
 function GroupMainInfo({ groupName, groupDescription, orgId, groupType, scheme, onCreate }) {
   const userInfo = Data.getCurrentUser();
+  const debugMode = Debug.isDebugMode();
   const dispatch = useDispatch();
   const [name, setName] = useState(groupName);
   const org = Data.getOrg(orgId);
@@ -294,7 +290,7 @@ function GroupMainInfo({ groupName, groupDescription, orgId, groupType, scheme, 
         }
         center={
           <View style={{ flex: 1 }}>
-            <Text>New Group</Text>
+            <Text>New Group{debugMode ? " (Group Main Info)" : ""}</Text>
             {Globals.dev && <Text>NewPrivateGroupModal.js</Text>}
           </View>
         }

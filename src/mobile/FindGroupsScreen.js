@@ -60,7 +60,7 @@ Activities
         side={null}
       />
       <View style={{ flex: 1, flexDirection: "column", backgroundColor: "white" }}>
-        <NewSchool />
+        {userInfo.superUser && <NewSchool />}
         <View style={{ flexBasis: 80 }}>
           <SearchBar
             key="search"
@@ -90,14 +90,7 @@ Activities
 
         {/* 'all schools/activities/groups' section */}
         {searchResults == null &&
-          directorySection(
-            dispatch,
-            userInfo,
-            schoolGroups,
-            otherOrgGroups,
-            orgsMap,
-            Debug.isDebugMode
-          )}
+          directorySection(dispatch, userInfo, schoolGroups, otherOrgGroups, orgsMap, debugMode)}
       </View>
       <Toolbar />
     </Portal>

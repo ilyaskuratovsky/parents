@@ -52,14 +52,17 @@ export default function ThreadMessageModal({ userInfo, group, visible, sendMessa
               //zIndex: Number.MAX_VALUE,
             }}
           >
+            {/* group name/select */}
             <View
               style={{
                 flexGrow: 1,
                 alignItems: "flex-start",
                 justifyContent: "center",
+                backgroundColor: "grey",
               }}
             >
-              <Text style={{ fontSize: 20, fontWeight: "bold" }}>{group.name}</Text>
+              Group:
+              <Text style={{ fontSize: 20, fontWeight: "bold" }}>{"group name"}</Text>
             </View>
             <View
               style={{

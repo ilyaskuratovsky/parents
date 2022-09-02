@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import { Divider } from "react-native-elements";
 import { IconButton } from "react-native-paper";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import BookCalendarEventModal from "./BookCalendarEventModal";
 import { useDispatch, useSelector } from "react-redux";
@@ -34,11 +36,11 @@ import * as Logger from "../common/Logger";
 import TopBar from "./TopBar";
 import Toolbar from "./Toolbar";
 import TopBarLeftContentSideButton from "./TopBarLeftContentSideButton";
+import * as Data from "../common/Data";
 
 export default function FeedScreen({ debug }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  //const [messagesModalVisible, setMessagesModalVisible] = useState(null);
 
   let { messages, userMap, userMessagesMap, groupMap } = useSelector((state) => {
     return {
@@ -90,6 +92,7 @@ export default function FeedScreen({ debug }) {
     return <MessageViewContainer user={userInfo} showGroup={true} item={item} onPress={onPress} />;
   };
   useEffect(async () => {}, [messages]);
+  const defaultGroup = Data.getSuperPublicGroups()[0];
 
   return (
     <Portal
@@ -129,7 +132,18 @@ export default function FeedScreen({ debug }) {
           </View>
         }
         center={<Text>{""}</Text>}
-        right={null}
+        right={
+          <View style={{ height: 30, width: 34 }}>
+            <TouchableOpacity
+              onPress={() => {
+                Alert.alert("new post: " + defaultGroup.id);
+                dispatch(Actions.openModal({ modal: "NEW_POST", groupId: defaultGroup.id }));
+              }}
+            >
+              <Icon fill="white" name="plus-circle" style={{ color: "black", fontSize: 26 }} />
+            </TouchableOpacity>
+          </View>
+        }
       />
       {/* messages section */}
       <View

@@ -195,7 +195,7 @@ export default function SchoolScreen({ schoolId }) {
             }}
           />
           <MyButtons.FormButton
-            text={"Create Group"}
+            text={"Create Groupy"}
             titleStyle={{ fontSize: 14 }}
             style={{ width: 120, fontSize: 10 }}
             onPress={() => {

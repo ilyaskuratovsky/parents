@@ -24,9 +24,11 @@ import * as Data from "../common/Data";
 import { useDispatch } from "react-redux";
 import * as Actions from "../common/Actions";
 import * as Controller from "../common/Controller";
+import * as Debug from "../common/Debug";
 
 export default function ThreadMessageModal({ groupId }) {
   const dispatch = useDispatch();
+  const isDebugMode = Debug.isDebugMode();
   const insets = useSafeAreaInsets();
   const [images, setImages] = useState([]);
   const [text, setText] = useState("");
@@ -37,7 +39,7 @@ export default function ThreadMessageModal({ groupId }) {
   //</KeyboardAvoidingView>
   const sendMessage = useCallback(
     async (title, text) => {
-      const groupName = group.name;
+      const groupName = group?.name;
       const fromName = UserInfo.chatDisplayName(userInfo);
       const data = {};
       const attachments =
@@ -122,7 +124,8 @@ export default function ThreadMessageModal({ groupId }) {
                 justifyContent: "center",
               }}
             >
-              <Text style={{ fontSize: 20, fontWeight: "bold" }}>{group.name}</Text>
+              <SelectGroup groupId={groupId} onSet={() => {}} />
+              {isDebugMode && <Text>groupId: {groupId}</Text>}
             </View>
             <View
               style={{
@@ -284,5 +287,31 @@ export default function ThreadMessageModal({ groupId }) {
         </KeyboardAvoidingView>
       </Portal>
     </Modal>
+  );
+}
+
+function SelectGroup({ groupId, onSet }) {
+  const group = Data.getGroup(groupId);
+  return (
+    <View
+      style={{
+        flexGrow: 1,
+        alignItems: "flex-start",
+        justifyContent: "left",
+        flexDirection: "row",
+      }}
+    >
+      <Text style={{ fontSize: 20, fontWeight: "bold" }}>Group: {group?.name}</Text>
+      <IconButton
+        style={{
+          //backgroundColor: "green",
+          padding: 0,
+          margin: 0,
+        }}
+        icon="chevron-right"
+        color={"darkgrey"}
+        size={32}
+      />
+    </View>
   );
 }

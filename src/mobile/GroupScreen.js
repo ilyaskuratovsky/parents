@@ -1,48 +1,59 @@
-import React, { useCallback, useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
-  Alert,
-  Dimensions,
-  FlatList,
-  StyleSheet,
+  ScrollView,
   Text,
   TouchableOpacity,
-  useWindowDimensions,
   View,
+  ActivityIndicator,
   Modal,
+  FlatList,
+  Alert,
 } from "react-native";
-import { Icon } from "react-native-elements";
-import { Divider } from "react-native-elements";
-import { IconButton } from "react-native-paper";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import BookCalendarEventModal from "./BookCalendarEventModal";
 import { useDispatch, useSelector } from "react-redux";
-import * as Controller from "../common/Controller";
-import * as Date from "../common/Date";
-import FacePile from "./FacePile";
-import * as Globals from "./Globals";
-import GroupSettingsModal from "./GroupSettingsModal";
-import MessageModal from "./MessageContainerModal";
-import * as MessageUtils from "../common/MessageUtils";
-import MessageViewContainer from "./MessageViewContainer";
-import Portal from "./Portal";
 import * as Actions from "../common/Actions";
-import ThreadMessageModal from "./ThreadMessageModal";
-import * as UIConstants from "./UIConstants";
-import * as UserInfo from "../common/UserInfo";
+import * as Controller from "../common/Controller";
 import * as MyButtons from "./MyButtons";
-import Loading from "./Loading";
-import * as Logger from "../common/Logger";
-import * as Debug from "../common/Debug";
+import NewSchoolGroupModal from "./NewSchoolGroupModal";
+import Portal from "./Portal";
+import Toolbar from "./Toolbar";
+import TopBar from "./TopBar";
+import * as UIConstants from "./UIConstants";
 import * as Data from "../common/Data";
+import * as Debug from "../common/Debug";
+import { styles } from "./Styles";
+import * as Utils from "../common/Utils";
+import FacePile from "./FacePile";
+import { Divider, Icon } from "react-native-elements";
+import { IconButton } from "react-native-paper";
+import MessageViewContainer from "./MessageViewContainer";
 
-export default function GroupScreen({ groupId, messageId, debug }) {
+/* 
+People can "follow" orgs, this is a new relationship
+When people follow orgs - they will receive notifications of all the happenings - new groups created
+ - by default they will be subscribed to the org's general discussion group.  This subscription will be created automatically (ie a new group membership will be created).
+    this means the user can explicitly unsubscribe since the group will come up.
+- The default discussion group will have the chevron that you can open it up to the group (at the top of that page will be subscribe)
+- This page will list all the groups including the general discussion group
+    Groups can be private (Invite only)
+    Groups can be private (Request to Join) - in which case you can indicate it with a "lock" icon.  For these groups you need to request to join
+    Groups can be Public (Request to join)
+    Groups can be public
+    These will all be choices created when you create a new group
+- you can follow groups explicitly (or you can follow an entire org)
+Of the org page you should be able to create a group -
+  this will take you to the "create group" page - which will have the org pre-selected (and as if you clicked new school group).  
+
+*/
+
+export default function GroupScreen({ groupId }) {
   const dispatch = useDispatch();
-  const userInfo = Data.getCurrentUser();
+  const debugMode = Debug.isDebugMode();
+  const userInfo = useSelector((state) => state.main.userInfo);
+  const [loading, setLoading] = useState(false);
+  //const group = Data.getOrgGroup(schoolId);
   const group = Data.getGroup(groupId);
-  const userRootMessages = Data.getGroupUserRootMessages(groupId);
-  const members = Data.getGroupMemberships(groupId) ?? [];
-  const otherMembers = (members ?? []).filter((member) => member.uid !== userInfo.uid);
-  const iAmInviter = members.filter((gm) => gm.uid === userInfo.uid).length > 0;
+  const members = Data.getGroupMemberships(group.id) ?? [];
+  const isMember = members.filter((gm) => gm.uid === userInfo.uid).length > 0;
   const groupTypeDescription =
     group.type === "private"
       ? "Private (Invite Only)"
@@ -53,55 +64,22 @@ export default function GroupScreen({ groupId, messageId, debug }) {
       : group.type === "public"
       ? "Public (Open to All)"
       : group.type;
-  console.log(
-    "GroupScreen, groupId: " +
-      groupId +
-      ", messageId: " +
-      messageId +
-      ", group: " +
-      JSON.stringify(group)
+  const subGroups = Data.getSubGroups(group.id).filter(
+    (group) =>
+      group.type === "public_membersonly" ||
+      group.type === "private_requesttojoin" ||
+      group.type === "public"
   );
 
-  const FlatListItemSeparator = () => {
-    return (
-      <View
-        style={{
-          height: 6,
-          width: "100%",
-          backgroundColor: "lightgrey",
-        }}
-      />
-    );
-  };
-
-  const sortedMessages = useMemo(() => {
-    const sortedMessages = [...(userRootMessages ?? [])] ?? [];
-    sortedMessages.sort((m1, m2) => {
-      return m2.lastUpdated - m1.lastUpdated;
-    });
-    return sortedMessages;
-  }, [userRootMessages]);
-
-  //const org = orgsMap[group?.orgId];
-  // send message callback function
-  const renderMessage = ({ item }) => {
-    const onPress = () => {
-      //setMessagesModalVisible(item.id);
-      dispatch(Actions.openModal({ modal: "MESSAGES", messageId: item.id }));
-    };
-    return <MessageViewContainer user={userInfo} item={item} onPress={onPress} />;
-  };
-
-  // show message modal if there's a messageId prop
-  useEffect(async () => {
-    //Alert.alert("setting messageId: " + messageId);
-    // only show if the message has been loaded and exists in the message map
-    if (messageId != null) {
-      dispatch(Actions.openModal({ modal: "MESSAGES", messageId: item.id }));
-    }
-  }, [messageId]);
-
-  const bottomBarHeight = 64;
+  /* search bar at the top */
+  /* School Screen - 
+- lists details about the school on top
+- below has all of the groups in a list (with join button)
+- At the bottom have: Don't see your group? Create a new one
+ */
+  useEffect(() => {
+    Controller.observeGroupMessages(dispatch, group.id);
+  }, []);
 
   return (
     <Modal visible={true} animationType={"slide"}>
@@ -155,15 +133,6 @@ export default function GroupScreen({ groupId, messageId, debug }) {
                 >
                   <Icon name="chevron-left" />
                 </TouchableOpacity>
-                {/*
-              <IconButton
-                icon={"chevron-left"}
-                style={{ backgroundColor: "green", color: UIConstants.BLACK_TEXT_COLOR }}
-                onPress={() => {
-                  dispatch(Actions.goToScreen({ screen: "GROUPS" }));
-                }}
-              />
-              */}
                 <View
                   style={{
                     flexDirection: "column",
@@ -191,168 +160,78 @@ export default function GroupScreen({ groupId, messageId, debug }) {
                     <Text style={{ fontWeight: "normal", fontSize: 14 }}>{org.name}</Text>
                   )*/}
                   </TouchableOpacity>
-
-                  {/* group details section */}
-                  <View
-                    style={[
-                      {
-                        paddingLeft: 4,
-                        paddingRight: 4,
-                        paddingTop: 0,
-                        paddingBottom: 4,
-                        flexDirection: "row",
-                        alignItems: "center",
-                        //backgroundColor: "green",
-                      },
-                    ]}
+                  <TouchableOpacity
+                    style={{ paddingBottom: 4 }}
+                    onPress={() => {
+                      dispatch(Actions.openModal({ modal: "GROUP_SETTINGS", groupId: group.id }));
+                    }}
                   >
-                    {group.type !== "super_public" && (
-                      <>
-                        <Text>{groupTypeDescription}</Text>
-                        <Text style={{ paddingLeft: 4, paddingRight: 4 }}>•</Text>
-                        <Text style={{ paddingRight: 4 }}>{members.length} members</Text>
-                      </>
-                    )}
-                  </View>
-                  {/* member facepile */}
-                  {group.type !== "super_public" && (
-                    <TouchableOpacity
-                      style={{ paddingBottom: 4 }}
-                      onPress={() => {
-                        dispatch(Actions.openModal({ modal: "GROUP_SETTINGS", groupId: group.id }));
-                      }}
-                    >
-                      <FacePile
-                        userIds={members
+                    <FacePile
+                      userIds={[userInfo.uid].concat(
+                        members
                           .filter((groupMembership) => {
                             return userInfo.uid != groupMembership.uid;
                           })
-                          .map((groupMembership) => groupMembership.uid)}
-                        border
-                      />
-                    </TouchableOpacity>
-                  )}
-                  {/* invite/join section */}
-                  <View
-                    style={[
-                      {
-                        paddingLeft: 4,
-                        paddingRight: 4,
-                        paddingTop: 0,
-                        paddingBottom: 4,
-                        flexDirection: "row",
-                        alignItems: "center",
-                        //backgroundColor: "green",
-                      },
-                    ]}
-                  >
-                    {group.type !== "super_public" && (
-                      <>
-                        {iAmInviter && (
-                          <MyButtons.LinkButton
-                            text="Invite"
-                            onPress={() => {
-                              dispatch(
-                                Actions.openModal({ modal: "GROUP_INVITE", groupId: group.id })
-                              );
-                            }}
-                          />
-                        )}
-                        {!iAmInviter && (
-                          <MyButtons.LinkButton
-                            text="Request to Join"
-                            onPress={() => {
-                              Controller.requestToJoin(userInfo, group.id).then(() => {
-                                Alert.alert("Your request has been submitted");
-                              });
-                            }}
-                          />
-                        )}
-                      </>
-                    )}
-                  </View>
+                          .map((groupMembership) => groupMembership.uid)
+                      )}
+                      border
+                    />
+                  </TouchableOpacity>
                 </View>
               </View>
-            </View>
-
-            {/* members button */}
-            <View
-              style={{
-                width: 80,
-                flexGrow: 0,
-                marginRight: 4,
-                alignItems: "flex-end",
-                justifyContent: "center",
-                flexDirection: "column",
-              }}
-            >
-              {/*
-            <MyButtons.MenuButton
-              icon="account-supervisor"
-              text={members.length + " member" + (members.length > 1 ? "s" : "")}
-              onPress={() => {
-                console.log("members pressed");
-                setMembersModalVisible(true);
-              }}
-            />
-            */}
             </View>
           </View>
           <Divider style={{}} width={1} color="lightgrey" />
         </View>
-        {/* invite if only you're a member */}
-        {otherMembers.length === 0 && group.type !== "super_public" && (
-          <View
-            style={{
-              flexDirection: "column",
-              backgroundColor: "white",
-              alignItems: "center",
-              justifyContent: "center",
-              //backgroundColor: "yellow",
-              height: 140,
-            }}
-          >
-            <Text style={{ padding: 8 }}>There are no other members in this group</Text>
+        <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
+          {!isMember ? (
             <MyButtons.FormButton
-              text="Invite"
-              onPress={() => {
-                dispatch(Actions.openModal({ modal: "GROUP_INVITE", groupId: group.id }));
+              text={"Follow"}
+              titleStyle={{ fontSize: 14 }}
+              style={{ width: 120, fontSize: 10 }}
+              onPress={async () => {
+                await Controller.joinGroup(user.uid, group.id);
               }}
             />
-          </View>
-        )}
-        {/* messages section */}
-        <View
+          ) : (
+            <Text>Following</Text>
+          )}
+          <MyButtons.FormButton
+            titleStyle={{ fontSize: 14 }}
+            style={{ width: 100, fontSize: 10 }}
+            text={"Invite"}
+            onPress={() => {
+              dispatch(Actions.openModal({ modal: "GROUP_INVITE", groupId: group.id }));
+            }}
+          />
+          <MyButtons.FormButton
+            text={"Create Groupy"}
+            titleStyle={{ fontSize: 14 }}
+            style={{ width: 120, fontSize: 10 }}
+            onPress={() => {
+              dispatch(Actions.openModal({ modal: "NEW_GROUP", parentGroupId: group.id }));
+            }}
+          />
+        </View>
+        {/* default group */}
+        {debugMode ? <Text style={{ fontSize: 10 }}>Group: {JSON.stringify(group)}</Text> : null}
+        {/*debugMode ? <Text style={{ fontSize: 10 }}>Org: {JSON.stringify(org)}</Text> : null*/}
+        <ScrollView
           style={{
+            marginTop: 20,
+            paddingLeft: 8,
+            paddingRight: 8,
             flexGrow: 1,
             flexDirection: "column",
-            backgroundColor: "white",
+            //backgroundColor: "cyan",
           }}
         >
-          <View style={{ flex: 1 }}>
-            <View
-              style={{
-                flexDirection: "column",
-                flex: 1,
-                //backgroundColor: "green"
-              }}
-            >
-              <FlatList
-                style={{
-                  flex: 1,
-                  //backgroundColor: "orange"
-                }}
-                data={
-                  //DATA
-                  sortedMessages
-                }
-                renderItem={renderMessage}
-                keyExtractor={(item) => item.id}
-                ItemSeparatorComponent={FlatListItemSeparator}
-              />
-            </View>
-          </View>
-        </View>
+          {subGroups.map((group) => {
+            return <GroupView group={group} />;
+          })}
+          <MessagesSection groupId={group.id} user={userInfo} />
+        </ScrollView>
+        {/* messages section */}
         <Divider style={{}} width={1} color="darkgrey" />
         {/* toolbar section */}
         <View
@@ -361,7 +240,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
             alignItems: "flex-end",
             justifyContent: "center",
             flexDirection: "row",
-            height: bottomBarHeight,
+            height: 40,
           }}
         >
           <MyButtons.MenuButton
@@ -377,30 +256,226 @@ export default function GroupScreen({ groupId, messageId, debug }) {
             text="New Event"
             onPress={() => {
               //setShowNewEventModal(true);
-              dispatch(Actions.openModal({ modal: "NEW_EVENT", groupId: groupId }));
+              dispatch(Actions.openModal({ modal: "NEW_EVENT", groupId: group.id }));
             }}
           />
         </View>
-        {/* messages modal */}
-        {/*messagesModalVisible != null && (
-          <MessageModal
-            groupId={groupId}
-            messageId={messagesModalVisible}
-            visible={messagesModalVisible != null}
-            closeModal={() => {
-              setMessagesModalVisible(null);
-            }}
-            containerStyle={{ paddingLeft: 24 }}
-          />
-        )*/}
       </Portal>
     </Modal>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row", // row
-    alignItems: "center",
-  },
-});
+function GroupView({ group, setLoading }) {
+  const dispatch = useDispatch();
+  const debugMode = Debug.isDebugMode();
+  const groupId = group.id;
+  let members = [];
+  let userGroupMembership = null;
+  if (!groupId.startsWith("__placeholder_default_group_id")) {
+    members = Data.getGroupMemberships(groupId);
+    userGroupMembership = Data.getUserGroupMemberships(group.id);
+  }
+  const userInfo = Data.getCurrentUser();
+  return (
+    <View
+      key={groupId}
+      style={{
+        flex: 1,
+        backgroundColor: "cyan",
+        marginBottom: 2,
+      }}
+    >
+      <TouchableOpacity
+        key={group.id}
+        style={{
+          flexDirection: "row",
+          //height: Utils.isEmptyString(group.description) ? 60 : 80,
+          alignItems: "flex-start",
+          paddingLeft: 10,
+        }}
+        onPress={async () => {
+          let groupId = group.id;
+          dispatch(Actions.openModal({ modal: "GROUP", groupId: groupId }));
+        }}
+      >
+        <View
+          style={{
+            flexGrow: 1,
+            flexDirection: "column",
+            //backgroundColor: "green",
+          }}
+        >
+          <Text
+            style={[
+              {
+                justifyContent: "center",
+                alignItems: "flex-start",
+                height: 22,
+                //backgroundColor: "cyan",
+                //fontFamily: "Helvetica Neue",
+              },
+              styles.header1,
+            ]}
+          >
+            {group.name} {/*group.id*/}
+          </Text>
+          {!Utils.isEmptyString(group.description) && (
+            <Text
+              style={{
+                justifyContent: "center",
+                alignItems: "flex-start",
+                fontSize: 11,
+                fontWeight: "normal",
+                color: UIConstants.BLACK_TEXT_COLOR,
+                height: 16,
+                //fontFamily: "Helvetica Neue",
+              }}
+            >
+              {group.description}
+            </Text>
+          )}
+          <View style={{ flex: 1, paddingTop: 4 }}>
+            <FacePile
+              userIds={(members ?? [])
+                .filter((groupMembership) => {
+                  return userInfo.uid != groupMembership.uid;
+                })
+                .map((groupMembership) => groupMembership.uid)}
+              border
+            />
+          </View>
+          {debugMode && <Text style={{ fontSize: 10 }}>{JSON.stringify(group, null, 2)}</Text>}
+          {debugMode && userInfo.superUser && (
+            <MyButtons.LinkButton
+              text="(Admin) Delete Group"
+              onPress={async () => {
+                Alert.alert("Delete Group?", null, [
+                  {
+                    text: "Yes",
+                    onPress: async () => {
+                      await Controller.deleteGroup(group.id);
+                    },
+                  },
+                  {
+                    text: "No",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel",
+                  },
+                ]);
+              }}
+            />
+          )}
+        </View>
+        {/*
+        <View
+          style={{
+            flexBasis: 120,
+            justifyContent: "flex-end",
+            alignItems: "center",
+            flexDirection: "row",
+            padding: 10,
+            //backgroundColor: "brown",
+          }}
+        >
+          {group.type === "public_membersonly" && (
+            <MyButtons.FormButton
+              style={{ width: 120 }}
+              titleStyle={{ fontSize: 12 }}
+              text="Request to Join"
+              onPress={async () => {
+                await Controller.subscribeToGroup(userInfo, group.id);
+              }}
+            />
+          )}
+          {group.type === "private_requesttojoin" && (
+            <MyButtons.FormButton
+              style={{ width: 120 }}
+              titleStyle={{ fontSize: 12 }}
+              text="Request to Join"
+              onPress={async () => {
+                await Controller.subscribeToGroup(userInfo, group.id);
+              }}
+            />
+          )}
+        </View>
+            */}
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+function MessagesSection({ groupId, user }) {
+  const renderMessage = ({ item }) => {
+    const onPress = () => {
+      dispatch(Actions.openModal({ modal: "MESSAGES", id: item.id }));
+    };
+    return <MessageViewContainer key={item.id} user={user} item={item} onPress={onPress} />;
+  };
+
+  const userRootMessages = Data.getGroupUserRootMessages(groupId);
+
+  const sortedMessages = useMemo(() => {
+    if (userRootMessages == null) {
+      return null;
+    }
+    const sortedMessages = [...(userRootMessages ?? [])] ?? [];
+    sortedMessages.sort((m1, m2) => {
+      return m2.lastUpdated - m1.lastUpdated;
+    });
+    return sortedMessages;
+  }, [userRootMessages]);
+
+  if (sortedMessages == null) {
+    return <Text>Loading...</Text>;
+  }
+  if (sortedMessages.length == 0) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          height: 500,
+          alignItems: "center",
+          justifyContent: "center",
+          //backgroundColor: "yellow",
+        }}
+      >
+        <Text>No messages in this group</Text>
+      </View>
+    );
+  }
+  return (
+    <View
+      style={{
+        flexGrow: 1,
+        flexDirection: "column",
+        backgroundColor: "white",
+      }}
+    >
+      <View style={{ flex: 1 }}>
+        <View
+          style={{
+            flexDirection: "column",
+            flex: 1,
+            //backgroundColor: "green"
+          }}
+        >
+          {sortedMessages.map((message) => {
+            return renderMessage({ item: message });
+          })}
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function FlatListItemSeparator() {
+  return (
+    <View
+      style={{
+        height: 6,
+        width: "100%",
+        backgroundColor: "lightgrey",
+      }}
+    />
+  );
+}

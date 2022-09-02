@@ -39,6 +39,7 @@ export default function NewPrivateGroupModal({ visible, createGroup, closeModal 
   const [invitees, setInvitees] = useState([]);
   const [invitesByEmailList, setInvitesByEmailList] = useState([]);
   const [processing, setProcessing] = useState(false);
+  const debugMode = Debug.isDebugMode();
 
   const { groupMap, userGroupMemberships, groupMembershipMap, userMap } = useSelector((state) => {
     return {
@@ -105,7 +106,7 @@ export default function NewPrivateGroupModal({ visible, createGroup, closeModal 
           }
           center={
             <View style={{ flex: 1 }}>
-              <Text>New Group</Text>
+              <Text>New Group{debugMode ? " (New Private Group Modal)" : ""}</Text>
               {Globals.dev && <Text>NewPrivateGroupModal.js</Text>}
             </View>
           }

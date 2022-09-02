@@ -218,11 +218,11 @@ function RootApp(props, state) {
       {modal === "GROUP_INVITE" && <GroupInviteModal {...modalWithParams} />}
       {modal === "GROUP_SETTINGS" && <GroupSettingsModal {...modalWithParams} />}
       {modal === "NEW_GROUP" && <NewGroupModal {...modalWithParams} />}
-      {modal === "GROUP" && (
+      {(modal === "GROUP" || modal == "SCHOOL_GROUP") && (
         <GroupScreenContainer key={modalWithParams["groupId"]} {...modalWithParams} />
       )}
       {modal === "MESSAGES" && <MessageModal {...modalWithParams} />}
-      {modal === "SCHOOL_GROUP" && <SchoolGroup {...modalWithParams} />}
+      {/*modal === "SCHOOL_GROUP" && <SchoolGroup {...modalWithParams} />*/}
       <View style={{ position: "absolute", bottom: 400, right: 0 }}>
         <MyButtons.MenuButton
           icon="bug"

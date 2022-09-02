@@ -42,9 +42,12 @@ export default function GroupScreenContainer({ groupId, messageId, debug }) {
   const userInfo = Data.getCurrentUser();
   const group = Data.getGroup(groupId);
   const org = group.orgId != null ? Data.getOrg(group.orgId) : null;
+  /*
   if (org != null) {
     return <SchoolScreen schoolId={org.id} />;
   } else {
     return <GroupScreen groupId={group.id} messageId={messageId} />;
   }
+  */
+  return <GroupScreen groupId={group.id} messageId={messageId} />;
 }
