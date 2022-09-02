@@ -26,7 +26,13 @@ import * as Controller from "../common/Controller";
 export default function NewGroupModal({ scheme, parentGroupId }) {
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
-  const parentGroup = Data.getGroup(parentGroupId);
+  let parentGroup = Data.getGroup(parentGroupId);
+  const rootGroup = Data.getRootGroup();
+
+  if (parentGroupId == null) {
+    parentGroup = rootGroup;
+  }
+
   const org = parentGroup != null ? Data.getOrg(parentGroup.orgId) : null;
   const orgId = org?.id;
   const debugMode = Debug.isDebugMode();
@@ -39,7 +45,7 @@ export default function NewGroupModal({ scheme, parentGroupId }) {
 
   let startPage = null;
   if (page == null) {
-    if (orgId != null) {
+    if (parentGroup != null) {
       startPage = "DETAILS";
     } else if (scheme === "school" || scheme == "activity") {
       startPage = "ORG";
@@ -75,7 +81,7 @@ export default function NewGroupModal({ scheme, parentGroupId }) {
           groupName={groupName}
           groupDescription={groupDescription}
           groupType={groupType}
-          orgId={groupOrgId}
+          parentGroup={parentGroup}
           scheme={selectedScheme}
           onCreate={async (name, description, type) => {
             setGroupName(name);
@@ -132,8 +138,7 @@ function GroupScheme({ onNext }) {
         }
         center={
           <View style={{ flex: 1 }}>
-            <Text>New Group{debugMode ? " (Group Scheme)" : ""}</Text>
-            {Globals.dev && <Text>NewPrivateGroupModal.js</Text>}
+            <Text>New Group</Text>
           </View>
         }
         right={
@@ -147,6 +152,8 @@ function GroupScheme({ onNext }) {
           */ null
         }
       />
+      {debugMode && <Text style={{ fontSize: 8 }}>NewGroupModald.js</Text>}
+      {debugMode && <Text style={{ fontSize: 8 }}>page: GroupScheme</Text>}
       <View style={{ marginTop: 60, paddingLeft: 20, paddingRight: 20 }}>
         <View
           style={{
@@ -253,12 +260,12 @@ function GroupScheme({ onNext }) {
   );
 }
 
-function GroupMainInfo({ groupName, groupDescription, orgId, groupType, scheme, onCreate }) {
+function GroupMainInfo({ groupName, groupDescription, parentGroup, groupType, scheme, onCreate }) {
   const userInfo = Data.getCurrentUser();
   const debugMode = Debug.isDebugMode();
   const dispatch = useDispatch();
   const [name, setName] = useState(groupName);
-  const org = Data.getOrg(orgId);
+  //const org = Data.getOrg(orgId);
   const [description, setDescription] = useState(groupDescription);
   const [type, setType] = useState(groupType);
 
@@ -290,14 +297,15 @@ function GroupMainInfo({ groupName, groupDescription, orgId, groupType, scheme, 
         }
         center={
           <View style={{ flex: 1 }}>
-            <Text>New Group{debugMode ? " (Group Main Info)" : ""}</Text>
-            {Globals.dev && <Text>NewPrivateGroupModal.js</Text>}
+            <Text>New Group</Text>
           </View>
         }
         right={null}
       />
+      {debugMode && <Text style={{ fontSize: 8 }}>NewGroupModal.js</Text>}
+      {debugMode && <Text style={{ fontSize: 8 }}>page: GroupMainInfo, parentGroup: </Text>}
       <View style={{ paddingTop: 20, alignItems: "center" }}>
-        {org != null && <Text>{org.name}</Text>}
+        <Text>{parentGroup.name}</Text>
         <View
           style={{
             paddingTop: 4,

@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import * as MessageUtils from "../common/MessageUtils";
 import { useEffect, useMemo } from "react";
 import * as Controller from "../common/Controller";
+import { ROOT_GROUP_ID } from "../../config/firebase";
 
 export function getCurrentUser() {
   const user = useSelector((state) => state.main.userInfo);
@@ -265,6 +266,15 @@ export function getGroup(groupId) {
   const { group } = useSelector((state) => {
     return {
       group: state.main.groupMap[groupId],
+    };
+  });
+  return group;
+}
+
+export function getRootGroup() {
+  const { group } = useSelector((state) => {
+    return {
+      group: state.main.groupMap[ROOT_GROUP_ID],
     };
   });
   return group;

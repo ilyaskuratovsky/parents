@@ -68,7 +68,8 @@ export default function GroupScreen({ groupId }) {
     (group) =>
       group.type === "public_membersonly" ||
       group.type === "private_requesttojoin" ||
-      group.type === "public"
+      group.type === "public" ||
+      group.type === "private"
   );
 
   /* search bar at the top */
@@ -216,6 +217,7 @@ export default function GroupScreen({ groupId }) {
         {/* default group */}
         {debugMode ? <Text style={{ fontSize: 10 }}>Group: {JSON.stringify(group)}</Text> : null}
         {/*debugMode ? <Text style={{ fontSize: 10 }}>Org: {JSON.stringify(org)}</Text> : null*/}
+        {/* sub-groups section */}
         <ScrollView
           style={{
             marginTop: 20,
