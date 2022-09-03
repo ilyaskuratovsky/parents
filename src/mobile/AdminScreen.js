@@ -31,7 +31,9 @@ export default function AdminScreen({}) {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
   const allGroups = Data.getAllGroups();
+  const users = Data.getAllUsers();
   const [page, setPage] = useState(null);
+  const groupMemberships = Data.getAllGroupMemberships();
 
   return (
     <Portal
@@ -40,7 +42,7 @@ export default function AdminScreen({}) {
     >
       <Text>Admin Screen</Text>
       <View style={{ marginLeft: 5, flexDirection: "row" }}>
-        <View style={{ marginRight: 10, marginBottom: 20 }}>
+        <View style={{ marginRight: 10, marginBottom: 12 }}>
           <MyButtons.LinkButton
             text="Home"
             onPress={() => {
@@ -48,7 +50,7 @@ export default function AdminScreen({}) {
             }}
           />
         </View>
-        <View style={{ marginRight: 10, marginBottom: 20 }}>
+        <View style={{ marginRight: 10, marginBottom: 12 }}>
           <MyButtons.LinkButton
             text="Groups"
             onPress={() => {
@@ -75,23 +77,38 @@ export default function AdminScreen({}) {
       </View>
       {/* Groups */}
       {(page == null || page === "groups") && (
-        <ScrollView style={{ marginBottom: 200 }}>
-          {allGroups.map((group) => {
-            return <GroupView group={group} />;
-          })}
-        </ScrollView>
+        <View style={{ flexDirection: "column" }}>
+          <Text>Groups</Text>
+          <ScrollView style={{ marginBottom: 200 }}>
+            {allGroups.map((group) => {
+              return <GroupView group={group} />;
+            })}
+          </ScrollView>
+        </View>
       )}
       {/* Users */}
-      {page === "users" &&
-        allGroups.map((group) => {
-          return <Text>{group.name}</Text>;
-        })}
+      {(page == null || page === "users") && (
+        <View style={{ flexDirection: "column" }}>
+          <Text>Users</Text>
+          <ScrollView style={{ marginBottom: 200 }}>
+            {users.map((user) => {
+              return <UserView user={user} />;
+            })}
+          </ScrollView>
+        </View>
+      )}
 
       {/* Group Memberships */}
-      {page === "group_memberships" &&
-        allGroups.map((group) => {
-          return <Text>{group.name}</Text>;
-        })}
+      {(page == null || page === "group_memberships") && (
+        <View style={{ flexDirection: "column" }}>
+          <Text>Group Memberships</Text>
+          <ScrollView style={{ marginBottom: 200 }}>
+            {groupMemberships.map((groupMembership) => {
+              return <GroupMembershipView groupMembership={groupMembership} />;
+            })}
+          </ScrollView>
+        </View>
+      )}
     </Portal>
   );
 }
@@ -128,12 +145,32 @@ function GroupView({ group }) {
         />
         <Text style={{ width: 120, fontSize: 8, marginRight: 10 }}>{group.id}</Text>
         {members != null && members.length > 0 ? (
-          <Text style={{ width: 20, fontSize: 10 }}>{members.length}</Text>
+          <Text
+            style={{
+              width: 20,
+              fontSize: 16,
+              color: "red",
+              fontWeight: "bold",
+              backgroundColor: "yellow",
+            }}
+          >
+            {members.length}
+          </Text>
         ) : (
           <Text style={{ width: 20, fontSize: 10 }}>-</Text>
         )}
         {groupMessages != null && groupMessages.length > 0 ? (
-          <Text style={{ width: 200, fontSize: 10 }}>{groupMessages.length}</Text>
+          <Text
+            style={{
+              width: 200,
+              fontSize: 16,
+              color: "red",
+              fontWeight: "bold",
+              backgroundColor: "yellow",
+            }}
+          >
+            {groupMessages.length}
+          </Text>
         ) : (
           <Text style={{ width: 20, fontSize: 10 }}>-</Text>
         )}
@@ -148,6 +185,110 @@ function GroupView({ group }) {
               text: "Yes",
               onPress: async () => {
                 await Controller.deleteGroup(group.id);
+              },
+            },
+            {
+              text: "No",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel",
+            },
+          ]);
+        }}
+      />
+    </View>
+  );
+}
+
+function UserView({ user }) {
+  const dispatch = useDispatch();
+  const userGroupMemberships = Data.getUserGroupMemberships();
+
+  return (
+    <View
+      style={{
+        marginLeft: 5,
+        marginTop: 10,
+        paddingBottom: 10,
+        paddingTop: 10,
+        flexDirection: "column",
+        alignContent: "flex-end",
+        backgroundColor: "lightgrey",
+        justifyContent: "flex-end",
+      }}
+    >
+      <View
+        style={{
+          flexDirection: "column",
+        }}
+      >
+        <Text style={{ width: "100%", fontSize: 12, marginRight: 10 }}>
+          {JSON.stringify(user, null, 2) ?? "<None>"}
+        </Text>
+        <Text style={{ width: "100%", fontSize: 12, marginRight: 10 }}>
+          Memberships: {JSON.stringify(userGroupMemberships, null, 2) ?? "<None>"}
+        </Text>
+      </View>
+      <MyButtons.LinkButton
+        style={{ marginTop: 4, marginBottom: 4 }}
+        text="Delete"
+        onPress={async () => {
+          Alert.alert("Delete User?", null, [
+            {
+              text: "Yes",
+              onPress: async () => {
+                await Controller.deleteUser(user.id);
+              },
+            },
+            {
+              text: "No",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel",
+            },
+          ]);
+        }}
+      />
+    </View>
+  );
+}
+
+function GroupMembershipView({ groupMembership }) {
+  const dispatch = useDispatch();
+  const group = Data.getGroup(groupMembership.groupId);
+
+  return (
+    <View
+      style={{
+        marginLeft: 5,
+        marginTop: 10,
+        paddingBottom: 10,
+        paddingTop: 10,
+        flexDirection: "column",
+        alignContent: "flex-end",
+        backgroundColor: "lightgrey",
+        justifyContent: "flex-end",
+      }}
+    >
+      <View
+        style={{
+          flexDirection: "column",
+        }}
+      >
+        <Text style={{ width: "100%", fontSize: 12, marginRight: 10 }}>
+          {JSON.stringify(groupMembership, null, 2) ?? "<None>"}
+        </Text>
+        <Text style={{ width: "100%", fontSize: 12, marginRight: 10 }}>
+          Group: {JSON.stringify(group) ?? "<Null>"}
+        </Text>
+      </View>
+      <MyButtons.LinkButton
+        style={{ marginTop: 4, marginBottom: 4 }}
+        text="Delete"
+        onPress={async () => {
+          Alert.alert("Delete Group Membership " + groupMembership.id + "?", null, [
+            {
+              text: "Yes",
+              onPress: async () => {
+                await Controller.deleteGroupMembership(groupMembership.id);
               },
             },
             {

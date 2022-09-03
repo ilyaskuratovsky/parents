@@ -273,6 +273,7 @@ export async function updateUser(uid, update) {
 }
 
 export async function deleteGroupMembership(groupMembershipId) {
+  console.log("deleting group membership: " + groupMembershipId);
   const docRef = RDB.ref(rdb, "/group_memberships/" + groupMembershipId);
   await RDB.remove(docRef);
 }

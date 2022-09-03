@@ -730,7 +730,7 @@ export async function deleteUser(uid) {
   await Database.deleteUser(uid);
 }
 
-export async function deleteGroupMembership(userInfo, groupMembershipId) {
+export async function deleteGroupMembership(groupMembershipId) {
   await Database.deleteGroupMembership(groupMembershipId);
 }
 

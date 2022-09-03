@@ -140,6 +140,20 @@ export function getGroupMemberships(groupId) {
   return groupMemberships;
 }
 
+export function getAllGroupMemberships() {
+  const { groupMembershipsMap } = useSelector((state) => {
+    return {
+      groupMembershipsMap: state.main.groupMembershipMap,
+    };
+  });
+
+  return [
+    ...Object.entries(groupMembershipsMap)
+      .map((keyValue) => keyValue[1])
+      .flat(),
+  ];
+}
+
 export function getUserChatMemberships() {
   const { userChatMemberships } = useSelector((state) => {
     return {
