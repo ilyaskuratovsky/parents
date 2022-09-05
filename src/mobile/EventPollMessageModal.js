@@ -324,46 +324,6 @@ export default function EventPollMessageModal({
                   />
                 </View>
               </View>
-              {/* responses 2 */}
-              {/*
-              <View>
-                {pollResponseSummary.map((option) => {
-                  return (
-                    <View style={{ flex: 1, flexDirection: "column" }}>
-                      <View
-                        style={{
-                          flex: 1,
-                          flexDirection: "row",
-                          alignItems: "center",
-                          //backgroundColor: "yellow",
-                        }}
-                      >
-                        <Text>
-                          {moment(Date.toDate(option.poll_option.startDate)).format("LL") +
-                            " - " +
-                            moment(Date.toDate(option.poll_option.endTime)).format("LT")}
-                        </Text>
-                        {option.uid_list.length == 0 && (
-                          <View style={{ height: 30, justifyContent: "center" }}>
-                            <Text
-                              style={
-                                {
-                                  //backgroundColor: "yellow",
-                                }
-                              }
-                            >
-                            </Text>
-                          </View>
-                        )}
-                        {option.uid_list.length >= 0 && (
-                          <FacePile userIds={option.uid_list} border />
-                        )}
-                      </View>
-                    </View>
-                  );
-                })}
-              </View>
-            */}
             </View>
             <Divider style={{}} width={1} color="darkgrey" />
             {/* comments section */}
@@ -404,30 +364,6 @@ export default function EventPollMessageModal({
                   </Text>
                 </ScrollView>
               )}
-              {/*message.event_poll.creator != user.uid && (
-                <>
-                  {message.event_poll.options.map((option) => {
-                    return (
-                      <CheckBox
-                        checked={
-                          pollResponse.filter((response) => response.name == option.name).length > 0
-                        }
-                        onPress={() => {
-                          togglePollResponse(option);
-                        }}
-                        style={{ alignSelf: "center" }}
-                        title={
-                          moment(Date.toDate(option.startDate)).format("LL") +
-                          " " +
-                          moment(Date.toDate(option.startTime)).format("LT") +
-                          " - " +
-                          moment(Date.toDate(option.endTime)).format("LT")
-                        }
-                      />
-                    );
-                  })}
-                </>
-                )*/}
             </View>
             <View
               style={{
@@ -482,23 +418,6 @@ export default function EventPollMessageModal({
             </View>
           </View>
         </KeyboardAvoidingView>
-        {/*
-        <NewEventModal
-          userInfo={user}
-          group={group}
-          visible={showNewEventModal != null}
-          allowCreatePoll={false}
-          papaId={message.id}
-          initialTitle={showNewEventModal?.title}
-          initialText={showNewEventModal?.text}
-          initialStartDate={showNewEventModal?.startDate}
-          initialStartTime={showNewEventModal?.startTime}
-          initialEndTime={showNewEventModal?.endTime}
-          closeModal={(flag) => {
-            setShowNewEventModal(null);
-          }}
-        />
-        */}
       </Portal>
     </Modal>
   );

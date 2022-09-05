@@ -10,6 +10,7 @@ export default function ThreadMessageModal({ userInfo, group, visible, sendMessa
   const insets = useSafeAreaInsets();
   const [text, setText] = useState(null);
   const [title, setTitle] = useState(null);
+  const debugMode = Debug.isDebugMode();
   //<KeyboardAvoidingView behavior="padding" style={{ flex: 1, backgroundColor: "white" }}>
   //</KeyboardAvoidingView>
 
@@ -61,7 +62,7 @@ export default function ThreadMessageModal({ userInfo, group, visible, sendMessa
                 backgroundColor: "grey",
               }}
             >
-              Group:
+              Groupx:
               <Text style={{ fontSize: 20, fontWeight: "bold" }}>{"group name"}</Text>
             </View>
             <View

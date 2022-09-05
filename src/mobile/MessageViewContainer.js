@@ -7,6 +7,7 @@ import * as Globals from "./Globals";
 import MessageTime from "./MessageTime";
 import * as UIConstants from "./UIConstants";
 import MessageView from "./MessageView";
+import MessagePollView from "./MessagePollView";
 import EventMessageView from "./EventMessageView";
 import EventPollMessageView from "./EventPollMessageView";
 import EventPollMessageCreatorView from "./EventPollMessageCreatorView";
@@ -20,6 +21,8 @@ export default function MessageViewContainer({ user, item, onPress, showGroup = 
     } else {
       return <EventPollMessageCreatorView message={item} />;
     }
+  } else if (item.poll != null) {
+    return <MessagePollView item={item} onPress={onPress} showGroup={showGroup} />;
   } else {
     return <MessageView item={item} onPress={onPress} showGroup={showGroup} />;
   }

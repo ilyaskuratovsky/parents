@@ -41,7 +41,7 @@ import * as Data from "../common/Data";
 export default function FeedScreen({ debug }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-
+  console.log("FeedScreen 1");
   let { messages, userMap, userMessagesMap, groupMap } = useSelector((state) => {
     return {
       userinfo: state.main.userInfo,
@@ -55,6 +55,7 @@ export default function FeedScreen({ debug }) {
       userMessagesMap: state.main.userMessagesMap,
     };
   });
+  console.log("FeedScreen 2");
 
   const FlatListItemSeparator = () => {
     return (
@@ -68,6 +69,7 @@ export default function FeedScreen({ debug }) {
     );
   };
 
+  console.log("FeedScreen 3");
   const sortedMessages = useMemo(() => {
     const rootMessages = MessageUtils.buildRootMessagesWithChildren(
       messages,
@@ -84,6 +86,7 @@ export default function FeedScreen({ debug }) {
     return sortedMessages;
   }, [messages, userInfo, userMessagesMap, null, userMap]);
 
+  console.log("FeedScreen 4");
   const renderMessage = ({ item }) => {
     const onPress = () => {
       //setMessagesModalVisible({ messageId: item.id, groupId: item.groupId });
@@ -94,6 +97,7 @@ export default function FeedScreen({ debug }) {
   useEffect(async () => {}, [messages]);
   const defaultGroup = Data.getSuperPublicGroups()[0];
 
+  console.log("FeedScreen 5");
   return (
     <Portal
       backgroundColor={UIConstants.DEFAULT_BACKGROUND}

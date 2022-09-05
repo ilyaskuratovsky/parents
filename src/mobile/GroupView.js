@@ -19,6 +19,7 @@ import * as Data from "../common/Data";
 import * as MessageUtils from "../common/MessageUtils";
 import { Badge } from "react-native-elements";
 import { styles } from "./Styles";
+import DebugText from "./DebugText";
 
 export default function GroupView({ groupId }) {
   const dispatch = useDispatch();
@@ -33,7 +34,9 @@ export default function GroupView({ groupId }) {
   if (group == null) {
     if (debugMode) {
       return (
-        <Text>Group is null for group_memberships: {JSON.stringify(userGroupMembership)}</Text>
+        <DebugText
+          text={"Group is null for group_memberships: " + JSON.stringify(userGroupMembership)}
+        />
       );
     } else {
       return null;

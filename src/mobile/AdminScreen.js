@@ -79,7 +79,7 @@ export default function AdminScreen({}) {
       {(page == null || page === "groups") && (
         <View style={{ flexDirection: "column" }}>
           <Text>Groups</Text>
-          <ScrollView style={{ marginBottom: 200 }}>
+          <ScrollView style={{ paddingBottom: 100, marginBottom: 200 }}>
             {allGroups.map((group) => {
               return <GroupView group={group} />;
             })}

@@ -26,7 +26,7 @@ import FacePile from "./FacePile";
 import { Divider, Icon } from "react-native-elements";
 import { IconButton } from "react-native-paper";
 import MessageViewContainer from "./MessageViewContainer";
-
+import DebugText from "./DebugText";
 /* 
 People can "follow" orgs, this is a new relationship
 When people follow orgs - they will receive notifications of all the happenings - new groups created
@@ -182,6 +182,7 @@ export default function GroupScreen({ groupId }) {
               </View>
             </View>
           </View>
+          {debugMode && <Text style={{ fontSize: 8 }}>GroupScreen.js</Text>}
           <Divider style={{}} width={1} color="lightgrey" />
         </View>
         <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
@@ -215,7 +216,7 @@ export default function GroupScreen({ groupId }) {
           />
         </View>
         {/* default group */}
-        {debugMode ? <Text style={{ fontSize: 10 }}>Group: {JSON.stringify(group)}</Text> : null}
+        <DebugText text={"Group: " + JSON.stringify(group)} />
         {/*debugMode ? <Text style={{ fontSize: 10 }}>Org: {JSON.stringify(org)}</Text> : null*/}
         {/* sub-groups section */}
         <ScrollView
@@ -247,7 +248,7 @@ export default function GroupScreen({ groupId }) {
         >
           <MyButtons.MenuButton
             icon="plus"
-            text="New Post"
+            text="Post"
             onPress={() => {
               dispatch(Actions.openModal({ modal: "NEW_POST", groupId: group.id }));
             }}
@@ -255,10 +256,18 @@ export default function GroupScreen({ groupId }) {
           />
           <MyButtons.MenuButton
             icon="calendar-plus"
-            text="New Event"
+            text="Event"
             onPress={() => {
               //setShowNewEventModal(true);
               dispatch(Actions.openModal({ modal: "NEW_EVENT", groupId: group.id }));
+            }}
+          />
+          <MyButtons.MenuButton
+            icon="poll"
+            text="Poll"
+            onPress={() => {
+              //setShowNewEventModal(true);
+              dispatch(Actions.openModal({ modal: "NEW_POLL", groupId: group.id }));
             }}
           />
         </View>

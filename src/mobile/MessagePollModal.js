@@ -29,6 +29,7 @@ import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
 import BookCalendarEventModal from "./BookCalendarEventModal";
+import Checkbox from "./Checkbox";
 //import moment from "moment";
 import moment from "moment-timezone";
 import JSONTree from "react-native-json-tree";
@@ -38,12 +39,14 @@ import * as Debug from "../common/Debug";
 import * as Data from "../common/Data";
 import DebugText from "./DebugText";
 
-export default function MessageModal({ messageId, scrollToEnd }) {
+export default function MessagePollModal({ messageId, scrollToEnd }) {
+  console.log("MessagePollModal: " + messageId);
   const debugMode = Debug.isDebugMode();
   const dispatch = useDispatch();
   const user = Data.getCurrentUser();
   const messageObj = Data.getMessage(messageId);
   const message = Data.getRootMessageWithChildrenAndUserStatus(messageId);
+  const pollOptions = message.poll;
   const group = Data.getGroup(message.groupId);
   const sortedChildMessages = [...message.children] ?? [];
   sortedChildMessages.sort((m1, m2) => {
@@ -94,7 +97,7 @@ export default function MessageModal({ messageId, scrollToEnd }) {
         backgroundColor={UIConstants.DEFAULT_BACKGROUND}
         //backgroundColor="green"
       >
-        {debugMode && <Text>MessageModal.js</Text>}
+        {debugMode && <Text>MessagePollModal.js</Text>}
         {/* top bar */}
         <TopBarMiddleContentSideButtons
           backgroundColor={UIConstants.DEFAULT_BACKGROUND}
@@ -225,6 +228,31 @@ export default function MessageModal({ messageId, scrollToEnd }) {
               })}
             </View>
           </ScrollView>
+
+          {/* Poll Section */}
+          <View
+            style={{
+              paddingLeft: 0,
+              paddingTop: 0,
+              borderRadius: 0,
+              flex: 1,
+              flexDirection: "column",
+              backgroundColor: "cyan",
+            }}
+          >
+            {pollOptions.map((pollOption, index) => {
+              return (
+                <Checkbox
+                  checked={true}
+                  onPress={async () => {
+                    //setPoll(!poll);
+                  }}
+                  text={<Text key={index}>{pollOption.message}</Text>}
+                />
+              );
+            })}
+          </View>
+
           {/* reply text input section */}
           <View
             style={{

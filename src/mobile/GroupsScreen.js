@@ -96,7 +96,7 @@ export default function GroupsScreen({}) {
   if (userGroupMemberships.length > 0) {
     groupsComponents = userGroupMemberships.map((userGroupMembership, index) => {
       const groupId = userGroupMembership.groupId;
-      return <GroupView groupId={groupId} />;
+      return <GroupView key={groupId} groupId={groupId} />;
     });
   }
 

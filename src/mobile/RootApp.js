@@ -50,6 +50,9 @@ import SchoolGroup from "./SchoolScreen";
 import MessageModal from "./MessageModal";
 import AdminScreen from "./AdminScreen";
 import GroupScreenContainer from "./GroupScreenContainer";
+import NewPollModal from "./NewPollModal";
+import MessagePollModal from "./MessagePollModal";
+import { DebugTextModal } from "./DebugText";
 /*
 App vision:  The local social network for parents.
 When join you put in your zip code (we also detect based on gps coordinates)
@@ -211,6 +214,7 @@ function RootApp(props, state) {
       {modal === "EVENT_POLL" && <EventPollModal visible={true} {...modalWithParams} />}
       {modal === "NEW_EVENT_FROM_POLL" && <NewEventFromPollModal {...modalWithParams} />}
       {modal === "NEW_EVENT" && <NewEventModal visible={true} {...modalWithParams} />}
+      {modal === "NEW_POLL" && <NewPollModal visible={true} {...modalWithParams} />}
       {modal === "BOOK_IN_CALENDAR" && (
         <BookCalendarEventModal visible={true} {...modalWithParams} />
       )}
@@ -225,6 +229,8 @@ function RootApp(props, state) {
         <GroupScreenContainer key={modalWithParams["groupId"]} {...modalWithParams} />
       )}
       {modal === "MESSAGES" && <MessageModal {...modalWithParams} />}
+      {modal === "MESSAGE_POLL" && <MessagePollModal {...modalWithParams} />}
+      {modal === "DEBUG_TEXT" && <DebugTextModal {...modalWithParams} />}
       {/*modal === "SCHOOL_GROUP" && <SchoolGroup {...modalWithParams} />*/}
       <View style={{ position: "absolute", bottom: 400, right: 0 }}>
         <MyButtons.MenuButton

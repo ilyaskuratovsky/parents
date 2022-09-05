@@ -8,6 +8,7 @@ import * as Actions from "../common/Actions";
 import FacePile from "./FacePile";
 import * as Date from "../common/Date";
 import * as Debug from "../common/Debug";
+import DebugText from "./DebugText";
 
 export default function EventPollMessageCreatorView({ message, showGroup = false }) {
   const dispatch = useDispatch();
@@ -17,6 +18,7 @@ export default function EventPollMessageCreatorView({ message, showGroup = false
   //have "create meeting button" - this will go to a new "create meeting out of poll screen"
   return (
     <View style={{ flex: 1 }}>
+      {debugMode && <DebugText style={{ fontSize: 8 }}>EventPollMessageCreatorView.js</DebugText>}
       <TouchableOpacity
         style={{ flex: 1, padding: 20, backgroundColor: "rgba(204, 255, 255, 0.5)" }}
         onPress={() => {
@@ -25,9 +27,7 @@ export default function EventPollMessageCreatorView({ message, showGroup = false
       >
         {debugMode ? <Text style={{ fontSize: 10 }}>{message.id}</Text> : null}
         {debugMode ? (
-          <Text style={{ fontSize: 10 }}>
-            {JSON.stringify({ ...message, children: null }, null, 2)}
-          </Text>
+          <DebugText text={JSON.stringify({ ...message, children: null }, null, 2)} />
         ) : null}
         <View style={{ height: 22 }}>
           <Text style={{ fontWeight: "bold", fontSize: 12 }}>

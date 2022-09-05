@@ -81,6 +81,8 @@ export default function ThreadMessageModal({ groupId }) {
   return (
     <Modal visible={true} animationType={"slide"}>
       <Portal>
+        {isDebugMode && <Text>ThreadMessageModal.js</Text>}
+        {isDebugMode && <Text>groupId: {groupId}</Text>}
         {/* top close section */}
         <View
           style={{
@@ -125,7 +127,6 @@ export default function ThreadMessageModal({ groupId }) {
               }}
             >
               <SelectGroup groupId={groupId} onSet={() => {}} />
-              {isDebugMode && <Text>groupId: {groupId}</Text>}
             </View>
             <View
               style={{
@@ -301,7 +302,7 @@ function SelectGroup({ groupId, onSet }) {
         flexDirection: "row",
       }}
     >
-      <Text style={{ fontSize: 20, fontWeight: "bold" }}>Group: {group?.name}</Text>
+      <Text style={{ fontSize: 20, fontWeight: "bold" }}>{group?.name}</Text>
       <IconButton
         style={{
           //backgroundColor: "green",

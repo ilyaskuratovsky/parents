@@ -10,19 +10,25 @@ import * as Debug from "../common/Debug";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Utils from "../common/Utils";
 import DebugText from "./DebugText";
+import { useDispatch, useSelector } from "react-redux";
+import * as Actions from "../common/Actions";
+import Checkbox from "./Checkbox";
 
-export default function MessageView({ item, onPress, showGroup = false }) {
+export default function MessagePollView({ item, onPress, showGroup = false }) {
+  const dispatch = useDispatch();
   const timestamp = item.timestamp?.toDate();
   const debugMode = Debug.isDebugMode();
   const insets = useSafeAreaInsets();
+  const pollOptions = item.poll;
 
   return (
     <TouchableOpacity
       onPress={() => {
-        onPress();
+        dispatch(Actions.openModal({ modal: "MESSAGE_POLL", messageId: item.id }));
       }}
     >
-      {debugMode && <Text style={{ fontSize: 8 }}>MessageView.js</Text>}
+      {debugMode && <Text style={{ fontSize: 8 }}>MessagePollView.js</Text>}
+      {debugMode && <Text style={{ fontSize: 8 }}>{JSON.stringify(pollOptions)}</Text>}
       <View style={{ flex: 1, flexDirection: "row", paddingRight: 20 }}>
         <View
           style={{
@@ -180,6 +186,30 @@ export default function MessageView({ item, onPress, showGroup = false }) {
               </View>
               {debugMode ? <Text style={{ fontSize: 10 }}>{item.id}</Text> : null}
               <DebugText text={JSON.stringify({ ...item, children: null }, null, 2)} />
+            </View>
+
+            {/* Poll Section */}
+            <View
+              style={{
+                paddingLeft: 0,
+                paddingTop: 0,
+                borderRadius: 0,
+                flex: 1,
+                flexDirection: "column",
+                backgroundColor: "cyan",
+              }}
+            >
+              {pollOptions.map((pollOption, index) => {
+                return (
+                  <Checkbox
+                    checked={true}
+                    onPress={async () => {
+                      //setPoll(!poll);
+                    }}
+                    text={<Text key={index}>{pollOption.message}</Text>}
+                  />
+                );
+              })}
             </View>
 
             {/* message text */}
