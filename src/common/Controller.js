@@ -54,7 +54,7 @@ export async function initializeApp(dispatch, notificationListener, responseList
 
   //observe group_membership_changes
   Database.observeAllGroupMembershipChanges((groupMemberships) => {
-    console.log("all group memberships: " + JSON.stringify(groupMemberships));
+    Logger.log("all group memberships: " + JSON.stringify(groupMemberships));
     dispatch(Actions.groupMemberships(groupMemberships));
   });
 
@@ -76,7 +76,7 @@ export async function initializeApp(dispatch, notificationListener, responseList
   /*
   Notifications.setNotificationHandler({
     handleNotification: async (notification) => {
-      console.log('handle notification');
+      Logger.log('handle notification');
       return {
       shouldShowAlert: true,
       shouldPlaySound: true,
@@ -394,15 +394,15 @@ export async function createGroupAndJoin(
     parentGroupId: parentGroupId ?? null,
     type: type,
   };
-  console.log("controller creating group: " + JSON.stringify(group) + ", type: " + type);
+  Logger.log("controller creating group: " + JSON.stringify(group) + ", type: " + type);
   const groupId = await Database.createGroup(group);
   await Database.joinGroup(userInfo.uid, groupId);
-  console.log("controller created group: " + groupId);
+  Logger.log("controller created group: " + groupId);
   return groupId;
 }
 
 export async function createDefaultOrgGroupIfNotExists(orgId) {
-  console.log(
+  Logger.log(
     "Controller.createDefaultOrgGroupIfNotExists: orgId: " + orgId + ", groupName: " + groupName
   );
   const groupList = await Database.getAllGroups();
@@ -421,12 +421,12 @@ export async function createDefaultOrgGroupIfNotExists(orgId) {
       const groupDescription = groupName + " General Discussion";
       groupId = await createGroup(groupName, groupDescription, "default_org_group", orgId);
     } catch (e) {
-      console.log("could not create group: " + JSON.stringify(e));
+      Logger.log("could not create group: " + JSON.stringify(e));
     }
-    console.log("group created: " + groupId);
+    Logger.log("group created: " + groupId);
     return groupId;
   } else {
-    console.log("group already exists: " + defaultGroup.id);
+    Logger.log("group already exists: " + defaultGroup.id);
     return defaultGroup.id;
   }
 }
@@ -439,7 +439,7 @@ export async function createOrgGroup(orgName, orgDescription, orgType /* school 
     orgId: orgId,
     type: "default_org_group",
   };
-  console.log("controller creating group: " + JSON.stringify(group));
+  Logger.log("controller creating group: " + JSON.stringify(group));
   const groupId = await Database.createGroup(group);
 }
 
@@ -490,11 +490,11 @@ export async function createPrivateGroupAndJoin(userInfo, groupName, groupDescri
 }
 
 export async function createChat(userInfo, participants) {
-  console.log("calling Database.createChat");
+  Logger.log("calling Database.createChat");
   const chatId = await Database.createChat({ organizerUid: userInfo.uid, participants });
   //await Database.joinChat(userInfo.uid, chatId);
   participants.forEach(async (uid) => {
-    console.log("calling Database.joinChat");
+    Logger.log("calling Database.joinChat");
     await Database.joinChat(uid, chatId);
   });
   return chatId;
@@ -691,7 +691,7 @@ export async function setUserGroupLastViewedTimestamp(
         ")"
     );
     */
-    console.log("lastViewedMessageTimestamp: " + lastViewedMessageTimestamp);
+    Logger.log("lastViewedMessageTimestamp: " + lastViewedMessageTimestamp);
     Database.updateUserGroupMembership(userGroupMembership.id, {
       lastViewedMessageTimestamp: lastViewedMessageTimestamp.getTime(),
     });
@@ -747,7 +747,7 @@ export async function createSharedCalendar(groupId) {
     },
     async (error, value) => {
       if (error) {
-        console.log(error);
+        Logger.log(error);
       }
 
       const metadata = {
@@ -756,12 +756,12 @@ export async function createSharedCalendar(groupId) {
 
       const fileRef = ref(storage, "calendars/test/test_calendar4.ics");
       let blob = new Blob([value], { type: "text/calendar" });
-      console.log("uploading");
+      Logger.log("uploading");
       const result = uploadBytes(fileRef, blob).then((snapshot) => {
-        console.log("Uploaded a blob or file!");
-        console.log("snapshpt: " + JSON.stringify(snapshot));
+        Logger.log("Uploaded a blob or file!");
+        Logger.log("snapshpt: " + JSON.stringify(snapshot));
       });
-      console.log("result: " + JSON.stringify(result));
+      Logger.log("result: " + JSON.stringify(result));
       // We're done with the blob, close and release it
       //blob.close();
     }

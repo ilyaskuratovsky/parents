@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback } from "react";
 import { TouchableOpacity, Text } from "react-native";
 import { GiftedChat } from "react-native-gifted-chat";
+import * as Logger from "../common/Logger";
+
 /*
 import {
   collection,
@@ -18,7 +20,7 @@ export default function Chat({ navigation }) {
   const [messages, setMessages] = useState([]);
 
   const onSignOut = () => {
-    signOut(auth).catch((error) => console.log("Error logging out: ", error));
+    signOut(auth).catch((error) => Logger.log("Error logging out: ", error));
   };
   const onSend = useCallback((messages = []) => {
     setMessages((previousMessages) => GiftedChat.append(previousMessages, messages));

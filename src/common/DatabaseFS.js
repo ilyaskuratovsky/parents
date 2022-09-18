@@ -12,6 +12,8 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
+import * as Logger from "./Logger";
+
 //import Firebase from "firebase";
 
 export async function getAllSchools() {
@@ -79,7 +81,7 @@ export function observeUserChanges(uid, callback) {
       callback(userInfo);
     },
     (err) => {
-      console.log("encountered error");
+      Logger.log("encountered error");
     }
   );
 }
@@ -184,7 +186,7 @@ export function observeToUserInvites(toUid, toEmail, callback) {
         const data = doc.data();
         const toUidStr = data.toUid;
         const filter = toUidStr == "_uid_" + toUid || toUidStr == "_email_" + toEmail;
-        console.log(
+        Logger.log(
           "userinvite snapshot: " + toUid + ", toUidStr: " + toUidStr + ", filter: " + filter
         );
         return filter;
@@ -266,7 +268,7 @@ export async function joinGroup(userInfo, groupId) {
 
   const existingGroupMembershipSnapshot = await getDocs(existingGroupMembershipQuery);
 
-  console.log("existing memberships: " + existingGroupMembershipSnapshot.docs.length);
+  Logger.log("existing memberships: " + existingGroupMembershipSnapshot.docs.length);
   if (existingGroupMembershipSnapshot.docs.length == 0) {
     const membership = { uid: userInfo.uid, groupId: groupId };
     await addDoc(groupMembershipCollectionRef, membership);
@@ -312,7 +314,7 @@ export async function sendChatMessage(chatId, uid, text, data, papaId, notificat
 }
 
 export async function createInvite(fromUid, groupId, uid, email) {
-  console.log("creating invite");
+  Logger.log("creating invite");
   const invitesRef = collection(db, "invites");
   const timestamp = serverTimestamp();
   const group = await addDoc(invitesRef, {
@@ -322,11 +324,11 @@ export async function createInvite(fromUid, groupId, uid, email) {
     status: "new",
     created: timestamp,
   });
-  console.log("invite created: " + JSON.stringify(group));
+  Logger.log("invite created: " + JSON.stringify(group));
 }
 
 export async function createEvent(uid, groupId, title, text, startDate, endDate) {
-  console.log(
+  Logger.log(
     "create event: " +
       uid +
       ", " +

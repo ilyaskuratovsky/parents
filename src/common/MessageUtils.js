@@ -310,7 +310,7 @@ export function addEventPollData(rootMessage) {
 }
 
 export function addPollData(rootMessage) {
-  console.log("rootMessage: " + JSON.stringify(rootMessage));
+  Logger.log("rootMessage: " + JSON.stringify(rootMessage));
   if (rootMessage.poll == null) {
     return rootMessage;
   }

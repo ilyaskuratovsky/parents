@@ -40,10 +40,11 @@ import * as Data from "../common/Data";
 import * as Message from "../common/Message";
 import * as Debug from "../common/Debug";
 import * as Actions from "../common/Actions";
+import * as Logger from "../common/Logger";
 
 export default function EventModal({ messageId }) {
   const dispatch = useDispatch();
-  console.log("EventModal - messageId: " + messageId);
+  Logger.log("EventModal - messageId: " + messageId);
   const message = Data.getRootMessageWithChildrenAndUserStatus(messageId);
   const group = Data.getGroup(message.groupId);
   const user = Data.getCurrentUser();
@@ -60,7 +61,7 @@ export default function EventModal({ messageId }) {
   const childMessages = sortedChildMessages;
   let currentUserStatus = null;
   const currentUserStatusArr = childMessages.filter((m) => {
-    console.log(
+    Logger.log(
       "userInfo.uid: " +
         user.uid +
         ", m.uid: " +
@@ -70,7 +71,7 @@ export default function EventModal({ messageId }) {
     );
     return m.uid == user.uid && !Utils.isEmptyString(m.event?.eventResponse);
   });
-  console.log(
+  Logger.log(
     "currentUserSTatusArr: " +
       JSON.stringify(currentUserStatusArr) +
       ", childMessages: " +
@@ -79,7 +80,7 @@ export default function EventModal({ messageId }) {
   if (currentUserStatusArr.length > 0) {
     currentUserStatus = currentUserStatusArr[currentUserStatusArr.length - 1].event?.eventResponse;
   }
-  console.log("currentUserStatus: " + currentUserStatus);
+  Logger.log("currentUserStatus: " + currentUserStatus);
 
   const sendEventReply = useCallback(async (eventResponse, text) => {
     const groupName = group.name;
@@ -110,7 +111,7 @@ export default function EventModal({ messageId }) {
         },
         {
           text: "No",
-          onPress: () => console.log("Cancel Pressed"),
+          onPress: () => Logger.log("Cancel Pressed"),
           style: "cancel",
         },
       ]);
@@ -126,7 +127,7 @@ export default function EventModal({ messageId }) {
 
   Data.useMarkRead(message);
 
-  console.log("event response is empty string: " + Utils.isEmptyString(eventResponse));
+  Logger.log("event response is empty string: " + Utils.isEmptyString(eventResponse));
   const canSend =
     (text != null && text.length > 0) ||
     (!Utils.isEmptyString(eventResponse) && eventResponse != currentUserStatus);

@@ -124,7 +124,7 @@ export default function BookCalendarEventModal({ title, notes, startDate, endDat
                       }}
                     >
                       {calendars.map((calendar, i) => {
-                        console.log("color: " + JSON.stringify(calendar.color));
+                        Logger.log("color: " + JSON.stringify(calendar.color));
                         return (
                           <TouchableOpacity
                             key={i}
@@ -204,5 +204,4 @@ async function createEvent(calendar, title, notes, startDate, endDate) {
     .catch((error) => {
       Alert.alert("got error booking in calnar: " + JSON.stringify(error));
     });
-  // console.log(`calendar ID is: ${id}`)
 }

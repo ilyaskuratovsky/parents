@@ -9,6 +9,7 @@ import { setNativeExceptionHandler } from "react-native-exception-handler";
 import ErrorBoundary from "./ErrorBoundary";
 import ErrorScreen from "./ErrorScreen";
 import * as Database from "../common/Database";
+import * as Logger from "../common/Logger";
 
 /*
 setNativeExceptionHandler((errorString) => {
@@ -35,9 +36,9 @@ Notifications.setNotificationHandler({
 
 /*
 const myErrorHandler = (error, info) => {
-  console.log("logging error to database");
+  Logger.log("logging error to database");
   Database.logError(error, info);
-  console.log("error: " + error + ", info: " + JSON.stringify(info));
+  Logger.log("error: " + error + ", info: " + JSON.stringify(info));
 };
 */
 

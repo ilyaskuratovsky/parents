@@ -50,7 +50,6 @@ export default function GroupSettingsModal({ groupId }) {
         state.main.fromUserInvites?.filter((invite) => invite.groupId == groupId) ?? [],
     };
   });
-  //console.log("fromUserInviets: " + (fromUserInvites ? fromUserInvites.length : "null"));
 
   const [processing, setProcessing] = useState(false);
   const group = Data.getGroup(groupId);
@@ -214,7 +213,7 @@ function GroupSettings({ userInfo, group, closeModal }) {
             },
             {
               text: "No",
-              onPress: () => console.log("Cancel Pressed"),
+              onPress: () => Logger.log("Cancel Pressed"),
               style: "cancel",
             },
           ]);

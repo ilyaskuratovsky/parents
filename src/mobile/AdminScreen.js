@@ -26,6 +26,7 @@ import FacePile from "./FacePile";
 import { Divider, Icon } from "react-native-elements";
 import { IconButton } from "react-native-paper";
 import MessageViewContainer from "./MessageViewContainer";
+import * as Logger from "../common/Logger";
 
 export default function AdminScreen({}) {
   const dispatch = useDispatch();
@@ -189,7 +190,7 @@ function GroupView({ group }) {
             },
             {
               text: "No",
-              onPress: () => console.log("Cancel Pressed"),
+              onPress: () => Logger.log("Cancel Pressed"),
               style: "cancel",
             },
           ]);
@@ -241,7 +242,7 @@ function UserView({ user }) {
             },
             {
               text: "No",
-              onPress: () => console.log("Cancel Pressed"),
+              onPress: () => Logger.log("Cancel Pressed"),
               style: "cancel",
             },
           ]);
@@ -293,7 +294,7 @@ function GroupMembershipView({ groupMembership }) {
             },
             {
               text: "No",
-              onPress: () => console.log("Cancel Pressed"),
+              onPress: () => Logger.log("Cancel Pressed"),
               style: "cancel",
             },
           ]);

@@ -12,6 +12,7 @@ import TopBarLeftContentSideButton from "./TopBarLeftContentSideButton";
 import * as UIConstants from "./UIConstants";
 import * as Data from "../common/Data";
 import * as Debug from "../common/Debug";
+import * as Logger from "../common/Logger";
 
 export default function FindGroupsScreens({ navigation }) {
   const dispatch = useDispatch();
@@ -229,7 +230,7 @@ function directorySection(dispatch, user, schoolGroups, otherOrgGroups, orgsMap,
                       },
                       {
                         text: "No",
-                        onPress: () => console.log("Cancel Pressed"),
+                        onPress: () => Logger.log("Cancel Pressed"),
                         style: "cancel",
                       },
                     ]);
@@ -281,7 +282,7 @@ function directorySection(dispatch, user, schoolGroups, otherOrgGroups, orgsMap,
                     },
                     {
                       text: "No",
-                      onPress: () => console.log("Cancel Pressed"),
+                      onPress: () => Logger.log("Cancel Pressed"),
                       style: "cancel",
                     },
                   ]);

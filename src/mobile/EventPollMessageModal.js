@@ -38,6 +38,7 @@ import Autolink from "react-native-autolink";
 import FacePile from "./FacePile";
 import * as Date from "../common/Date";
 import * as Debug from "../common/Debug";
+import * as Logger from "../common/Logger";
 
 export default function EventPollMessageModal({
   group,
@@ -91,20 +92,20 @@ export default function EventPollMessageModal({
     (pollResponse != null &&
       JSON.stringify(pollResponse) != JSON.stringify(userPollResponse?.event_poll_response ?? []));
 
-  console.log("canSend: " + canSend + ", text: " + text);
+  Logger.log("canSend: " + canSend + ", text: " + text);
   const togglePollResponse = (option) => {
-    console.log("toggling poll response: " + JSON.stringify(option));
+    Logger.log("toggling poll response: " + JSON.stringify(option));
     const index = pollResponse.findIndex((response) => {
       return response.name == option.name;
     });
-    console.log("toggling poll response, index" + index);
+    Logger.log("toggling poll response, index" + index);
     const newPollResponse = [...pollResponse];
     if (index == -1) {
       newPollResponse.push(option);
     } else {
       newPollResponse.splice(index, 1);
     }
-    console.log("newPollResponse: " + JSON.stringify(newPollResponse));
+    Logger.log("newPollResponse: " + JSON.stringify(newPollResponse));
     setPollResponse(newPollResponse);
   };
 
@@ -401,7 +402,7 @@ export default function EventPollMessageModal({
                 multiline={true}
                 autoFocus={false}
                 onChangeText={(text) => {
-                  console.log("setting text: " + text);
+                  Logger.log("setting text: " + text);
                   setText(text);
                 }}
               />

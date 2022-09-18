@@ -17,6 +17,7 @@ import * as Utils from "../common/Utils";
 import * as Data from "../common/Data";
 import * as Debug from "../common/Debug";
 import { styles } from "./Styles";
+import * as Logger from "../common/Logger";
 
 export default function FriendsScreen({}) {
   const debugMode = Debug.isDebugMode();
@@ -118,7 +119,7 @@ export default function FriendsScreen({}) {
                         },
                         {
                           text: "No",
-                          onPress: () => console.log("Cancel Pressed"),
+                          onPress: () => Logger.log("Cancel Pressed"),
                           style: "cancel",
                         },
                       ]);

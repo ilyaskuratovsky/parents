@@ -27,6 +27,8 @@ import { Divider, Icon } from "react-native-elements";
 import { IconButton } from "react-native-paper";
 import MessageViewContainer from "./MessageViewContainer";
 import DebugText from "./DebugText";
+import * as Logger from "../common/Logger";
+
 /* 
 People can "follow" orgs, this is a new relationship
 When people follow orgs - they will receive notifications of all the happenings - new groups created
@@ -369,7 +371,7 @@ function GroupView({ group, setLoading }) {
                   },
                   {
                     text: "No",
-                    onPress: () => console.log("Cancel Pressed"),
+                    onPress: () => Logger.log("Cancel Pressed"),
                     style: "cancel",
                   },
                 ]);

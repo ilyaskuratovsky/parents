@@ -1,12 +1,8 @@
 import React, { Component } from "react";
 import { View, Button } from "react-native";
 //import { LoginButton, AccessToken } from "react-native-fbsdk-next";
-import {
-  getAuth,
-  signInWithPopup,
-  FacebookAuthProvider,
-  signInWithRedirect,
-} from "firebase/auth";
+import { getAuth, signInWithPopup, FacebookAuthProvider, signInWithRedirect } from "firebase/auth";
+import * as Logger from "../common/Logger";
 
 export default class FacebookSignin extends Component {
   render() {
@@ -22,7 +18,7 @@ export default class FacebookSignin extends Component {
             signInWithPopup(auth, provider)
               .then((result) => {
                 // The signed-in user info.
-                console.log("facebook login successful");
+                Logger.log("facebook login successful");
                 const user = result.user;
 
                 // This gives you a Facebook Access Token. You can use it to access the Facebook API.
@@ -34,7 +30,7 @@ export default class FacebookSignin extends Component {
               })
               .catch((error) => {
                 // Handle Errors here.
-                console.log("error: " + JSON.stringify(error));
+                Logger.log("error: " + JSON.stringify(error));
                 const errorCode = error.code;
                 const errorMessage = error.message;
                 // The email of the user's account used.
@@ -47,8 +43,7 @@ export default class FacebookSignin extends Component {
             getRedirectResult(auth)
               .then((result) => {
                 // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-                const credential =
-                  FacebookAuthProvider.credentialFromResult(result);
+                const credential = FacebookAuthProvider.credentialFromResult(result);
                 const token = credential.accessToken;
 
                 const user = result.user;
@@ -60,8 +55,7 @@ export default class FacebookSignin extends Component {
                 // The email of the user's account used.
                 const email = error.email;
                 // AuthCredential type that was used.
-                const credential =
-                  FacebookAuthProvider.credentialFromError(error);
+                const credential = FacebookAuthProvider.credentialFromError(error);
               });
             // ...
           }}

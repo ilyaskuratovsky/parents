@@ -25,14 +25,15 @@ import * as Dates from "../common/Date";
 import BookCalendarEventModal from "./BookCalendarEventModal";
 import Checkbox from "./Checkbox";
 import * as Debug from "../common/Debug";
+import * as Logger from "../common/Logger";
 
 export default function DatePickerModal({ value, visible, onChange, closeModal }) {
-  console.log("DatePickerModal, value: " + value);
+  Logger.log("DatePickerModal, value: " + value);
   const [date, setDate] = useState(value);
   useEffect(() => {
     setDate(value);
   }, [value]);
-  console.log("Time picker modal visible: " + visible);
+  Logger.log("Time picker modal visible: " + visible);
   return (
     <Modal visible={visible} animationType={"slide"}>
       <Portal

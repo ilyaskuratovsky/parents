@@ -53,7 +53,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
       : group.type === "public"
       ? "Public (Open to All)"
       : group.type;
-  console.log(
+  Logger.log(
     "GroupScreen, groupId: " +
       groupId +
       ", messageId: " +
@@ -295,7 +295,7 @@ export default function GroupScreen({ groupId, messageId, debug }) {
               icon="account-supervisor"
               text={members.length + " member" + (members.length > 1 ? "s" : "")}
               onPress={() => {
-                console.log("members pressed");
+                Logger.log("members pressed");
                 setMembersModalVisible(true);
               }}
             />
