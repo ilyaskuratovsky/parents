@@ -97,7 +97,7 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
         backgroundColor={UIConstants.DEFAULT_BACKGROUND}
         //backgroundColor="green"
       >
-        {debugMode && <Text>MessagePollModal.js</Text>}
+        <DebugText text="MessagePollModal.js" />
         {/* top bar */}
         <TopBarMiddleContentSideButtons
           backgroundColor={UIConstants.DEFAULT_BACKGROUND}
@@ -194,6 +194,7 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
                 >
                   {message.title}
                 </Text>
+
                 {/* the message text */}
                 <Autolink
                   // Required: the text to parse for links
@@ -211,9 +212,57 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
                     color: UIConstants.BLACK_TEXT_COLOR,
                   }}
                 />
-                {Globals.dev && (
-                  <Text style={{ fontSize: 8 }}>{JSON.stringify(message, null, 2)}</Text>
-                )}
+                {/* Poll Part of the message */}
+                <View
+                  style={{
+                    paddingLeft: 0,
+                    paddingTop: 0,
+                    borderRadius: 0,
+                    flex: 1,
+                    flexDirection: "column",
+                    backgroundColor: "cyan",
+                    alignItems: "center",
+                  }}
+                >
+                  <View style={{ flex: 1, width: "100%" }}>
+                    {pollOptions.map((pollOption, index) => {
+                      /*
+                      return (
+                        <Checkbox
+                          checked={true}
+                          onPress={async () => {
+                            //setPoll(!poll);
+                          }}
+                          text={<Text key={index}>{pollOption.message}</Text>}
+                        />
+                      );
+                      */
+                      return (
+                        <View style={{ flex: 1, flexDirection: "row" }}>
+                          <Text style={{ width: "80%" }} key={index}>
+                            {pollOption.message}
+                          </Text>
+                          <View style={{ flex: 1, width: "20%", alignItems: "flex-end" }}>
+                            <Text style={{}} key={index}>
+                              Putas
+                            </Text>
+                          </View>
+                        </View>
+                      );
+                    })}
+                  </View>
+                  <MyButtons.FormButton
+                    text="Vote"
+                    disabled={false}
+                    style={{ width: 100, fontSize: 10 }}
+                    onPress={() => {
+                      dispatch(
+                        Actions.openModal({ modal: "MESSAGE_POLL_VOTE", messageId: message.id })
+                      );
+                    }}
+                  />
+                </View>
+                <DebugText text={JSON.stringify(message, null, 2)} />
               </View>
             </View>
             <Divider style={{}} width={1} color="darkgrey" />
@@ -228,30 +277,6 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
               })}
             </View>
           </ScrollView>
-
-          {/* Poll Section */}
-          <View
-            style={{
-              paddingLeft: 0,
-              paddingTop: 0,
-              borderRadius: 0,
-              flex: 1,
-              flexDirection: "column",
-              backgroundColor: "cyan",
-            }}
-          >
-            {pollOptions.map((pollOption, index) => {
-              return (
-                <Checkbox
-                  checked={true}
-                  onPress={async () => {
-                    //setPoll(!poll);
-                  }}
-                  text={<Text key={index}>{pollOption.message}</Text>}
-                />
-              );
-            })}
-          </View>
 
           {/* reply text input section */}
           <View

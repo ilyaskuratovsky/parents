@@ -18,7 +18,7 @@ export default function EventPollMessageCreatorView({ message, showGroup = false
   //have "create meeting button" - this will go to a new "create meeting out of poll screen"
   return (
     <View style={{ flex: 1 }}>
-      {debugMode && <DebugText style={{ fontSize: 8 }}>EventPollMessageCreatorView.js</DebugText>}
+      <DebugText text="EventPollMessageCreatorView.js" />
       <TouchableOpacity
         style={{ flex: 1, padding: 20, backgroundColor: "rgba(204, 255, 255, 0.5)" }}
         onPress={() => {

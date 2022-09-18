@@ -85,7 +85,13 @@ export function buildRootMessagesWithChildren(
     return acc;
   }, {});
 
-  for (const m of Object.values(messageMap)) {
+  const sortedMessages = [...Object.values(messageMap)].sort((m1, m2) => {
+    const millis1 = Dates.toMillis(m1.timestamp);
+    const millis2 = Dates.toMillis(m2.timestamp);
+    return millis1 - millis2;
+  });
+
+  for (const m of sortedMessages) {
     if (m.papaId != null) {
       const papaMessage = messageMap[m.papaId];
       if (papaMessage != null) {
@@ -100,8 +106,15 @@ export function buildRootMessagesWithChildren(
   const rootMessages = Object.values(messageMap).filter((m) => m.papaId == null);
   const messagesWithStatus = rootMessages.map((rootMessage) => {
     let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap, userMap, groupMap);
+    Logger.log("building message with status (addMeta):  " + rootMessage.id);
+    rootMessageWithStatus = addPollData(rootMessageWithStatus);
+    Logger.log(
+      "building message with status (addPollData):  " + rootMessage.id + rootMessage.poll_responses
+    );
     rootMessageWithStatus = addEventData(rootMessageWithStatus);
+    Logger.log("building message with status (addEventData):  " + rootMessage.id);
     rootMessageWithStatus = addEventPollData(rootMessageWithStatus);
+    Logger.log("building message with status (addEventPollData):  " + rootMessage.id);
     return { ...rootMessage, ...rootMessageWithStatus };
   });
   Logger.log(
@@ -294,6 +307,49 @@ export function addEventPollData(rootMessage) {
   }
 
   return rootMessage;
+}
+
+export function addPollData(rootMessage) {
+  console.log("rootMessage: " + JSON.stringify(rootMessage));
+  if (rootMessage.poll == null) {
+    return rootMessage;
+  }
+
+  const poll = rootMessage.poll;
+  let poll_responses = {};
+  const pollResponseMessages = [...(rootMessage.children ?? [])].filter(
+    (message) => message.poll_response != null
+  );
+
+  for (const pollOption of poll) {
+    const uidResponses = {};
+    const optionResponseMessages = pollResponseMessages.filter((r) => {
+      return r.poll_response.option.name == pollOption.name;
+    });
+    for (const message of optionResponseMessages) {
+      if (message.poll_response.response == "true") {
+        uidResponses[message.uid] = true;
+      } else {
+        delete uidResponses[message.uid];
+      }
+    }
+
+    const count = Object.keys(uidResponses).length;
+    const uids = Object.keys(uidResponses);
+    poll_responses[pollOption.name] = {
+      uids,
+    };
+    /*
+    count = 
+    uids = []
+
+    */
+  }
+
+  return {
+    ...rootMessage,
+    poll_responses: poll_responses,
+  };
 }
 
 function eventPollResponseSummary(rootMessage) {

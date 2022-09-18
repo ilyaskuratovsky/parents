@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { Text, TouchableOpacity, View, Image } from "react-native";
 import { Badge } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -13,13 +13,44 @@ import DebugText from "./DebugText";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "../common/Actions";
 import Checkbox from "./Checkbox";
+import * as Data from "../common/Data";
+import * as Controller from "../common/Controller";
 
-export default function MessagePollView({ item, onPress, showGroup = false }) {
+export default function MessagePollView({ item, showGroup = false }) {
   const dispatch = useDispatch();
+  const userInfo = Data.getCurrentUser();
   const timestamp = item.timestamp?.toDate();
-  const debugMode = Debug.isDebugMode();
-  const insets = useSafeAreaInsets();
   const pollOptions = item.poll;
+  const pollResponses = item.poll_responses ?? {};
+  const initialUserPollResponses = {};
+
+  for (const pollOption of pollOptions) {
+    initialUserPollResponses[pollOption.name] = (
+      (pollResponses[pollOption.name] ?? {}).uids ?? []
+    ).includes(userInfo.uid);
+  }
+  const [userPollResponse, setUserPollReponse] = useState(initialUserPollResponses);
+  console.log("userPollResponse: " + JSON.stringify(userPollResponse));
+  const toggleAndSendPollResponse = useCallback(async (option) => {
+    const currentState = userPollResponse[option];
+    let response = null;
+    if (currentState == null || currentState.response == "false") {
+      response = "true";
+    } else {
+      response = "false";
+    }
+
+    await Controller.sendMessage(
+      dispatch,
+      userInfo,
+      item.groupId,
+      null,
+      null,
+      { poll_response: { option: option, response: response } },
+      item.id,
+      null
+    );
+  }, []);
 
   return (
     <TouchableOpacity
@@ -27,10 +58,11 @@ export default function MessagePollView({ item, onPress, showGroup = false }) {
         dispatch(Actions.openModal({ modal: "MESSAGE_POLL", messageId: item.id }));
       }}
     >
-      {debugMode && <Text style={{ fontSize: 8 }}>MessagePollView.js</Text>}
-      {debugMode && <Text style={{ fontSize: 8 }}>{JSON.stringify(pollOptions)}</Text>}
-      <View style={{ flex: 1, flexDirection: "row", paddingRight: 20 }}>
+      <DebugText key="debug" text="MessagePollView.js" />
+      <DebugText text={JSON.stringify({ ...item /*, children: null*/ }, null, 2)} />
+      <View key="container" style={{ flex: 1, flexDirection: "row", paddingRight: 20 }}>
         <View
+          key={"user_status"}
           style={{
             paddingLeft: 0,
             paddingTop: 15,
@@ -45,6 +77,7 @@ export default function MessagePollView({ item, onPress, showGroup = false }) {
           )}
         </View>
         <View
+          key="flex_container"
           style={{
             flexGrow: 1,
             flexDirection: "row",
@@ -184,8 +217,6 @@ export default function MessagePollView({ item, onPress, showGroup = false }) {
                   {item.title ?? "[No Title]"}
                 </Text>
               </View>
-              {debugMode ? <Text style={{ fontSize: 10 }}>{item.id}</Text> : null}
-              <DebugText text={JSON.stringify({ ...item, children: null }, null, 2)} />
             </View>
 
             {/* Poll Section */}
@@ -196,18 +227,25 @@ export default function MessagePollView({ item, onPress, showGroup = false }) {
                 borderRadius: 0,
                 flex: 1,
                 flexDirection: "column",
-                backgroundColor: "cyan",
+                //backgroundColor: "cyan",
               }}
             >
               {pollOptions.map((pollOption, index) => {
                 return (
-                  <Checkbox
-                    checked={true}
-                    onPress={async () => {
-                      //setPoll(!poll);
-                    }}
-                    text={<Text key={index}>{pollOption.message}</Text>}
-                  />
+                  <View style={{ flexDirection: "column" }}>
+                    <DebugText text={"Checked: " + userPollResponse[pollOption.name]} />
+                    <Checkbox
+                      checked={userPollResponse[pollOption.name]}
+                      onPress={async () => {
+                        toggleAndSendPollResponse(pollOption);
+                      }}
+                      text={<Text key={index}>{pollOption.message}</Text>}
+                    />
+                    <DebugText text={JSON.stringify(userPollResponse)} />
+                    <View style={{ width: "100%", backgroundColor: "red" }}>
+                      <Text>0%</Text>
+                    </View>
+                  </View>
                 );
               })}
             </View>

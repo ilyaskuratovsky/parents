@@ -1,42 +1,16 @@
-import React, { useCallback, useEffect, useState, useMemo } from "react";
-import {
-  Alert,
-  Dimensions,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  useWindowDimensions,
-  View,
-} from "react-native";
-import { Divider } from "react-native-elements";
-import { IconButton } from "react-native-paper";
+import React, { useEffect, useMemo } from "react";
+import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import BookCalendarEventModal from "./BookCalendarEventModal";
 import { useDispatch, useSelector } from "react-redux";
-import * as Controller from "../common/Controller";
-import * as Date from "../common/Date";
-import FacePile from "./FacePile";
-import * as Globals from "./Globals";
-import GroupSettingsModal from "./GroupSettingsModal";
-import MessageModalContainer from "./MessageContainerModal";
-import * as MessageUtils from "../common/MessageUtils";
-import MessageViewContainer from "./MessageViewContainer";
-import NewEventModal from "./NewEventModal";
-import Portal from "./Portal";
 import * as Actions from "../common/Actions";
-import ThreadMessageModal from "./ThreadMessageModal";
-import * as UIConstants from "./UIConstants";
-import * as UserInfo from "../common/UserInfo";
-import * as MyButtons from "./MyButtons";
-import Loading from "./Loading";
-import * as Logger from "../common/Logger";
-import TopBar from "./TopBar";
-import Toolbar from "./Toolbar";
-import TopBarLeftContentSideButton from "./TopBarLeftContentSideButton";
 import * as Data from "../common/Data";
+import * as MessageUtils from "../common/MessageUtils";
+import * as UserInfo from "../common/UserInfo";
+import MessageViewContainer from "./MessageViewContainer";
+import Portal from "./Portal";
+import Toolbar from "./Toolbar";
+import TopBar from "./TopBar";
+import * as UIConstants from "./UIConstants";
 
 export default function FeedScreen({ debug }) {
   const dispatch = useDispatch();

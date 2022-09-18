@@ -23,7 +23,7 @@ export default function DebugText({ text }) {
   const lines = (displayText.match(/\n/g) || "").length + 1;
   const dispatch = useDispatch();
 
-  const defaultNumberOfLines = 10;
+  const defaultNumberOfLines = 5;
   const [numberOfLines, setNumberOfLines] = useState(Math.min(lines, defaultNumberOfLines));
 
   //const lines = 5;
@@ -35,7 +35,7 @@ export default function DebugText({ text }) {
       <Text
         onPress={() => {
           //dispatch(Actions.openModal({ modal: "DEBUG_TEXT", text: children }));
-          setNumberOfLines(100);
+          setNumberOfLines(numberOfLines > defaultNumberOfLines ? defaultNumberOfLines : lines);
         }}
         numberOfLines={numberOfLines}
         style={{ fontSize: 9, color: "black" }}

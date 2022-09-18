@@ -52,6 +52,7 @@ import AdminScreen from "./AdminScreen";
 import GroupScreenContainer from "./GroupScreenContainer";
 import NewPollModal from "./NewPollModal";
 import MessagePollModal from "./MessagePollModal";
+import MessagePollVoteModal from "./MessagePollVoteModal";
 import { DebugTextModal } from "./DebugText";
 /*
 App vision:  The local social network for parents.
@@ -230,6 +231,7 @@ function RootApp(props, state) {
       )}
       {modal === "MESSAGES" && <MessageModal {...modalWithParams} />}
       {modal === "MESSAGE_POLL" && <MessagePollModal {...modalWithParams} />}
+      {modal === "MESSAGE_POLL_VOTE" && <MessagePollVoteModal {...modalWithParams} />}
       {modal === "DEBUG_TEXT" && <DebugTextModal {...modalWithParams} />}
       {/*modal === "SCHOOL_GROUP" && <SchoolGroup {...modalWithParams} />*/}
       <View style={{ position: "absolute", bottom: 400, right: 0 }}>
