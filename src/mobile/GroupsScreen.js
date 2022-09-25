@@ -102,7 +102,7 @@ export default function GroupsScreen({}) {
 
   const superPublicGroups = Data.getSuperPublicGroups();
   const superPublicGroupsComponents = superPublicGroups.map((group) => {
-    return <GroupView groupId={group.id} />;
+    return <GroupView key={group.id} groupId={group.id} />;
   });
 
   return (

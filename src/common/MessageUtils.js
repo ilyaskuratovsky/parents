@@ -105,7 +105,9 @@ export function buildRootMessagesWithChildren(
   const messagesWithStatus = rootMessages.map((rootMessage) => {
     let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap, userMap, groupMap);
     Logger.log("building message with status (addMeta):  " + rootMessage.id);
-    rootMessageWithStatus = addPollData(rootMessageWithStatus);
+    try {
+      rootMessageWithStatus = addPollData(rootMessageWithStatus);
+    } catch (e) {}
     Logger.log(
       "building message with status (addPollData):  " + rootMessage.id + rootMessage.poll_responses
     );
@@ -337,11 +339,6 @@ export function addPollData(rootMessage) {
     poll_responses[pollOption.name] = {
       uids,
     };
-    /*
-    count = 
-    uids = []
-
-    */
   }
 
   return {

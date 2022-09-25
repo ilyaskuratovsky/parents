@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { Divider } from "react-native-elements";
 import { IconButton } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
@@ -72,6 +72,7 @@ export default function GroupView({ groupId }) {
           paddingLeft: 10,
         }}
         onPress={() => {
+          Alert.alert("opening modal");
           dispatch(Actions.openModal({ modal: "GROUP", groupId: group.id }));
         }}
       >

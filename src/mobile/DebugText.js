@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Alert, SafeAreaView, Text, TextInput, View, Modal } from "react-native";
+import React, { useState, useRef } from "react";
+import { Alert, SafeAreaView, Text, TextInput, View, Modal, ScrollView } from "react-native";
 import JSONTree from "react-native-json-tree";
 import { useDispatch, useSelector } from "react-redux";
 import * as Database from "../common/Database";
@@ -30,24 +30,39 @@ export default function DebugText({ text }) {
   if (!debugMode) {
     return null;
   }
+  const scrollViewStyle =
+    numberOfLines > defaultNumberOfLines ? { height: Math.min(numberOfLines * 15, 500) } : null;
+
+  const scrollViewRef = useRef();
+  const isSmall = numberOfLines == defaultNumberOfLines;
+  const textComponent = (
+    <Text
+      onPress={() => {
+        //dispatch(Actions.openModal({ modal: "DEBUG_TEXT", text: children }));
+        setNumberOfLines(numberOfLines > defaultNumberOfLines ? defaultNumberOfLines : lines);
+      }}
+      numberOfLines={numberOfLines}
+      style={{ fontSize: 9, color: "black" }}
+    >
+      ({lines}) {displayText}
+    </Text>
+  );
   return (
     <View style={{ marginTop: 4, marginBottom: 4, backgroundColor: "yellow" }}>
-      <Text
-        onPress={() => {
-          //dispatch(Actions.openModal({ modal: "DEBUG_TEXT", text: children }));
-          setNumberOfLines(numberOfLines > defaultNumberOfLines ? defaultNumberOfLines : lines);
-        }}
-        numberOfLines={numberOfLines}
-        style={{ fontSize: 9, color: "black" }}
-      >
-        ({lines}) {displayText}
-      </Text>
-      {numberOfLines == defaultNumberOfLines && (
+      {isSmall ? (
+        textComponent
+      ) : (
+        <ScrollView ref={scrollViewRef} style={scrollViewStyle}>
+          {textComponent}
+        </ScrollView>
+      )}
+      {isSmall && (
         <Text
           style={{ textDecorationLine: "underline", fontSize: 9, color: "blue" }}
           onPress={() => {
             //dispatch(Actions.openModal({ modal: "DEBUG_TEXT", text: children }));
             setNumberOfLines(100);
+            scrollViewRef.current?.scrollTo({});
           }}
         >
           more...

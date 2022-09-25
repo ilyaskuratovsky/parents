@@ -38,52 +38,30 @@ import * as Actions from "../common/Actions";
 import * as Debug from "../common/Debug";
 import * as Data from "../common/Data";
 import DebugText from "./DebugText";
+import * as Logger from "../common/Logger";
+import { RootMessage } from "../common/Message";
 
 export default function MessagePollVoteModal({ messageId }) {
   Logger.log("MessagePollVoteModal: " + messageId);
-  const debugMode = Debug.isDebugMode();
   const dispatch = useDispatch();
-  const user = Data.getCurrentUser();
-  const messageObj = Data.getMessage(messageId);
-  const message = Data.getRootMessageWithChildrenAndUserStatus(messageId);
-  const pollOptions = message.poll;
-  const group = Data.getGroup(message.groupId);
-
-  const toggleAndSendPollResponse = useCallback(async (option) => {
-    const currentState = userPollResponse[option];
-    let response = null;
-    if (currentState == null || currentState.response == "false") {
-      response = "true";
-    } else {
-      response = "false";
-    }
-
-    await Controller.sendMessage(
-      dispatch,
-      userInfo,
-      item.groupId,
-      null,
-      null,
-      { poll_response: { option: option, response: response } },
-      item.id,
-      null
-    );
-  }, []);
+  const userInfo = Data.getCurrentUser();
+  const message = new RootMessage(Data.getRootMessageWithChildrenAndUserStatus(messageId));
+  const pollOptions = message.getPoll();
+  const [pollSelection, setPollSelection] = useState(message.getPollResponses());
 
   return (
     <Modal visible={true} animationType={"slide"} transparent={true}>
       <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
+        <DebugText key="debug1" text={"MessagePollVoteModal.js"} />
+        <DebugText key="debug2" text={JSON.stringify(message, null, 2)} />
         <View
+          key="content"
           style={{
             flex: 1,
             justifyContent: "flex-end",
           }}
         >
           {pollOptions.map((pollOption, index) => {
-            /*
-                      return (
-                      );
-                      */
             return (
               <View
                 key={index}
@@ -97,9 +75,12 @@ export default function MessagePollVoteModal({ messageId }) {
               >
                 <View style={{ width: "80%" }}>
                   <Checkbox
-                    checked={true}
+                    checked={pollSelection[pollOption.name]}
                     onPress={async () => {
-                      //setPoll(!poll);
+                      setPollSelection({
+                        ...pollSelection,
+                        [pollOption.name]: !pollSelection[pollOption.name],
+                      });
                     }}
                     text={<Text key={index}>{pollOption.message}</Text>}
                   />
@@ -113,12 +94,43 @@ export default function MessagePollVoteModal({ messageId }) {
             );
           })}
         </View>
-        <View style={{ flexGrow: 1, marginTop: 40, alignItems: "center" }}>
+        <View
+          style={{
+            flexGrow: 1,
+            marginTop: 40,
+            alignItems: "center",
+            justifyContent: "flex-start",
+            flexDirection: "column",
+          }}
+        >
           <MyButtons.FormButton
+            key="vote"
             text="Vote"
             disabled={false}
             style={{ width: 100, fontSize: 10 }}
-            onPress={() => {}}
+            onPress={async () => {
+              console.log("pressed");
+              await Controller.sendMessage(
+                dispatch,
+                userInfo,
+                message.groupId,
+                null,
+                null,
+                { poll_response: pollSelection },
+                message.id,
+                null
+              );
+              dispatch(Actions.closeModal());
+            }}
+          />
+          <MyButtons.LinkButton
+            key="cancel"
+            text="Cancel"
+            disabled={false}
+            style={{ width: 100, fontSize: 12, alignItems: "center", justifyContent: "center" }}
+            onPress={() => {
+              dispatch(Actions.closeModal());
+            }}
           />
         </View>
       </Portal>

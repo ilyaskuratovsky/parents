@@ -245,14 +245,7 @@ export default function MessagePollView({ item, showGroup = false }) {
                       key="debug1"
                       text={"Checked: " + userPollResponse[pollOption.name]}
                     />
-                    <Checkbox
-                      key="checkbox"
-                      checked={userPollResponse[pollOption.name]}
-                      onPress={async () => {
-                        toggleAndSendPollResponse(pollOption);
-                      }}
-                      text={<Text key={index}>{pollOption.message}</Text>}
-                    />
+                    <Text key={index}>{pollOption.message}</Text>
                     <DebugText key="debug2" text={JSON.stringify(userPollResponse)} />
                     <View key="percent" style={{ width: "100%", backgroundColor: "red" }}>
                       <Text>0%</Text>
