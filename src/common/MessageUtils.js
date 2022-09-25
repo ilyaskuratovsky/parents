@@ -17,7 +17,6 @@ export function buildRootMessageWithChildren(
     return millis1 - millis2;
   });
 
-  /*
   Logger.log(
     "buildingRootMessageWithChildren, messageId: " +
       messageId +
@@ -34,7 +33,6 @@ export function buildRootMessageWithChildren(
         2
       )
   );
-  */
 
   let rootMessage = { children: [] };
   const message = sortedMessages.filter((m) => m.id === messageId)[0];

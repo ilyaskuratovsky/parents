@@ -22,9 +22,10 @@ export default function MessageView({ item, onPress, showGroup = false }) {
         onPress();
       }}
     >
-      {debugMode && <Text style={{ fontSize: 8 }}>MessageView.js</Text>}
-      <View style={{ flex: 1, flexDirection: "row", paddingRight: 20 }}>
+      <DebugText key="debug1" text="MessageView.js" />
+      <View key="content" style={{ flex: 1, flexDirection: "row", paddingRight: 20 }}>
         <View
+          key="badge"
           style={{
             paddingLeft: 0,
             paddingTop: 15,
@@ -39,6 +40,7 @@ export default function MessageView({ item, onPress, showGroup = false }) {
           )}
         </View>
         <View
+          key="content"
           style={{
             flexGrow: 1,
             flexDirection: "row",
@@ -178,7 +180,7 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                   {item.title ?? "[No Title]"}
                 </Text>
               </View>
-              {debugMode ? <Text style={{ fontSize: 10 }}>{item.id}</Text> : null}
+              <DebugText text={item.id} />
               <DebugText text={JSON.stringify({ ...item, children: null }, null, 2)} />
             </View>
 

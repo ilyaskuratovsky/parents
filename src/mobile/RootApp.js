@@ -127,27 +127,6 @@ function RootApp(props, state) {
     }
     return <Loading />;
   }
-  {
-    /*
-  return (
-    <View
-      style={{
-        flex: 1,
-        height: "100%",
-        width: "100%",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "white",
-      }}
-    >
-      <ScrollView style={{ marginTop: 100 }}>
-        <Text style={{ fontSize: 8 }}>{JSON.stringify(Constants.manifest.extra, null, 2)}</Text>
-      </ScrollView>
-    </View>
-  );
-    return <TestImagePicker />;
-    */
-  }
 
   let render = null;
   if (screen === "LOGIN") {

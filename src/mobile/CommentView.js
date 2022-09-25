@@ -9,6 +9,7 @@ import Autolink from "react-native-autolink";
 import MessageTime from "./MessageTime";
 import * as Utils from "../common/Utils";
 import * as Debug from "../common/Debug";
+import DebugText from "./DebugText";
 
 export default function CommentView({ item, user, onPress }) {
   const debugMode = Debug.isDebugMode();
@@ -152,8 +153,8 @@ export default function CommentView({ item, user, onPress }) {
                 }}
               />
             )}
-            {debugMode && <Text style={{ fontSize: 8 }}>{item.id}</Text>}
-            {debugMode && <Text style={{ fontSize: 8 }}>{JSON.stringify(item, null, 2)}</Text>}
+            <DebugText text={item.id} />
+            <DebugText text={JSON.stringify(item, null, 2)} />
           </View>
         </View>
       </View>

@@ -20,6 +20,7 @@ export default function MessageView({ item, onPress }) {
     >
       <View style={{ flex: 1, flexDirection: "row", paddingRight: 20 }}>
         <View
+          key="container1"
           style={{
             paddingLeft: 0,
             paddingTop: 15,
@@ -39,6 +40,7 @@ export default function MessageView({ item, onPress }) {
           )}
         </View>
         <View
+          key="container1.1"
           style={{
             flexGrow: 1,
             flexDirection: "row",

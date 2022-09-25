@@ -58,8 +58,8 @@ export default function MessagePollView({ item, showGroup = false }) {
         dispatch(Actions.openModal({ modal: "MESSAGE_POLL", messageId: item.id }));
       }}
     >
-      <DebugText key="debug" text="MessagePollView.js" />
-      <DebugText text={JSON.stringify({ ...item /*, children: null*/ }, null, 2)} />
+      <DebugText key="debug1" text="MessagePollView.js" />
+      <DebugText key="debug2" text={JSON.stringify({ ...item /*, children: null*/ }, null, 2)} />
       <View key="container" style={{ flex: 1, flexDirection: "row", paddingRight: 20 }}>
         <View
           key={"user_status"}
@@ -99,6 +99,7 @@ export default function MessagePollView({ item, showGroup = false }) {
             {/* group name/user avatar and name section */}
             {showGroup && (
               <View
+                key="container1"
                 style={{
                   flex: 1,
                   justifyContent: "flex-start",
@@ -152,6 +153,7 @@ export default function MessagePollView({ item, showGroup = false }) {
             {/* user avatar and name section */}
             {!showGroup && (
               <View
+                key="container2"
                 style={{
                   flex: 1,
                   justifyContent: "flex-start",

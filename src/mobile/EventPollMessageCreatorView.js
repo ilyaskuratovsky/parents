@@ -18,27 +18,26 @@ export default function EventPollMessageCreatorView({ message, showGroup = false
   //have "create meeting button" - this will go to a new "create meeting out of poll screen"
   return (
     <View style={{ flex: 1 }}>
-      <DebugText text="EventPollMessageCreatorView.js" />
+      <DebugText key="debug" text="EventPollMessageCreatorView.js" />
       <TouchableOpacity
         style={{ flex: 1, padding: 20, backgroundColor: "rgba(204, 255, 255, 0.5)" }}
         onPress={() => {
           //onPress();
         }}
       >
-        {debugMode ? <Text style={{ fontSize: 10 }}>{message.id}</Text> : null}
-        {debugMode ? (
-          <DebugText text={JSON.stringify({ ...message, children: null }, null, 2)} />
-        ) : null}
-        <View style={{ height: 22 }}>
+        <DebugText key="debug1" text={message.id} />
+        <DebugText key="debug2" text={JSON.stringify({ ...message, children: null }, null, 2)} />
+        <View key="container1" style={{ height: 22 }}>
           <Text style={{ fontWeight: "bold", fontSize: 12 }}>
             Creator Event Date &amp; Time Poll
           </Text>
         </View>
-        <View style={{ height: 30 }}>
+        <View key="container2" style={{ height: 30 }}>
           <Text style={{ fontWeight: "bold", fontSize: 20 }}>{message.title}</Text>
         </View>
 
         <View
+          key="container3"
           style={{
             width: 200,
             //backgroundColor: "cyan"
