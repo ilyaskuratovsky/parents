@@ -29,147 +29,6 @@ import MessageViewContainer from "./MessageViewContainer";
 import DebugText from "./DebugText";
 import * as Logger from "../common/Logger";
 
-export default function GroupScreen({ groupId }) {
-  const dispatch = useDispatch();
-  const debugMode = Debug.isDebugMode();
-  const userInfo = useSelector((state) => state.main.userInfo);
-  const [loading, setLoading] = useState(false);
-  //const group = Data.getOrgGroup(schoolId);
-  const group = Data.getGroup(groupId);
-  const members = Data.getGroupMemberships(group.id) ?? [];
-  const isMember = members.filter((gm) => gm.uid === userInfo.uid).length > 0;
-  const subGroups = Data.getSubGroups(group.id).filter(
-    (group) =>
-      group.type === "public_membersonly" ||
-      group.type === "private_requesttojoin" ||
-      group.type === "public" ||
-      group.type === "private"
-  );
-
-  /* search bar at the top */
-  /* School Screen - 
-- lists details about the school on top
-- below has all of the groups in a list (with join button)
-- At the bottom have: Don't see your group? Create a new one
- */
-  useEffect(() => {
-    Controller.observeGroupMessages(dispatch, group.id);
-  }, []);
-
-  return <Text>hi</Text>;
-  return (
-    <Modal visible={true} animationType={"slide"}>
-      <Portal
-        backgroundColor={UIConstants.DEFAULT_BACKGROUND}
-        //backgroundColor="green"
-      >
-        <DebugText key="debug1" text="GroupScreen.js" />
-        {/* top bar section */}
-        <View
-          key="top_bar"
-          style={{
-            //backgroundColor: "whitesmoke",
-            flexDirection: "column",
-          }}
-        >
-          <Text>Top Bar Content</Text>
-        </View>
-
-        {/* second top bar */}
-        <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
-          {!isMember ? (
-            <MyButtons.FormButton
-              text={"Follow"}
-              titleStyle={{ fontSize: 14 }}
-              style={{ width: 120, fontSize: 10 }}
-              onPress={async () => {
-                await Controller.joinGroup(user.uid, group.id);
-              }}
-            />
-          ) : (
-            <Text>Following</Text>
-          )}
-          <MyButtons.FormButton
-            titleStyle={{ fontSize: 14 }}
-            style={{ width: 100, fontSize: 10 }}
-            text={"Invite"}
-            onPress={() => {
-              dispatch(Actions.openModal({ modal: "GROUP_INVITE", groupId: group.id }));
-            }}
-          />
-          <MyButtons.FormButton
-            text={"Create Groupy"}
-            titleStyle={{ fontSize: 14 }}
-            style={{ width: 120, fontSize: 10 }}
-            onPress={() => {
-              dispatch(Actions.openModal({ modal: "NEW_GROUP", parentGroupId: group.id }));
-            }}
-          />
-        </View>
-
-        {/* default group */}
-        <DebugText key={"debug2"} text={"Group: " + JSON.stringify(group)} />
-
-        {/* sub-groups section */}
-        <ScrollView
-          key="scroll_view"
-          style={{
-            marginTop: 20,
-            paddingLeft: 8,
-            paddingRight: 8,
-            flexGrow: 1,
-            flexDirection: "column",
-            //backgroundColor: "cyan",
-          }}
-        >
-          {subGroups.map((group) => {
-            return <GroupView group={group} />;
-          })}
-          <MessagesSection groupId={group.id} user={userInfo} />
-        </ScrollView>
-        {/* messages section */}
-        <Divider style={{}} width={1} color="darkgrey" />
-
-        {/* toolbar section */}
-        <View
-          style={{
-            //backgroundColor: "purple",
-            alignItems: "flex-end",
-            justifyContent: "center",
-            flexDirection: "row",
-            height: 40,
-          }}
-        >
-          <MyButtons.MenuButton
-            icon="plus"
-            text="Post"
-            onPress={() => {
-              dispatch(Actions.openModal({ modal: "NEW_POST", groupId: group.id }));
-            }}
-            containerStyle={{ paddingRight: 24 }}
-          />
-          <MyButtons.MenuButton
-            icon="calendar-plus"
-            text="Event"
-            onPress={() => {
-              //setShowNewEventModal(true);
-              dispatch(Actions.openModal({ modal: "NEW_EVENT", groupId: group.id }));
-            }}
-          />
-          <MyButtons.MenuButton
-            icon="poll"
-            text="Poll"
-            onPress={() => {
-              //setShowNewEventModal(true);
-              dispatch(Actions.openModal({ modal: "NEW_POLL", groupId: group.id }));
-            }}
-          />
-        </View>
-      </Portal>
-    </Modal>
-  );
-}
-
 /* 
 People can "follow" orgs, this is a new relationship
 When people follow orgs - they will receive notifications of all the happenings - new groups created
@@ -188,7 +47,7 @@ Of the org page you should be able to create a group -
 
 */
 
-export function GroupScreen_prod({ groupId }) {
+export default function GroupScreen({ groupId }) {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
   const userInfo = useSelector((state) => state.main.userInfo);
@@ -356,22 +215,24 @@ export function GroupScreen_prod({ groupId }) {
         <DebugText key={"debug2"} text={"Group: " + JSON.stringify(group)} />
 
         {/* sub-groups section */}
-        <ScrollView
-          key="scroll_view"
-          style={{
-            marginTop: 20,
-            paddingLeft: 8,
-            paddingRight: 8,
-            flexGrow: 1,
-            flexDirection: "column",
-            //backgroundColor: "cyan",
-          }}
-        >
-          {subGroups.map((group) => {
-            return <GroupView group={group} />;
-          })}
-          <MessagesSection groupId={group.id} user={userInfo} />
-        </ScrollView>
+        <View style={{ flexGrow: 1, backgroundColor: "orange" }}>
+          <ScrollView
+            key="scroll_view"
+            style={{
+              flex: 1,
+              marginTop: 20,
+              paddingLeft: 8,
+              paddingRight: 8,
+              flexDirection: "column",
+              //backgroundColor: "cyan",
+            }}
+          >
+            {subGroups.map((group) => {
+              return <GroupView group={group} />;
+            })}
+            <MessagesSection groupId={group.id} user={userInfo} />
+          </ScrollView>
+        </View>
         {/* messages section */}
         <Divider style={{}} width={1} color="darkgrey" />
 

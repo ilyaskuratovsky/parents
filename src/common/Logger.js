@@ -1,6 +1,6 @@
 let a = [];
 export function log(str) {
-  //console.log(str);
+  console.log(str);
   a.push(str);
 }
 
