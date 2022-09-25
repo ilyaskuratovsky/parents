@@ -49,6 +49,7 @@ export default function MessageView({ item, onPress, showGroup = false }) {
         >
           {/* main content*/}
           <View
+            key="main_content"
             style={{
               flexDirection: "column",
               flex: 1,
@@ -136,6 +137,7 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                   }}
                 >
                   <Text
+                    key="name"
                     style={{
                       marginLeft: 5,
                       fontWeight: "bold",
@@ -146,6 +148,7 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                     {UserInfo.chatDisplayName(item.user)} {/*item._id*/}
                   </Text>
                   <View
+                    key="message_time"
                     style={{
                       marginLeft: 5,
                       fontWeight: "normal",
@@ -170,6 +173,7 @@ export default function MessageView({ item, onPress, showGroup = false }) {
             >
               <View style={{ flex: 1, flexDirection: "row" }}>
                 <Text
+                  key="title"
                   style={{
                     paddingLeft: 0,
                     fontSize: 16,
@@ -180,8 +184,8 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                   {item.title ?? "[No Title]"}
                 </Text>
               </View>
-              <DebugText text={item.id} />
-              <DebugText text={JSON.stringify({ ...item, children: null }, null, 2)} />
+              <DebugText key="debug1" text={item.id} />
+              <DebugText key="debug2" text={JSON.stringify({ ...item, children: null }, null, 2)} />
             </View>
 
             {/* message text */}
@@ -203,6 +207,7 @@ export default function MessageView({ item, onPress, showGroup = false }) {
               >
                 {!Utils.isEmptyString(item.text) && (
                   <Text
+                    key="text"
                     numberOfLines={1}
                     ellipsizeMode="tail"
                     style={{
@@ -217,6 +222,7 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                 {(item.attachments ?? []).map((attachment) => {
                   return (
                     <Image
+                      key="image"
                       source={{ uri: attachment.uri }}
                       //resizeMode={"contain"}
                       style={{ width: "100%", height: null, aspectRatio: 4 / 3 }}

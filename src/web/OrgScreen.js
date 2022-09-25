@@ -145,7 +145,6 @@ export default function OrgScreen({ orgId }) {
           visible={visibleOrgGroupModal}
           onCreateGroup={createOrgGroup}
           closeModal={() => {
-            console.log("close modal called");
             setVisibleOrgGroupModal(false);
           }}
         />

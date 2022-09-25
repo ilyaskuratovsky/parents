@@ -21,11 +21,11 @@ export default function Login({ afterLoginScreen }) {
     if (email !== "" && password !== "") {
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          console.log("got user credential: " + JSON.stringify(userCredential));
+          Logger.log("got user credential: " + JSON.stringify(userCredential));
           dispatch(Actions.goToScreen(afterLoginScreen));
         })
         .catch((err) => {
-          console.log(`Login err: ${err}`);
+          Logger.log(`Login err: ${err}`);
         });
     }
   };

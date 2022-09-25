@@ -54,6 +54,8 @@ import NewPollModal from "./NewPollModal";
 import MessagePollModal from "./MessagePollModal";
 import MessagePollVoteModal from "./MessagePollVoteModal";
 import { DebugTextModal } from "./DebugText";
+import * as Logger from "../common/Logger";
+
 /*
 App vision:  The local social network for parents.
 When join you put in your zip code (we also detect based on gps coordinates)
@@ -106,16 +108,16 @@ function RootApp(props, state) {
 
   const screenWithParams = useSelector((state) => state.screen.screen);
   let screen = screenWithParams?.screen;
-  console.log("screenWithParams: " + JSON.stringify(screenWithParams));
+  Logger.log("screenWithParams: " + JSON.stringify(screenWithParams));
 
   const modalStack = useSelector((state) => {
     return state.screen?.modalStack;
   });
   const modalWithParams = modalStack.length > 0 ? modalStack[modalStack.length - 1] : null;
   let modal = modalWithParams?.modal;
-  console.log("modalWithParams: " + JSON.stringify(modalWithParams));
+  Logger.log("modalWithParams: " + JSON.stringify(modalWithParams));
   const debugMode = Debug.isDebugMode();
-  console.log("RootApp.js:appInitialized: " + appState.main.appInitialized);
+  Logger.log("RootApp.js:appInitialized: " + appState.main.appInitialized);
   if (!appState.main.appInitialized) {
     //return <SplashScreen appInitializedCallback={() => {}} refresh={2200} />;
     if (debugMode) {
@@ -175,7 +177,7 @@ function RootApp(props, state) {
     render = <ErrorScreen error={{ message: "No screen" }} />;
   }
 
-  console.log(
+  Logger.log(
     "root app rendering: modal: " +
       modal +
       "(" +

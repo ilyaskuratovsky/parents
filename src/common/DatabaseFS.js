@@ -281,8 +281,6 @@ export async function createGroup(data) {
 }
 
 export async function sendMessage(groupId, uid, title, text, data, papaId, notificationInfo) {
-  // console.log(firebase.firestore);
-  // console.log(Object.keys(firebase.firestore));
   const message = {
     uid: uid,
     groupId,

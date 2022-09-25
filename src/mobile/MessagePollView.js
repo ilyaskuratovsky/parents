@@ -15,6 +15,7 @@ import * as Actions from "../common/Actions";
 import Checkbox from "./Checkbox";
 import * as Data from "../common/Data";
 import * as Controller from "../common/Controller";
+import * as Logger from "../common/Logger";
 
 export default function MessagePollView({ item, showGroup = false }) {
   const dispatch = useDispatch();
@@ -30,7 +31,7 @@ export default function MessagePollView({ item, showGroup = false }) {
     ).includes(userInfo.uid);
   }
   const [userPollResponse, setUserPollReponse] = useState(initialUserPollResponses);
-  console.log("userPollResponse: " + JSON.stringify(userPollResponse));
+  Logger.log("userPollResponse: " + JSON.stringify(userPollResponse));
   const toggleAndSendPollResponse = useCallback(async (option) => {
     const currentState = userPollResponse[option];
     let response = null;
@@ -121,10 +122,11 @@ export default function MessagePollView({ item, showGroup = false }) {
                   }}
                 >
                   <View style={{ flex: 1, flexDirection: "column", marginLeft: 6 }}>
-                    <Text style={{ fontWeight: "bold", fontSize: 14 }}>
+                    <Text key="group_name" style={{ fontWeight: "bold", fontSize: 14 }}>
                       {item.group?.name ?? "No group name"}
                     </Text>
                     <Text
+                      key="user_name"
                       style={{
                         fontWeight: "normal",
                         color: UIConstants.BLACK_TEXT_COLOR,
@@ -175,6 +177,7 @@ export default function MessagePollView({ item, showGroup = false }) {
                   }}
                 >
                   <Text
+                    key="username"
                     style={{
                       marginLeft: 5,
                       fontWeight: "bold",
@@ -185,6 +188,7 @@ export default function MessagePollView({ item, showGroup = false }) {
                     {UserInfo.chatDisplayName(item.user)} {/*item._id*/}
                   </Text>
                   <View
+                    key="message_time"
                     style={{
                       marginLeft: 5,
                       fontWeight: "normal",
@@ -201,13 +205,14 @@ export default function MessagePollView({ item, showGroup = false }) {
             )}
             {/* title */}
             <View
+              key="title"
               style={{
                 paddingLeft: 0,
                 paddingTop: 0,
                 borderRadius: 0,
               }}
             >
-              <View style={{ flex: 1, flexDirection: "row" }}>
+              <View key="title_1" style={{ flex: 1, flexDirection: "row" }}>
                 <Text
                   style={{
                     paddingLeft: 0,
@@ -223,6 +228,7 @@ export default function MessagePollView({ item, showGroup = false }) {
 
             {/* Poll Section */}
             <View
+              key="poll_section"
               style={{
                 paddingLeft: 0,
                 paddingTop: 0,
@@ -234,17 +240,21 @@ export default function MessagePollView({ item, showGroup = false }) {
             >
               {pollOptions.map((pollOption, index) => {
                 return (
-                  <View style={{ flexDirection: "column" }}>
-                    <DebugText text={"Checked: " + userPollResponse[pollOption.name]} />
+                  <View key={"poll_option_" + index} style={{ flexDirection: "column" }}>
+                    <DebugText
+                      key="debug1"
+                      text={"Checked: " + userPollResponse[pollOption.name]}
+                    />
                     <Checkbox
+                      key="checkbox"
                       checked={userPollResponse[pollOption.name]}
                       onPress={async () => {
                         toggleAndSendPollResponse(pollOption);
                       }}
                       text={<Text key={index}>{pollOption.message}</Text>}
                     />
-                    <DebugText text={JSON.stringify(userPollResponse)} />
-                    <View style={{ width: "100%", backgroundColor: "red" }}>
+                    <DebugText key="debug2" text={JSON.stringify(userPollResponse)} />
+                    <View key="percent" style={{ width: "100%", backgroundColor: "red" }}>
                       <Text>0%</Text>
                     </View>
                   </View>
@@ -271,6 +281,7 @@ export default function MessagePollView({ item, showGroup = false }) {
               >
                 {!Utils.isEmptyString(item.text) && (
                   <Text
+                    key="text"
                     numberOfLines={1}
                     ellipsizeMode="tail"
                     style={{
@@ -285,6 +296,7 @@ export default function MessagePollView({ item, showGroup = false }) {
                 {(item.attachments ?? []).map((attachment) => {
                   return (
                     <Image
+                      key="image"
                       source={{ uri: attachment.uri }}
                       //resizeMode={"contain"}
                       style={{ width: "100%", height: null, aspectRatio: 4 / 3 }}

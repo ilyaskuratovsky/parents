@@ -30,8 +30,8 @@ export default function MyProfileScreen({}) {
   }
 
   const mySchools = (userInfo.profile ?? {}).schools ?? [];
-  console.log("userInfo: " + JSON.stringify(userInfo));
-  console.log("mySchools: " + JSON.stringify(mySchools));
+  Logger.log("userInfo: " + JSON.stringify(userInfo));
+  Logger.log("mySchools: " + JSON.stringify(mySchools));
   const mySchoolComponents = mySchools.map((schoolId) => {
     const school = orgsMap[schoolId];
     console.log("school: " + JSON.stringify(school));

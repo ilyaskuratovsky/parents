@@ -59,7 +59,7 @@ export default function MessagesContainer({ groupId, messageId, visible, closeMo
     null,
     userMap
   );
-  console.log("built message with children: " + message.id);
+  Logger.log("built message with children: " + message.id);
 
   const group = groupMap[groupId];
   if (message.event != null) {

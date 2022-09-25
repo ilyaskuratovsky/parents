@@ -63,6 +63,7 @@ export default function EventPollMessageCreatorView({ message, showGroup = false
 
           return (
             <View
+              key={"poll_result_" + index}
               style={{
                 paddingTop: 8,
                 paddingBottom: 4,
@@ -72,18 +73,18 @@ export default function EventPollMessageCreatorView({ message, showGroup = false
                 marginBottom: index == 0 ? 4 : 4,
               }}
             >
-              <Text style={{ fontWeight: "bold" }}>
+              <Text key="time" style={{ fontWeight: "bold" }}>
                 {moment(Date.toDate(option.startDate)).format("LLLL") +
                   " - " +
                   moment(Date.toDate(option.endTime)).format("LT")}
               </Text>
               {optionSummary.uid_list.length >= 0 && (
-                <View style={{ marginLeft: 0 }}>
+                <View key="facepile" style={{ marginLeft: 0 }}>
                   <FacePile userIds={optionSummary.uid_list} border />
                 </View>
               )}
               {optionSummary.uid_list.length == 0 && (
-                <View style={{ marginLeft: 0, height: 24 }}></View>
+                <View key="blank" style={{ marginLeft: 0, height: 24 }}></View>
               )}
             </View>
           );

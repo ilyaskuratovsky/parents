@@ -51,7 +51,7 @@ export default function MessagesContainer({ groupId, messageId, visible, closeMo
       ),
     [messageId, messages, user, userMessagesMap, userMap]
   );
-  console.log("built message with children: " + message.id);
+  Logger.log("built message with children: " + message.id);
 
   const group = groupMap[groupId];
   if (message.event == null) {
@@ -628,7 +628,7 @@ async function createEvent(calendar) {
     timeZone: "America/New_York",
     location: "Ilya's Bedroom",
   }).then((eventId) => {
-    console.log("booked: " + eventId);
+    Logger.log("booked: " + eventId);
     return eventId;
   });
   // console.log(`calendar ID is: ${id}`)

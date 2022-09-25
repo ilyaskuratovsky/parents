@@ -40,7 +40,7 @@ import * as Data from "../common/Data";
 import DebugText from "./DebugText";
 
 export default function MessagePollVoteModal({ messageId }) {
-  console.log("MessagePollVoteModal: " + messageId);
+  Logger.log("MessagePollVoteModal: " + messageId);
   const debugMode = Debug.isDebugMode();
   const dispatch = useDispatch();
   const user = Data.getCurrentUser();

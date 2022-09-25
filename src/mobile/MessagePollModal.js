@@ -38,9 +38,10 @@ import * as Actions from "../common/Actions";
 import * as Debug from "../common/Debug";
 import * as Data from "../common/Data";
 import DebugText from "./DebugText";
+import * as Logger from "../common/Logger";
 
 export default function MessagePollModal({ messageId, scrollToEnd }) {
-  console.log("MessagePollModal: " + messageId);
+  Logger.log("MessagePollModal: " + messageId);
   const debugMode = Debug.isDebugMode();
   const dispatch = useDispatch();
   const user = Data.getCurrentUser();
@@ -97,7 +98,7 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
         backgroundColor={UIConstants.DEFAULT_BACKGROUND}
         //backgroundColor="green"
       >
-        <DebugText text="MessagePollModal.js" />
+        <DebugText key="debug1" text="MessagePollModal.js" />
         {/* top bar */}
         <TopBarMiddleContentSideButtons
           backgroundColor={UIConstants.DEFAULT_BACKGROUND}
@@ -126,8 +127,9 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
           keyboardVerticalOffset={40}
           enabled
         >
-          <DebugText text={JSON.stringify(messageObj, null, 2)} />
+          <DebugText key="debug1" text={JSON.stringify(messageObj, null, 2)} />
           <ScrollView
+            key="scroll"
             ref={scrollViewRef}
             style={{ flex: 1 }}
             onContentSizeChange={() => {
@@ -136,6 +138,7 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
           >
             {/* parent message */}
             <View
+              key="header"
               style={{
                 flexDirection: "column",
                 paddingTop: 10,
@@ -146,6 +149,7 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
               }}
             >
               <View
+                key="avatar"
                 style={{
                   justifyContent: "flex-start",
                   flexDirection: "row",
@@ -177,6 +181,7 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
                 </View>
               </View>
               <View
+                key="title"
                 style={{
                   paddingLeft: 0,
                   paddingTop: 0,
@@ -265,9 +270,9 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
                 <DebugText text={JSON.stringify(message, null, 2)} />
               </View>
             </View>
-            <Divider style={{}} width={1} color="darkgrey" />
+            <Divider key="divider" style={{}} width={1} color="darkgrey" />
             {/* comments section */}
-            <View style={{ paddingTop: 10, flex: 1 }}>
+            <View key="comments" style={{ paddingTop: 10, flex: 1 }}>
               {childMessages.map((message, index) => {
                 return (
                   <View key={index} style={{ paddingBottom: 10 }}>
@@ -292,6 +297,7 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
             }}
           >
             <IconButton
+              key="camera"
               icon="camera"
               color={"blue"}
               size={32}
@@ -300,6 +306,7 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
               }}
             />
             <IconButton
+              key="button"
               icon="image"
               color={"blue"}
               backgroundColor="green"
@@ -310,6 +317,7 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
             />
 
             <TextInput
+              key="text"
               value={text}
               style={{
                 flexGrow: 1,
@@ -339,6 +347,7 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
             />
             {text != null && text.length > 0 && (
               <IconButton
+                key="send"
                 icon="arrow-up-circle"
                 color={"blue"}
                 size={38}

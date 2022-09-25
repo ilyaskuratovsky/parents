@@ -29,7 +29,7 @@ import { profileIncomplete } from "../common/UserInfo";
 import * as Debug from "../common/Debug";
 
 export default function MyProfileModal({ forceComplete }) {
-  console.log("Showing MyProfileModal");
+  Logger.log("Showing MyProfileModal");
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
   const insets = useSafeAreaInsets();
@@ -65,7 +65,7 @@ function ModalContainer({ userInfo, forceComplete }) {
         setImage(uploadUrl);
       }
     } catch (e) {
-      console.log(e);
+      Logger.log(e);
       alert("Upload failed, sorry :(");
     } finally {
       setUploading(false);
@@ -78,7 +78,7 @@ function ModalContainer({ userInfo, forceComplete }) {
       aspect: [4, 3],
     });
 
-    console.log({ pickerResult });
+    Logger.log({ pickerResult });
 
     _handleImagePicked(pickerResult);
   };
@@ -232,18 +232,18 @@ async function uploadImageAsync(uri) {
       resolve(xhr.response);
     };
     xhr.onerror = function (e) {
-      console.log(e);
+      Logger.log(e);
       reject(new TypeError("Network request failed"));
     };
     xhr.responseType = "blob";
     xhr.open("GET", uri, true);
     xhr.send(null);
   });
-  console.log("blob:" + JSON.stringify(blob));
+  Logger.log("blob:" + JSON.stringify(blob));
 
   //const fileRef = ref(getStorage(), uuid.v4());
   const fileRef = ref(storage, "images/profile/" + userInfo.uid + "_" + uuid.v4() + ".jpg");
-  console.log("uploading");
+  Logger.log("uploading");
   const result = await uploadBytes(fileRef, blob);
   // We're done with the blob, close and release it
   blob.close();

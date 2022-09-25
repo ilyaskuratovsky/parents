@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { storage } from "../../config/firebase";
 import uuid from "uuid";
+import * as Logger from "../common/Logger";
 
 // Firebase sets some timeers for a long period, which will trigger some warnings. Let's turn that off for this example
 LogBox.ignoreLogs([`Setting a timer for a long period`]);
@@ -160,7 +161,7 @@ export default class App extends React.Component {
       aspect: [4, 3],
     });
 
-    console.log({ pickerResult });
+    Logger.log({ pickerResult });
 
     this._handleImagePicked(pickerResult);
   };
@@ -173,7 +174,7 @@ export default class App extends React.Component {
         this.setState({ image: pickerResult.uri });
       }
     } catch (e) {
-      console.log(e);
+      Logger.log(e);
       alert("Upload failed, sorry :(");
     } finally {
       this.setState({ uploading: false });
@@ -190,7 +191,7 @@ async function uploadImageAsync(uri, path) {
       resolve(xhr.response);
     };
     xhr.onerror = function (e) {
-      console.log(e);
+      Logger.log(e);
       reject(new TypeError("Network request failed"));
     };
     xhr.responseType = "blob";
@@ -200,7 +201,7 @@ async function uploadImageAsync(uri, path) {
 
   //const fileRef = ref(storage, "images/file1.jpg");
   const fileRef = ref(storage, path);
-  console.log("uploading");
+  Logger.log("uploading");
   const result = await uploadBytes(fileRef, blob);
 
   /*

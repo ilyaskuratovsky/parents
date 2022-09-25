@@ -62,7 +62,7 @@ export default function InitialChooseSchoolsWizard({ navigation }) {
                   const checked = !(newSchoolSelection[school.id] ?? false);
 
                   newSchoolSelection[school.id] = checked;
-                  console.log(
+                  Logger.log(
                     "setting school selection: " +
                       school.id +
                       ": " +
