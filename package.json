@@ -16,11 +16,13 @@
     "@expo-google-fonts/inter": "^0.2.2",
     "@iconify/react": "^3.1.2",
     "@react-native-async-storage/async-storage": "~1.15.0",
+    "@react-native-community/async-storage": "^1.12.1",
     "@react-native-community/checkbox": "^0.5.12",
     "@react-native-community/datetimepicker": "4.0.0",
     "@react-native-segmented-control/segmented-control": "2.4.0",
     "@reduxjs/toolkit": "^1.6.2",
     "expo": "^44.0.0",
+    "expo-blur": "~11.0.0",
     "expo-calendar": "~10.1.0",
     "expo-clipboard": "~2.1.0",
     "expo-contacts": "~10.1.0",
@@ -82,7 +84,7 @@
     "react-redux": "^7.2.6",
     "react-timeago": "^6.2.1",
     "start": "^5.1.0",
-    "expo-blur": "~11.0.0"
+    "undefined": "react-native-async-storage/async-storage"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
