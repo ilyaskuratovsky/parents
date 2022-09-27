@@ -39,6 +39,7 @@ import * as Debug from "../common/Debug";
 import * as Data from "../common/Data";
 import DebugText from "./DebugText";
 import * as Logger from "../common/Logger";
+import { RootMessage } from "../common/Message";
 
 export default function MessagePollModal({ messageId, scrollToEnd }) {
   Logger.log("MessagePollModal: " + messageId);
@@ -47,6 +48,8 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
   const user = Data.getCurrentUser();
   const messageObj = Data.getMessage(messageId);
   const message = Data.getRootMessageWithChildrenAndUserStatus(messageId);
+  const pollMessage = new RootMessage(message);
+  const pollSummary = pollMessage.getPollSummary();
   const pollOptions = message.poll;
   const group = Data.getGroup(message.groupId);
   const sortedChildMessages = [...message.children] ?? [];
@@ -249,7 +252,7 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
                           </Text>
                           <View style={{ flex: 1, width: "20%", alignItems: "flex-end" }}>
                             <Text style={{}} key={index}>
-                              Putas
+                              {JSON.stringify(pollSummary[pollOption.name].users)}
                             </Text>
                           </View>
                         </View>

@@ -16,15 +16,26 @@ import Checkbox from "./Checkbox";
 import * as Data from "../common/Data";
 import * as Controller from "../common/Controller";
 import * as Logger from "../common/Logger";
+import { RootMessage } from "../common/Message";
+import FacePile from "./FacePile";
 
-export default function MessagePollView({ item, showGroup = false }) {
+export default function MessagePollView({ message, showGroup = false }) {
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
-  const timestamp = item.timestamp?.toDate();
-  const pollOptions = item.poll;
-  const pollResponses = item.poll_responses ?? {};
+  const timestamp = message.timestamp?.toDate();
+  const pollOptions = message.poll;
+
+  const pollMessage = new RootMessage(message);
+  const pollSummary = pollMessage.getPollSummary();
+  /*
+    "Option 1": {count: 2, total: 8, users: []}
+    "Option 2": {}
+
+  */
+
   const initialUserPollResponses = {};
 
+  /*
   for (const pollOption of pollOptions) {
     initialUserPollResponses[pollOption.name] = (
       (pollResponses[pollOption.name] ?? {}).uids ?? []
@@ -32,6 +43,8 @@ export default function MessagePollView({ item, showGroup = false }) {
   }
   const [userPollResponse, setUserPollReponse] = useState(initialUserPollResponses);
   Logger.log("userPollResponse: " + JSON.stringify(userPollResponse));
+  */
+  /*
   const toggleAndSendPollResponse = useCallback(async (option) => {
     const currentState = userPollResponse[option];
     let response = null;
@@ -44,23 +57,24 @@ export default function MessagePollView({ item, showGroup = false }) {
     await Controller.sendMessage(
       dispatch,
       userInfo,
-      item.groupId,
+      message.groupId,
       null,
       null,
       { poll_response: { option: option, response: response } },
-      item.id,
+      message.id,
       null
     );
   }, []);
+  */
 
   return (
     <TouchableOpacity
       onPress={() => {
-        dispatch(Actions.openModal({ modal: "MESSAGE_POLL", messageId: item.id }));
+        dispatch(Actions.openModal({ modal: "MESSAGE_POLL", messageId: message.id }));
       }}
     >
       <DebugText key="debug1" text="MessagePollView.js" />
-      <DebugText key="debug2" text={JSON.stringify({ ...item /*, children: null*/ }, null, 2)} />
+      <DebugText key="debug2" text={JSON.stringify({ ...message /*, children: null*/ }, null, 2)} />
       <View key="container" style={{ flex: 1, flexDirection: "row", paddingRight: 20 }}>
         <View
           key={"user_status"}
@@ -73,7 +87,7 @@ export default function MessagePollView({ item, showGroup = false }) {
             //backgroundColor: "cyan",
           }}
         >
-          {item.userStatus?.status != "read" && (
+          {message.userStatus?.status != "read" && (
             <Badge status="primary" value={""} containerStyle={{ width: 12, height: 12 }} />
           )}
         </View>
@@ -110,7 +124,7 @@ export default function MessagePollView({ item, showGroup = false }) {
                   //backgroundColor: "cyan",
                 }}
               >
-                {UserInfo.smallAvatarComponent(item.user)}
+                {UserInfo.smallAvatarComponent(message.user)}
                 <View
                   style={{
                     flex: 1,
@@ -123,7 +137,7 @@ export default function MessagePollView({ item, showGroup = false }) {
                 >
                   <View style={{ flex: 1, flexDirection: "column", marginLeft: 6 }}>
                     <Text key="group_name" style={{ fontWeight: "bold", fontSize: 14 }}>
-                      {item.group?.name ?? "No group name"}
+                      {message.group?.name ?? "No group name"}
                     </Text>
                     <Text
                       key="user_name"
@@ -133,7 +147,7 @@ export default function MessagePollView({ item, showGroup = false }) {
                         fontSize: 12,
                       }}
                     >
-                      {UserInfo.chatDisplayName(item.user)} {/*item._id*/}
+                      {UserInfo.chatDisplayName(message.user)} {/*item._id*/}
                     </Text>
                   </View>
                   <View
@@ -165,7 +179,7 @@ export default function MessagePollView({ item, showGroup = false }) {
                   //backgroundColor: "cyan",
                 }}
               >
-                {UserInfo.smallAvatarComponent(item.user)}
+                {UserInfo.smallAvatarComponent(message.user)}
                 <View
                   style={{
                     flex: 1,
@@ -185,7 +199,7 @@ export default function MessagePollView({ item, showGroup = false }) {
                       fontSize: 16,
                     }}
                   >
-                    {UserInfo.chatDisplayName(item.user)} {/*item._id*/}
+                    {UserInfo.chatDisplayName(message.user)} {/*item._id*/}
                   </Text>
                   <View
                     key="message_time"
@@ -221,7 +235,7 @@ export default function MessagePollView({ item, showGroup = false }) {
                     color: UIConstants.BLACK_TEXT_COLOR,
                   }}
                 >
-                  {item.title ?? "[No Title]"}
+                  {message.title ?? "[No Title]"}
                 </Text>
               </View>
             </View>
@@ -240,15 +254,51 @@ export default function MessagePollView({ item, showGroup = false }) {
             >
               {pollOptions.map((pollOption, index) => {
                 return (
-                  <View key={"poll_option_" + index} style={{ flexDirection: "column" }}>
-                    <DebugText
-                      key="debug1"
-                      text={"Checked: " + userPollResponse[pollOption.name]}
-                    />
-                    <Text key={index}>{pollOption.message}</Text>
-                    <DebugText key="debug2" text={JSON.stringify(userPollResponse)} />
-                    <View key="percent" style={{ width: "100%", backgroundColor: "red" }}>
-                      <Text>0%</Text>
+                  <View
+                    key={"poll_option_" + index}
+                    style={{ flexDirection: "column", marginTop: 10 }}
+                  >
+                    <View style={{ flex: 1, flexDirection: "row", height: 34 }}>
+                      <View
+                        key={"poll_option_" + index}
+                        style={{ flexDirection: "column", justifyContent: "center" }}
+                      >
+                        <Text key={index}>{pollOption.message}</Text>
+                      </View>
+                      <View
+                        style={{
+                          flex: 1,
+                          width: "20%",
+                          alignItems: "flex-end",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <FacePile userIds={pollSummary[pollOption.name].users} border />
+                      </View>
+                    </View>
+                    <View
+                      key="percent"
+                      style={{
+                        width: "100%",
+                        flexDirection: "row",
+                        borderWidth: 1,
+                        borderColor: "black",
+                      }}
+                    >
+                      <View
+                        key="percent"
+                        style={{
+                          width:
+                            "" +
+                            (100 * pollSummary[pollOption.name].count) /
+                              pollSummary[pollOption.name].total +
+                            "%",
+                          backgroundColor: "red",
+                          flexDirection: "row",
+                        }}
+                      >
+                        <Text></Text>
+                      </View>
                     </View>
                   </View>
                 );
@@ -272,7 +322,7 @@ export default function MessagePollView({ item, showGroup = false }) {
                   //backgroundColor: "yellow",
                 }}
               >
-                {!Utils.isEmptyString(item.text) && (
+                {!Utils.isEmptyString(message.text) && (
                   <Text
                     key="text"
                     numberOfLines={1}
@@ -283,10 +333,10 @@ export default function MessagePollView({ item, showGroup = false }) {
                       flexGrow: 1,
                     }}
                   >
-                    {(item.text ?? "").replace(/(\r\n|\n|\r)/gm, " ")}
+                    {(message.text ?? "").replace(/(\r\n|\n|\r)/gm, " ")}
                   </Text>
                 )}
-                {(item.attachments ?? []).map((attachment) => {
+                {(message.attachments ?? []).map((attachment) => {
                   return (
                     <Image
                       key="image"
@@ -320,13 +370,13 @@ export default function MessagePollView({ item, showGroup = false }) {
                       //backgroundColor: "green",
                       paddingLeft: 0,
                       fontSize: 14,
-                      fontWeight: item.unreadChildCount > 0 ? "bold" : "normal",
+                      fontWeight: message.unreadChildCount > 0 ? "bold" : "normal",
                       color: UIConstants.BLACK_TEXT_COLOR,
                     }}
                   >
-                    {(item.children?.length ?? -1) > 1 || item.children?.length == 0
-                      ? (item.children?.length ?? -1) + " replies"
-                      : (item.children?.length ?? -1) + " reply"}
+                    {(message.children?.length ?? -1) > 1 || message.children?.length == 0
+                      ? (message.children?.length ?? -1) + " replies"
+                      : (message.children?.length ?? -1) + " reply"}
                   </Text>
                 </View>
               </View>

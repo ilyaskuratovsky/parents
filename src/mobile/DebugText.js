@@ -26,15 +26,15 @@ export default function DebugText({ text }) {
   const defaultNumberOfLines = 5;
   const [numberOfLines, setNumberOfLines] = useState(Math.min(lines, defaultNumberOfLines));
 
-  //const lines = 5;
-  if (!debugMode) {
-    return null;
-  }
   const scrollViewStyle =
     numberOfLines > defaultNumberOfLines ? { height: Math.min(numberOfLines * 15, 500) } : null;
 
   const scrollViewRef = useRef();
   const isSmall = numberOfLines == defaultNumberOfLines;
+  if (!debugMode) {
+    return null;
+  }
+
   const textComponent = (
     <Text
       onPress={() => {

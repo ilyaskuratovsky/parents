@@ -27,6 +27,7 @@ import * as MyButtons from "./MyButtons";
 import Portal from "./Portal";
 import { profileIncomplete } from "../common/UserInfo";
 import * as Debug from "../common/Debug";
+import * as Logger from "../common/Logger";
 
 export default function MyProfileModal({ forceComplete }) {
   Logger.log("Showing MyProfileModal");

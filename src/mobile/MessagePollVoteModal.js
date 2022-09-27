@@ -47,13 +47,14 @@ export default function MessagePollVoteModal({ messageId }) {
   const userInfo = Data.getCurrentUser();
   const message = new RootMessage(Data.getRootMessageWithChildrenAndUserStatus(messageId));
   const pollOptions = message.getPoll();
-  const [pollSelection, setPollSelection] = useState(message.getPollResponses());
+  const [pollSelection, setPollSelection] = useState(message.getUserPollResponses(userInfo.uid));
 
   return (
     <Modal visible={true} animationType={"slide"} transparent={true}>
       <Portal backgroundColor={UIConstants.DEFAULT_BACKGROUND}>
         <DebugText key="debug1" text={"MessagePollVoteModal.js"} />
-        <DebugText key="debug2" text={JSON.stringify(message, null, 2)} />
+        <DebugText key="debug2" text={"Message: " + JSON.stringify(message, null, 2)} />
+        <DebugText key="debug3" text={"pollSelection: " + JSON.stringify(pollSelection)} />
         <View
           key="content"
           style={{

@@ -22,7 +22,7 @@ export default function MessageViewContainer({ user, item, onPress, showGroup = 
       return <EventPollMessageCreatorView message={item} />;
     }
   } else if (item.poll != null) {
-    return <MessagePollView item={item} onPress={onPress} showGroup={showGroup} />;
+    return <MessagePollView message={item} onPress={onPress} showGroup={showGroup} />;
   } else {
     return <MessageView item={item} onPress={onPress} showGroup={showGroup} />;
   }

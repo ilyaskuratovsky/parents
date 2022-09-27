@@ -72,7 +72,6 @@ export default function GroupView({ groupId }) {
           paddingLeft: 10,
         }}
         onPress={() => {
-          Alert.alert("opening modal");
           dispatch(Actions.openModal({ modal: "GROUP", groupId: group.id }));
         }}
       >
