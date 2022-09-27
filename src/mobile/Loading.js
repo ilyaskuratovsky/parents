@@ -20,7 +20,8 @@ export default function Loading() {
         },
       ]}
     >
-      <ActivityIndicator color="#fff" animating size="large" />
+      {/*<ActivityIndicator color="#fff" animating size="large" />*/}
+      <Text>hi</Text>
     </View>
   );
 }

@@ -119,7 +119,6 @@ function RootApp(props, state) {
   const debugMode = Debug.isDebugMode();
   Logger.log("RootApp.js:appInitialized: " + appState.main.appInitialized);
   if (!appState.main.appInitialized) {
-    //return <SplashScreen appInitializedCallback={() => {}} refresh={2200} />;
     if (debugMode) {
       return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -127,6 +126,7 @@ function RootApp(props, state) {
         </View>
       );
     }
+    console.log("returning loading");
     return <Loading />;
   }
 

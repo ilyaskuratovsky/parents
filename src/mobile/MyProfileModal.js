@@ -53,6 +53,7 @@ function ModalContainer({ userInfo, forceComplete }) {
 
   const _maybeRenderUploadingOverlay = () => {
     if (uploading) {
+      console.log("MyProfileModal: returning loading");
       return <Loading />;
     }
   };

@@ -8,6 +8,7 @@ import * as Actions from "../common/Actions";
 import * as Globals from "./Globals";
 import * as MyButtons from "./MyButtons";
 import * as Debug from "../common/Debug";
+import * as DebugText from "./DebugText";
 
 export default function Login({ afterLoginScreen }) {
   const dispatch = useDispatch();
@@ -72,6 +73,7 @@ export default function Login({ afterLoginScreen }) {
           },
         ]}
       >
+        {/*<DebugText text={"LoginScreen.js"} />*/}
         <ActivityIndicator color="#fff" animating size="large" />
       </View>
     );

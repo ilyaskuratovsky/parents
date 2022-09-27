@@ -32,6 +32,7 @@ export default function ChatThreadView({ chatId }) {
   const unreadMessages = Data.getChatUserUnreadMessages(chat?.id);
   const unreadCount = unreadMessages.length;
   if (chat == null) {
+    console.log("ChatThreadView returning loading");
     return <Loading />;
   }
   return (
