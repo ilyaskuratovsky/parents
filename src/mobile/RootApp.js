@@ -1,3 +1,5 @@
+// @flow
+
 import * as Notifications from "expo-notifications";
 import React, { useEffect, useRef } from "react";
 import { Alert, View, Text, Modal, ScrollView } from "react-native";
@@ -5,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as MyButtons from "./MyButtons";
 
 import * as Actions from "../common/Actions";
+import { RootState } from "../common/Actions";
 import * as Controller from "../common/Controller";
 import DebugScreen from "./DebugScreen";
 import ErrorScreen from "./ErrorScreen";
@@ -81,16 +84,20 @@ function RootApp(props, state) {
   const dispatch = useDispatch();
   const notificationListener = useRef();
   const responseListener = useRef();
-  const appState = useSelector((state) => {
+  const appState = useSelector((state: RootState) => {
     return state;
   });
 
-  useEffect(async () => {
-    try {
-      return await Controller.initializeApp(dispatch, notificationListener, responseListener);
-    } catch (error) {
-      dispatch(Actions.goToScreen({ screen: "ERROR", error }));
-    }
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        Logger.log("INITIALIZING APP");
+        await Controller.initializeApp(dispatch, notificationListener, responseListener);
+      } catch (error) {
+        dispatch(Actions.goToScreen({ screen: "ERROR", error }));
+      }
+    };
+    initializeApp();
   }, []);
 
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
@@ -106,11 +113,11 @@ function RootApp(props, state) {
     }
   }, [lastNotificationResponse]);
 
-  const screenWithParams = useSelector((state) => state.screen.screen);
+  const screenWithParams = useSelector((state: RootState) => state.screen.screen);
   let screen = screenWithParams?.screen;
   Logger.log("screenWithParams: " + JSON.stringify(screenWithParams));
 
-  const modalStack = useSelector((state) => {
+  const modalStack = useSelector((state: RootState) => {
     return state.screen?.modalStack;
   });
   const modalWithParams = modalStack.length > 0 ? modalStack[modalStack.length - 1] : null;
@@ -132,15 +139,15 @@ function RootApp(props, state) {
 
   let render = null;
   if (screen === "LOGIN") {
-    render = <LoginScreen dispatch={dispatch} />;
+    render = <LoginScreen />;
   } else if (screen === "SIGNUP") {
     render = <SignupScreen />;
   } else if (appState.main.userInfo == null) {
     render = <LoginScreen />;
   } else if (screen === "USER") {
     render = <UserScreen />;
-  } else if (screen == "INITIAL_SELECT_SCHOOLS") {
-    render = <InitialChooseSchoolsWizard />;
+    // } else if (screen == "INITIAL_SELECT_SCHOOLS") {
+    //   render = <InitialChooseSchoolsWizard />;
   } else if (screen == "INITIAL_SELECT_SCHOOL_GROUPS") {
     render = <InitialJoinSchoolGroupsScreen />;
   } else if (screen == "GROUPS") {
@@ -152,27 +159,36 @@ function RootApp(props, state) {
   } else if (screen == "CHATS") {
     render = <ChatsScreen />;
   } else if (screen == "GROUP") {
-    render = <GroupScreenContainer {...screenWithParams} />;
+    render = (
+      <GroupScreenContainer
+        groupId={screenWithParams["groupId"]}
+        messageId={screenWithParams["messageId"]}
+      />
+    );
   } else if (screen == "FIND_GROUPS") {
     render = <FindGroupsScreen />;
   } else if (screen == "SCHOOL") {
-    render = <SchoolScreen schoolId={screenWithParams.schoolId} />;
+    render = <SchoolScreen schoolId={screenWithParams["schoolId"]} />;
   } else if (screen == "POST") {
-    render = <PostScreen messageId={screenWithParams.messageId} />;
+    render = <PostScreen messageId={screenWithParams["messageId"]} />;
   } else if (screen == "ORG") {
-    render = <OrgScreen orgId={screenWithParams.orgId} />;
+    render = <OrgScreen orgId={screenWithParams["orgId"]} />;
   } else if (screen == "MY_PROFILE") {
     render = <MyProfileScreen />;
   } else if (screen == "MESSAGE") {
     render = (
-      <MessageScreen groupId={screenWithParams.groupId} messageId={screenWithParams.messageId} />
+      <MessageScreen
+        groupId={screenWithParams["groupId"]}
+        messageId={screenWithParams["messageId"]}
+        onBack={null}
+      />
     );
   } else if (screen == "DEBUG") {
-    render = <DebugScreen backAction={screenWithParams.backAction} />;
+    render = <DebugScreen backAction={screenWithParams["backAction"]} />;
   } else if (screen == "ADMIN") {
     render = <AdminScreen />;
   } else if (screen == "ERROR") {
-    render = <ErrorScreen error={screenWithParams.error} />;
+    render = <ErrorScreen error={screenWithParams["error"]} />;
   } else {
     render = <ErrorScreen error={{ message: "No screen" }} />;
   }
@@ -216,6 +232,7 @@ function RootApp(props, state) {
       {modal === "DEBUG_TEXT" && <DebugTextModal {...modalWithParams} />}
       {/*modal === "SCHOOL_GROUP" && <SchoolGroup {...modalWithParams} />*/}
       <View style={{ position: "absolute", bottom: 400, right: 0 }}>
+        {/*React.memo<{text: string, onPress:()=>void, icon:string, style: string, color: string, badge: string, containerStyle: Object}>*/}
         <MyButtons.MenuButton
           icon="bug"
           color={debugMode ? "red" : "black"}

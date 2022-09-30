@@ -37,7 +37,7 @@ import * as Data from "../common/Data";
 import SchoolScreen from "./SchoolScreen";
 import GroupScreen from "./GroupScreen";
 
-export default function GroupScreenContainer({ groupId, messageId, debug }) {
+export default function GroupScreenContainer({ groupId, messageId }) {
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
   const group = Data.getGroup(groupId);

@@ -42,12 +42,20 @@ import * as Debug from "../common/Debug";
 import * as Actions from "../common/Actions";
 import * as Logger from "../common/Logger";
 
-export default function EventModal({ messageId }) {
+export default function EventModalContainer({ messageId }) {
+  const [loading, message] = Data.getRootMessageWithChildrenAndUserStatus(messageId);
+  if (loading) {
+    return <Loading />;
+  }
+  return <EventModal message={message} />;
+}
+
+function EventModal({ message }) {
   const dispatch = useDispatch();
-  Logger.log("EventModal - messageId: " + messageId);
-  const message = Data.getRootMessageWithChildrenAndUserStatus(messageId);
   const group = Data.getGroup(message.groupId);
   const user = Data.getCurrentUser();
+  Logger.log("EventModal - messageId: " + messageId);
+
   const sortedChildMessages = [...message.children] ?? [];
   sortedChildMessages.sort((m1, m2) => {
     return m1.timestamp - m2.timestamp;

@@ -12,13 +12,6 @@ import * as Data from "../common/Data";
 const Toolbar = ({ selected }) => {
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
-  const { groupMessagesMap, userMessagesMap } = useSelector((state) => {
-    return {
-      groupMessagesMap: state.main.groupMessages,
-      userMessagesMap: state.main.userMessagesMap,
-    };
-  });
-
   const unreadMessageCount = Data.getUserUnreadMessageCount();
   const unreadChatMessageCount = Data.getUserUnreadChatMessageCount();
   return (
@@ -53,10 +46,10 @@ const Toolbar = ({ selected }) => {
           );
         }}
         badge={
-          unreadMessageCount > 0 ? (
+          (unreadMessageCount.data ?? 0) > 0 ? (
             <Badge
               status="error"
-              value={unreadMessageCount}
+              value={unreadMessageCount.data}
               containerStyle={{ position: "absolute", top: -4, right: -4 }}
             />
           ) : null

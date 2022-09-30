@@ -10,7 +10,7 @@ import * as MyButtons from "./MyButtons";
 import * as Debug from "../common/Debug";
 import * as DebugText from "./DebugText";
 
-export default function Login({ afterLoginScreen }) {
+export default function Login() {
   const dispatch = useDispatch();
   const isDebugMode = Debug.isDebugMode();
 
@@ -23,7 +23,7 @@ export default function Login({ afterLoginScreen }) {
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           Logger.log("got user credential: " + JSON.stringify(userCredential));
-          dispatch(Actions.goToScreen(afterLoginScreen));
+          dispatch(Actions.goToScreen({ screen: "FEED" }));
         })
         .catch((err) => {
           Logger.log(`Login err: ${err}`);

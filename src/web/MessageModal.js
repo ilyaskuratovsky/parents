@@ -31,29 +31,14 @@ import * as Debug from "../common/Debug";
 
 export default function MessagesContainer({ groupId, messageId, visible, closeModal }) {
   const user = useSelector((state) => state.main.userInfo);
-  const { messages, groupMap, userMessagesMap, userMap } = useSelector((state) => {
+  const { userMap } = useSelector((state) => {
     return {
-      groupMap: state.main.groupMap,
-      messages: state.main.groupMessages[groupId] ?? [],
-      userMessagesMap: state.main.userMessagesMap,
       userMap: state.main.userMap,
     };
   });
-  const message = useMemo(
-    () =>
-      MessageUtils.buildRootMessageWithChildren(
-        messageId,
-        messages,
-        user,
-        userMessagesMap,
-        null,
-        userMap
-      ),
-    [messageId, messages, user, userMessagesMap, userMap]
-  );
+  const message = Data.getMessage(messageId);
   Logger.log("built message with children: " + message.id);
-
-  const group = groupMap[groupId];
+  const group = Data.getGroup(groupId);
   if (message.event == null) {
     return (
       <MessageModal
@@ -62,7 +47,6 @@ export default function MessagesContainer({ groupId, messageId, visible, closeMo
         message={message}
         visible={visible}
         closeModal={closeModal}
-        userMap={userMap}
       />
     );
   } else {
@@ -73,13 +57,12 @@ export default function MessagesContainer({ groupId, messageId, visible, closeMo
         message={message}
         visible={visible}
         closeModal={closeModal}
-        userMap={userMap}
       />
     );
   }
 }
 
-function MessageModal({ user, group, message, visible, closeModal, userMap }) {
+function MessageModal({ user, group, message, visible, closeModal }) {
   const dispatch = useDispatch();
   const sortedChildMessages = [...message.children] ?? [];
   sortedChildMessages.sort((m1, m2) => {

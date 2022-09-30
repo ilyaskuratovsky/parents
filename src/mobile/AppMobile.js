@@ -1,9 +1,11 @@
+// @flow
+
 import * as Notifications from "expo-notifications";
 import React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import RootApp from "./RootApp";
-import store from "../common/Actions";
+import { store } from "../common/Actions";
 import { setNativeExceptionHandler } from "react-native-exception-handler";
 //import { ErrorBoundary } from "react-error-boundary";
 import ErrorBoundary from "./ErrorBoundary";

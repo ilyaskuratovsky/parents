@@ -14,33 +14,12 @@ import * as UserInfo from "../common/UserInfo";
 export default function MessageScreen({ groupId, messageId, onBack }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-
-  const { groupMap, orgsMap, messages, userMap, members } = useSelector((state) => {
-    return {
-      userinfo: state.main.userInfo,
-      schoolList: state.main.schoolList,
-      schoolMap: state.main.schoolMap,
-      groupList: state.main.groupList,
-      groupMap: state.main.groupMap,
-      orgsMap: state.main.orgsMap,
-      userMap: state.main.userMap,
-      messages: state.main.groupMessages[groupId] ?? [],
-      members: state.main.groupMembershipMap[groupId],
-    };
-  });
-  const group = groupMap[groupId];
+  const group = Data.getGroup(groupId);
   const { height, width } = useWindowDimensions();
   const windowWidth = width ?? 0;
   const [membersModalVisible, setMembersModalVisible] = useState(false);
-  const message = MessageUtils.buildRootMessageWithChildren(
-    messageId,
-    messages,
-    userInfo,
-    null,
-    null,
-    userMap
-  );
-  const user = userMap[message.uid];
+  const message = Data.getMessage(messageId);
+  const user = Data.getUser(message.uid);
 
   const sortedChildMessages = [...message.children] ?? [];
   sortedChildMessages.sort((m1, m2) => {
@@ -49,7 +28,7 @@ export default function MessageScreen({ groupId, messageId, onBack }) {
   });
 
   const childMessages = sortedChildMessages.map((message) => {
-    const user = userMap[message.uid];
+    const user = message.user;
     return {
       _id: message.id,
       text: message.text,

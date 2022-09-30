@@ -3,13 +3,19 @@ import { rdb } from "../../config/firebase";
 import * as Logger from "./Logger";
 
 const observers = {};
+export type ObjectMap<T> = {
+  id: string,
+  object: T,
+}
+
+export type GroupMembership = {id: string, uid: string}
 
 export async function getAllOrgs() {
   /*real-time database */
   const dbRef = RDB.ref(rdb);
   const orgsRDB = await RDB.get(RDB.child(dbRef, "orgs"));
-
-  const ret = toArray(orgsRDB.val());
+  const val = orgsRDB.val()
+  const ret = toArray(val);
   return ret;
 }
 
@@ -115,7 +121,7 @@ export function observeAllUserChanges(callback) {
   });
 }
 
-export async function getAllGroupMemberships() {
+export async function getAllGroupMemberships(): Promise<Array<Object>> {
   /*real-time database */
   const dbRef = RDB.ref(rdb);
   const snapshot = await RDB.get(RDB.child(dbRef, "group_memberships"));
@@ -123,14 +129,14 @@ export async function getAllGroupMemberships() {
   return ret;
 }
 
-function observeAllGroupMembershipChangesHelper(callback, uid, userCallback) {
+function observeAllGroupMembershipChangesHelper(callback: (_) => void, uid: string, userCallback) {
   const ref = RDB.ref(rdb, "group_memberships");
   const unsubscribe = RDB.onValue(ref, (snapshot) => {
     const data = snapshot.val();
     const ret = toArray(data);
     callback(ret);
     if (uid != null) {
-      const userGroupMemberships = ret.filter((groupMembership) => groupMembership.uid == uid);
+      const userGroupMemberships = ret.filter((groupMembership) => groupMembership['object'].uid == uid);
       userCallback(userGroupMemberships);
     }
   });
@@ -297,12 +303,12 @@ export async function logError(error, info) {
   return newReference.key;
 }
 
-function toArray(obj) {
-  if (obj == null) {
-    return [];
+function toArray(idMap: Object) : Array<Object> {
+  const array:Array<Object>  = [];
+  if (idMap == null) {
+    return array;
   }
-  const array = [];
-  for (const [key, value] of Object.entries(obj)) {
+  for (const [key, value] of Object.entries(idMap)) {
     array.push({ id: key, ...value });
   }
   return array;

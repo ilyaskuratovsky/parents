@@ -14,7 +14,7 @@ import * as Data from "../common/Data";
 import * as Debug from "../common/Debug";
 import * as Logger from "../common/Logger";
 
-export default function FindGroupsScreens({ navigation }) {
+export default function FindGroupsScreens() {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
   const userInfo = Data.getCurrentUser();

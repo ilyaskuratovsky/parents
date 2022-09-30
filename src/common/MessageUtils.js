@@ -1,19 +1,33 @@
+// @flow
+
 import * as Logger from "./Logger";
-import * as Dates from "../common/Date";
+import * as Dates from "./Date";
+import { Alert } from "react-native";
+import { UserInfo, UserMessage, MessageRecord, Group } from "./Actions";
+
+export type Message = {
+  id: string,
+  uid: string,
+  timestamp: number,
+  lastUpdated: number,
+  children: Array<Message>
+  event_poll_response: Object,
+  event_poll: Object,
+  user: Object,
+}
 
 /* given a single root message, built it with children */
 export function buildRootMessageWithChildren(
-  messageId,
-  messages,
-  userInfo,
-  userMessagesMap,
-  groupMembers,
-  groupMap,
-  userMap
-) {
+  messageId: string,
+  messages: Array<MessageRecord>,
+  userInfo: UserInfo,
+  userMessagesMap: Record<string, UserMessage>,
+  groupMap: Record<string, UserMessage>,
+  userMap: Record<string, UserInfo>
+): Message {
   const sortedMessages = [...messages].sort((m1, m2) => {
-    const millis1 = Dates.toMillis(m1.timestamp);
-    const millis2 = Dates.toMillis(m2.timestamp);
+    const millis1 = Dates.toMillis(m1.timestamp) ?? 0;
+    const millis2 = Dates.toMillis(m2.timestamp) ?? 0;
     return millis1 - millis2;
   });
 
@@ -70,56 +84,43 @@ export function buildRootMessageWithChildren(
 
 /* builds the entire collection of root message for all the messages of a group*/
 export function buildRootMessagesWithChildren(
-  messages,
-  userInfo,
-  userMessagesMap,
-  groupMembers,
-  groupMap,
-  userMap
-) {
+  messages: Array<MessageRecord>,
+  userInfo: UserInfo,
+  userMessagesMap: Record<string, UserMessage>,
+  groupMap: Record<string, Group>,
+  userMap: Record<string, UserInfo>,
+): Array<Message> {
   Logger.log("buildRootMessagesWithChildren, messages.length: " + messages?.length);
   const messageMap = messages.reduce(function (acc, message) {
-    acc[message.id] = { ...message };
+    const messageId = message['id'] as string;
+    acc[messageId] = { ...message };
     return acc;
   }, {});
 
   const sortedMessages = [...Object.values(messageMap)].sort((m1, m2) => {
-    const millis1 = Dates.toMillis(m1.timestamp);
-    const millis2 = Dates.toMillis(m2.timestamp);
+    const millis1 = Dates.toMillis(m1['timestamp'] as number);
+    const millis2 = Dates.toMillis(m2['timestamp'] as number);
     return millis1 - millis2;
   });
 
   for (const m of sortedMessages) {
-    if (m.papaId != null) {
-      const papaMessage = messageMap[m.papaId];
+    if (m['papaId'] != null) {
+      const papaId = m['papaId'] as string;
+      const papaMessage = messageMap[papaId];
       if (papaMessage != null) {
-        if (papaMessage.children == null) {
+        if (papaMessage['children'] == null) {
           papaMessage["children"] = [];
         }
-        papaMessage.children.push(m);
+        papaMessage['children'].push(m);
       }
     }
   }
 
-  const rootMessages = Object.values(messageMap).filter((m) => m.papaId == null);
+  const rootMessages = Object.values(messageMap).filter((m) => m['papaId'] == null);
   const messagesWithStatus = rootMessages.map((rootMessage) => {
     let rootMessageWithStatus = addMeta(rootMessage, userInfo, userMessagesMap, userMap, groupMap);
-    Logger.log("building message with status (addMeta):  " + rootMessage.id);
-    try {
-      rootMessageWithStatus = addPollData(rootMessageWithStatus);
-    } catch (e) {}
-    Logger.log(
-      "building message with status (addPollData):  " + rootMessage.id + rootMessage.poll_responses
-    );
-    rootMessageWithStatus = addEventData(rootMessageWithStatus);
-    Logger.log("building message with status (addEventData):  " + rootMessage.id);
-    rootMessageWithStatus = addEventPollData(rootMessageWithStatus);
-    Logger.log("building message with status (addEventPollData):  " + rootMessage.id);
-    return { ...rootMessage, ...rootMessageWithStatus };
+    return rootMessageWithStatus;
   });
-  Logger.log(
-    "done buildRootMessagesWithChildren, messagesWithStatus.length: " + messagesWithStatus?.length
-  );
   return messagesWithStatus;
 }
 
@@ -184,6 +185,9 @@ export function addMeta(rootMessage, userInfo, userMessagesMap, userMap, groupMa
   let userMessageId = null;
   let rootMessageStatus = null;
   if (userInfo.uid !== rootMessage.uid) {
+    if (userMessagesMap == null) {
+      Alert.alert("userMessagesMap[rootMessage.id] issue");
+    }
     const userMessage = userMessagesMap[rootMessage.id];
     rootMessageStatus = userMessage?.status;
     userStatus["userMessageId"] = userMessage?.id;
@@ -347,25 +351,25 @@ export function addPollData(rootMessage) {
   };
 }
 
-function eventPollResponseSummary(rootMessage) {
+function eventPollResponseSummary(rootMessage: Message) {
   // accumulate all the 'last' responses per user
   const eventPollResponsesPerUser = {};
   const childMessages = rootMessage.children;
   for (const childMessage of childMessages) {
     if (childMessage.event_poll_response != null) {
-      eventPollResponsesPerUser[childMessage.user.uid] = childMessage;
+      eventPollResponsesPerUser[childMessage.user['uid']] = childMessage;
     }
   }
 
   // get the poll options
   const eventPollOptions = rootMessage.event_poll;
   const result = [];
-  for (const pollOption of eventPollOptions) {
+  for (const pollOption of Object.values(eventPollOptions)) {
     const uid_list = [];
     for (const [userId, userEventPollResponseMessage] of Object.entries(
       eventPollResponsesPerUser
     )) {
-      const pollResponse = userEventPollResponseMessage.event_poll_response;
+      const pollResponse = (userEventPollResponseMessage as Message).event_poll_response;
       if (pollResponse != null && pollResponse[pollOption.name]?.status) {
         uid_list.push(userId);
       }

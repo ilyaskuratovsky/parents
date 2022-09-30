@@ -5,7 +5,7 @@ import { Platform } from "react-native";
 import * as Actions from "./Actions";
 import { auth } from "../../config/firebase";
 import * as Database from "./Database";
-import store from "./Actions";
+import {store} from "./Actions";
 import * as Search from "./Search";
 import moment from "moment";
 import * as UserInfo from "./UserInfo";
@@ -14,6 +14,7 @@ import { storage } from "../../config/firebase";
 import { getDownloadURL, ref, uploadBytes, uploadString } from "firebase/storage";
 import { useSelector } from "react-redux";
 import { createGroup } from "./DatabaseRDB";
+import {data, loading} from "./RemoteData";
 
 //import { Database } from "firebase-firestore-lite";
 
@@ -37,10 +38,10 @@ export async function initializeApp(dispatch, notificationListener, responseList
 
   //observe super public group messages
   groups
-    .filter((g) => g.type === "super_public")
+    .filter((g) => g['type'] === "super_public")
     .forEach(async (group) => {
       //Loop through group_memberships and set up a subscriber for its messages
-      observeGroupMessages(dispatch, group.id);
+      observeGroupMessages(dispatch, group['id']);
     });
 
   dispatch(
@@ -163,15 +164,16 @@ export function getLoggedInScreen(state) {
   return { screen: "GROUPS" };
 }
 
-export async function loggedIn(dispatch, authenticatedUser, pushToken) {
+export async function loggedIn(dispatch, authenticatedUser, pushToken: string) {
   Logger.log("logged in");
   const uid = authenticatedUser.uid;
 
-  let userData = {
+  let userData: {uid: string, displayName: string, photoURL: string, email: string, pushToken: string} = {
     uid,
     displayName: authenticatedUser.displayName,
     photoURL: authenticatedUser.photoURL,
     email: authenticatedUser.email,
+    pushToken: null,
   };
   if (pushToken != undefined) {
     userData = { pushToken, ...userData };
@@ -232,6 +234,7 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken) {
   });
 
   //observe user messages
+  Actions.userMessages(loading());
   Database.observeUserMessages(uid, (userMessages) => {
     dispatch(Actions.userMessages(userMessages));
   });
@@ -403,14 +406,14 @@ export async function createGroupAndJoin(
 
 export async function createDefaultOrgGroupIfNotExists(orgId) {
   Logger.log(
-    "Controller.createDefaultOrgGroupIfNotExists: orgId: " + orgId + ", groupName: " + groupName
+    "Controller.createDefaultOrgGroupIfNotExists: orgId: " + orgId
   );
   const groupList = await Database.getAllGroups();
   const org = await Database.getOrg(orgId);
 
   const defaultGroup = single(
     groupList.filter((group) => {
-      group.orgId == orgId && group.type === "default_org_group";
+      group['orgId'] == orgId && group['type'] === "default_org_group";
     })
   );
 
@@ -674,6 +677,7 @@ export async function setUserGroupLastViewedTimestamp(
   groupId,
   lastViewedMessageTimestamp
 ) {
+  console.log("getState()");
   const userGroupMemberships = store
     .getState()
     .main.groupMembershipMap[groupId].filter((gm) => gm.uid == userInfo.uid);

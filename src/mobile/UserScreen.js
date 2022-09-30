@@ -8,7 +8,7 @@ import GroupsScreen from "./GroupsScreen";
 import InitialChooseSchoolsWizard from "./InitialChooseSchoolsWizard";
 import InitialJoinSchoolGroupsScreen from "./InitialJoinSchoolGroupsScreen";
 
-export default function UserScreen({ navigation }) {
+export default function UserScreen() {
   const userInfo = useSelector((state) => state.main.userInfo);
   const screenWithParams = useSelector((state) => state.screen.userScreen);
   const screen = screenWithParams.screen;

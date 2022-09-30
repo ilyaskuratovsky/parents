@@ -12,26 +12,14 @@ import Toolbar from "./Toolbar";
 import TopBar from "./TopBar";
 import * as UIConstants from "./UIConstants";
 import * as Logger from "../common/Logger";
+import { ActivityIndicator } from "react-native-paper";
+import { RemoteData, uninitialized, loading, data, isLoading } from "../common/RemoteData";
+import Loading from "./Loading";
 
-export default function FeedScreen({ debug }) {
+export default function FeedScreen() {
   const dispatch = useDispatch();
-  const userInfo = useSelector((state) => state.main.userInfo);
-  Logger.log("FeedScreen 1");
-  let { messages, userMap, userMessagesMap, groupMap } = useSelector((state) => {
-    return {
-      userinfo: state.main.userInfo,
-      schoolList: state.main.schoolList,
-      schoolMap: state.main.schoolMap,
-      groupList: state.main.groupList,
-      groupMap: state.main.groupMap,
-      orgsMap: state.main.orgsMap,
-      userMap: state.main.userMap,
-      messages: Object.values(state.main.groupMessages).flat(),
-      userMessagesMap: state.main.userMessagesMap,
-    };
-  });
-  Logger.log("FeedScreen 2");
-
+  const userInfo = Data.getCurrentUser();
+  const groupMessages = Data.getAllGroupMessages();
   const FlatListItemSeparator = () => {
     return (
       <View
@@ -44,23 +32,6 @@ export default function FeedScreen({ debug }) {
     );
   };
 
-  Logger.log("FeedScreen 3");
-  const sortedMessages = useMemo(() => {
-    const rootMessages = MessageUtils.buildRootMessagesWithChildren(
-      messages,
-      userInfo,
-      userMessagesMap,
-      null,
-      groupMap,
-      userMap
-    );
-    const sortedMessages = [...rootMessages] ?? [];
-    sortedMessages.sort((m1, m2) => {
-      return m2.lastUpdated - m1.lastUpdated;
-    });
-    return sortedMessages;
-  }, [messages, userInfo, userMessagesMap, null, userMap]);
-
   Logger.log("FeedScreen 4");
   const renderMessage = ({ item }) => {
     const onPress = () => {
@@ -69,10 +40,12 @@ export default function FeedScreen({ debug }) {
     };
     return <MessageViewContainer user={userInfo} showGroup={true} item={item} onPress={onPress} />;
   };
-  useEffect(async () => {}, [messages]);
   const defaultGroup = Data.getSuperPublicGroups()[0];
 
   Logger.log("FeedScreen 5");
+  if (isLoading(groupMessages, defaultGroup)) {
+    return <Loading />;
+  }
   return (
     <Portal
       backgroundColor={UIConstants.DEFAULT_BACKGROUND}
@@ -147,7 +120,7 @@ export default function FeedScreen({ debug }) {
               }}
               data={
                 //DATA
-                sortedMessages
+                groupMessages
               }
               renderItem={renderMessage}
               keyExtractor={(item) => item.id}

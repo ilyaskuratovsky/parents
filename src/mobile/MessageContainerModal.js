@@ -40,28 +40,12 @@ import EventPollMessageModal from "./EventPollMessageModal";
 
 export default function MessagesContainer({ groupId, messageId, visible, closeModal }) {
   const user = useSelector((state) => state.main.userInfo);
-  const { messages, groupMap, userMessagesMap, userMap } = useSelector((state) => {
-    return {
-      groupMap: state.main.groupMap,
-      messages: state.main.groupMessages[groupId] ?? [],
-      userMessagesMap: state.main.userMessagesMap,
-      userMap: state.main.userMap,
-    };
-  });
 
   // if message has a parent, render the parent message
-  const message = MessageUtils.buildRootMessageWithChildren(
-    messageId,
-    messages,
-    user,
-    userMessagesMap,
-    null,
-    null,
-    userMap
-  );
+  const message = Data.getRootMessageWithChildrenAndUserStatus(messageId);
+  const group = Data.getGroup(grouId);
   Logger.log("built message with children: " + message.id);
 
-  const group = groupMap[groupId];
   if (message.event != null) {
     return (
       <EventMessageModal

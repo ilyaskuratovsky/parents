@@ -1,3 +1,5 @@
+// @flow
+
 import { configureStore } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import {
@@ -6,6 +8,16 @@ import {
 } from "firebase/firestore";
 import * as Logger from "./Logger";
 import * as MessageUtils from "./MessageUtils";
+import { RemoteData, loading, data } from "./RemoteData";
+
+/*
+export type Org = Record<string, Object>;
+export type Group = Record<string, Object>;
+export type GroupMembership = Record<string, Object>;
+export type UserInfo = Record<string, Object>;
+export type UserMessage = Record<string, Object>;
+export type MessageRecord = Record<string, Object>;
+*/
 
 const START_IN_DEBUG = true;
 export const screenSlice = createSlice({
@@ -29,10 +41,7 @@ export const screenSlice = createSlice({
       };
       return newState;
     },
-    openModal: (state, modal) => {
-      Logger.log("Actions.openModal: " + JSON.stringify(modal));
-      // const newModalStack = [...state.modalStack];
-      // newModalStack.push(modal.payload);
+    openModal: (state, modal: { payload: string }) => {
       const newState = {
         ...state,
         modalStack: [...state.modalStack, modal.payload],
@@ -63,32 +72,35 @@ export const screenSlice = createSlice({
 export const mainSlice = createSlice({
   name: "main",
   initialState: {
-    userInfo: null,
-    orgsList: null,
-    orgMap: null,
-    groupIds: null,
-    groupMap: null,
-    groupMembershipMap: null,
-    userMap: null,
-    userList: null,
-    userGroupMemberships: null,
-    userChatMemberships: [],
-    chatMap: {},
-    messages: {},
-    allChatMessages: {},
-    groupMessages: {},
-    chatMessages: {},
+    appInitialized: false,
+    userInfo: null as UserInfo | null,
+    orgsList: null as Array<Record<string, Object>> | null,
+    orgsMap: null as Record<string, Org> | null,
+    // groupIds: null,
+    groupList: null as Array<Group> | null,
+    groupMap: null as Record<string, Group> | null,
+    groupMembershipMap: null as Record<string, Array<GroupMembership>> | null,
+    userMap: null as Record<string, Record<string, Object>> | null,
+    userList: null as Array<Record<string, Object>> | null,
+    userGroupMemberships: null as Array<GroupMembership> | null,
+    userChatMemberships: null as Array<Record<string, Object>> | null,
+    chatMap: null as Record<string, Object> | null,
+    messagesMap: null as Record<string, Record<string, Object>> | null,
+    //
+    groupMessagesMap: null as Record<string, Array<Record<string, Object>>> | null,
+    chatMessagesMap: null as Record<string, Object> | null,
     pushToken: null,
     toUserInvites: null,
     groupMembershipRequests: null,
     fromUserInvites: null,
-    userMessagesMap: null,
-    userChatMessagesMap: null,
+    // key'd by message id the user's meta data for the message (e.g. read/unread)
+    userMessagesMap: {} as Record<string, UserMessage>,
+    userChatMessagesMap: {} as Record<string, any>,
     unreadMessages: [],
     deviceType: null,
   },
   reducers: {
-    appInitialized: (state, obj) => {
+    appInitialized: (state) => {
       Logger.log("Actions.appInitialized");
       const newState = {
         ...state,
@@ -98,7 +110,6 @@ export const mainSlice = createSlice({
     },
     userInfo: (state, obj) => {
       const userInfo = obj.payload;
-      Logger.log("Actions.userInfo: " + userInfo?.id);
       const newUserMap = { ...state.userMap };
       newUserMap[userInfo.uid] = userInfo;
       const newState = {
@@ -119,32 +130,34 @@ export const mainSlice = createSlice({
       const { orgs, groups, users, groupMemberships } = obj.payload;
 
       //users
-      const userList = [];
-      const userMap = {};
+      const userList: Array<Record<string, Object>> = [];
+      const userMap = {} as Record<string, Record<string, Object>>;
       for (const user of users) {
         userList.push(user);
         userMap[user.id] = user;
       }
 
       //groups
-      const groupList = [];
-      const groupMap = {};
+      const groupList = [] as Array<Record<string, Group>>;
+      const groupMap = {} as Record<string, Group>;
       for (const group of groups) {
         groupList.push(group);
         groupMap[group.id] = group;
       }
 
       //groupMemberships
-      const groupMembershipMap = {};
+      const groupMembershipMap = {} as Record<string, Array<GroupMembership>>;
       for (const groupMembership of groupMemberships) {
-        !(groupMembership.groupId in groupMembershipMap)
-          ? (groupMembershipMap[groupMembership.groupId] = [groupMembership])
-          : groupMembershipMap[groupMembership.groupId].push(groupMembership);
+        if (!(groupMembership.groupId in groupMembershipMap)) {
+          groupMembershipMap[groupMembership.groupId] = [groupMembership];
+        } else {
+          groupMembershipMap[groupMembership.groupId]?.push(groupMembership);
+        }
       }
 
       //orgs
-      const orgsList = [];
-      const orgsMap = {};
+      const orgsList = [] as Array<Record<string, Object>>;
+      const orgsMap = {} as Record<string, Record<string, Object>>;
       for (const org of orgs) {
         orgsList.push(org);
         orgsMap[org.id] = org;
@@ -152,20 +165,18 @@ export const mainSlice = createSlice({
 
       const newState = {
         ...state,
-        userList,
-        userMap,
-        groupList,
-        groupMap,
-        orgsList,
-        orgsMap,
-        groupMembershipMap,
+        userList: userList,
+        userMap: userMap,
+        groupList: groupList,
+        groupMap: groupMap,
+        orgsList: orgsList,
+        orgsMap: orgsMap,
+        groupMembershipMap: groupMembershipMap,
       };
       return newState;
     },
     pushToken: (state, obj) => {
       const { token } = obj.payload;
-      Logger.log("Actions.pushToken: " + JSON.stringify(token));
-
       const newState = {
         ...state,
         pushToken: token,
@@ -174,9 +185,6 @@ export const mainSlice = createSlice({
     },
     userGroupMemberships: (state, obj) => {
       const userGroupMemberships = obj.payload;
-      Logger.log(
-        "Actions.userGroupMemberships: " + JSON.stringify(userGroupMemberships?.map((u) => u?.id))
-      );
       const newState = {
         ...state,
         userGroupMemberships,
@@ -203,18 +211,22 @@ export const mainSlice = createSlice({
       };
       return newState;
     },
-    groupMessages: (state, obj) => {
+    groupMessages: (
+      state,
+      obj: {
+        payload: { groupId: string; messages: Array<Record<string, Object>> } 
+      }
+    ) => {
       const { groupId, messages } = obj.payload;
-      Logger.log("Actions.groupMessages, groupId:" + groupId);
       const orderedMessages = messages.sort((message1, message2) => {
-        return message2.timestamp - message1.timestamp;
+        return message2.timestamp as number - (message1.timestamp as number); 
       });
-      const groupMessages = { ...state.groupMessages };
+      const groupMessages = { ...state.groupMessagesMap };
       groupMessages[groupId] = orderedMessages;
 
-      const allMessages = { ...state.messages };
+      const allMessages = { ...state.messagesMap };
       orderedMessages.forEach((message) => {
-        allMessages[message.id] = message;
+        allMessages[message.id as string] = message;
       });
 
       const newState = {
@@ -226,47 +238,42 @@ export const mainSlice = createSlice({
       return newState;
     },
     chatMessages: (state, obj) => {
-      const { chatId, messages } = obj.payload;
-      Logger.log("Actions.chatMessages, chatId:" + chatId);
+      const { chatId, messages }: { chatId: string; messages: Array<Record<string, Object>> } =
+        obj.payload;
       const orderedMessages = messages.sort((message1, message2) => {
-        return message2.timestamp - message1.timestamp;
+        return (message2["timestamp"] as number) - (message1["timestamp"] as number);
       });
-      const chatMessages = { ...state.chatMessages };
-      chatMessages[chatId] = orderedMessages;
-
-      const allChatMessages = { ...state.allChatMessages };
-      orderedMessages.forEach((message) => {
-        allChatMessages[message.id] = message;
-      });
+      const chatMessagesMap = { ...(state.chatMessagesMap ?? {}) };
+      chatMessagesMap[chatId] = orderedMessages;
 
       const newState = {
         ...state,
-        chatMessages,
-        allChatMessages,
-        //rootUserMessages: {...state.rootUserMessages, ...groupRootUserMessages},
+        chatMessagesMap,
       };
       return newState;
     },
+
+    //THE user's meta data on a message (e.g. read/unread etc.)
     userMessages: (state, obj) => {
-      const messages = obj.payload;
-      Logger.log("Actions.userMessages");
-      const userMessagesMap = { ...state.userMessagesMap };
-      for (const message of messages) {
-        userMessagesMap[message.id] = message;
+      const userMessages = obj.payload as Array<Record<string, any>>;
+      const userMessagesMap = { ...(state.userMessagesMap ?? {}) };
+
+      for (const userMessage of userMessages) {
+        userMessagesMap[userMessage.id] = userMessage;
       }
 
       return {
         ...state,
-        userMessagesMap,
-        //rootUserMessages,
+        userMessagesMap: userMessagesMap,
       };
     },
-    userChatMessages: (state, obj) => {
+
+    //User meta data on chat messages (e.g. read/unread)
+    userChatMessages: (state, obj: {payload: Array<Record<string, Object>>}) => {
       const messages = obj.payload;
-      Logger.log("Actions.userChatMessages");
       const userChatMessagesMap = { ...state.userChatMessagesMap };
       for (const message of messages) {
-        userChatMessagesMap[message.id] = message;
+        userChatMessagesMap[message.id as string] = message;
       }
 
       return {
@@ -275,35 +282,37 @@ export const mainSlice = createSlice({
         //rootUserMessages,
       };
     },
-    groups: (state, obj) => {
+    groups: (state, obj: {payload: Array<Record<string, Object>>}) => {
       let groups = obj.payload;
-      groups = groups.filter((group) => group != null /* && group.status != "deleted"*/);
-      Logger.log("Actions.groups");
-      const groupList = [];
-      const groupMap = {};
+      groups = groups.filter((group) => group != null);
+      const groupList = [] as Array<Group>;
+      const groupMap = {} as Record<string, Group>;
       for (const group of groups) {
         groupList.push(group);
-        groupMap[group.id] = group;
+        groupMap[group.id as string] = group;
       }
       const newState = {
         ...state,
-        groupList,
-        groupMap,
+        groupList: groupList,
+        groupMap: groupMap,
       };
       return newState;
     },
-    groupMemberships: (state, obj) => {
+    groupMemberships: (state, obj : {payload: Array<Record<string, Object>>}) => {
       const groupMemberships = obj.payload;
-      Logger.log("Actions.groupMemberships");
-      const groupMembershipMap = {};
+      const groupMembershipMap = {} as Record<string, Array<Record<string, Object>>>;
       for (const groupMembership of groupMemberships) {
-        !(groupMembership.groupId in groupMembershipMap)
-          ? (groupMembershipMap[groupMembership.groupId] = [groupMembership])
-          : groupMembershipMap[groupMembership.groupId].push(groupMembership);
+         const groupId = groupMembership.groupId as string;
+        if (!(groupId in groupMembershipMap)) {
+          groupMembershipMap[groupId] = [groupMembership];
+        } else {
+          groupMembershipMap[groupId].push(groupMembership);
+
+        }
       }
       const newState = {
         ...state,
-        groupMembershipMap,
+        groupMembershipMap: groupMembershipMap,
       };
       return newState;
     },
@@ -319,7 +328,7 @@ export const mainSlice = createSlice({
     orgsUpdated: (state, obj) => {
       const orgs = obj.payload;
       const orgsList = [];
-      const orgsMap = {};
+      const orgsMap = {} as Record<string, Record<string, Object>>;
       for (const org of orgs) {
         orgsList.push(org);
         orgsMap[org.id] = org;
@@ -327,8 +336,8 @@ export const mainSlice = createSlice({
 
       const newState = {
         ...state,
-        orgsList,
-        orgsMap,
+        orgsList: orgsList,
+        orgsMap: orgsMap,
       };
       return newState;
     },
@@ -412,16 +421,20 @@ export const {
   clearUserData,
   deviceType,
 } = mainSlice.actions;
-export const { goToScreen, openModal, closeModal, goToUserScreen, goToScreenAfterLogin } =
-  screenSlice.actions;
+export const { goToScreen, openModal, closeModal, goToUserScreen } = screenSlice.actions;
 
 export const { toggleDebugMode } = debugSlice.actions;
 
-export default configureStore({
-  reducer: {
+export const store = configureStore({
+  reducer: Reducer<>: {
     main: mainSlice.reducer,
     screen: screenSlice.reducer,
     debug: debugSlice.reducer,
   },
   middleware: [],
 });
+
+/*
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+*/

@@ -40,14 +40,7 @@ import * as Date from "../common/Date";
 import * as Debug from "../common/Debug";
 import * as Logger from "../common/Logger";
 
-export default function EventPollMessageModal({
-  group,
-  message,
-  user,
-  userMap,
-  visible,
-  closeModal,
-}) {
+export default function EventPollMessageModal({ group, message, user, visible, closeModal }) {
   const dispatch = useDispatch();
   const sortedChildMessages = [...message.children] ?? [];
   sortedChildMessages.sort((m1, m2) => {
