@@ -172,6 +172,10 @@ export default class RootMessage {
     return new Date(this.rootMessage.timestamp);
   }
 
+  getLastUpdated(): Date {
+    return new Date(this.rootMessage.timestamp);
+  }
+
   getChildren(): Array<RootMessage> {
     const sortedMessages = [...(this.children ?? [])]
       .sort((m1, m2) => {

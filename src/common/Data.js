@@ -336,6 +336,17 @@ export function getUserGroupMembership(groupId: string): ?GroupMembership {
   return arr.length == 1 ? arr[0] : null;
 }
 
+export function getOrg(orgId: string): ?Org {
+  const { orgsMap } = useSelector((state: RootState) => {
+    return {
+      orgsMap: state.main.orgsMap,
+    };
+  });
+
+  const org = orgsMap[orgId];
+  return org;
+}
+
 /*
   let unreadMessages = 0;
   for (const message of userRootMessages) {
@@ -357,17 +368,6 @@ export function getRootGroup(): ?Group {
     };
   });
   return group;
-}
-
-export function getOrg(orgId: string): ?Org {
-  const { orgsMap } = useSelector((state: RootState) => {
-    return {
-      orgsMap: state.main.orgsMap,
-    };
-  });
-
-  const org = orgsMap[orgId];
-  return org;
 }
 
 export function getChat(chatId: string): ?Chat {

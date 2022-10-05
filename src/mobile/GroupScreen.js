@@ -31,7 +31,7 @@ import { IconButton } from "react-native-paper";
 import MessageViewContainer from "./MessageViewContainer";
 import DebugText from "./DebugText";
 import * as Logger from "../common/Logger";
-
+import * as Messages from "../common/Message";
 /* 
 People can "follow" orgs, this is a new relationship
 When people follow orgs - they will receive notifications of all the happenings - new groups created
@@ -426,7 +426,7 @@ function MessagesSection({ groupId, user }) {
     return <MessageViewContainer key={item.id} user={user} item={item} onPress={onPress} />;
   };
 
-  const userRootMessages = Data.getGroupUserRootMessages(groupId);
+  const userRootMessages = Messages.getGroupUserRootMessages(groupId);
 
   const sortedMessages = useMemo(() => {
     if (userRootMessages == null) {
@@ -434,7 +434,7 @@ function MessagesSection({ groupId, user }) {
     }
     const sortedMessages = [...(userRootMessages ?? [])] ?? [];
     sortedMessages.sort((m1, m2) => {
-      return m2.lastUpdated - m1.lastUpdated;
+      return m2.getLastUpdated() - m1.getLastUpdated();
     });
     return sortedMessages;
   }, [userRootMessages]);
