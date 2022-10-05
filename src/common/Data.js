@@ -324,13 +324,10 @@ export function getChatMessages(chatId: string): Array<ChatMessageInfo> {
 
 export function getGroupUserRootUnreadMessages(groupId: string): Array<RootMessage> {
   const userGroupRootMessages = getGroupUserRootMessages(groupId);
-  const unread = useMemo(() => {
-    const unreadMessages = userGroupRootMessages.filter(
-      (rootMessage) => rootMessage.getUserStatus().status != "read"
-    );
-    return unreadMessages;
-  }, [userGroupRootMessages]);
-  return unread;
+  const unreadMessages = userGroupRootMessages.filter(
+    (rootMessage) => rootMessage.getUserStatus().status != "read"
+  );
+  return unreadMessages;
 }
 
 export function getChatUserUnreadMessages(chatId: string): Array<ChatMessageInfo> {
@@ -407,6 +404,27 @@ export function getAllUserChatMessages(): Array<ChatMessageInfo> {
   }, [chatMessages, userChatMessagesMap, userMap]);
 }
 
+export function getUserGroupMemberships(): Array<GroupMembership> {
+  const user = getCurrentUser();
+  const { userGroupMemberships } = useSelector((state: RootState) => {
+    return {
+      userGroupMemberships: state.main.userGroupMemberships,
+    };
+  });
+  return userGroupMemberships;
+}
+
+export function getUserGroupMembership(groupId: string): ?GroupMembership {
+  const user = getCurrentUser();
+  const { userGroupMemberships } = useSelector((state: RootState) => {
+    return {
+      userGroupMemberships: state.main.userGroupMemberships,
+    };
+  });
+  const arr = (userGroupMemberships ?? []).filter((m) => m["groupId"] === groupId);
+  return arr.length == 1 ? arr[0] : null;
+}
+
 /*
   let unreadMessages = 0;
   for (const message of userRootMessages) {
@@ -456,27 +474,6 @@ export function getSuperPublicGroups(groupId: string): Array<Group> {
     return groups;
   });
   return groups.filter((group) => group["type"] === "super_public");
-}
-
-export function getUserGroupMemberships(): Array<GroupMembership> {
-  const user = getCurrentUser();
-  const { userGroupMemberships } = useSelector((state: RootState) => {
-    return {
-      userGroupMemberships: state.main.userGroupMemberships,
-    };
-  });
-  return userGroupMemberships;
-}
-
-export function getUserGroupMembership(groupId: string): ?GroupMembership {
-  const user = getCurrentUser();
-  const { userGroupMemberships } = useSelector((state: RootState) => {
-    return {
-      userGroupMemberships: state.main.userGroupMemberships,
-    };
-  });
-  const arr = (userGroupMemberships ?? []).filter((m) => m["groupId"] === groupId);
-  return arr.length == 1 ? arr[0] : null;
 }
 
 

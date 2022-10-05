@@ -17,6 +17,7 @@ export type Group = {
   id: string,
   type: string,
   name: string,
+  description: ?string,
   ...
 };
 
@@ -34,13 +35,51 @@ export type Message = {
   timestamp: number,
   papaId: string,
   uid: string,
-  poll: { ... },
+  //poll: { ... },
   ...
 };
 
 export type UserMessage = {
   id: string,
   status: string,
+  ...
+};
+
+export type GroupMembership = {
+  id: string,
+  ...
+};
+
+export type Chat = {
+  id: string,
+  ...
+};
+
+export type ChatMessage = {
+  id: string,
+  ...
+};
+
+export type UserChatMessage = {
+  id: string,
+  userStatus: {
+    status: string,
+  },
+  ...
+};
+
+export type ChatMembership = {
+  id: string,
+  ...
+};
+
+export type UserInvite = {
+  id: string,
+  ...
+};
+
+export type GroupMembershipRequest = {
+  id: string,
   ...
 };
 

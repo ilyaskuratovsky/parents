@@ -1,4 +1,7 @@
-import React, { useEffect, useState, useMemo } from "react";
+// @flow strict-local
+
+import { useEffect, useState, useMemo } from "react";
+import * as React from "react";
 import {
   ScrollView,
   Text,
@@ -47,7 +50,7 @@ Of the org page you should be able to create a group -
 
 */
 
-export default function GroupScreen({ groupId }) {
+export default function GroupScreen({ groupId }: { groupId: string }): React.Node {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
   const userInfo = useSelector((state) => state.main.userInfo);

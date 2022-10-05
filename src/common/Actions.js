@@ -9,7 +9,20 @@ import {
 import * as Logger from "./Logger";
 import * as MessageUtils from "./MessageUtils";
 import { RemoteData, loading, data } from "./RemoteData";
-import type { UserInfo, Org, Group, UserMessage, Message } from "./Database";
+import type {
+  UserInfo,
+  Org,
+  Group,
+  UserMessage,
+  Message,
+  UserChatMessage,
+  GroupMembership,
+  ChatMembership,
+  Chat,
+  ChatMessage,
+  UserInvite,
+  GroupMembershipRequest,
+} from "./Database";
 
 const START_IN_DEBUG = true;
 export const screenSlice: {
@@ -88,7 +101,7 @@ export type MainState = {|
   userGroupMemberships: ?{ [key: string]: GroupMembership },
   userChatMembershipsList: ?Array<ChatMembership>,
   chatMap: ?{ [key: string]: Chat },
-  groupMessagesMap: ?{ [key: string]: Message },
+  groupMessagesMap: ?{| [key: string]: { ... } |},
   chatMessagesMap: ?{ [key: string]: ChatMessage },
   pushToken: string,
   toUserInvites: ?Array<UserInvite>,
@@ -101,44 +114,6 @@ export type MainState = {|
 |};
 
 export type DebugState = { ... };
-
-export type GroupMembership = {
-  id: string,
-  ...
-};
-
-export type Chat = {
-  id: string,
-  ...
-};
-
-export type ChatMessage = {
-  id: string,
-  ...
-};
-
-export type UserChatMessage = {
-  id: string,
-  userStatus: {
-    status: string,
-  },
-  ...
-};
-
-export type ChatMembership = {
-  id: string,
-  ...
-};
-
-export type UserInvite = {
-  id: string,
-  ...
-};
-
-export type GroupMembershipRequest = {
-  id: string,
-  ...
-};
 
 export type MainActions = { [key: string]: ({ ... }) => void };
 export type MainReducer = { [key: string]: () => void };
@@ -299,24 +274,27 @@ export const mainSlice: {
       };
       return newState;
     },
-    groupMessages: (state: MainState, obj): MainState => {
+    groupMessages: (
+      state: MainState,
+      obj: { payload: { groupId: string, messages: Array<Message> } }
+    ) => {
       const { groupId, messages } = obj.payload;
       const orderedMessages = messages.sort((message1, message2) => {
         return message2.timestamp - message1.timestamp;
       });
-      const groupMessages = { ...state.groupMessagesMap };
+      const groupMessages = { ...(state.groupMessagesMap ?? {}) };
       groupMessages[groupId] = orderedMessages;
 
-      const allMessages = { ...state.messagesMap };
+      const allMessages = { ...(state.messagesMap ?? {}) };
       orderedMessages.forEach((message) => {
         allMessages[message.id] = message;
       });
 
+      const userMessagesMap = { ...(state.userMessagesMap ?? {}) };
       const newState = {
         ...state,
         groupMessagesMap: groupMessages,
         messagesMap: allMessages,
-        //rootUserMessages: {...state.rootUserMessages, ...groupRootUserMessages},
       };
       return newState;
     },

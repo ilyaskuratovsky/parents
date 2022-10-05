@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+// @flow strict-local
+
+import { useState } from "react";
+import * as React from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { Divider } from "react-native-elements";
 import { IconButton } from "react-native-paper";
@@ -21,12 +24,12 @@ import { Badge } from "react-native-elements";
 import { styles } from "./Styles";
 import DebugText from "./DebugText";
 
-export default function GroupView({ groupId }) {
+export default function GroupView({ groupId }: { groupId: string }): React.Node {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
   const group = Data.getGroup(groupId);
   const members = Data.getGroupMemberships(groupId) ?? [];
-  const userGroupMembership = Data.getUserGroupMemberships(groupId) ?? [];
+  const userGroupMembership = Data.getUserGroupMembership(groupId);
   const userInfo = Data.getCurrentUser();
   const unreadRootMessages = Data.getGroupUserRootUnreadMessages(groupId);
   const unreadCount = unreadRootMessages.length;
@@ -35,7 +38,9 @@ export default function GroupView({ groupId }) {
     if (debugMode) {
       return (
         <DebugText
-          text={"Group is null for group_memberships: " + JSON.stringify(userGroupMembership)}
+          text={
+            "Group is null for group_memberships: " + JSON.stringify(userGroupMembership ?? "null")
+          }
         />
       );
     } else {
@@ -54,9 +59,9 @@ export default function GroupView({ groupId }) {
         <Text key="debug" style={{ fontSize: 8 }}>
           {JSON.stringify(
             {
-              user_group_membership: userGroupMembership.id,
+              user_group_membership: userGroupMembership?.id,
               group: group.id,
-              unreadRootMessages: JSON.stringify(unreadRootMessages.map((m) => m.id)),
+              unreadRootMessages: JSON.stringify(unreadRootMessages.map((m) => m.getID())),
             },
             null,
             2

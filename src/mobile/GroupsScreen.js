@@ -91,11 +91,13 @@ export default function GroupsScreen({}) {
   //   (groupMembership) => groupMembership.groupId
   // );
   let groupsComponents = null;
+
   const userGroupMemberships = [...manualUserGroupMemberships];
 
   if (userGroupMemberships.length > 0) {
     groupsComponents = userGroupMemberships.map((userGroupMembership, index) => {
       const groupId = userGroupMembership.groupId;
+      //return <Text key={groupId}>group</Text>;
       return <GroupView key={groupId} groupId={groupId} />;
     });
   }
@@ -156,11 +158,12 @@ export default function GroupsScreen({}) {
       <View key="main_content" style={{ flex: 1, backgroundColor: "white", paddingTop: 20 }}>
         <ScrollView key="messages">
           {groupsComponents}
+          {/*
           {superPublicGroupsComponents}
+          */}
           <View
             style={{
               flex: 1,
-              /*backgroundColor: "cyan",*/
               height: 60,
               alignItems: "center",
               justifyContent: "center",
