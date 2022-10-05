@@ -10,6 +10,7 @@ export type UserInfo = {
   lastName: ?string,
   email: ?string,
   image: ?string,
+  superUser: ?boolean,
   ...
 };
 

@@ -17,6 +17,11 @@ import { getDownloadURL, ref, uploadBytes, uploadString } from "firebase/storage
 import { useSelector } from "react-redux";
 import { createGroup } from "./DatabaseRDB";
 import { data, loading } from "./RemoteData";
+import * as Data from "./Data";
+import * as Message from "./Message";
+import type { ChatMessage } from "./Database";
+import { useEffect } from "react";
+import * as Messages from "./Message";
 
 //import { Database } from "firebase-firestore-lite";
 
@@ -308,6 +313,35 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken: ?string):
     userInvitesUnsubscribe();
   };
   return unsubscribe;
+}
+
+export function useMarkRead(messageId: string) {
+  const user = Data.getCurrentUser();
+  const message = Messages.getRootMessage(messageId);
+
+  useEffect(() => {
+    if (message != null) {
+      let markRead = [];
+      if (message?.getUserStatus()?.status != "read") {
+        markRead.push(message.getID());
+      }
+      const unreadChildMessages = (message.getChildren() ?? []).filter(
+        (m) => m.getUserStatus().status != "read"
+      );
+      markRead = markRead.concat(unreadChildMessages.map((m) => m.id));
+      markMessagesRead(user, markRead);
+    }
+  }, [message]);
+}
+
+export function useMarkChatMessagesRead(chatMessages: Array<ChatMessage>): void {
+  const user = Data.getCurrentUser();
+  return useEffect(() => {
+    markChatMessagesRead(
+      user,
+      chatMessages.map((m) => m.id)
+    );
+  }, []);
 }
 
 export function observeGroupMessages(dispatch: (?{ ... }) => void, groupId: string) {

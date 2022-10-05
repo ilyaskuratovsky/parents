@@ -1,18 +1,20 @@
+// @flow strict-local
 import React from "react";
 import { Badge } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
-import * as MessageUtils from "../common/MessageUtils";
 import * as MyButtons from "./MyButtons";
 import * as Actions from "../common/Actions";
 import BottomBar from "./BottomBar";
 import * as UIConstants from "./UIConstants";
 import * as Logger from "../common/Logger";
 import * as Data from "../common/Data";
+import * as Messages from "../common/Message";
 
 const Toolbar = ({ selected }) => {
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
-  const unreadMessageCount = Data.getUserUnreadMessageCount();
+  const unreadMessageCount = Messages.getUserUnreadMessageCount();
+  //const unreadMessageCount = 0;
   const unreadChatMessageCount = Data.getUserUnreadChatMessageCount();
   return (
     <BottomBar
@@ -46,10 +48,10 @@ const Toolbar = ({ selected }) => {
           );
         }}
         badge={
-          (unreadMessageCount.data ?? 0) > 0 ? (
+          (unreadMessageCount ?? 0) > 0 ? (
             <Badge
               status="error"
-              value={unreadMessageCount.data}
+              value={unreadMessageCount}
               containerStyle={{ position: "absolute", top: -4, right: -4 }}
             />
           ) : null

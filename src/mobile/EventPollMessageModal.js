@@ -23,7 +23,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import CommentView from "./CommentView";
 import * as Controller from "../common/Controller";
-import * as MessageUtils from "../common/MessageUtils";
 import * as MyButtons from "./MyButtons";
 import Portal from "./Portal";
 import * as Globals from "./Globals";
@@ -78,7 +77,7 @@ export default function EventPollMessageModal({ group, message, user, visible, c
   const topBarHeight = 64;
   const replyBarHeight = 80;
 
-  Data.useMarkRead(message);
+  Controller.useMarkRead(message);
 
   const canSend =
     (text != null && text.length > 0) ||

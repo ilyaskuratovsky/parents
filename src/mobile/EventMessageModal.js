@@ -21,7 +21,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import CommentView from "./CommentView";
 import * as Controller from "../common/Controller";
-import * as MessageUtils from "../common/MessageUtils";
 import * as MyButtons from "./MyButtons";
 import Portal from "./Portal";
 import * as Globals from "./Globals";
@@ -111,7 +110,7 @@ export default function EventMessageModal({ group, message, user, visible, close
     }
   }, []);
 
-  Data.useMarkRead(message.id);
+  Controller.useMarkRead(message.id);
   const [text, setText] = useState("");
   const [eventResponse, setEventResponse] = useState(currentUserStatus);
   const [showCalendarSelection, setShowCalendarSelection] = useState(false);

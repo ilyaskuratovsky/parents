@@ -18,7 +18,6 @@ import FacePile from "./FacePile";
 import * as Globals from "./Globals";
 import GroupMembersModal from "./GroupMembersModal";
 import MessageModal from "./MessageModal";
-import * as MessageUtils from "../common/MessageUtils";
 import MessageView from "./MessageView";
 import NewEventModal from "./NewEventModal";
 import Portal from "./Portal";
@@ -70,7 +69,7 @@ export default function GroupScreen({ groupId }) {
     );
   };
 
-  const rootMessages = MessageUtils.buildRootMessagesWithChildren(
+  const rootMessages = Data.buildRootMessagesWithChildren(
     messages,
     userInfo,
     userMessagesMap,

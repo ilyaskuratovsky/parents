@@ -7,7 +7,6 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "../common/Actions";
 import * as Data from "../common/Data";
-import * as MessageUtils from "../common/MessageUtils";
 import * as UserInfo from "../common/UserInfo";
 import MessageViewContainer from "./MessageViewContainer";
 import Portal from "./Portal";
@@ -17,6 +16,7 @@ import * as UIConstants from "./UIConstants";
 import * as Logger from "../common/Logger";
 import { ActivityIndicator } from "react-native-paper";
 import Loading from "./Loading";
+import * as Messages from "../common/Message";
 
 export default function FeedScreen(): React.Node {
   /*
@@ -28,7 +28,7 @@ export default function FeedScreen(): React.Node {
   */
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
-  const groupMessages = Data.getAllRootMessages();
+  const groupMessages = Messages.getAllRootMessages();
   const FlatListItemSeparator = () => {
     return (
       <View

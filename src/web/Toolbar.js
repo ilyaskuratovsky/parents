@@ -1,7 +1,6 @@
 import React from "react";
 import { Badge } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
-import * as MessageUtils from "../common/MessageUtils";
 import * as MyButtons from "./MyButtons";
 import * as Actions from "../common/Actions";
 import BottomBar from "./BottomBar";
@@ -16,10 +15,7 @@ const Toolbar = ({ selected }) => {
     };
   });
 
-  const unreadMessages = MessageUtils.calculateAllGroupUnreadMessages(
-    groupMessagesMap,
-    userMessagesMap
-  );
+  const unreadMessages = Data.calculateAllGroupUnreadMessages();
   return (
     <BottomBar style={{ backgroundColor: UIConstants.DEFAULT_BACKGROUND }}>
       <MyButtons.MenuButton

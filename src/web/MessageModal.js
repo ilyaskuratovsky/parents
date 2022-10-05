@@ -20,7 +20,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import CommentView from "./CommentView";
 import * as Controller from "../common/Controller";
-import * as MessageUtils from "../common/MessageUtils";
 import * as MyButtons from "./MyButtons";
 import Portal from "./Portal";
 import * as Globals from "./Globals";

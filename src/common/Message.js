@@ -1,14 +1,121 @@
 // @flow strict-local
 
+import { useSelector } from "react-redux";
 import * as Logger from "./Logger";
 import * as Dates from "./Date";
-import type { ChatMessage } from "./Actions";
-import type { Group, Message, UserInfo, UserMessage } from "./Database";
+import type { Group, Message, UserInfo, UserMessage, ChatMessage } from "./Database";
 import * as Data from "./Data";
+import type { MainState, RootState } from "./Actions";
+
+export function getAllRootMessages(): Array<RootMessage> {
+  const rootMessagesMap = getAllRootMessagesMap();
+  return Object.keys(rootMessagesMap).map((k) => rootMessagesMap[k]);
+}
+
+export function getGroupUserRootUnreadMessages(groupId: string): Array<RootMessage> {
+  const userGroupRootMessages = getGroupUserRootMessages(groupId);
+  const unreadMessages = userGroupRootMessages.filter(
+    (rootMessage) => rootMessage.getUserStatus().status != "read"
+  );
+  return unreadMessages;
+}
+
+export function calculateAllGroupUnreadMessages(): number {
+  const allMessages = getAllRootMessages();
+  let count = 0;
+  allMessages.forEach((message) => {
+    if (message.getUserStatus().status != "read") {
+      count++;
+    }
+    count += message.getUnreadChildCount();
+  });
+  return count;
+}
+
+export function getUserUnreadMessageCount(): number {
+  const allUserRootMessagesMap = getAllRootMessagesMap();
+  const allUserRootMessages = Object.keys(allUserRootMessagesMap).map(
+    (k) => allUserRootMessagesMap[k]
+  );
+  const unreadMessages = allUserRootMessages.filter(
+    (rootMessage) => rootMessage.getUserStatus().status != "read"
+  );
+  return unreadMessages.length;
+}
+
+export function getAllRootMessagesMap(): { [key: string]: RootMessage } {
+  const {
+    messagesMap,
+    state,
+  }: // groupMap,
+  // userMessagesMap,
+  // userMap,
+  {
+    messagesMap: ?{ [key: string]: ?Message },
+    // userMessagesMap: ?{ [key: string]: ?UserMessage },
+    // userMap: ?{ [key: string]: ?UserInfo },
+    // groupMap: ?{ [key: string]: ?Group },
+    state: MainState,
+  } = useSelector((state: RootState) => {
+    return {
+      messagesMap: state.main.messagesMap != null ? state.main.messagesMap : {},
+      // groupMap: state.main.groupMap,
+      // userMessagesMap: state.main.userMessagesMap,
+      // userMap: state.main.userMap,
+      state: state.main,
+    };
+  });
+
+  let rootMessageMap: { [key: string]: {| root: Message, children: Array<Message> |} } = {};
+
+  for (const messageId in messagesMap) {
+    const message = messagesMap[messageId];
+    if (message?.papaId === null) {
+      rootMessageMap[message.id] = { root: message, children: [] };
+    }
+  }
+
+  for (const messageId in messagesMap) {
+    const message = messagesMap[messageId];
+    const papaId = message?.papaId;
+    if (papaId != null) {
+      const papaMessage = rootMessageMap[papaId];
+      message != null ? papaMessage?.children.push(message) : false;
+    }
+  }
+
+  const rootMessages: { [key: string]: RootMessage } = {};
+  for (const rootMessageId of Object.keys(rootMessageMap)) {
+    rootMessages[rootMessageId] = new RootMessage(
+      rootMessageMap[rootMessageId].root,
+      rootMessageMap[rootMessageId].children,
+      state
+      /*
+      userMessagesMap ?? {},
+      groupMap ?? {},
+      userMap ?? {}
+      */
+    );
+  }
+
+  return rootMessages;
+}
+
+export function getRootMessage(messageId: string): ?RootMessage {
+  return getAllRootMessagesMap()[messageId];
+}
+
+export function getGroupUserRootMessages(groupId: string): Array<RootMessage> {
+  const all = getAllRootMessagesMap();
+  return Object.keys(all)
+    .map((k) => all[k])
+    .filter((rootMessage) => rootMessage.getGroupId() === groupId);
+}
 
 export default class RootMessage {
   rootMessage: Message;
   children: ?Array<Message>;
+  state: MainState;
 
   // userMessagesMap: { [key: string]: ?UserMessage };
   // groupMap: { [key: string]: ?Group };
@@ -16,13 +123,15 @@ export default class RootMessage {
 
   constructor(
     rootMessage: Message,
-    children: Array<Message>
+    children: Array<Message>,
+    state: MainState
     // userMessagesMap: { [key: string]: ?UserMessage },
     // groupMap: { [key: string]: ?Group },
     // userMap: { [key: string]: ?UserInfo }
   ) {
     this.rootMessage = rootMessage;
     this.children = children;
+    this.state = state;
     //this.useSelector = useSelector;
     // this.userMessagesMap = userMessagesMap;
     // this.groupMap = groupMap;
@@ -50,30 +159,28 @@ export default class RootMessage {
   }
 
   getGroup(): ?Group {
-    return Data.getGroup(this.rootMessage.groupId);
-    //return this.groupMap[this.rootMessage.groupId];
+    //return Data.getGroup(this.rootMessage.groupId);
+    return this.state.groupMap?.[this.rootMessage.groupId];
   }
 
   getUserInfo(): ?UserInfo {
-    return Data.getUser(this.rootMessage.uid);
-    //return this.userMap[this.rootMessage.uid];
+    //return Data.getUser(this.rootMessage.uid);
+    return this.state.userMap?.[this.rootMessage.uid];
   }
 
   getTimestamp(): Date {
     return new Date(this.rootMessage.timestamp);
   }
 
-  getChildren() {
+  getChildren(): Array<RootMessage> {
     const sortedMessages = [...(this.children ?? [])]
       .sort((m1, m2) => {
         const millis1 = Dates.toMillis(m1.timestamp) ?? 0;
         const millis2 = Dates.toMillis(m2.timestamp) ?? 0;
         return millis1 - millis2;
       })
-      .map(
-        (message) =>
-          new RootMessage(message, [] /*, this.userMessagesMap, this.groupMap, this.userMap*/)
-      );
+      .map((message) => new RootMessage(message, [], this.state));
+    return sortedMessages;
   }
 
   getUnreadChildCount(): number {
@@ -81,7 +188,7 @@ export default class RootMessage {
       if (c.uid === this.rootMessage.uid) {
         return false;
       }
-      const userMessage = Data.getUserMessage(c.id);
+      const userMessage = this.state.userMessagesMap?.[c.id];
       //const status = this.userMessagesMap[c.id]?.status != "read";
       const status = userMessage?.status != "read";
       return status;
@@ -90,7 +197,7 @@ export default class RootMessage {
   }
   getUserStatus(): { status: ?string } {
     //const userMessage = this.userMessagesMap?.[this.getID()];
-    const userMessage = Data.getUserMessage(this.getID());
+    const userMessage = this.state.userMessagesMap?.[this.getID()];
     if (userMessage != null) {
       return { status: userMessage.status };
     } else {

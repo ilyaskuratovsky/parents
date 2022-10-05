@@ -7,7 +7,6 @@ import {
   //} from "firebase/firestore/lite";
 } from "firebase/firestore";
 import * as Logger from "./Logger";
-import * as MessageUtils from "./MessageUtils";
 import { RemoteData, loading, data } from "./RemoteData";
 import type {
   UserInfo,

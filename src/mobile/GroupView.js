@@ -19,10 +19,10 @@ import * as UserInfo from "../common/UserInfo";
 import * as Utils from "../common/Utils";
 import * as Debug from "../common/Debug";
 import * as Data from "../common/Data";
-import * as MessageUtils from "../common/MessageUtils";
 import { Badge } from "react-native-elements";
 import { styles } from "./Styles";
 import DebugText from "./DebugText";
+import * as Messages from "../common/Message";
 
 export default function GroupView({ groupId }: { groupId: string }): React.Node {
   const dispatch = useDispatch();
@@ -31,7 +31,7 @@ export default function GroupView({ groupId }: { groupId: string }): React.Node 
   const members = Data.getGroupMemberships(groupId) ?? [];
   const userGroupMembership = Data.getUserGroupMembership(groupId);
   const userInfo = Data.getCurrentUser();
-  const unreadRootMessages = Data.getGroupUserRootUnreadMessages(groupId);
+  const unreadRootMessages = Messages.getGroupUserRootUnreadMessages(groupId);
   const unreadCount = unreadRootMessages.length;
 
   if (group == null) {

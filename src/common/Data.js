@@ -1,28 +1,26 @@
 // @flow strict-local
 
 import { useSelector } from "react-redux";
-import * as MessageUtils from "./MessageUtils";
 import { useEffect, useMemo } from "react";
-import * as Controller from "./Controller";
 import { ROOT_GROUP_ID } from "../../config/firebase";
 import * as RD from "./RemoteData";
 import { RemoteData, uninitialized, loading, data, isLoading } from "./RemoteData";
-import type {
-  MainState,
-  RootState,
-  GroupMembership,
-  ChatMembership,
-  UserChatMessage,
-  Chat,
-  ChatMessage,
-} from "./Actions";
+import type { MainState, RootState } from "./Actions";
 
 import { calculateUnreadChatMessages } from "./ChatMessage";
 
-import type { UserInfo, Group, Org, UserMessage, Message } from "./Database";
+import type {
+  UserInfo,
+  Group,
+  Org,
+  UserMessage,
+  Message,
+  GroupMembership,
+  ChatMembership,
+  ChatMessage,
+} from "./Database";
 import * as Dates from "../common/Date";
 import type { JsTypeString } from "react-native/ReactCommon/hermes/inspector/tools/msggen/src/Converters";
-import RootMessage from "./Message";
 import ChatMessageInfo from "./ChatMessage";
 
 /*
@@ -227,76 +225,6 @@ export function getUserChatMemberships(): Array<ChatMembership> {
   return userChatMembershipsList;
 }
 
-export function getAllRootMessages(): Array<RootMessage> {
-  const rootMessagesMap = getAllRootMessagesMap();
-  return Object.keys(rootMessagesMap).map((k) => rootMessagesMap[k]);
-}
-
-export function getAllRootMessagesMap(): { [key: string]: RootMessage } {
-  const {
-    messagesMap,
-    groupMap,
-    userMessagesMap,
-    userMap,
-  }: {
-    messagesMap: ?{ [key: string]: ?Message },
-    userMessagesMap: ?{ [key: string]: ?UserMessage },
-    userMap: ?{ [key: string]: ?UserInfo },
-    groupMap: ?{ [key: string]: ?Group },
-  } = useSelector((state: RootState) => {
-    return {
-      groupMap: state.main.groupMap,
-      messagesMap: state.main.messagesMap != null ? state.main.messagesMap : {},
-      userMessagesMap: state.main.userMessagesMap,
-      userMap: state.main.userMap,
-    };
-  });
-
-  let rootMessageMap: { [key: string]: {| root: Message, children: Array<Message> |} } = {};
-
-  for (const messageId in messagesMap) {
-    const message = messagesMap[messageId];
-    if (message?.papaId === null) {
-      rootMessageMap[message.id] = { root: message, children: [] };
-    }
-  }
-
-  for (const messageId in messagesMap) {
-    const message = messagesMap[messageId];
-    const papaId = message?.papaId;
-    if (papaId != null) {
-      const papaMessage = rootMessageMap[papaId];
-      message != null ? papaMessage?.children.push(message) : false;
-    }
-  }
-
-  const rootMessages: { [key: string]: RootMessage } = {};
-  for (const rootMessageId of Object.keys(rootMessageMap)) {
-    rootMessages[rootMessageId] = new RootMessage(
-      rootMessageMap[rootMessageId].root,
-      rootMessageMap[rootMessageId].children
-      /*
-      userMessagesMap ?? {},
-      groupMap ?? {},
-      userMap ?? {}
-      */
-    );
-  }
-
-  return rootMessages;
-}
-
-export function getRootMessage(messageId: string): ?RootMessage {
-  return getAllRootMessagesMap()[messageId];
-}
-
-export function getGroupUserRootMessages(groupId: string): Array<RootMessage> {
-  const all = getAllRootMessagesMap();
-  return Object.keys(all)
-    .map((k) => all[k])
-    .filter((rootMessage) => rootMessage.getGroupId() === groupId);
-}
-
 export function getChatMessages(chatId: string): Array<ChatMessageInfo> {
   const user = getCurrentUser();
   const { chatMessages, userChatMessagesMap, userMap } = useSelector((state: RootState) => {
@@ -322,14 +250,6 @@ export function getChatMessages(chatId: string): Array<ChatMessageInfo> {
   return rootChatMessages;
 }
 
-export function getGroupUserRootUnreadMessages(groupId: string): Array<RootMessage> {
-  const userGroupRootMessages = getGroupUserRootMessages(groupId);
-  const unreadMessages = userGroupRootMessages.filter(
-    (rootMessage) => rootMessage.getUserStatus().status != "read"
-  );
-  return unreadMessages;
-}
-
 export function getChatUserUnreadMessages(chatId: string): Array<ChatMessageInfo> {
   const chatMessages = getChatMessages(chatId);
   const unreadMessages = chatMessages.filter((message) => message.userStatus?.status != "read");
@@ -353,15 +273,6 @@ export function getSuperPublicGroups(): Array<Group> {
     return [];
   }
   return groups.filter((group) => group.type === "super_public");
-}
-
-export function getUserUnreadMessageCount(): number {
-  const allUserRootMessagesMap = getAllRootMessagesMap();
-  const allUserRootMessages = Object.keys(allUserRootMessagesMap).map(
-    (k) => allUserRootMessagesMap[k]
-  );
-  const unreadMessages = getUserUnreadChatMessageCount();
-  return unreadMessages;
 }
 
 export function getUserUnreadChatMessageCount(): number {
@@ -543,35 +454,6 @@ export function getAllUserChatMessages(): Array<ChatMessageInfo> {
 export function getUserMessage(messageId: string): ?UserMessage {
   let userMessagesMap = useSelector((state: RootState) => state.main.userMessagesMap);
   return userMessagesMap?.[messageId];
-}
-
-export function useMarkRead(messageId: string) {
-  const user = getCurrentUser();
-  const message = getRootMessage(messageId);
-
-  useEffect(() => {
-    if (message != null) {
-      let markRead = [];
-      if (message?.getUserStatus()?.status != "read") {
-        markRead.push(message.getID());
-      }
-      const unreadChildMessages = (message.getChildren() ?? []).filter(
-        (m) => m.getUserStatus().status != "read"
-      );
-      markRead = markRead.concat(unreadChildMessages.map((m) => m.id));
-      Controller.markMessagesRead(user, markRead);
-    }
-  }, [message]);
-}
-
-export function useMarkChatMessagesRead(chatMessages: Array<ChatMessage>): void {
-  const user = getCurrentUser();
-  return useEffect(() => {
-    Controller.markChatMessagesRead(
-      user,
-      chatMessages.map((m) => m.id)
-    );
-  }, []);
 }
 
 export function getDefaultOrgGroup(orgId: string): ?Group {

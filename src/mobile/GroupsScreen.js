@@ -17,7 +17,6 @@ import * as UserInfo from "../common/UserInfo";
 import * as Utils from "../common/Utils";
 import * as Debug from "../common/Debug";
 import * as Data from "../common/Data";
-import * as MessageUtils from "../common/MessageUtils";
 import { Badge } from "react-native-elements";
 import GroupView from "./GroupView";
 import { styles } from "./Styles";

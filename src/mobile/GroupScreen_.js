@@ -22,7 +22,6 @@ import FacePile from "./FacePile";
 import * as Globals from "./Globals";
 import GroupSettingsModal from "./GroupSettingsModal";
 import MessageModal from "./MessageContainerModal";
-import * as MessageUtils from "../common/MessageUtils";
 import MessageViewContainer from "./MessageViewContainer";
 import Portal from "./Portal";
 import * as Actions from "../common/Actions";
