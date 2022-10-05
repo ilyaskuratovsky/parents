@@ -101,7 +101,6 @@ export default function FeedScreen(): React.Node {
           </View>
         }
       />
-      <Text>Count: {groupMessages.length}</Text>
       {/* messages section */}
       <View
         style={{

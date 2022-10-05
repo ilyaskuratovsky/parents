@@ -4,26 +4,29 @@ import * as Logger from "./Logger";
 import * as Dates from "./Date";
 import type { ChatMessage } from "./Actions";
 import type { Group, Message, UserInfo, UserMessage } from "./Database";
+import * as Data from "./Data";
 
 export default class RootMessage {
   rootMessage: Message;
   children: ?Array<Message>;
-  userMessagesMap: { [key: string]: ?UserMessage };
-  groupMap: { [key: string]: ?Group };
-  userMap: { [key: string]: ?UserInfo };
+
+  // userMessagesMap: { [key: string]: ?UserMessage };
+  // groupMap: { [key: string]: ?Group };
+  // userMap: { [key: string]: ?UserInfo };
 
   constructor(
     rootMessage: Message,
-    children: Array<Message>,
-    userMessagesMap: { [key: string]: ?UserMessage },
-    groupMap: { [key: string]: ?Group },
-    userMap: { [key: string]: ?UserInfo }
+    children: Array<Message>
+    // userMessagesMap: { [key: string]: ?UserMessage },
+    // groupMap: { [key: string]: ?Group },
+    // userMap: { [key: string]: ?UserInfo }
   ) {
     this.rootMessage = rootMessage;
     this.children = children;
-    this.userMessagesMap = userMessagesMap;
-    this.groupMap = groupMap;
-    this.userMap = userMap;
+    //this.useSelector = useSelector;
+    // this.userMessagesMap = userMessagesMap;
+    // this.groupMap = groupMap;
+    // this.userMap = userMap;
   }
 
   getID(): string {
@@ -47,11 +50,13 @@ export default class RootMessage {
   }
 
   getGroup(): ?Group {
-    return this.groupMap[this.rootMessage.groupId];
+    return Data.getGroup(this.rootMessage.groupId);
+    //return this.groupMap[this.rootMessage.groupId];
   }
 
   getUserInfo(): ?UserInfo {
-    return this.userMap[this.rootMessage.uid];
+    return Data.getUser(this.rootMessage.uid);
+    //return this.userMap[this.rootMessage.uid];
   }
 
   getTimestamp(): Date {
@@ -66,7 +71,8 @@ export default class RootMessage {
         return millis1 - millis2;
       })
       .map(
-        (message) => new RootMessage(message, [], this.userMessagesMap, this.groupMap, this.userMap)
+        (message) =>
+          new RootMessage(message, [] /*, this.userMessagesMap, this.groupMap, this.userMap*/)
       );
   }
 
@@ -75,13 +81,16 @@ export default class RootMessage {
       if (c.uid === this.rootMessage.uid) {
         return false;
       }
-      const status = this.userMessagesMap[c.id]?.status != "read";
+      const userMessage = Data.getUserMessage(c.id);
+      //const status = this.userMessagesMap[c.id]?.status != "read";
+      const status = userMessage?.status != "read";
       return status;
     }).length;
     return unreadChildCount;
   }
   getUserStatus(): { status: ?string } {
-    const userMessage = this.userMessagesMap?.[this.getID()];
+    //const userMessage = this.userMessagesMap?.[this.getID()];
+    const userMessage = Data.getUserMessage(this.getID());
     if (userMessage != null) {
       return { status: userMessage.status };
     } else {

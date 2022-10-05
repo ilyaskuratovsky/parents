@@ -371,7 +371,7 @@ export const mainSlice: {
       const groupMap = {};
       for (const group of groups) {
         groupList.push(group);
-        groupMap[group.chatId] = group;
+        groupMap[group.id] = group;
       }
       const newState = {
         ...state,

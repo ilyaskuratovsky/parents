@@ -266,7 +266,7 @@ export function getAllRootMessagesMap(): { [key: string]: RootMessage } {
     const papaId = message?.papaId;
     if (papaId != null) {
       const papaMessage = rootMessageMap[papaId];
-      papaMessage?.children.push(message);
+      message != null ? papaMessage?.children.push(message) : false;
     }
   }
 
@@ -274,10 +274,12 @@ export function getAllRootMessagesMap(): { [key: string]: RootMessage } {
   for (const rootMessageId of Object.keys(rootMessageMap)) {
     rootMessages[rootMessageId] = new RootMessage(
       rootMessageMap[rootMessageId].root,
-      rootMessageMap[rootMessageId].children,
+      rootMessageMap[rootMessageId].children
+      /*
       userMessagesMap ?? {},
       groupMap ?? {},
       userMap ?? {}
+      */
     );
   }
 

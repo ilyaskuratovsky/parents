@@ -129,7 +129,10 @@ export async function initializeApp(
 
   //observe to group changes
   Database.observeAllGroupChanges((groups) => {
-    Logger.log("observe: AllGroupChanges: " + groups.length, Logger.INFO);
+    Logger.log(
+      "observe: AllGroupChanges: " + groups.length + ", " + JSON.stringify(groups.map((g) => g.id)),
+      Logger.INFO
+    );
     dispatch(Actions.groups(groups));
   });
 
