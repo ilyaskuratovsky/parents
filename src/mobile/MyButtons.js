@@ -6,65 +6,52 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Elements from "react-native-elements";
 import { IconNode } from "react-native-elements/dist/icons/Icon";
 
-const MenuButton = React.memo<{
-  text: string;
-  onPress: () => void;
-  icon: string;
-  style?: string;
-  color?: string;
-  badge?: string;
-  containerStyle?: Object;
-}>(({ icon, text, onPress, color = "black", badge = null, containerStyle = null }) => {
-  return (
-    <TouchableOpacity onPress={onPress} style={containerStyle}>
-      <View
-        style={{
-          flexDirection: "column",
-          alignItems: "center",
-          marginLeft: 8,
-          marginRight: 8,
-        }}
-      >
-        <Icon name={icon} style={{ color: color, fontSize: 24 }} />
-        {badge}
-        <Text style={{ color: color, fontSize: 12 }}>{text}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-});
-
-const DialogButton = React.memo<{ text: string; onPress: () => void; icon: string; style: Object }>(
-  ({ text, onPress, icon, style }) => {
+const MenuButton = React.memo(
+  ({ icon, text, onPress, color = "black", badge = null, containerStyle = null }) => {
     return (
-      <TouchableOpacity onPress={onPress}>
+      <TouchableOpacity onPress={onPress} style={containerStyle}>
         <View
-          style={[
-            {
-              flex: 1,
-              flexDirection: "row",
-              alignItems: "center",
-              marginLeft: 8,
-              marginRight: 8,
-              marginBottom: 8,
-              alignSelf: "center",
-              ...style,
-            },
-          ]}
+          style={{
+            flexDirection: "column",
+            alignItems: "center",
+            marginLeft: 8,
+            marginRight: 8,
+          }}
         >
-          {icon && <Icon name={icon} style={{ marginRight: 10, color: "black", fontSize: 16 }} />}
-          <Text style={{ color: "black", fontSize: 18 }}>{text}</Text>
+          <Icon name={icon} style={{ color: color, fontSize: 24 }} />
+          {badge}
+          <Text style={{ color: color, fontSize: 12 }}>{text}</Text>
         </View>
       </TouchableOpacity>
     );
   }
 );
 
-const PaperDialogButton = React.memo<{
-  text: string;
-  onPress: () => void;
-  icon: string;
-  style: Object;
-}>(({ text, icon, onPress }) => {
+const DialogButton = React.memo(({ text, onPress, icon, style }) => {
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <View
+        style={[
+          {
+            flex: 1,
+            flexDirection: "row",
+            alignItems: "center",
+            marginLeft: 8,
+            marginRight: 8,
+            marginBottom: 8,
+            alignSelf: "center",
+            ...style,
+          },
+        ]}
+      >
+        {icon && <Icon name={icon} style={{ marginRight: 10, color: "black", fontSize: 16 }} />}
+        <Text style={{ color: "black", fontSize: 18 }}>{text}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+});
+
+const PaperDialogButton = React.memo(({ text, icon, onPress }) => {
   return (
     <Paper.Button
       icon={icon}
@@ -96,14 +83,7 @@ const FormButton = React.memo(({ text, icon, onPress, style }) => {
 });
 */
 
-const FormButton = React.memo<{
-  text: string;
-  onPress: () => void;
-  icon: IconNode;
-  style: Object;
-  titleStyle: Object;
-  disabled: boolean;
-}>(({ text, icon, onPress, style, titleStyle, disabled = false }) => {
+const FormButton = React.memo(({ text, icon, onPress, style, titleStyle, disabled = false }) => {
   return (
     <Elements.Button
       title={text}
@@ -118,14 +98,7 @@ const FormButton = React.memo<{
   );
 });
 
-const LinkButton = React.memo<{
-  text: string;
-  onPress: () => void;
-  icon: IconNode;
-  style: Object;
-  titleStyle: Object;
-  disabled: boolean;
-}>(({ text, onPress, style, disabled }) => {
+const LinkButton = React.memo(({ text, onPress, style, disabled }) => {
   return (
     <TouchableOpacity onPress={onPress} disabled={disabled != null ? disabled : false}>
       <Text
@@ -145,14 +118,7 @@ const LinkButton = React.memo<{
   );
 });
 
-const RoundedButton = React.memo<{
-  text: string;
-  onPress: () => void;
-  icon: IconNode;
-  style: Object;
-  titleStyle: Object;
-  disabled: boolean;
-}>(({ text, onPress, style = null, disabled }) => {
+const RoundedButton = React.memo(({ text, onPress, style = null, disabled }) => {
   return (
     <TouchableOpacity onPress={onPress} disabled={disabled != null ? disabled : false}>
       <Text

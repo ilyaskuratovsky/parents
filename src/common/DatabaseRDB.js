@@ -1,35 +1,39 @@
+// @flow strict-local
+
 import * as RDB from "firebase/database";
 import { rdb } from "../../config/firebase";
 import * as Logger from "./Logger";
+import type { Org } from "./Database";
+import type { UserMessage } from "./Actions";
 
 const observers = {};
 export type ObjectMap<T> = {
   id: string,
   object: T,
-}
+};
 
-export type GroupMembership = {id: string, uid: string}
+export type GroupMembership = { id: string, uid: string };
 
-export async function getAllOrgs() {
+export async function getAllOrgs(): Promise<Array<Org>> {
   /*real-time database */
   const dbRef = RDB.ref(rdb);
   const orgsRDB = await RDB.get(RDB.child(dbRef, "orgs"));
-  const val = orgsRDB.val()
-  const ret = toArray(val);
+  const val = orgsRDB.val();
+  const ret = toOrgArray(val);
   return ret;
 }
 
-export function observeOrgChanges(callback) {
+export function observeOrgChanges(callback: (orgs: Array<Org>) => void) {
   //rdb
   const schoolsRef = RDB.ref(rdb, "orgs");
   RDB.onValue(schoolsRef, (snapshot) => {
     const data = snapshot.val();
-    const ret = toArray(data);
+    const ret = toOrgArray(data);
     callback(ret);
   });
 }
 
-export function observeUserMessages(uid, callback) {
+export function observeUserMessages(uid: string, callback: (Array<UserMessage>) => void) {
   const userMessagesRef = RDB.ref(rdb, "user_messages/" + uid);
   RDB.onValue(userMessagesRef, (snapshot) => {
     const data = snapshot.val();
@@ -129,14 +133,18 @@ export async function getAllGroupMemberships(): Promise<Array<Object>> {
   return ret;
 }
 
-function observeAllGroupMembershipChangesHelper(callback: (_) => void, uid: string, userCallback) {
+function observeAllGroupMembershipChangesHelper(
+  callback: (result: Array<{ ... }>) => void,
+  uid: string,
+  userCallback: (result: Array<{ ... }>) => void
+) {
   const ref = RDB.ref(rdb, "group_memberships");
   const unsubscribe = RDB.onValue(ref, (snapshot) => {
     const data = snapshot.val();
     const ret = toArray(data);
     callback(ret);
     if (uid != null) {
-      const userGroupMemberships = ret.filter((groupMembership) => groupMembership['object'].uid == uid);
+      const userGroupMemberships = ret.filter((groupMembership) => groupMembership.uid == uid);
       userCallback(userGroupMemberships);
     }
   });
@@ -148,8 +156,8 @@ function observeAllGroupMembershipChangesHelper(callback: (_) => void, uid: stri
   };
 }
 
-export function observeAllGroupMembershipChanges(callback) {
-  let uid = null;
+export function observeAllGroupMembershipChanges(callback: (Array<{ ... }>) => void) {
+  let uid: ?string = null;
   let userCallback = null;
   if (observers["observeAllGroupChanges"] != null) {
     uid = observers["observeAllGroupChanges"]["uid"];
@@ -303,8 +311,20 @@ export async function logError(error, info) {
   return newReference.key;
 }
 
-function toArray(idMap: Object) : Array<Object> {
-  const array:Array<Object>  = [];
+function toArray<T>(idMap: { [key: string]: { ... } }): Array<T> {
+  const array: Array<T> = [];
+  if (idMap == null) {
+    return array;
+  }
+  for (const [key, value] of Object.entries(idMap)) {
+    const castValue = (value: T);
+    array.push({ id: key, ...value });
+  }
+  return array;
+}
+
+function toOrgArray(idMap: { [key: string]: { ... } }): Array<Org> {
+  const array: Array<Org> = [];
   if (idMap == null) {
     return array;
   }

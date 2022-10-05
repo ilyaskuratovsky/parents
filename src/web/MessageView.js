@@ -188,7 +188,7 @@ export default function MessageView({ item, onPress }) {
                       //backgroundColor: "green",
                       paddingLeft: 0,
                       fontSize: 14,
-                      fontWeight: item.unreadChildCount > 0 ? "bold" : "normal",
+                      fontWeight: item.getUnreadChildCount() > 0 ? "bold" : "normal",
                       color: UIConstants.BLACK_TEXT_COLOR,
                     }}
                   >

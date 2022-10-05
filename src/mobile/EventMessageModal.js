@@ -111,7 +111,7 @@ export default function EventMessageModal({ group, message, user, visible, close
     }
   }, []);
 
-  Data.useMarkRead(message);
+  Data.useMarkRead(message.id);
   const [text, setText] = useState("");
   const [eventResponse, setEventResponse] = useState(currentUserStatus);
   const [showCalendarSelection, setShowCalendarSelection] = useState(false);

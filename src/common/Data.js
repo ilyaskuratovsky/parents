@@ -1,20 +1,64 @@
+// @flow strict-local
+
 import { useSelector } from "react-redux";
 import * as MessageUtils from "./MessageUtils";
 import { useEffect, useMemo } from "react";
 import * as Controller from "./Controller";
 import { ROOT_GROUP_ID } from "../../config/firebase";
 import * as RD from "./RemoteData";
-import { RemoteData, uninitialized, loading, data, isLoading} from "./RemoteData";
-import {Group, GroupMembership, Org, RootState} from "./Actions";
-import { Message } from "./MessageUtils";
+import { RemoteData, uninitialized, loading, data, isLoading } from "./RemoteData";
+import type {
+  MainState,
+  RootState,
+  GroupMembership,
+  ChatMembership,
+  UserChatMessage,
+  Chat,
+  ChatMessage,
+} from "./Actions";
 
-export function getCurrentUser() {
-  const user = useSelector((state: RootState) => state.main.userInfo);
+import { calculateUnreadChatMessages } from "./ChatMessage";
+
+import type { UserInfo, Group, Org, UserMessage, Message } from "./Database";
+import * as Dates from "../common/Date";
+import type { JsTypeString } from "react-native/ReactCommon/hermes/inspector/tools/msggen/src/Converters";
+import RootMessage from "./Message";
+import ChatMessageInfo from "./ChatMessage";
+
+/*
+export type MessageInfo = {
+  id: string,
+  uid: string,
+  timestamp: number,
+  papaId: ?string,
+  lastUpdated: number,
+  children: Array<MessageInfo>,
+  event_poll_response: { [key: string]: { status: boolean } },
+  event_poll: { [key: string]: { name: string, message: string } },
+  user: UserInfo,
+  userStatus: {
+    status: string,
+    rootMessageStatus: string,
+    status: string,
+    unreadChildCount: number,
+    userMessageId: string,
+  },
+  ...
+};
+*/
+
+export function getCurrentUser(): UserInfo {
+  const user: UserInfo = useSelector((state: RootState) => state.main.userInfo);
+  if (user == null) {
+    throw "getCurrentUser: user is null";
+  }
   return user;
 }
-export function getUsers(uids: Array<string>): Array<Record<string, Object>> {
-  const userMap = useSelector((state: RootState) => state.main.userMap);
-  const users = [] as Array<Record<string, Object>>;
+export function getUsers(uids: Array<string>): Array<UserInfo> {
+  const userMap: ?{ [key: string]: UserInfo } = useSelector(
+    (state: RootState) => state.main.userMap
+  );
+  const users = [];
   if (userMap == null) {
     return [];
   }
@@ -25,20 +69,25 @@ export function getUsers(uids: Array<string>): Array<Record<string, Object>> {
   return users;
 }
 
-export function getUser(uid: string) {
-  const userMap = useSelector((state: RootState) => state.main.userMap) ?? {};
+export function getUser(uid: string): ?UserInfo {
+  const select = (state: RootState) => state.main.userMap;
+  const userMap = useSelector(select);
+  /*
+  const userMap: { [key: string]: UserInfo } =
+    useSelector((state: RootState) => state.main.userMap) ?? {};
+  */
   return userMap[uid];
 }
 
-export function getMessage(messageId: string) {
-  let { messagesMap } = useSelector((state: RootState) => {
+export function getMessage(messageId: string): ?Message {
+  let messagesMap: ?{ [key: string]: Message } = useSelector((state: RootState) => {
     return {
       messagesMap: state.main.messagesMap,
     };
   });
   return messagesMap != null ? messagesMap[messageId] : null;
 }
-export function getAllUsers() {
+export function getAllUsers(): ?Array<UserInfo> {
   const { users } = useSelector((state: RootState) => {
     return {
       users: state.main.userList,
@@ -46,7 +95,7 @@ export function getAllUsers() {
   });
   return users;
 }
-export function getAllOrgs() {
+export function getAllOrgs(): ?Array<Org> {
   const { orgsList } = useSelector((state: RootState) => {
     return {
       orgsList: state.main.orgsList,
@@ -55,7 +104,7 @@ export function getAllOrgs() {
   return orgsList;
 }
 
-export function getAllOrgsMap(): Record<string, Org> | null {
+export function getAllOrgsMap(): ?{ [key: string]: Org } {
   const { orgsMap } = useSelector((state: RootState) => {
     return {
       orgsMap: state.main.orgsMap,
@@ -64,7 +113,7 @@ export function getAllOrgsMap(): Record<string, Org> | null {
   return orgsMap;
 }
 
-export function getAllGroupsMap() {
+export function getAllGroupsMap(): ?{ [key: string]: Group } {
   const { groupMap } = useSelector((state: RootState) => {
     return {
       groupMap: state.main.groupMap,
@@ -73,7 +122,7 @@ export function getAllGroupsMap() {
   return groupMap;
 }
 
-export function getOrgGroups(orgId: string): Array<Group> {
+export function getOrgGroups(orgId: string): ?Array<Group> {
   const { groupList } = useSelector((state: RootState) => {
     return {
       groupList: state.main.groupList,
@@ -84,7 +133,7 @@ export function getOrgGroups(orgId: string): Array<Group> {
     return [];
   }
 
-  return groupList.filter((group) => group['orgId'] === orgId);
+  return groupList.filter((group) => group["orgId"] === orgId);
 }
 
 export function getSubGroups(groupId: string): Array<Group> {
@@ -94,10 +143,10 @@ export function getSubGroups(groupId: string): Array<Group> {
     };
   });
 
-  if(groupList == null) {
+  if (groupList == null) {
     return [];
   }
-  return groupList.filter((group) => group['parentGroupId'] === groupId);
+  return groupList.filter((group) => group["parentGroupId"] === groupId);
 }
 
 export function getOrgGroup(orgId: string): Group | null {
@@ -111,28 +160,30 @@ export function getOrgGroup(orgId: string): Group | null {
     return null;
   }
   return single(
-    groupList.filter((group) => group['orgId'] === orgId && group['type'] === "default_org_group")
+    groupList.filter((group) => group["orgId"] === orgId && group["type"] === "default_org_group")
   );
 }
 
-export function getAllOrgGroups() {
-  const { groupList } = useSelector((state: RootState) => {
+export function getAllOrgGroups(): ?Array<Group> {
+  const { groupList } = useSelector<RootState>((state: RootState) => {
     return {
       groupList: state.main.groupList,
     };
   });
+  /*
   if (groupList == null) {
     return null;
   }
+  */
 
   const orgGroupList = groupList.filter(
-    (group) => group['orgId'] != null && group['type'] === "default_org_group"
+    (group) => group["orgId"] != null && group["type"] === "default_org_group"
   );
   return orgGroupList;
 }
 
-export function getAllGroups() {
-  const { groupList } = useSelector((state: RootState) => {
+export function getAllGroups(): Array<Group> {
+  const { groupList } = useSelector<RootState>((state: RootState) => {
     return {
       groupList: state.main.groupList,
     };
@@ -144,7 +195,8 @@ export function getGroupMemberships(groupId: string): Array<GroupMembership> {
   const group = getGroup(groupId);
   const { groupMemberships } = useSelector((state: RootState) => {
     return {
-      groupMemberships: state.main.groupMembershipMap != null ? state.main.groupMembershipMap[groupId] : [],
+      groupMemberships:
+        state.main.groupMembershipMap != null ? state.main.groupMembershipMap[groupId] : [],
     };
   });
 
@@ -152,95 +204,180 @@ export function getGroupMemberships(groupId: string): Array<GroupMembership> {
 }
 
 export function getAllGroupMemberships(): Array<GroupMembership> {
-  const { groupMembershipsMap } = useSelector((state: RootState) => {
-    return {
-      groupMembershipsMap: state.main.groupMembershipMap,
-    };
-  });
+  const groupMembershipsMap: { [key: string]: GroupMembership } = useSelector(
+    (state: RootState): { [key: string]: GroupMembership } => {
+      return state.main.groupMembershipMap ?? {};
+    }
+  );
 
   if (groupMembershipsMap == null) {
     return [];
   }
 
-  return [
-    ...Object.entries(groupMembershipsMap)
-      .map((keyValue) => keyValue[1])
-      .flat(),
-  ];
+  return Object.keys(groupMembershipsMap).map((k) => groupMembershipsMap[k]);
 }
 
-export function getUserChatMemberships() {
-  const { userChatMemberships } = useSelector((state: RootState) => {
+export function getUserChatMemberships(): Array<ChatMembership> {
+  const userChatMembershipsList: Array<ChatMembership> = useSelector((state: RootState) => {
     return {
-      userChatMemberships: state.main.userChatMemberships,
+      userChatMembershipsList: state.main.userChatMembershipsList,
     };
   });
 
-  return userChatMemberships;
+  return userChatMembershipsList;
 }
 
-export function getRootMessageWithChildrenAndUserStatus(messageId: string): Message | null {
-  const message = getMessage(messageId);
-  if (message == null) {
-    return null;
-  }
-  const groupId = message.groupId as string;
-  const { messages, groupMap, userMessagesMap, userMap } = useSelector((state: RootState) => {
+export function getAllRootMessages(): Array<RootMessage> {
+  const rootMessagesMap = getAllRootMessagesMap();
+  return Object.keys(rootMessagesMap).map((k) => rootMessagesMap[k]);
+}
+
+export function getAllRootMessagesMap(): { [key: string]: RootMessage } {
+  const {
+    messagesMap,
+    groupMap,
+    userMessagesMap,
+    userMap,
+  }: {
+    messagesMap: ?{ [key: string]: ?Message },
+    userMessagesMap: ?{ [key: string]: ?UserMessage },
+    userMap: ?{ [key: string]: ?UserInfo },
+    groupMap: ?{ [key: string]: ?Group },
+  } = useSelector((state: RootState) => {
     return {
       groupMap: state.main.groupMap,
-      messages: state.main.groupMessagesMap != null ? state.main.groupMessagesMap[groupId] : [],
+      messagesMap: state.main.messagesMap != null ? state.main.messagesMap : {},
       userMessagesMap: state.main.userMessagesMap,
       userMap: state.main.userMap,
     };
   });
-  const user = useSelector((state: RootState) => state.main.userInfo);
 
-  return useMemo(() => {
-    const result = MessageUtils.buildRootMessageWithChildren(
-      messageId,
-      messages,
-      user,
-      userMessagesMap,
-      null,
-      groupMap,
-      userMap
-    );
-    return [false, result];
-  }, [messageId, messages, user, userMessagesMap, groupMap, userMap]);
-}
+  let rootMessageMap: { [key: string]: {| root: Message, children: Array<Message> |} } = {};
 
-export function getGroupUserRootMessages(groupId) {
-  const user = getCurrentUser();
-  const { groupMessages, userMessagesMap, groupMap, userMap } = useSelector((state: RootState) => {
-    return {
-      groupMessages: state.main.groupMessages[groupId],
-      userMessagesMap: state.main.userMessagesMap,
-      groupMap: state.main.groupMap,
-      userMap: state.main.userMap,
-    };
-  });
-
-  return useMemo(() => {
-    if (groupMessages != null) {
-      return MessageUtils.buildRootMessagesWithChildren(
-        groupMessages,
-        user.getData(),
-        userMessagesMap.getData(),
-        null,
-        groupMap.getData(),
-        userMap.getData()
-      );
-    } else {
-      return [];
+  for (const messageId in messagesMap) {
+    const message = messagesMap[messageId];
+    if (message?.papaId === null) {
+      rootMessageMap[message.id] = { root: message, children: [] };
     }
-  }, [groupMessages, user, userMessagesMap, groupMap, userMap]);
+  }
+
+  for (const messageId in messagesMap) {
+    const message = messagesMap[messageId];
+    const papaId = message?.papaId;
+    if (papaId != null) {
+      const papaMessage = rootMessageMap[papaId];
+      papaMessage?.children.push(message);
+    }
+  }
+
+  const rootMessages: { [key: string]: RootMessage } = {};
+  for (const rootMessageId of Object.keys(rootMessageMap)) {
+    rootMessages[rootMessageId] = new RootMessage(
+      rootMessageMap[rootMessageId].root,
+      rootMessageMap[rootMessageId].children,
+      userMessagesMap ?? {},
+      groupMap ?? {},
+      userMap ?? {}
+    );
+  }
+
+  return rootMessages;
 }
 
-export function getChatUserMessages(chatId) {
+export function getRootMessage(messageId: string): ?RootMessage {
+  return getAllRootMessagesMap()[messageId];
+}
+
+export function getGroupUserRootMessages(groupId: string): Array<RootMessage> {
+  const all = getAllRootMessagesMap();
+  return Object.keys(all)
+    .map((k) => all[k])
+    .filter((rootMessage) => rootMessage.getGroupId() === groupId);
+}
+
+export function getChatMessages(chatId: string): Array<ChatMessageInfo> {
   const user = getCurrentUser();
   const { chatMessages, userChatMessagesMap, userMap } = useSelector((state: RootState) => {
     return {
-      chatMessages: chatId != null ? state.main.chatMessages[chatId] : [],
+      chatMessages: chatId != null ? state.main.chatMessagesMap?.[chatId] : [],
+      userChatMessagesMap: state.main.userChatMessagesMap,
+      userMap: state.main.userMap,
+    };
+  });
+
+  const rootChatMessages = useMemo(() => {
+    if (chatMessages != null) {
+      const userChatMessages = [];
+      chatMessages.forEach((message) => {
+        const userChatMessage = userChatMessagesMap[message.id];
+        userChatMessages.push(new ChatMessageInfo(message, userChatMessage));
+      });
+      return userChatMessages;
+    } else {
+      return [];
+    }
+  }, [chatMessages, userChatMessagesMap]);
+  return rootChatMessages;
+}
+
+export function getGroupUserRootUnreadMessages(groupId: string): Array<RootMessage> {
+  const userGroupRootMessages = getGroupUserRootMessages(groupId);
+  const unread = useMemo(() => {
+    const unreadMessages = userGroupRootMessages.filter(
+      (rootMessage) => rootMessage.getUserStatus().status != "read"
+    );
+    return unreadMessages;
+  }, [userGroupRootMessages]);
+  return unread;
+}
+
+export function getChatUserUnreadMessages(chatId: string): Array<ChatMessageInfo> {
+  const chatMessages = getChatMessages(chatId);
+  const unreadMessages = chatMessages.filter((message) => message.userStatus?.status != "read");
+  return unreadMessages;
+}
+
+export function getGroup(groupId: string): ?Group {
+  const { group } = useSelector((state: RootState) => {
+    return {
+      group: state.main.groupMap?.[groupId],
+    };
+  });
+  return group;
+}
+
+export function getSuperPublicGroups(): Array<Group> {
+  const groups: ?Array<Group> = useSelector(
+    (state: RootState): ?Array<Group> => state.main.groupList
+  );
+  if (groups == null) {
+    return [];
+  }
+  return groups.filter((group) => group.type === "super_public");
+}
+
+export function getUserUnreadMessageCount(): number {
+  const allUserRootMessagesMap = getAllRootMessagesMap();
+  const allUserRootMessages = Object.keys(allUserRootMessagesMap).map(
+    (k) => allUserRootMessagesMap[k]
+  );
+  const unreadMessages = getUserUnreadChatMessageCount();
+  return unreadMessages;
+}
+
+export function getUserUnreadChatMessageCount(): number {
+  const allChatMessages = getAllUserChatMessages();
+  const unreadMessages = calculateUnreadChatMessages(allChatMessages);
+  return unreadMessages.length;
+}
+
+export function getAllUserChatMessages(): Array<ChatMessageInfo> {
+  const user = getCurrentUser();
+  const { chatMessages, userChatMessagesMap, userMap } = useSelector((state: RootState) => {
+    return {
+      chatMessages: Object.keys(state.main.chatMessagesMap ?? {}).map(
+        (k: string) => state.main.chatMessagesMap?.[k]
+      ),
       userChatMessagesMap: state.main.userChatMessagesMap,
       userMap: state.main.userMap,
     };
@@ -265,55 +402,33 @@ export function getChatUserMessages(chatId) {
     } else {
       return [];
     }
-  }, [chatMessages, userChatMessagesMap]);
+  }, [chatMessages, userChatMessagesMap, userMap]);
 }
 
-export function getGroupUserRootUnreadMessages(groupId) {
-  const userGroupRootMessages = getGroupUserRootMessages(groupId);
-  const unread = useMemo(
-    () => MessageUtils.calculateUnreadMessages(userGroupRootMessages),
-    [userGroupRootMessages]
-  );
-  return unread;
+/*
+  let unreadMessages = 0;
+  for (const message of userRootMessages) {
+    if (message.userStatus?.status != "read") {
+      unreadMessages += 1;
+    }
+  }
 }
 
-export function getChatUserUnreadMessages(chatId) {
-  const userChatMessages = getChatUserMessages(chatId);
-  const unread = useMemo(
-    () => MessageUtils.calculateUnreadChatMessages(userChatMessages),
-    [userChatMessages]
-  );
-  return unread;
-}
-
-export function getGroupUserRootMessageUnreadCount(groupId) {
-  const userGroupRootMessages = getGroupUserRootMessages(groupId);
-  const unread = useMemo(
-    () => MessageUtils.calculateUnreadMessages(userGroupRootMessages),
-    [userGroupRootMessages]
-  );
+export function getGroupUserRootMessageUnreadCount(groupId: string): number {
+  const unread = getGroupUserRootUnreadMessages(groupId);
   return unread.length;
 }
 
-export function getGroup(groupId) {
+export function getRootGroup(): ?Group {
   const { group } = useSelector((state: RootState) => {
     return {
-      group: state.main.groupMap[groupId],
+      group: state.main.groupMap?.[ROOT_GROUP_ID],
     };
   });
   return group;
 }
 
-export function getRootGroup() {
-  const { group } = useSelector((state: RootState) => {
-    return {
-      group: state.main.groupMap[ROOT_GROUP_ID],
-    };
-  });
-  return group;
-}
-
-export function getOrg(orgId) {
+export function getOrg(orgId: string): ?Org {
   const { orgsMap } = useSelector((state: RootState) => {
     return {
       orgsMap: state.main.orgsMap,
@@ -324,39 +439,24 @@ export function getOrg(orgId) {
   return org;
 }
 
-export function getChat(chatId) {
+export function getChat(chatId: string): ?Chat {
   const { chat } = useSelector((state: RootState) => {
     return {
-      chat: state.main.chatMap[chatId],
+      chat: state.main.chatMap?.[chatId],
     };
   });
   return chat;
 }
 
-export function getSuperPublicGroups(groupId) {
-  const { groups } = useSelector((state: RootState) => {
-    return {
-      groups: state.main.groupList,
-    };
+export function getSuperPublicGroups(groupId: string): Array<Group> {
+  const groups = useSelector((state: RootState) => {
+    const groups = state.main.groupList;
+    return groups;
   });
-  if (isLoading(groups)) {
-    return loading();
-  }
-  return groups.getData().filter((group) => group['type'] === "super_public");
+  return groups.filter((group) => group["type"] === "super_public");
 }
 
-export function getGroupUnreadMessages(groupId) {
-  const { groupMessages, userMessagesMap } = useSelector((state: RootState) => {
-    return {
-      groupMessages: state.main.groupMessages[groupId] ?? [],
-      userMessagesMap: state.main.userMessagesMap,
-    };
-  });
-
-  return MessageUtils.filterUnreadMessages(groupMessages, userMessagesMap);
-}
-
-export function getUserGroupMemberships() {
+export function getUserGroupMemberships(): Array<GroupMembership> {
   const user = getCurrentUser();
   const { userGroupMemberships } = useSelector((state: RootState) => {
     return {
@@ -366,74 +466,25 @@ export function getUserGroupMemberships() {
   return userGroupMemberships;
 }
 
-export function getUserGroupMembership(groupId: string) {
+export function getUserGroupMembership(groupId: string): ?GroupMembership {
   const user = getCurrentUser();
   const { userGroupMemberships } = useSelector((state: RootState) => {
     return {
       userGroupMemberships: state.main.userGroupMemberships,
     };
   });
-  const arr = (userGroupMemberships ?? []).filter((m) => m['groupId'] === groupId);
+  const arr = (userGroupMemberships ?? []).filter((m) => m["groupId"] === groupId);
   return arr.length == 1 ? arr[0] : null;
 }
 
-export function getUserUnreadMessageCount() {
-  const allUserRootMessages = getAllUserRootMessages();
-  if (allUserRootMessages.loading) {
-    return loading();
-  }
-  const unreadMessages = MessageUtils.calculateUnreadMessages(allUserRootMessages.data);
-  return data(unreadMessages.length);
-}
 
-export function getUserUnreadChatMessageCount() {
-  const allChatMessages = getAllUserChatMessages();
-  const unreadMessages = MessageUtils.calculateUnreadChatMessages(allChatMessages);
-  return unreadMessages.length;
-}
-
-export function getAllUserRootMessages() {
-  const user = getCurrentUser();
-  const { groupMessagesMap, userMessagesMap, groupMap, userMap } = useSelector((state: RootState) => {
-    return {
-      groupMessagesMap: state.main.groupMessages,
-      userMessagesMap: state.main.userMessagesMap,
-      groupMap: state.main.groupMap,
-      userMap: state.main.userMap,
-    };
-  });
-  if (userMessagesMap.loading) {
-    return loading();
-  }
-
-  return useMemo(() => {
-    let allMessages = [];
-    for (let groupId in groupMessagesMap) {
-      const groupMessages = groupMessagesMap[groupId];
-      if (groupMessages != null && groupMessages.length > 0) {
-        allMessages = allMessages.concat(groupMessages);
-      }
-    }
-    if (allMessages.length > 0) {
-      const messages = MessageUtils.buildRootMessagesWithChildren(
-        allMessages,
-        user.getData(),
-        userMessagesMap.getData(),
-        null,
-        groupMap.getData(),
-        userMap.getData()
-      );
-      return data(messages);
-    }
-    return data([]);
-  }, [groupMessagesMap, user, userMessagesMap]);
-}
-
-export function getAllUserChatMessages() {
+export function getAllUserChatMessages(): Array<ChatMessageInfo> {
   const user = getCurrentUser();
   const { chatMessages, userChatMessagesMap, userMap } = useSelector((state: RootState) => {
     return {
-      chatMessages: Object.values(state.main.chatMessages).flat(),
+      chatMessages: Object.keys(state.main.chatMessagesMap ?? {}).map(
+        (k: string) => state.main.chatMessagesMap?.[k]
+      ),
       userChatMessagesMap: state.main.userChatMessagesMap,
       userMap: state.main.userMap,
     };
@@ -489,22 +540,32 @@ export function getAllUserChatMessages() {
     return [];
   }, [groupMessagesMap, user, userMessagesMap]);
   */
+
+export function getUserMessage(messageId: string): ?UserMessage {
+  let userMessagesMap = useSelector((state: RootState) => state.main.userMessagesMap);
+  return userMessagesMap?.[messageId];
 }
 
-export function useMarkRead(message) {
+export function useMarkRead(messageId: string) {
   const user = getCurrentUser();
+  const message = getRootMessage(messageId);
+
   useEffect(() => {
-    let markRead = [];
-    if (message.userStatus?.status != "read") {
-      markRead.push(message.id);
+    if (message != null) {
+      let markRead = [];
+      if (message?.getUserStatus()?.status != "read") {
+        markRead.push(message.getID());
+      }
+      const unreadChildMessages = (message.getChildren() ?? []).filter(
+        (m) => m.getUserStatus().status != "read"
+      );
+      markRead = markRead.concat(unreadChildMessages.map((m) => m.id));
+      Controller.markMessagesRead(user, markRead);
     }
-    const unreadChildMessages = (message.children ?? []).filter((m) => m.status != "read");
-    markRead = markRead.concat(unreadChildMessages.map((m) => m.id));
-    Controller.markMessagesRead(user, markRead);
   }, [message]);
 }
 
-export function useMarkChatMessagesRead(chatMessages) {
+export function useMarkChatMessagesRead(chatMessages: Array<ChatMessage>): void {
   const user = getCurrentUser();
   return useEffect(() => {
     Controller.markChatMessagesRead(
@@ -514,54 +575,22 @@ export function useMarkChatMessagesRead(chatMessages) {
   }, []);
 }
 
-export function getDefaultOrgGroup(orgId) {
-  const { orgsList, orgsMap, groupList, groupMap, userGroupMemberships } = useSelector((state: RootState) => {
-    return {
-      orgsList: state.main.orgsList,
-      orgsMap: state.main.orgsMap,
-      groupList: state.main.groupList,
-      groupMap: state.main.groupMap,
-      userGroupMemberships: state.main.userGroupMemberships,
-    };
-  });
+export function getDefaultOrgGroup(orgId: string): ?Group {
+  const { orgsList, orgsMap, groupList, groupMap, userGroupMemberships } = useSelector(
+    (state: RootState) => {
+      return {
+        orgsList: state.main.orgsList,
+        orgsMap: state.main.orgsMap,
+        groupList: state.main.groupList,
+        groupMap: state.main.groupMap,
+        userGroupMemberships: state.main.userGroupMemberships,
+      };
+    }
+  );
   const defaultOrgGroup = groupList.getData().filter((group) => {
-    return group['orgId'] == orgId && group['type'] === "default_org_group";
+    return group["orgId"] == orgId && group["type"] === "default_org_group";
   });
   return single(defaultOrgGroup);
-}
-
-export function getAllGroupMessages(): Array<Message> {
-  console.log("getAllGroupMessages1");
-  let { groupMessages, userMap, userMessagesMap, groupMap, userInfo } = useSelector((state: RootState) => {
-    return {
-      userInfo: state.main.userInfo,
-      groupList: state.main.groupList,
-      groupMap: state.main.groupMap,
-      orgsMap: state.main.orgsMap,
-      userMap: state.main.userMap,
-      groupMessages: state.main.groupMessages,
-      userMessagesMap: state.main.userMessagesMap,
-    };
-  });
-
-  const messages = Object.values(groupMessages).flat();
-
-  const sortedMessages = useMemo(() => {
-    const rootMessages = MessageUtils.buildRootMessagesWithChildren(
-      messages,
-      userInfo,
-      userMessagesMap,
-      null,
-      groupMap,
-      userMap,
-    );
-    const sortedMessages = [...rootMessages] ?? [];
-    sortedMessages.sort((m1, m2) => {
-      return m2.lastUpdated - m1.lastUpdated;
-    });
-    return sortedMessages;
-  }, [messages, userInfo, userMessagesMap, null, userMap]);
-  return sortedMessages;
 }
 
 function single(list) {

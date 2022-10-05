@@ -1,20 +1,22 @@
+// @flow strict-local
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
+
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { Platform } from "react-native";
+import { Platform, Alert } from "react-native";
 import * as Actions from "./Actions";
 import { auth } from "../../config/firebase";
 import * as Database from "./Database";
-import {store} from "./Actions";
+import { store } from "./Actions";
 import * as Search from "./Search";
 import moment from "moment";
-import * as UserInfo from "./UserInfo";
+import * as UserInfoUtil from "./UserInfo";
 import * as Logger from "./Logger";
 import { storage } from "../../config/firebase";
 import { getDownloadURL, ref, uploadBytes, uploadString } from "firebase/storage";
 import { useSelector } from "react-redux";
 import { createGroup } from "./DatabaseRDB";
-import {data, loading} from "./RemoteData";
+import { data, loading } from "./RemoteData";
 
 //import { Database } from "firebase-firestore-lite";
 
@@ -23,7 +25,11 @@ const chatMessageSubscriptions = {};
 const chatSubscriptions = {};
 let loggedInUnsubscribe;
 
-export async function initializeApp(dispatch, notificationListener, responseListener) {
+export async function initializeApp(
+  dispatch: (?mixed) => void,
+  notificationListener: ({ ... }) => void,
+  responseListener: ({ ... }) => void
+): Promise<{ ... }> {
   Logger.log("initializing App");
   const orgs = await Database.getAllOrgs();
 
@@ -38,10 +44,10 @@ export async function initializeApp(dispatch, notificationListener, responseList
 
   //observe super public group messages
   groups
-    .filter((g) => g['type'] === "super_public")
+    .filter((g) => g["type"] === "super_public")
     .forEach(async (group) => {
       //Loop through group_memberships and set up a subscriber for its messages
-      observeGroupMessages(dispatch, group['id']);
+      observeGroupMessages(dispatch, group["id"]);
     });
 
   dispatch(
@@ -55,18 +61,18 @@ export async function initializeApp(dispatch, notificationListener, responseList
 
   //observe group_membership_changes
   Database.observeAllGroupMembershipChanges((groupMemberships) => {
-    Logger.log("all group memberships: " + JSON.stringify(groupMemberships));
+    Logger.log("observe: AllGroupMembershipChanges: " + groupMemberships.length, Logger.INFO);
     dispatch(Actions.groupMemberships(groupMemberships));
   });
 
   //push notification token
-  let pushToken = null;
+  let pushToken: ?string = null;
 
   // register for push notifications - receive a token that you can use
   // to push notifications to this particular device
   await registerForPushNotificationsAsync()
     .then((token) => {
-      Logger.log("Got push notificaiton token: " + token);
+      Logger.log("Got push notificaiton token: " + (token ?? ""));
       pushToken = token;
     })
     .catch((error) => {
@@ -114,7 +120,7 @@ export async function initializeApp(dispatch, notificationListener, responseList
   const unsubscribeAuth = onAuthStateChanged(auth, async (authenticatedUser) => {
     Logger.log("auth state change: " + JSON.stringify(authenticatedUser));
     if (authenticatedUser != null) {
-      Logger.log("loggedIN: " + pushToken);
+      Logger.log("loggedIN: " + (pushToken ?? ""));
       loggedInUnsubscribe = await loggedIn(dispatch, authenticatedUser, pushToken);
     } else {
       loggedOut(dispatch);
@@ -123,6 +129,7 @@ export async function initializeApp(dispatch, notificationListener, responseList
 
   //observe to group changes
   Database.observeAllGroupChanges((groups) => {
+    Logger.log("observe: AllGroupChanges: " + groups.length, Logger.INFO);
     dispatch(Actions.groups(groups));
   });
 
@@ -164,11 +171,17 @@ export function getLoggedInScreen(state) {
   return { screen: "GROUPS" };
 }
 
-export async function loggedIn(dispatch, authenticatedUser, pushToken: string) {
-  Logger.log("logged in");
+export async function loggedIn(dispatch, authenticatedUser, pushToken: ?string): void {
+  Logger.log("Logged In: " + JSON.stringify(authenticatedUser), Logger.INFO);
   const uid = authenticatedUser.uid;
 
-  let userData: {uid: string, displayName: string, photoURL: string, email: string, pushToken: string} = {
+  let userData: {
+    uid: string,
+    displayName: string,
+    photoURL: string,
+    email: string,
+    pushToken: string,
+  } = {
     uid,
     displayName: authenticatedUser.displayName,
     photoURL: authenticatedUser.photoURL,
@@ -181,12 +194,14 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken: string) {
 
   const userInfo = await Database.updateOrCreateUser(uid, userData);
   //observe user changes
-  Database.observeUserChanges(uid, (userInfo) => {
+  Database.observeUserChanges(uid, (userInfo: UserInfo) => {
+    Logger.log("OBSERVE: UserChanges: ", Logger.INFO);
     dispatch(Actions.userInfo(userInfo));
   });
 
   //observe user group membership changes
   Database.observeUserGroupMemberships(uid, (userGroupMemberships) => {
+    Logger.log("OBSERVE: UserGroupMemberships: " + userGroupMemberships.length, Logger.INFO);
     dispatch(Actions.userGroupMemberships(userGroupMemberships));
     userGroupMemberships.forEach(async (groupMembership) => {
       //Loop through group_memberships and set up a subscriber for its messages
@@ -196,6 +211,10 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken: string) {
       Database.observeGroupMembershipRequests(
         groupMembership.groupId,
         (groupMembershipRequests) => {
+          Logger.log(
+            "OBSERVE: UserGroupMemberships: " + groupMembershipRequests.length,
+            Logger.INFO
+          );
           dispatch(Actions.groupMembershipRequests(groupMembershipRequests));
         }
       );
@@ -204,6 +223,7 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken: string) {
 
   /* observe user chat memberships */
   Database.observeUserChatMemberships(uid, (userChatMemberships) => {
+    Logger.log("OBSERVE: UserChatMemberships: " + userChatMemberships.length, Logger.INFO);
     dispatch(Actions.userChatMemberships(userChatMemberships));
     userChatMemberships.forEach(async (chatMembership) => {
       //Loop through group_memberships and set up a subscriber for its messages
@@ -216,6 +236,7 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken: string) {
         const unsubscribeChatMessages = Database.observeChatMessages(
           chatMembership.chatId,
           (messagesSnapshot) => {
+            Logger.log("observe_callback[start]: observeChatMessages");
             const messages = [];
             messagesSnapshot.forEach((message) => {
               messages.push(message);
@@ -226,26 +247,32 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken: string) {
                 messages: messages,
               })
             );
+            Logger.log("observe_callback[end]: observeChatMessages");
           }
         );
         chatMessageSubscriptions[chatMembership.chatId] = unsubscribeChatMessages;
       }
     });
+    Logger.log("observe_callback[end]: observeUserChatMemberships");
   });
 
   //observe user messages
-  Actions.userMessages(loading());
   Database.observeUserMessages(uid, (userMessages) => {
+    Logger.log("OBSERVE: UserMessages: " + userMessages.length, Logger.INFO);
     dispatch(Actions.userMessages(userMessages));
+    Logger.log("observe_callback[end]: observeUserMessages");
   });
 
   //observe user chat messages
   Database.observeUserChatMessages(uid, (userMessages) => {
+    Logger.log("OBSERVE: UserChatMessages: " + userMessages.length, Logger.INFO);
     dispatch(Actions.userChatMessages(userMessages));
+    Logger.log("observe_callback[end]: observeUserChatMessages");
   });
 
   //observe org changes
   Database.observeOrgChanges((orgs) => {
+    Logger.log("OBSERVE: OrgChanges: " + orgs.length, Logger.INFO);
     dispatch(Actions.orgsUpdated(orgs));
   });
 
@@ -254,17 +281,23 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken: string) {
     userInfo.uid,
     userInfo.email,
     (invites) => {
+      Logger.log("OBSERVE: ToUserInvites: " + invites.length, Logger.INFO);
       dispatch(Actions.toUserInvites(invites));
+      Logger.log("observe_callback[end]: observeToUserInvites");
     }
   );
 
   Database.observeFromUserInvites(userInfo.uid, (invites) => {
+    Logger.log("OBSERVE: FromUserInvites: " + invites.length, Logger.INFO);
     dispatch(Actions.fromUserInvites(invites));
+    Logger.log("observe_callback[end]: observeFromUserInvites");
   });
 
   // redirect user automatically to profile if it's not complete
-  if (UserInfo.profileIncomplete(userInfo)) {
+  if (UserInfoUtil.profileIncomplete(userInfo)) {
+    Logger.log("observe_callback[start]: profileIncomplete");
     dispatch(Actions.openModal({ modal: "MY_PROFILE", forceComplete: true }));
+    Logger.log("observe_callback[end]: profileIncomplete");
   }
 
   Logger.log("Logged in complete");
@@ -274,9 +307,10 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken: string) {
   return unsubscribe;
 }
 
-export function observeGroupMessages(dispatch, groupId) {
+export function observeGroupMessages(dispatch: (?{ ... }) => void, groupId: string) {
   if (!(groupId in groupMessageSubscriptions)) {
     const unsubscribe = Database.observeGroupMessages(groupId, (messagesSnapshot) => {
+      Logger.log("OBSERVE: GroupMessages: " + messagesSnapshot.length, Logger.INFO);
       const messages = [];
       messagesSnapshot.forEach((message) => {
         messages.push(message);
@@ -292,14 +326,14 @@ export function observeGroupMessages(dispatch, groupId) {
   }
 }
 
-export async function loggedOut(dispatch) {
+export async function loggedOut(dispatch: (?{ ... }) => void) {
   if (loggedInUnsubscribe != null) {
     loggedInUnsubscribe();
   }
   dispatch(Actions.goToScreen({ screen: "LOGIN" }));
 }
 
-export async function initialUserProfileSchools(dispatch, userInfo, schools) {
+export async function initialUserProfileSchools(dispatch: (?{ ... }) => void, userInfo, schools) {
   await Database.updateOrCreateUser(userInfo.uid, {
     profile: { schools },
   });
@@ -311,11 +345,11 @@ export async function initialUserProfileSchools(dispatch, userInfo, schools) {
   }
 }
 
-export async function joinGroup(uid, groupId) {
+export async function joinGroup(uid: string, groupId: string) {
   await Database.joinGroup(uid, groupId);
 }
 
-export async function requestToJoin(userInfo, groupId) {
+export async function requestToJoin(userInfo, groupId: string) {
   await Database.createGroupMembershipRequest(userInfo, groupId);
 }
 
@@ -330,7 +364,11 @@ export async function acceptGroupMembershipRequest(userInfo, groupMembershipRequ
     groupMembershipRequest.id
   );
 }
-export async function rejectGroupMembershipRequest(userInfo, groupId, groupMembershipRequest) {
+export async function rejectGroupMembershipRequest(
+  userInfo,
+  groupId: string,
+  groupMembershipRequest
+) {
   //get the latest group membership request then update it indicating this particular user dismissed it
   /*
   const groupMembershipRequest = await Database.getGroupMembershipRequest(
@@ -405,15 +443,13 @@ export async function createGroupAndJoin(
 }
 
 export async function createDefaultOrgGroupIfNotExists(orgId) {
-  Logger.log(
-    "Controller.createDefaultOrgGroupIfNotExists: orgId: " + orgId
-  );
+  Logger.log("Controller.createDefaultOrgGroupIfNotExists: orgId: " + orgId);
   const groupList = await Database.getAllGroups();
   const org = await Database.getOrg(orgId);
 
   const defaultGroup = single(
     groupList.filter((group) => {
-      group['orgId'] == orgId && group['type'] === "default_org_group";
+      group["orgId"] == orgId && group["type"] === "default_org_group";
     })
   );
 
@@ -608,7 +644,11 @@ async function sendPushNotification(expoPushToken) {
   });
 }
 
-async function registerForPushNotificationsAsync() {
+async function registerForPushNotificationsAsync(): Promise<?string> {
+  if (!Device.isDevice) {
+    return;
+  }
+
   let token;
   if (Device.isDevice) {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -678,9 +718,10 @@ export async function setUserGroupLastViewedTimestamp(
   lastViewedMessageTimestamp
 ) {
   console.log("getState()");
-  const userGroupMemberships = store
-    .getState()
-    .main.groupMembershipMap[groupId].filter((gm) => gm.uid == userInfo.uid);
+  const userGroupMemberships = store.getState().main.groupMembershipMap[groupId].filter((gm) => {
+    console.log("NULL check: " + JSON.stringify(gm));
+    return gm.uid == userInfo.uid;
+  });
 
   const userGroupMembership = userGroupMemberships.length > 0 ? userGroupMemberships[0] : null;
   if (userGroupMembership != null) {
@@ -727,7 +768,10 @@ export async function deleteGroup(groupId) {
 
 export async function deleteUser(uid) {
   const allGroupMemberships = await Database.getAllGroupMemberships();
-  const userGroupMemberships = allGroupMemberships.filter((gm) => gm.uid === uid);
+  const userGroupMemberships = allGroupMemberships.filter((gm) => {
+    console.log("NULL check: " + JSON.stringify(gm));
+    return gm.uid === uid;
+  });
   for (const gm of userGroupMemberships) {
     await Database.deleteGroupMembership(gm.id);
   }

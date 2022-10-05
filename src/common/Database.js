@@ -1,26 +1,69 @@
+// @flow strict-local
+
 import * as DatabaseRDB from "./DatabaseRDB";
 import * as DatabaseFS from "./DatabaseFS";
 
-export async function getAllOrgs() {
+export type UserInfo = {
+  uid: string,
+  displayName: ?string,
+  firstName: ?string,
+  lastName: ?string,
+  email: ?string,
+  image: ?string,
+  ...
+};
+
+export type Group = {
+  id: string,
+  type: string,
+  name: string,
+  ...
+};
+
+export type Org = {
+  id: string,
+  ...
+};
+
+export type Message = {
+  id: string,
+  title: ?string,
+  text: ?string,
+  attachments: ?Array<{ uri: string }>,
+  groupId: string,
+  timestamp: number,
+  papaId: string,
+  uid: string,
+  poll: { ... },
+  ...
+};
+
+export type UserMessage = {
+  id: string,
+  status: string,
+  ...
+};
+
+export async function getAllOrgs(): Promise<Array<Org>> {
   return DatabaseRDB.getAllOrgs();
 }
 
-export async function getOrg(orgId) {
+export async function getOrg(orgId: string): Promise<?Org> {
   const allOrgs = await DatabaseRDB.getAllOrgs();
   return single(allOrgs.filter((org) => org.id == orgId));
 }
 
-export async function getGroup(groupId) {
+export async function getGroup(groupId: string): Promise<?Group> {
   const allGroups = await DatabaseRDB.getAllGroups();
   return single(allGroups.filter((group) => group.id == groupId));
 }
 
-export async function getGroupMessages(groupId) {
+export async function getGroupMessages(groupId: string): Promise<Array<Message>> {
   const groupMessages = await DatabaseFS.getGroupMessages(groupId);
   return groupMessages;
 }
 
-export function observeOrgChanges(callback) {
+export function observeOrgChanges(callback: (snapshot) => void) {
   return DatabaseRDB.observeOrgChanges(callback);
 }
 
@@ -32,7 +75,7 @@ export function observeUserChatMessages(uid, callback) {
   return DatabaseRDB.observeUserChatMessages(uid, callback);
 }
 
-export async function updateOrCreateUser(uid, data) {
+export async function updateOrCreateUser(uid: string, data: UserInfo): Promise<UserInfo> {
   return DatabaseRDB.updateOrCreateUser(uid, data);
 }
 
@@ -40,7 +83,7 @@ export async function updateUserAddToArrayField(uid, fieldName, value) {
   return DatabaseRDB.updateUserAddToArrayField(uid, fieldName, value);
 }
 
-export function observeUserChanges(uid, callback) {
+export function observeUserChanges(uid, callback: (UserInfo) => void) {
   return DatabaseRDB.observeUserChanges(uid, callback);
 }
 
@@ -192,7 +235,7 @@ export async function logError(error, info) {
   DatabaseRDB.logError(error, info);
 }
 
-function single(list) {
+function single<T>(list: Array<T>): ?T {
   if (list != null && list.length === 1) {
     return list[0];
   } else {

@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as MyButtons from "./MyButtons";
 
 import * as Actions from "../common/Actions";
-import { RootState } from "../common/Actions";
+import type { RootState } from "../common/Actions";
 import * as Controller from "../common/Controller";
 import DebugScreen from "./DebugScreen";
 import ErrorScreen from "./ErrorScreen";
@@ -78,7 +78,7 @@ Inside the groups you can
 
 */
 
-function RootApp(props, state) {
+function RootApp(props: {}, state) {
   //const x = { a: "b" };
   //x.b.c = "z";
   const dispatch = useDispatch();
@@ -91,13 +91,14 @@ function RootApp(props, state) {
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        Logger.log("INITIALIZING APP");
         await Controller.initializeApp(dispatch, notificationListener, responseListener);
       } catch (error) {
         dispatch(Actions.goToScreen({ screen: "ERROR", error }));
       }
     };
+    Logger.log("Initializing app (no user) - Start", Logger.INFO);
     initializeApp();
+    Logger.log("Initializing app (no user) - End", Logger.INFO);
   }, []);
 
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
@@ -105,7 +106,6 @@ function RootApp(props, state) {
     if (lastNotificationResponse) {
       const groupId = lastNotificationResponse.notification?.request?.content?.data?.groupId;
       const messageId = lastNotificationResponse.notification?.request?.content?.data?.messageId;
-      //Alert.alert("last notification response: " + groupId + ", " + messageId);
       if (groupId != null) {
         dispatch(Actions.goToScreen({ screen: "GROUP", groupId, messageId }));
       }
@@ -115,7 +115,6 @@ function RootApp(props, state) {
 
   const screenWithParams = useSelector((state: RootState) => state.screen.screen);
   let screen = screenWithParams?.screen;
-  Logger.log("screenWithParams: " + JSON.stringify(screenWithParams));
 
   const modalStack = useSelector((state: RootState) => {
     return state.screen?.modalStack;

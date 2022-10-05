@@ -1,4 +1,5 @@
-import React from "react";
+// @flow strict-local
+import * as React from "react";
 import { Text, TouchableOpacity, View, Image } from "react-native";
 import { Badge } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -10,9 +11,19 @@ import * as Debug from "../common/Debug";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Utils from "../common/Utils";
 import DebugText from "./DebugText";
+import RootMessage from "../common/Message";
 
-export default function MessageView({ item, onPress, showGroup = false }) {
-  const timestamp = item.timestamp?.toDate();
+export default function MessageView({
+  item,
+  onPress,
+  showGroup = false,
+}: {
+  item: RootMessage,
+  onPress: () => void,
+  showGroup: boolean,
+  ...
+}): React.Node {
+  const timestamp = item.getTimestamp();
   const debugMode = Debug.isDebugMode();
   const insets = useSafeAreaInsets();
 
@@ -35,7 +46,7 @@ export default function MessageView({ item, onPress, showGroup = false }) {
             //backgroundColor: "cyan",
           }}
         >
-          {item.userStatus?.status != "read" && (
+          {item.getUserStatus()?.status != "read" && (
             <Badge status="primary" value={""} containerStyle={{ width: 12, height: 12 }} />
           )}
         </View>
@@ -72,7 +83,7 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                   //backgroundColor: "cyan",
                 }}
               >
-                {UserInfo.smallAvatarComponent(item.user)}
+                {UserInfo.smallAvatarComponent(item.getUserInfo())}
                 <View
                   style={{
                     flex: 1,
@@ -85,7 +96,7 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                 >
                   <View style={{ flex: 1, flexDirection: "column", marginLeft: 6 }}>
                     <Text style={{ fontWeight: "bold", fontSize: 14 }}>
-                      {item.group?.name ?? "No group name"}
+                      {item.getGroup()?.name ?? "No group name"}
                     </Text>
                     <Text
                       style={{
@@ -94,14 +105,14 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                         fontSize: 12,
                       }}
                     >
-                      {UserInfo.chatDisplayName(item.user)} {/*item._id*/}
+                      {UserInfo.chatDisplayName(item.getUserInfo())} {/*item._id*/}
                     </Text>
                   </View>
                   <View
                     style={{
                       marginLeft: 5,
-                      fontWeight: "normal",
-                      fontSize: 14,
+                      //fontWeight: "normal",
+                      //fontSize: 14,
                     }}
                   >
                     <MessageTime
@@ -125,7 +136,7 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                   //backgroundColor: "cyan",
                 }}
               >
-                {UserInfo.smallAvatarComponent(item.user)}
+                {UserInfo.smallAvatarComponent(item.getUserInfo())}
                 <View
                   style={{
                     flex: 1,
@@ -145,14 +156,14 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                       fontSize: 16,
                     }}
                   >
-                    {UserInfo.chatDisplayName(item.user)} {/*item._id*/}
+                    {UserInfo.chatDisplayName(item.getUserInfo())} {/*item._id*/}
                   </Text>
                   <View
                     key="message_time"
                     style={{
                       marginLeft: 5,
-                      fontWeight: "normal",
-                      fontSize: 14,
+                      //fontWeight: "normal",
+                      //fontSize: 14,
                     }}
                   >
                     <MessageTime
@@ -181,10 +192,10 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                     color: UIConstants.BLACK_TEXT_COLOR,
                   }}
                 >
-                  {item.title ?? "[No Title]"}
+                  {item.getTitle() ?? "[No Title]"}
                 </Text>
               </View>
-              <DebugText key="debug1" text={item.id} />
+              <DebugText key="debug1" text={item.getID()} />
               <DebugText key="debug2" text={JSON.stringify({ ...item, children: null }, null, 2)} />
             </View>
 
@@ -205,7 +216,7 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                   //backgroundColor: "yellow",
                 }}
               >
-                {!Utils.isEmptyString(item.text) && (
+                {!Utils.isEmptyString(item.getText()) && (
                   <Text
                     key="text"
                     numberOfLines={1}
@@ -216,10 +227,10 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                       flexGrow: 1,
                     }}
                   >
-                    {(item.text ?? "").replace(/(\r\n|\n|\r)/gm, " ")}
+                    {(item.getText() ?? "").replace(/(\r\n|\n|\r)/gm, " ")}
                   </Text>
                 )}
-                {(item.attachments ?? []).map((attachment) => {
+                {(item.getAttachments() ?? []).map((attachment) => {
                   return (
                     <Image
                       key="image"
@@ -253,7 +264,7 @@ export default function MessageView({ item, onPress, showGroup = false }) {
                       //backgroundColor: "green",
                       paddingLeft: 0,
                       fontSize: 14,
-                      fontWeight: item.unreadChildCount > 0 ? "bold" : "normal",
+                      fontWeight: item.getUnreadChildCount() > 0 ? "bold" : "normal",
                       color: UIConstants.BLACK_TEXT_COLOR,
                     }}
                   >

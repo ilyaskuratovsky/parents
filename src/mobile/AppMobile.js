@@ -1,7 +1,7 @@
 // @flow
 
 import * as Notifications from "expo-notifications";
-import React from "react";
+import * as React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import RootApp from "./RootApp";
@@ -12,7 +12,7 @@ import ErrorBoundary from "./ErrorBoundary";
 import ErrorScreen from "./ErrorScreen";
 import * as Database from "../common/Database";
 import * as Logger from "../common/Logger";
-
+import * as Device from "expo-device";
 /*
 setNativeExceptionHandler((errorString) => {
   //You can do something like call an api to report to dev team here
@@ -44,13 +44,13 @@ const myErrorHandler = (error, info) => {
 };
 */
 
-export default function App() {
+export default function App(): React.Node {
   return (
     <SafeAreaProvider>
       <Provider store={store}>
-        <ErrorBoundary>
-          <RootApp />
-        </ErrorBoundary>
+        {/*<ErrorBoundary>*/}
+        <RootApp />
+        {/*</ErrorBoundary>*/}
       </Provider>
     </SafeAreaProvider>
   );

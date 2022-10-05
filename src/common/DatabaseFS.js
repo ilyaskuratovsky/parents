@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import {
   collection,
   doc,
@@ -228,7 +230,7 @@ export function observeGroupMessages(groupId, callback) {
         title: data.title,
         text: data.text,
         uid: data.uid,
-        timestamp: data.timestamp,
+        timestamp: data.timestamp.toDate().getTime(),
         papaId: data.papaId,
         ...data,
       };
@@ -248,7 +250,7 @@ export function observeChatMessages(chatId, callback) {
         title: data.title,
         text: data.text,
         uid: data.uid,
-        timestamp: data.timestamp,
+        timestamp: data.timestamp.toDate().getTime(),
         papaId: data.papaId,
         ...data,
       };

@@ -1,16 +1,20 @@
+// @flow strict-local
+
 import { Avatar } from "react-native-elements";
 import { TouchableOpacity, Text, View } from "react-native";
-import React from "react";
 import { Image } from "react-native-expo-image-cache";
 import * as Utils from "../common/Utils";
+import type { GroupMembership } from "./Actions";
+import type { Group, UserInfo } from "./Database";
+import * as React from "react";
 
 // preview can be a local image or a data uri
-export function chatDisplayName(userInfo) {
+export function chatDisplayName(userInfo: ?UserInfo): ?string {
   if (userInfo == null) {
     return "[Unknown User]";
   }
   if (userInfo.displayName != null) {
-    return displayName;
+    return userInfo.displayName;
   }
 
   if (userInfo.firstName != null && userInfo.lastName != null) {
@@ -24,7 +28,7 @@ export function chatDisplayName(userInfo) {
   }
 }
 
-export function avatarColor(userInfo) {
+export function avatarColor(userInfo: UserInfo): string {
   var hash = 0;
   if (userInfo.email != null) {
     for (var i = 0; i < userInfo.email.length; i++) {
@@ -35,7 +39,7 @@ export function avatarColor(userInfo) {
   return "hsl(" + h + ", " + "50" + "%, " + "65" + "%)";
 }
 
-export function avatarComponent(userInfo, onPress) {
+export function avatarComponent(userInfo: UserInfo, onPress: () => void): React.Node {
   const displayName = chatDisplayName(userInfo);
   let avatar = null;
   if (userInfo.image != null) {
@@ -54,7 +58,7 @@ export function avatarComponent(userInfo, onPress) {
       <Avatar
         size={40}
         rounded
-        title={displayName.charAt(0).toUpperCase()}
+        title={displayName?.charAt(0).toUpperCase() ?? ""}
         containerStyle={{
           backgroundColor: avatarColor(userInfo),
           marginRight: 1,
@@ -69,18 +73,31 @@ export function avatarComponent(userInfo, onPress) {
   }
 }
 
-export function smallAvatarComponent(userInfo, onPress, border) {
+export function smallAvatarComponent(
+  userInfo: ?UserInfo,
+  onPress: ?() => void,
+  border: ?string
+): React.Node {
   return sizedAvatarComponent(userInfo, onPress, border, "small");
 }
 
-export function tinyAvatarComponent(userInfo, onPress, border) {
+export function tinyAvatarComponent(
+  userInfo: UserInfo,
+  onPress: () => void,
+  border: ?string
+): React.Node {
   return sizedAvatarComponent(userInfo, onPress, border, "tiny");
 }
 
-export function tinyAvatarComponentWithName(userInfo, onPress, border, containerStyle) {
+export function tinyAvatarComponentWithName(
+  userInfo: UserInfo,
+  onPress: () => void,
+  border: ?string,
+  containerStyle: mixed
+): React.Node {
   return (
     <View style={{ flex: 1, flexDirection: "row", ...containerStyle }}>
-      {tinyAvatarComponent(userInfo)}
+      {tinyAvatarComponent(userInfo, onPress)}
       <View
         style={{
           flex: 1,
@@ -105,10 +122,15 @@ export function tinyAvatarComponentWithName(userInfo, onPress, border, container
   );
 }
 
-export function smallAvatarComponentWithName(userInfo, onPress, border, containerStyle) {
+export function smallAvatarComponentWithName(
+  userInfo: UserInfo,
+  onPress: () => void,
+  border: ?string,
+  containerStyle: mixed
+): React.Node {
   return (
     <View style={{ flex: 1, flexDirection: "row", ...containerStyle }}>
-      {smallAvatarComponent(userInfo)}
+      {smallAvatarComponent(userInfo, onPress)}
       <View
         style={{
           flex: 1,
@@ -163,7 +185,8 @@ function sizedAvatarComponent(userInfo, onPress, border, size) {
     let letters = null;
     if (userInfo.firstName != null && userInfo.lastName != null) {
       letters =
-        userInfo.firstName.charAt(0).toUpperCase() + userInfo.lastName.charAt(0).toUpperCase();
+        userInfo.firstName.charAt(0).toUpperCase() +
+        (userInfo.lastName?.charAt(0).toUpperCase() ?? "");
     } else {
       if (displayName != null) {
         letters = displayName.charAt(0).toUpperCase();
@@ -192,52 +215,22 @@ function sizedAvatarComponent(userInfo, onPress, border, size) {
   }
 }
 
-export function profileIncomplete(userInfo) {
+export function profileIncomplete(userInfo: UserInfo): boolean {
   return (
     (userInfo.firstName == null || userInfo.firstName.trim() == "") &&
     (userInfo.lastName == null || userInfo.lastName.trim() == "")
   );
 }
 
-export function groupInviteeList(
-  userInfo,
-  groupId,
-  userGroupMemberships,
-  groupMap,
-  groupMembershipMap,
-  userMap
-) {
-  let addList = [];
-  for (let m of userGroupMemberships) {
-    const userMembershipGroupId = m.groupId;
-    const members = groupMembershipMap[userMembershipGroupId];
-    for (let userGroupMemebership of members) {
-      const userId = userGroupMemebership.uid;
-      if (userId != userInfo.uid) {
-        const user = userMap[userId];
-        addList.push(user);
-      }
-    }
-  }
-  addList = Utils.uniqueArray(addList, (user) => user.uid);
-  //filter existing users
-  if (groupId != null) {
-    const thisGroupMembers = groupMembershipMap[groupId].map((m) => m.uid);
-    addList = addList.filter((user) => {
-      const inTheGroup = thisGroupMembers.includes(user.uid);
-      return !inTheGroup;
-    });
-  }
-
-  return addList;
-}
-
-export function commaSeparatedChatThread(users) {
+export function commaSeparatedChatThread(users: Array<UserInfo>): string {
   const shortNames = users.map((user) => user.firstName);
   const ret = shortNames.join(", ");
   return ret;
 }
 
-export function allUsers(userInfo, userMap) {
-  return Object.values(userMap);
+export function allUsers(
+  userInfo: UserInfo,
+  userMap: { [key: string]: UserInfo }
+): Array<UserInfo> {
+  return Object.keys(userMap).map((u) => userMap[u]);
 }

@@ -1,4 +1,7 @@
-import React, { useEffect, useMemo } from "react";
+//@flow strict-local
+
+import { useEffect, useMemo } from "react";
+import * as React from "react";
 import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,13 +16,19 @@ import TopBar from "./TopBar";
 import * as UIConstants from "./UIConstants";
 import * as Logger from "../common/Logger";
 import { ActivityIndicator } from "react-native-paper";
-import { RemoteData, uninitialized, loading, data, isLoading } from "../common/RemoteData";
 import Loading from "./Loading";
 
-export default function FeedScreen() {
+export default function FeedScreen(): React.Node {
+  /*
+  return (
+    <View>
+      <Text>Feed Screen</Text>
+    </View>
+  );
+  */
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
-  const groupMessages = Data.getAllGroupMessages();
+  const groupMessages = Data.getAllRootMessages();
   const FlatListItemSeparator = () => {
     return (
       <View
@@ -32,20 +41,15 @@ export default function FeedScreen() {
     );
   };
 
-  Logger.log("FeedScreen 4");
   const renderMessage = ({ item }) => {
     const onPress = () => {
       //setMessagesModalVisible({ messageId: item.id, groupId: item.groupId });
-      dispatch(Actions.openModal({ modal: "MESSAGES", messageId: item.id }));
+      dispatch(Actions.openModal({ modal: "MESSAGES", messageId: item.getID() }));
     };
     return <MessageViewContainer user={userInfo} showGroup={true} item={item} onPress={onPress} />;
   };
   const defaultGroup = Data.getSuperPublicGroups()[0];
 
-  Logger.log("FeedScreen 5");
-  if (isLoading(groupMessages, defaultGroup)) {
-    return <Loading />;
-  }
   return (
     <Portal
       backgroundColor={UIConstants.DEFAULT_BACKGROUND}
@@ -97,6 +101,7 @@ export default function FeedScreen() {
           </View>
         }
       />
+      <Text>Count: {groupMessages.length}</Text>
       {/* messages section */}
       <View
         style={{
@@ -123,7 +128,7 @@ export default function FeedScreen() {
                 groupMessages
               }
               renderItem={renderMessage}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item.getID()}
               ItemSeparatorComponent={FlatListItemSeparator}
             />
           </View>
