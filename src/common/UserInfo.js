@@ -4,8 +4,7 @@ import { Avatar } from "react-native-elements";
 import { TouchableOpacity, Text, View } from "react-native";
 import { Image } from "react-native-expo-image-cache";
 import * as Utils from "../common/Utils";
-import type { GroupMembership } from "./Actions";
-import type { Group, UserInfo } from "./Database";
+import type { Group, UserInfo, GroupMembership } from "./Database";
 import * as React from "react";
 
 // preview can be a local image or a data uri

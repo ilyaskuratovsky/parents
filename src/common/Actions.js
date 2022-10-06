@@ -41,7 +41,7 @@ export const screenSlice: {
     },
   },
   reducers: {
-    goToScreen: (state, screen) => {
+    goToScreen: (state: ScreenState, screen) => {
       Logger.log("Actions.goToScreen: " + JSON.stringify(screen), Logger.INFO);
       const newState = {
         ...state,
@@ -50,7 +50,7 @@ export const screenSlice: {
       };
       return newState;
     },
-    openModal: (state, modal: { payload: string }) => {
+    openModal: (state: ScreenState, modal: { payload: string }) => {
       Logger.log("Actions.openModal: " + JSON.stringify(modal), Logger.INFO);
       const newState = {
         ...state,
@@ -83,7 +83,8 @@ export type RootState = {
   main: MainState,
 };
 
-export type ScreenState = { ... };
+export type ScreenState = { screen: ?Screen, modalStack: Array<{ ... }>, ... };
+export type Screen = { screen: string, postLoginScreen?: ?Screen, ... };
 export type MainState = {|
   appInitialized: boolean,
   debugMode: { status: boolean },
@@ -110,11 +111,18 @@ export type MainState = {|
   userMessagesMap: ?{ [key: string]: UserMessage },
   userChatMessagesMap: ?{ [key: string]: ChatMessage },
   deviceType: string,
+  searchIndex: ?{ ... },
 |};
 
 export type DebugState = { ... };
 
-export type MainActions = { [key: string]: ({ ... }) => void };
+export type MainActions = {
+  appInitialized: () => void,
+  deviceType: (string) => void,
+  groups: (Array<Group>) => void,
+  orgsUpdated: (Array<Org>) => void,
+  [key: string]: ({ ... }) => void,
+};
 export type MainReducer = { [key: string]: () => void };
 export type ScreenActions = {
   openModal: ({ modal: string, ... }) => void,
@@ -341,7 +349,7 @@ export const mainSlice: {
         //rootUserMessages,
       };
     },
-    groups: (state, obj) => {
+    groups: (state: MainState, obj: { payload: Array<Group> }) => {
       let groups = obj.payload;
       groups = groups.filter((group) => group != null);
       const groupList = [];
@@ -426,7 +434,7 @@ export const mainSlice: {
       };
       return newState;
     },
-    deviceType: (state, obj) => {
+    deviceType: (state: MainState, obj: { payload: string }) => {
       const deviceType = obj.payload;
       Logger.log("Actions.deviceType");
       const newState = {
@@ -490,6 +498,9 @@ export const { goToScreen, openModal, closeModal } = screenSlice.actions;
 export const { toggleDebugMode } = debugSlice.actions;
 
 export const store: {
+  getState: () => {
+    main: MainState,
+  },
   reducer: {
     main: MainReducer,
     screen: ScreenReducer,

@@ -19,9 +19,11 @@ import { createGroup } from "./DatabaseRDB";
 import { data, loading } from "./RemoteData";
 import * as Data from "./Data";
 import * as Message from "./Message";
-import type { ChatMessage } from "./Database";
+import type { ChatMessage, Group, GroupMembershipRequest, UserInfo } from "./Database";
 import { useEffect } from "react";
 import * as Messages from "./Message";
+import type { ScreenState, Screen } from "./Actions";
+import nullthrows from "nullthrows";
 
 //import { Database } from "firebase-firestore-lite";
 
@@ -139,7 +141,7 @@ export async function initializeApp(
   });
 
   //observe to group changes
-  Database.observeAllGroupChanges((groups) => {
+  Database.observeAllGroupChanges((groups: Array<Group>) => {
     Logger.log(
       "observe: AllGroupChanges: " + groups.length + ", " + JSON.stringify(groups.map((g) => g.id)),
       Logger.INFO
@@ -178,14 +180,25 @@ export async function initializeApp(
   };
 }
 
-export function getLoggedInScreen(state) {
-  if (state.screen.postLoginScreen != null) {
-    return state.screen.postLoginScreen;
+export function getLoggedInScreen(state: ScreenState): Screen {
+  if (state.screen?.postLoginScreen != null) {
+    return state.screen?.postLoginScreen;
   }
   return { screen: "GROUPS" };
 }
 
-export async function loggedIn(dispatch, authenticatedUser, pushToken: ?string): void {
+export async function loggedIn(
+  dispatch: (?{ ... }) => void,
+  authenticatedUser: {
+    uid: string,
+    displayName: string,
+    photoURL: string,
+    email: string,
+    pushToken: ?string,
+    ...
+  },
+  pushToken: ?string
+): Promise<() => void> {
   Logger.log("Logged In: " + JSON.stringify(authenticatedUser), Logger.INFO);
   const uid = authenticatedUser.uid;
 
@@ -194,7 +207,7 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken: ?string):
     displayName: string,
     photoURL: string,
     email: string,
-    pushToken: string,
+    pushToken: ?string,
   } = {
     uid,
     displayName: authenticatedUser.displayName,
@@ -208,7 +221,7 @@ export async function loggedIn(dispatch, authenticatedUser, pushToken: ?string):
 
   const userInfo = await Database.updateOrCreateUser(uid, userData);
   //observe user changes
-  Database.observeUserChanges(uid, (userInfo: UserInfo) => {
+  Database.observeUserChanges(uid, (userInfo) => {
     Logger.log("OBSERVE: UserChanges: ", Logger.INFO);
     dispatch(Actions.userInfo(userInfo));
   });
@@ -334,7 +347,7 @@ export function useMarkRead(messageId: string) {
       const unreadChildMessages = (message.getChildren() ?? []).filter(
         (m) => m.getUserStatus().status != "read"
       );
-      markRead = markRead.concat(unreadChildMessages.map((m) => m.id));
+      markRead = markRead.concat(unreadChildMessages.map((m) => m.getID()));
       markMessagesRead(user, markRead);
     }
   }, [message]);
@@ -376,7 +389,11 @@ export async function loggedOut(dispatch: (?{ ... }) => void) {
   dispatch(Actions.goToScreen({ screen: "LOGIN" }));
 }
 
-export async function initialUserProfileSchools(dispatch: (?{ ... }) => void, userInfo, schools) {
+export async function initialUserProfileSchools(
+  dispatch: (?{ ... }) => void,
+  userInfo: UserInfo,
+  schools: Array<{ ... }>
+): Promise<void> {
   await Database.updateOrCreateUser(userInfo.uid, {
     profile: { schools },
   });
@@ -392,11 +409,14 @@ export async function joinGroup(uid: string, groupId: string) {
   await Database.joinGroup(uid, groupId);
 }
 
-export async function requestToJoin(userInfo, groupId: string) {
+export async function requestToJoin(userInfo: UserInfo, groupId: string) {
   await Database.createGroupMembershipRequest(userInfo, groupId);
 }
 
-export async function acceptGroupMembershipRequest(userInfo, groupMembershipRequest) {
+export async function acceptGroupMembershipRequest(
+  userInfo: UserInfo,
+  groupMembershipRequest: GroupMembershipRequest
+) {
   //have the user join the group
   await joinGroup(groupMembershipRequest.uid, groupMembershipRequest.groupId);
 
@@ -408,9 +428,9 @@ export async function acceptGroupMembershipRequest(userInfo, groupMembershipRequ
   );
 }
 export async function rejectGroupMembershipRequest(
-  userInfo,
+  userInfo: UserInfo,
   groupId: string,
-  groupMembershipRequest
+  groupMembershipRequest: GroupMembershipRequest
 ) {
   //get the latest group membership request then update it indicating this particular user dismissed it
   /*
@@ -427,7 +447,10 @@ export async function rejectGroupMembershipRequest(
     update
   );
 }
-export async function dismissGroupMembershipRequest(userInfo, groupMembershipRequest) {
+export async function dismissGroupMembershipRequest(
+  userInfo: UserInfo,
+  groupMembershipRequest: GroupMembershipRequest
+) {
   //get the latest group membership request then update it indicating this particular user dismissed it
   /*
   const groupMembershipRequest = await Database.getGroupMembershipRequest(
@@ -444,17 +467,17 @@ export async function dismissGroupMembershipRequest(userInfo, groupMembershipReq
   );
 }
 
-export async function joinOrg(userInfo, orgId) {
+export async function joinOrg(userInfo: UserInfo, orgId: string) {
   await Database.joinOrg(userInfo, orgId);
 }
 
 export async function createSchoolGroupAndJoin(
-  dispatch,
-  userInfo,
-  schoolId,
-  groupName,
-  grade,
-  year
+  dispatch: (?{ ... }) => void,
+  userInfo: UserInfo,
+  schoolId: string,
+  groupName: string,
+  grade: string,
+  year: string
 ) {
   const groupId = await Database.createGroup({
     name: groupName,
@@ -462,16 +485,16 @@ export async function createSchoolGroupAndJoin(
     grade,
     year,
   });
-  await Database.joinGroup(userInfo, groupId);
+  await Database.joinGroup(userInfo.uid, groupId);
 }
 
 export async function createGroupAndJoin(
-  userInfo,
-  groupName,
-  groupDescription,
-  type,
-  parentGroupId
-) {
+  userInfo: UserInfo,
+  groupName: string,
+  groupDescription: string,
+  type: string,
+  parentGroupId: ?string
+): Promise<string> {
   const group = {
     name: groupName,
     description: groupDescription,
@@ -485,10 +508,10 @@ export async function createGroupAndJoin(
   return groupId;
 }
 
-export async function createDefaultOrgGroupIfNotExists(orgId) {
+export async function createDefaultOrgGroupIfNotExists(orgId: string): Promise<string> {
   Logger.log("Controller.createDefaultOrgGroupIfNotExists: orgId: " + orgId);
   const groupList = await Database.getAllGroups();
-  const org = await Database.getOrg(orgId);
+  const org = nullthrows(await Database.getOrg(orgId));
 
   const defaultGroup = single(
     groupList.filter((group) => {
@@ -505,15 +528,19 @@ export async function createDefaultOrgGroupIfNotExists(orgId) {
     } catch (e) {
       Logger.log("could not create group: " + JSON.stringify(e));
     }
-    Logger.log("group created: " + groupId);
-    return groupId;
+    Logger.log("group created: " + nullthrows(groupId));
+    return nullthrows(groupId);
   } else {
     Logger.log("group already exists: " + defaultGroup.id);
     return defaultGroup.id;
   }
 }
 
-export async function createOrgGroup(orgName, orgDescription, orgType /* school or activity */) {
+export async function createOrgGroup(
+  orgName: string,
+  orgDescription: string,
+  orgType: string /* school or activity */
+) {
   const orgId = await Database.createOrg(orgName, orgType);
   const group = {
     name: orgName,
@@ -525,17 +552,23 @@ export async function createOrgGroup(orgName, orgDescription, orgType /* school 
   const groupId = await Database.createGroup(group);
 }
 
-export async function markMessageRead(userInfo, messageId) {
+export async function markMessageRead(userInfo: UserInfo, messageId: string): Promise<void> {
   markMessagesRead(userInfo, [messageId]);
 }
 
-export async function markMessagesRead(userInfo, messageIds) {
+export async function markMessagesRead(
+  userInfo: UserInfo,
+  messageIds: Array<string>
+): Promise<void> {
   for (const messageId of messageIds) {
     Database.updateUserMessage(userInfo.uid, messageId, { status: "read" });
   }
 }
 
-export async function markChatMessagesRead(userInfo, chatMessageIds) {
+export async function markChatMessagesRead(
+  userInfo: UserInfo,
+  chatMessageIds: Array<string>
+): Promise<void> {
   for (const chatMessageId of chatMessageIds) {
     Database.updateUserChatMessage(userInfo.uid, chatMessageId, { status: "read" });
   }
@@ -549,14 +582,18 @@ export async function markChatMessagesRead(userInfo, chatMessageIds) {
             );
 */
 
-export async function createPrivateGroupAndJoin(userInfo, groupName, groupDescription) {
+export async function createPrivateGroupAndJoin(
+  userInfo: UserInfo,
+  groupName: string,
+  groupDescription: string
+): Promise<string> {
   const groupId = await Database.createGroup({
     name: groupName,
     description: groupDescription,
     orgId: null,
     type: "private",
   });
-  await Database.joinGroup(userInfo, groupId);
+  await Database.joinGroup(userInfo.uid, groupId);
 
   /*
   for (const inviteeUid of invitees) {
@@ -571,38 +608,45 @@ export async function createPrivateGroupAndJoin(userInfo, groupName, groupDescri
   return groupId;
 }
 
-export async function createChat(userInfo, participants) {
+export async function createChat(
+  userInfo: UserInfo,
+  participantIds: Array<string>
+): Promise<string> {
   Logger.log("calling Database.createChat");
-  const chatId = await Database.createChat({ organizerUid: userInfo.uid, participants });
+  const chatId = await Database.createChat({ organizerUid: userInfo.uid, participantIds });
   //await Database.joinChat(userInfo.uid, chatId);
-  participants.forEach(async (uid) => {
+  participantIds.forEach(async (uid) => {
     Logger.log("calling Database.joinChat");
     await Database.joinChat(uid, chatId);
   });
   return chatId;
-  //return "-N4k2FapubvpeyHgFY_g";
 }
 
-export async function createOrgGroupAndJoin(dispatch, userInfo, orgId, groupName) {
+export async function createOrgGroupAndJoin(
+  dispatch: (?{ ... }) => void,
+  userInfo: UserInfo,
+  orgId: string,
+  groupName: string
+) {
   const groupId = await Database.createGroup({
     name: groupName,
     orgId: orgId,
   });
-  await Database.joinGroup(userInfo, groupId);
+  await Database.joinGroup(userInfo.uid, groupId);
 }
 
-export async function subscribeToGroup(userInfo, groupId) {}
+export async function subscribeToGroup(userInfo: UserInfo, groupId: string) {}
 
 export async function sendMessage(
-  dispatch,
-  userInfo,
-  groupId,
-  title,
-  text,
-  data,
-  papaId,
-  notificationInfo
-) {
+  dispatch: (?{ ... }) => void,
+  userInfo: UserInfo,
+  groupId: string,
+  title: string,
+  text: string,
+  data: ?{ ... },
+  papaId: ?string,
+  notificationInfo: ?{ ... }
+): Promise<string> {
   return await Database.sendMessage(
     groupId,
     userInfo.uid,
@@ -614,7 +658,14 @@ export async function sendMessage(
   );
 }
 
-export async function sendReply(dispatch, userInfo, groupId, text, papaId, notificationInfo) {
+export async function sendReply(
+  dispatch: (?{ ... }) => void,
+  userInfo: UserInfo,
+  groupId: string,
+  text: string,
+  papaId: ?string,
+  notificationInfo: ?{ ... }
+): Promise<string> {
   return await Database.sendMessage(
     groupId,
     userInfo.uid,
@@ -626,7 +677,14 @@ export async function sendReply(dispatch, userInfo, groupId, text, papaId, notif
   );
 }
 
-export async function sendChatMessage(dispatch, userInfo, chatId, text, papaId, notificationInfo) {
+export async function sendChatMessage(
+  dispatch: (?{ ... }) => void,
+  userInfo: UserInfo,
+  chatId: string,
+  text: string,
+  papaId: ?string,
+  notificationInfo: ?{ ... }
+): Promise<string> {
   //export async function sendChatMessage(chatId, uid, text, data, papaId, notificationInfo) {
   return await Database.sendChatMessage(
     chatId,
@@ -639,14 +697,14 @@ export async function sendChatMessage(dispatch, userInfo, chatId, text, papaId, 
 }
 
 export async function sendEventReply(
-  dispatch,
-  userInfo,
-  groupId,
-  eventResponse,
-  text,
-  papaId,
-  notificationInfo
-) {
+  dispatch: (?{ ... }) => void,
+  userInfo: UserInfo,
+  groupId: string,
+  eventResponse: ?{ ... },
+  text: string,
+  papaId: ?string,
+  notificationInfo: ?{ ... }
+): Promise<string> {
   return await Database.sendMessage(
     groupId,
     userInfo.uid,
@@ -662,7 +720,7 @@ export async function sendEventReply(
   );
 }
 
-export async function logout(dispatch) {
+export async function logout(dispatch: (?{ ... }) => void) {
   await signOut(auth);
   dispatch(Actions.clearUserData({}));
 }
@@ -723,25 +781,32 @@ async function registerForPushNotificationsAsync(): Promise<?string> {
   return token;
 }
 
-export async function inviteToGroup(dispatch, fromUserInfo, touserInfo, groupId) {}
-
-export async function createOrgAndAssignToUser(dispatch, userInfo, name, type) {
+export async function createOrgAndAssignToUser(
+  dispatch: (?{ ... }) => void,
+  userInfo: UserInfo,
+  name: string,
+  type: string
+) {
   const orgId = await Database.createOrg(name, type);
   await Database.updateUserAddToArrayField(userInfo.uid, "orgs", orgId);
 }
 
-export async function sendGroupInviteToEmails(userInfo, groupId, emails) {
+export async function sendGroupInviteToEmails(
+  userInfo: UserInfo,
+  groupId: string,
+  emails: Array<string>
+) {
   for (const email of emails) {
     await Database.createInvite(userInfo.uid, groupId, null, email);
   }
 }
 
-export async function sendGroupInviteToUser(userInfo, groupId, uid) {
+export async function sendGroupInviteToUser(userInfo: UserInfo, groupId: string, uid: string) {
   await Database.createInvite(userInfo.uid, groupId, uid, null);
 }
 
 export async function joinGroupFromInvite(
-  dispatch,
+  dispatch: (?{ ... }) => void,
   userInfo: UserInfo,
   groupId: string,
   inviteId: string
@@ -750,28 +815,33 @@ export async function joinGroupFromInvite(
   await Database.updateInvite(inviteId, { status: "dismissed" });
 }
 
-export async function dismissInvite(dispatch, userInfo, inviteId) {
+export async function dismissInvite(
+  dispatch: (?{ ... }) => void,
+  userInfo: UserInfo,
+  inviteId: string
+) {
   await Database.updateInvite(inviteId, { status: "dismissed" });
 }
 
-export function searchGroupsAndOrgs(text) {
+export function searchGroupsAndOrgs(text: string): { ... } {
   const searchIndex = store.getState().main.searchIndex;
   const results = Search.search(searchIndex, text);
   return results;
 }
 
 export async function setUserGroupLastViewedTimestamp(
-  userInfo,
-  groupId,
-  lastViewedMessageTimestamp
+  userInfo: UserInfo,
+  groupId: string,
+  lastViewedMessageTimestamp: Date
 ) {
   console.log("getState()");
-  const userGroupMemberships = store.getState().main.groupMembershipMap[groupId].filter((gm) => {
+  const userGroupMemberships = store.getState().main.groupMembershipMap?.[groupId].filter((gm) => {
     console.log("NULL check: " + JSON.stringify(gm));
     return gm.uid == userInfo.uid;
   });
 
-  const userGroupMembership = userGroupMemberships.length > 0 ? userGroupMemberships[0] : null;
+  const userGroupMembership =
+    (userGroupMemberships ?? []).length > 0 ? userGroupMemberships?.[0] : null;
   if (userGroupMembership != null) {
     /*
     Logger.log(
@@ -784,14 +854,19 @@ export async function setUserGroupLastViewedTimestamp(
         ")"
     );
     */
-    Logger.log("lastViewedMessageTimestamp: " + lastViewedMessageTimestamp);
+    Logger.log("lastViewedMessageTimestamp: " + lastViewedMessageTimestamp.toDateString());
     Database.updateUserGroupMembership(userGroupMembership.id, {
       lastViewedMessageTimestamp: lastViewedMessageTimestamp.getTime(),
     });
   }
 }
 
-export async function saveProfile(userId, firstName, lastName, image) {
+export async function saveProfile(
+  userId: string,
+  firstName: string,
+  lastName: string,
+  image: ?string
+) {
   await Database.updateUser(userId, {
     firstName,
     lastName,
@@ -800,21 +875,21 @@ export async function saveProfile(userId, firstName, lastName, image) {
   });
 }
 
-export async function updateGroup(userInfo, groupId, update) {
+export async function updateGroup(userInfo: UserInfo, groupId: string, update: { ... }) {
   await Database.updateGroup(groupId, update);
 }
 
-export async function markDeleteGroup(userInfo, groupId) {
+export async function markDeleteGroup(userInfo: UserInfo, groupId: string) {
   await Database.updateGroup(groupId, {
     status: "deleted",
   });
 }
 
-export async function deleteGroup(groupId) {
+export async function deleteGroup(groupId: string) {
   await Database.deleteGroup(groupId);
 }
 
-export async function deleteUser(uid) {
+export async function deleteUser(uid: string) {
   const allGroupMemberships = await Database.getAllGroupMemberships();
   const userGroupMemberships = allGroupMemberships.filter((gm) => {
     console.log("NULL check: " + JSON.stringify(gm));
@@ -826,11 +901,11 @@ export async function deleteUser(uid) {
   await Database.deleteUser(uid);
 }
 
-export async function deleteGroupMembership(groupMembershipId) {
+export async function deleteGroupMembership(groupMembershipId: string) {
   await Database.deleteGroupMembership(groupMembershipId);
 }
 
-export async function createSharedCalendar(groupId) {
+export async function createSharedCalendar(groupId: string) {
   const ics = require("ics"); //https://www.npmjs.com/package/ics
 
   ics.createEvent(

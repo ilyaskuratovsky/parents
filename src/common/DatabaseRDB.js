@@ -205,9 +205,14 @@ export function observeChat(chatId, callback) {
   });
 }
 
-export async function createGroup(data) {
+export async function createGroup(
+  groupName: string,
+  groupDescription: string,
+  type: string,
+  orgId: string
+): Promise<string> {
   const newReference = await RDB.push(RDB.ref(rdb, "/groups"));
-  await RDB.set(newReference, data);
+  await RDB.set(newReference, { groupName, groupDescription, type, orgId });
   return newReference.key;
 }
 

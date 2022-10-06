@@ -11,6 +11,7 @@ export type UserInfo = {
   email: ?string,
   image: ?string,
   superUser: ?boolean,
+  profileInitialized: ?boolean,
   ...
 };
 
@@ -25,6 +26,7 @@ export type Group = {
 
 export type Org = {
   id: string,
+  name: string,
   ...
 };
 
@@ -84,6 +86,8 @@ export type UserInvite = {
 
 export type GroupMembershipRequest = {
   id: string,
+  uid: string,
+  groupId: string,
   ...
 };
 
@@ -106,7 +110,7 @@ export async function getGroupMessages(groupId: string): Promise<Array<Message>>
   return groupMessages;
 }
 
-export function observeOrgChanges(callback: (snapshot) => void) {
+export function observeOrgChanges(callback: (snapshot: Array<Org>) => void): void {
   return DatabaseRDB.observeOrgChanges(callback);
 }
 
@@ -118,7 +122,7 @@ export function observeUserChatMessages(uid, callback) {
   return DatabaseRDB.observeUserChatMessages(uid, callback);
 }
 
-export async function updateOrCreateUser(uid: string, data: UserInfo): Promise<UserInfo> {
+export async function updateOrCreateUser(uid: string, data: { ... }): Promise<UserInfo> {
   return DatabaseRDB.updateOrCreateUser(uid, data);
 }
 

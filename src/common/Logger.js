@@ -1,6 +1,6 @@
 // @flow strict-local
 
-let a = [];
+let a: Array<string> = [];
 let filter = (str): boolean => true;
 //filter = (str): boolean => str.startsWith("logged");
 

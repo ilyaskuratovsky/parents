@@ -15,11 +15,11 @@ import {
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import * as Logger from "./Logger";
+import type { ChatMessage, Message, UserInfo } from "./Database";
 
 //import Firebase from "firebase";
-
+/*
 export async function getAllSchools() {
-  /* firestore */
   const schoolsSnapshot = await getDocs(collection(db, "schools"));
   const schools = [];
   schoolsSnapshot.forEach((doc) => {
@@ -27,7 +27,8 @@ export async function getAllSchools() {
   });
   return schools;
 }
-
+*/
+/*
 export function observeSchoolChanges(callback) {
   //firestores
   var schoolQuery = onSnapshot(
@@ -43,13 +44,14 @@ export function observeSchoolChanges(callback) {
     }
   );
 }
+*/
 
-export async function updateOrCreateUser(uid, data) {
+export async function updateOrCreateUser(uid: string, data: UserInfo): Promise<UserInfo> {
   //firebase
   const docRef = doc(db, "users", uid);
   const docSnap = await getDoc(docRef);
   let userDoc = null;
-  let userInfo = null;
+  let userInfo: ?UserInfo = null;
 
   // get or create the user info objet
   if (docSnap.exists()) {
@@ -72,7 +74,7 @@ export async function updateOrCreateUser(uid, data) {
   return userInfo;
 }
 
-export function observeUserChanges(uid, callback) {
+export function observeUserChanges(uid: string, callback) {
   //firebase
   const userDocRef = doc(db, "users", uid);
   onSnapshot(
@@ -220,12 +222,15 @@ export function observeFromUserInvites(fromUid, callback) {
   return unsubscribe;
 }
 
-export function observeGroupMessages(groupId, callback) {
+export function observeGroupMessages(
+  groupId: string,
+  callback: (Array<Message>) => void
+): () => void {
   const ref = collection(doc(collection(db, "groups"), groupId), "messages");
   return onSnapshot(ref, (snapshot) => {
     const list = snapshot.docs.map((doc) => {
       const data = doc.data();
-      const message = {
+      const message: Message = {
         id: doc.id,
         title: data.title,
         text: data.text,
@@ -240,7 +245,10 @@ export function observeGroupMessages(groupId, callback) {
   });
 }
 
-export function observeChatMessages(chatId, callback) {
+export function observeChatMessages(
+  chatId: string,
+  callback: (Array<ChatMessage>) => void
+): () => void {
   const ref = collection(doc(collection(db, "chats"), chatId), "messages");
   return onSnapshot(ref, (snapshot) => {
     const list = snapshot.docs.map((doc) => {
