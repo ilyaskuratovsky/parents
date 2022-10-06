@@ -740,8 +740,13 @@ export async function sendGroupInviteToUser(userInfo, groupId, uid) {
   await Database.createInvite(userInfo.uid, groupId, uid, null);
 }
 
-export async function joinGroupFromInvite(dispatch, userInfo, groupId, inviteId) {
-  await Database.joinGroup(userInfo, groupId);
+export async function joinGroupFromInvite(
+  dispatch,
+  userInfo: UserInfo,
+  groupId: string,
+  inviteId: string
+) {
+  await Database.joinGroup(userInfo.uid, groupId);
   await Database.updateInvite(inviteId, { status: "dismissed" });
 }
 

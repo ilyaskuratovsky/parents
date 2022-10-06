@@ -178,8 +178,8 @@ export function observeChat(chatId, callback) {
   DatabaseRDB.observeChat(chatId, callback);
 }
 
-export async function joinGroup(userInfo, groupId) {
-  return DatabaseRDB.joinGroup(userInfo, groupId);
+export async function joinGroup(uid: string, groupId: string): Promise<string> {
+  return DatabaseRDB.joinGroup(uid, groupId);
 }
 
 export async function createGroupMembershipRequest(userInfo, groupId) {

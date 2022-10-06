@@ -211,7 +211,7 @@ export async function createGroup(data) {
   return newReference.key;
 }
 
-export async function joinGroup(uid, groupId) {
+export async function joinGroup(uid: string, groupId: string): Promise<string> {
   const newReference = await RDB.push(RDB.ref(rdb, "/group_memberships"));
   await RDB.set(newReference, { uid: uid, groupId });
   return newReference.key;
