@@ -126,7 +126,6 @@ export default function InitialJoinSchoolGroupsScreen() {
           visible={visibleSchoolGroupModal == school.id}
           onCreateGroup={createSchoolGroup}
           closeModal={() => {
-            Logger.log("close modal called");
             setVisibleSchoolGroupModal(null);
           }}
         />

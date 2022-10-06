@@ -7,6 +7,7 @@ import * as MyButtons from "./MyButtons";
 import Portal from "./Portal";
 import Toolbar from "./Toolbar";
 import * as UserInfo from "../common/UserInfo";
+import * as Logger from "../common/Logger";
 
 export default function MyProfileScreen({}) {
   const dispatch = useDispatch();

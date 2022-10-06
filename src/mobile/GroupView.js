@@ -23,11 +23,12 @@ import { Badge } from "react-native-elements";
 import { styles } from "./Styles";
 import DebugText from "./DebugText";
 import * as Messages from "../common/Message";
+import nullthrows from "../common/nullthrows";
 
 export default function GroupView({ groupId }: { groupId: string }): React.Node {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
-  const group = Data.getGroup(groupId);
+  const group = nullthrows(Data.getGroup(groupId), "Group for groupId: " + groupId + " is null");
   const members = Data.getGroupMemberships(groupId) ?? [];
   const userGroupMembership = Data.getUserGroupMembership(groupId);
   const userInfo = Data.getCurrentUser();

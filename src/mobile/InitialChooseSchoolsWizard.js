@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Controller from "../common/Controller";
 import Portal from "./Portal";
 import * as UIConstants from "./UIConstants";
+import * as Logger from "../common/Logger";
 
 export default function InitialChooseSchoolsWizard({ navigation }) {
   const dispatch = useDispatch();

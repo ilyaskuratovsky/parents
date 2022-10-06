@@ -42,7 +42,6 @@ export default function MessagePollView({ message, showGroup = false }) {
     ).includes(userInfo.uid);
   }
   const [userPollResponse, setUserPollReponse] = useState(initialUserPollResponses);
-  Logger.log("userPollResponse: " + JSON.stringify(userPollResponse));
   */
   /*
   const toggleAndSendPollResponse = useCallback(async (option) => {

@@ -19,6 +19,7 @@ export type Group = {
   type: string,
   name: string,
   description: ?string,
+  parentGroupId: ?string,
   ...
 };
 
@@ -48,6 +49,8 @@ export type UserMessage = {
 
 export type GroupMembership = {
   id: string,
+  uid: string,
+  groupId: string,
   ...
 };
 
@@ -131,7 +134,7 @@ export async function getAllGroups() {
   return DatabaseRDB.getAllGroups();
 }
 
-export function observeAllGroupChanges(callback) {
+export function observeAllGroupChanges(callback: (Array<Group>) => void) {
   return DatabaseRDB.observeAllGroupChanges(callback);
 }
 

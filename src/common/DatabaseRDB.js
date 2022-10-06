@@ -4,7 +4,7 @@ import * as RDB from "firebase/database";
 import { rdb } from "../../config/firebase";
 import * as Logger from "./Logger";
 import type { Org } from "./Database";
-import type { UserMessage } from "./Actions";
+import type { Group, UserMessage } from "./Database";
 
 const observers = {};
 export type ObjectMap<T> = {
@@ -95,7 +95,7 @@ export async function getAllGroups() {
   return ret;
 }
 
-export function observeAllGroupChanges(callback) {
+export function observeAllGroupChanges(callback: (Array<Group>) => void) {
   //rdb
   const groupsRef = RDB.ref(rdb, "groups");
   const unsubscribe = RDB.onValue(groupsRef, (snapshot) => {

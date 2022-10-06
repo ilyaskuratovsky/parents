@@ -1,5 +1,6 @@
 import React from "react";
 import { Text, View, TextInput } from "react-native";
+import * as Logger from "../common/Logger";
 
 import * as Database from "../common/Database";
 

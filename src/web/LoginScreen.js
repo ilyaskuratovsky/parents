@@ -8,6 +8,7 @@ import * as Actions from "../common/Actions";
 import * as Globals from "./Globals";
 import * as MyButtons from "./MyButtons";
 import * as Debug from "../common/Debug";
+import * as Logger from "../common/Logger";
 
 export default function Login({ afterLoginScreen }) {
   const dispatch = useDispatch();

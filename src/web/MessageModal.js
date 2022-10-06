@@ -27,6 +27,7 @@ import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
 import * as Debug from "../common/Debug";
+import * as Logger from "../common/Logger";
 
 export default function MessagesContainer({ groupId, messageId, visible, closeModal }) {
   const user = useSelector((state) => state.main.userInfo);

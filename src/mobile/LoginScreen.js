@@ -9,6 +9,7 @@ import * as Globals from "./Globals";
 import * as MyButtons from "./MyButtons";
 import * as Debug from "../common/Debug";
 import * as DebugText from "./DebugText";
+import * as Logger from "../common/Logger";
 
 export default function Login() {
   const dispatch = useDispatch();

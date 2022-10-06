@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useMemo } from "react";
+// @flow strict-local
+import { useEffect, useState, useMemo } from "react";
+import * as React from "react";
 import {
   ScrollView,
   Text,
@@ -27,12 +29,13 @@ import { Divider, Icon } from "react-native-elements";
 import { IconButton } from "react-native-paper";
 import MessageViewContainer from "./MessageViewContainer";
 import * as Logger from "../common/Logger";
+import * as Messages from "../common/Message";
 
-export default function AdminScreen({}) {
+export default function AdminScreen({}: {}): React.Node {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
   const allGroups = Data.getAllGroups();
-  const users = Data.getAllUsers();
+  const users = Data.getAllUsers() ?? [];
   const [page, setPage] = useState(null);
   const groupMemberships = Data.getAllGroupMemberships();
 
@@ -117,7 +120,7 @@ export default function AdminScreen({}) {
 function GroupView({ group }) {
   const dispatch = useDispatch();
   const members = Data.getGroupMemberships(group.id) ?? [];
-  const groupMessages = Data.getGroupUserRootMessages(group.id);
+  const groupMessages = Messages.getGroupUserRootMessages(group.id);
 
   return (
     <View
@@ -237,7 +240,7 @@ function UserView({ user }) {
             {
               text: "Yes",
               onPress: async () => {
-                await Controller.deleteUser(user.id);
+                await Controller.deleteUser(user.uid);
               },
             },
             {
@@ -275,10 +278,10 @@ function GroupMembershipView({ groupMembership }) {
         }}
       >
         <Text style={{ width: "100%", fontSize: 12, marginRight: 10 }}>
-          {JSON.stringify(groupMembership, null, 2) ?? "<None>"}
+          Group Membership Object: {JSON.stringify(groupMembership, null, 2) ?? "<None>"}
         </Text>
         <Text style={{ width: "100%", fontSize: 12, marginRight: 10 }}>
-          Group: {JSON.stringify(group) ?? "<Null>"}
+          Group Object: {JSON.stringify(group) ?? "<Null>"}
         </Text>
       </View>
       <MyButtons.LinkButton

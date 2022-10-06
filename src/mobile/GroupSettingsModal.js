@@ -189,7 +189,6 @@ function GroupSettings({ userInfo, group, closeModal }) {
             name: groupName,
             description: groupDescription,
           });
-          Logger.log("going to screen tab");
           closeModal();
         }}
       />

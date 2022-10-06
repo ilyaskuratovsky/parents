@@ -96,7 +96,7 @@ export type MainState = {|
   orgsList: ?Array<Org>,
   groupMap: ?{ [key: string]: Group },
   groupList: ?Array<Group>,
-  groupMembershipMap: ?{ [key: string]: GroupMembership },
+  groupMembershipMap: ?{ [key: string]: Array<GroupMembership> },
   userGroupMemberships: ?{ [key: string]: GroupMembership },
   userChatMembershipsList: ?Array<ChatMembership>,
   chatMap: ?{ [key: string]: Chat },

@@ -36,6 +36,7 @@ import { userInfo } from "../common/Actions";
 import MessageModal from "./MessageModal";
 import EventMessageModal from "./EventMessageModal";
 import EventPollMessageModal from "./EventPollMessageModal";
+import * as Logger from "../common/Logger";
 
 export default function MessagesContainer({ groupId, messageId, visible, closeModal }) {
   const user = useSelector((state) => state.main.userInfo);

@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useMemo } from "react";
 import * as React from "react";
+import RootMessage from "../common/Message";
+
 import {
   ScrollView,
   Text,
@@ -32,6 +34,8 @@ import MessageViewContainer from "./MessageViewContainer";
 import DebugText from "./DebugText";
 import * as Logger from "../common/Logger";
 import * as Messages from "../common/Message";
+import nullthrows from "nullthrows";
+import type { Group } from "../common/Database";
 /* 
 People can "follow" orgs, this is a new relationship
 When people follow orgs - they will receive notifications of all the happenings - new groups created
@@ -56,7 +60,7 @@ export default function GroupScreen({ groupId }: { groupId: string }): React.Nod
   const userInfo = useSelector((state) => state.main.userInfo);
   const [loading, setLoading] = useState(false);
   //const group = Data.getOrgGroup(schoolId);
-  const group = Data.getGroup(groupId);
+  const group = nullthrows(Data.getGroup(groupId), "Group for groupId: " + groupId + " is null");
   const members = Data.getGroupMemberships(group.id) ?? [];
   const isMember = members.filter((gm) => gm.uid === userInfo.uid).length > 0;
   const subGroups = Data.getSubGroups(group.id).filter(
@@ -190,7 +194,7 @@ export default function GroupScreen({ groupId }: { groupId: string }): React.Nod
               titleStyle={{ fontSize: 14 }}
               style={{ width: 120, fontSize: 10 }}
               onPress={async () => {
-                await Controller.joinGroup(user.uid, group.id);
+                await Controller.joinGroup(userInfo.uid, group.id);
               }}
             />
           ) : (
@@ -218,7 +222,12 @@ export default function GroupScreen({ groupId }: { groupId: string }): React.Nod
         <DebugText key={"debug2"} text={"Group: " + JSON.stringify(group)} />
 
         {/* sub-groups section */}
-        <View style={{ flexGrow: 1, backgroundColor: "orange" }}>
+        <View
+          style={{
+            flexGrow: 1,
+            //backgroundColor: "orange"
+          }}
+        >
           <ScrollView
             key="scroll_view"
             style={{
@@ -231,7 +240,7 @@ export default function GroupScreen({ groupId }: { groupId: string }): React.Nod
             }}
           >
             {subGroups.map((group) => {
-              return <GroupView group={group} />;
+              return <GroupView group={group} setLoading={null} />;
             })}
             <MessagesSection groupId={group.id} user={userInfo} />
           </ScrollView>
@@ -279,7 +288,7 @@ export default function GroupScreen({ groupId }: { groupId: string }): React.Nod
   );
 }
 
-function GroupView({ group, setLoading }) {
+function GroupView({ group, setLoading }: { group: Group, setLoading: ?() => void }) {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
   const groupId = group.id;
@@ -287,7 +296,7 @@ function GroupView({ group, setLoading }) {
   let userGroupMembership = null;
   if (!groupId.startsWith("__placeholder_default_group_id")) {
     members = Data.getGroupMemberships(groupId);
-    userGroupMembership = Data.getUserGroupMemberships(group.id);
+    userGroupMembership = Data.getUserGroupMemberships();
   }
   const userInfo = Data.getCurrentUser();
   return (
@@ -419,11 +428,12 @@ function GroupView({ group, setLoading }) {
 }
 
 function MessagesSection({ groupId, user }) {
-  const renderMessage = ({ item }) => {
+  const dispatch = useDispatch();
+  const renderMessage = ({ item }: { item: RootMessage }) => {
     const onPress = () => {
-      dispatch(Actions.openModal({ modal: "MESSAGES", id: item.id }));
+      dispatch(Actions.openModal({ modal: "MESSAGES", id: item.getID() }));
     };
-    return <MessageViewContainer key={item.id} user={user} item={item} onPress={onPress} />;
+    return <MessageViewContainer key={item.getID()} user={user} item={item} onPress={onPress} />;
   };
 
   const userRootMessages = Messages.getGroupUserRootMessages(groupId);

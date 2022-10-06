@@ -66,7 +66,13 @@ export async function initializeApp(
 
   //observe group_membership_changes
   Database.observeAllGroupMembershipChanges((groupMemberships) => {
-    Logger.log("observe: AllGroupMembershipChanges: " + groupMemberships.length, Logger.INFO);
+    Logger.log(
+      "OBSERVE: AllGroupMembershipChanges (" +
+        groupMemberships.length +
+        "): " +
+        JSON.stringify(groupMemberships.map((gm) => gm.groupId)),
+      Logger.INFO
+    );
     dispatch(Actions.groupMemberships(groupMemberships));
   });
 
