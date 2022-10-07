@@ -63,6 +63,7 @@ export type Chat = {
 
 export type ChatMessage = {
   id: string,
+  participants: Array<string>,
   ...
 };
 
@@ -105,20 +106,28 @@ export async function getGroup(groupId: string): Promise<?Group> {
   return single(allGroups.filter((group) => group.id == groupId));
 }
 
+/*
 export async function getGroupMessages(groupId: string): Promise<Array<Message>> {
   const groupMessages = await DatabaseFS.getGroupMessages(groupId);
   return groupMessages;
 }
+*/
 
 export function observeOrgChanges(callback: (snapshot: Array<Org>) => void): void {
   return DatabaseRDB.observeOrgChanges(callback);
 }
 
-export function observeUserMessages(uid, callback) {
+export function observeUserMessages(
+  uid: string,
+  callback: (snapshot: Array<UserMessage>) => void
+): void {
   return DatabaseRDB.observeUserMessages(uid, callback);
 }
 
-export function observeUserChatMessages(uid, callback) {
+export function observeUserChatMessages(
+  uid: string,
+  callback: (snapshot: Array<UserChatMessage>) => void
+): void {
   return DatabaseRDB.observeUserChatMessages(uid, callback);
 }
 
@@ -126,59 +135,69 @@ export async function updateOrCreateUser(uid: string, data: { ... }): Promise<Us
   return DatabaseRDB.updateOrCreateUser(uid, data);
 }
 
-export async function updateUserAddToArrayField(uid, fieldName, value) {
+export async function updateUserAddToArrayField(
+  uid: string,
+  fieldName: string,
+  value: string
+): Promise<void> {
   return DatabaseRDB.updateUserAddToArrayField(uid, fieldName, value);
 }
 
-export function observeUserChanges(uid, callback: (UserInfo) => void) {
+export function observeUserChanges(uid: string, callback: (UserInfo) => void): void {
   return DatabaseRDB.observeUserChanges(uid, callback);
 }
 
-export async function getAllGroups() {
+export async function getAllGroups(): Promise<Array<Group>> {
   return DatabaseRDB.getAllGroups();
 }
 
-export function observeAllGroupChanges(callback: (Array<Group>) => void) {
+export function observeAllGroupChanges(callback: (Array<Group>) => void): void {
   return DatabaseRDB.observeAllGroupChanges(callback);
 }
 
-export async function getAllUsers() {
+export async function getAllUsers(): Promise<Array<UserInfo>> {
   return DatabaseRDB.getAllUsers();
 }
 
-export function observeAllUserChanges(callback) {
+export function observeAllUserChanges(callback: (Array<UserInfo>) => void): void {
   return DatabaseRDB.observeAllUserChanges(callback);
 }
 
-export async function getAllGroupMemberships() {
+export async function getAllGroupMemberships(): Promise<Array<GroupMembership>> {
   return DatabaseRDB.getAllGroupMemberships();
 }
 
-export function observeAllGroupMembershipChanges(callback) {
+export function observeAllGroupMembershipChanges(callback: (Array<GroupMembership>) => void): void {
   return DatabaseRDB.observeAllGroupMembershipChanges(callback);
 }
 
-export function observeUserGroupMemberships(uid, callback) {
+export function observeUserGroupMemberships(
+  uid: string,
+  callback: (Array<GroupMembership>) => void
+) {
   return DatabaseRDB.observeUserGroupMemberships(uid, callback);
 }
 
-export function observeGroupMembershipRequests(groupId, callback) {
+export function observeGroupMembershipRequests(
+  groupId: string,
+  callback: (Array<GroupMembershipRequest>) => void
+) {
   return DatabaseRDB.observeGroupMembershipRequests(groupId, callback);
 }
 
-export function observeUserChatMemberships(uid, callback) {
+export function observeUserChatMemberships(uid: string, callback: (Array<ChatMembership>) => void) {
   return DatabaseRDB.observeUserChatMemberships(uid, callback);
 }
 
-export function observeGroupMessages(groupId, callback) {
+export function observeGroupMessages(groupId: string, callback: (Array<Message>) => void) {
   return DatabaseFS.observeGroupMessages(groupId, callback);
 }
 
-export function observeChatMessages(chatId, callback) {
+export function observeChatMessages(chatId: string, callback: (Array<ChatMessage>) => void) {
   DatabaseFS.observeChatMessages(chatId, callback);
 }
 
-export function observeChat(chatId, callback) {
+export function observeChat(chatId: string, callback: (Array<Chat>) => void) {
   DatabaseRDB.observeChat(chatId, callback);
 }
 
@@ -186,29 +205,39 @@ export async function joinGroup(uid: string, groupId: string): Promise<string> {
   return DatabaseRDB.joinGroup(uid, groupId);
 }
 
-export async function createGroupMembershipRequest(userInfo, groupId) {
+export async function createGroupMembershipRequest(userInfo: UserInfo, groupId: string) {
   return DatabaseRDB.createGroupMembershipRequest(userInfo, groupId);
 }
 
-export async function deleteGroupMembershipRequest(userInfo, groupId, groupMembershipRequestId) {
+export async function deleteGroupMembershipRequest(
+  userInfo: UserInfo,
+  groupId: string,
+  groupMembershipRequestId: string
+) {
   return DatabaseRDB.deleteGroupMembershipRequest(userInfo, groupId, groupMembershipRequestId);
 }
 
-export async function updateGroupMembershipRequest(groupId, groupMembershipRequestId, update) {
+export async function updateGroupMembershipRequest(
+  groupId: string,
+  groupMembershipRequestId: string,
+  update: { ... }
+) {
   return DatabaseRDB.updateGroupMembershipRequest(groupId, groupMembershipRequestId, update);
 }
 
-export async function joinOrg(userInfo, orgId) {
+export async function joinOrg(userInfo: UserInfo, orgId: string) {
   return DatabaseRDB.joinOrg(userInfo, orgId);
 }
 
-export async function joinChat(uid, chatId) {
+export async function joinChat(uid: string, chatId: string) {
   return DatabaseRDB.joinChat(uid, chatId);
 }
 
-export async function createGroup(data) {
+/*
+export async function createGroup(data: Group) {
   return DatabaseRDB.createGroup(data);
 }
+*/
 
 export async function createChat(data) {
   return DatabaseRDB.createChat(data);

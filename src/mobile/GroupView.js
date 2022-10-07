@@ -22,7 +22,7 @@ import * as Data from "../common/Data";
 import { Badge } from "react-native-elements";
 import { styles } from "./Styles";
 import DebugText from "./DebugText";
-import * as Messages from "../common/Message";
+import * as Messages from "../common/MessageData";
 import nullthrows from "../common/nullthrows";
 
 export default function GroupView({ groupId }: { groupId: string }): React.Node {

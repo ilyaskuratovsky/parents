@@ -11,7 +11,7 @@ import * as Debug from "../common/Debug";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Utils from "../common/Utils";
 import DebugText from "./DebugText";
-import RootMessage from "../common/Message";
+import RootMessage from "../common/MessageData";
 
 export default function MessageView({
   item,
@@ -196,7 +196,10 @@ export default function MessageView({
                 </Text>
               </View>
               <DebugText key="debug1" text={item.getID()} />
-              <DebugText key="debug2" text={JSON.stringify({ ...item, children: null }, null, 2)} />
+              <DebugText
+                key="debug2"
+                text={JSON.stringify({ ...item.rootMessage, children: item.children }, null, 2)}
+              />
             </View>
 
             {/* message text */}

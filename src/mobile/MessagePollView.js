@@ -16,7 +16,7 @@ import Checkbox from "./Checkbox";
 import * as Data from "../common/Data";
 import * as Controller from "../common/Controller";
 import * as Logger from "../common/Logger";
-import { RootMessage } from "../common/Message";
+import { RootMessage } from "../common/MessageData";
 import FacePile from "./FacePile";
 
 export default function MessagePollView({ message, showGroup = false }) {

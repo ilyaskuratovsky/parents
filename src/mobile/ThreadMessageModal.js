@@ -25,6 +25,7 @@ import { useDispatch } from "react-redux";
 import * as Actions from "../common/Actions";
 import * as Controller from "../common/Controller";
 import * as Debug from "../common/Debug";
+import DebugText from "./DebugText";
 
 export default function ThreadMessageModal({ groupId }) {
   const dispatch = useDispatch();
@@ -81,8 +82,8 @@ export default function ThreadMessageModal({ groupId }) {
   return (
     <Modal visible={true} animationType={"slide"}>
       <Portal>
-        {isDebugMode && <Text>ThreadMessageModal.js</Text>}
-        {isDebugMode && <Text>groupId: {groupId}</Text>}
+        <DebugText text="ThreadMessageModal.js" />
+        <DebugText text={"groupId: " + groupId} />
         {/* top close section */}
         <View
           style={{

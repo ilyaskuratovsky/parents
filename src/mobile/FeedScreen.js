@@ -16,7 +16,7 @@ import * as UIConstants from "./UIConstants";
 import * as Logger from "../common/Logger";
 import { ActivityIndicator } from "react-native-paper";
 import Loading from "./Loading";
-import * as Messages from "../common/Message";
+import * as Messages from "../common/MessageData";
 
 export default function FeedScreen(): React.Node {
   /*

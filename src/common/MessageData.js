@@ -168,11 +168,17 @@ export default class RootMessage {
     return this.state.userMap?.[this.rootMessage.uid];
   }
 
-  getTimestamp(): Date {
-    return new Date(this.rootMessage.timestamp);
+  getTimestamp(): ?Date {
+    if (this.rootMessage.timestamp == null) {
+      return null;
+    }
+    return new Dates.toDate(this.rootMessage.timestamp);
   }
 
-  getLastUpdated(): Date {
+  getLastUpdated(): ?Date {
+    if (this.rootMessage.timestamp == null) {
+      return null;
+    }
     return new Date(this.rootMessage.timestamp);
   }
 
@@ -279,6 +285,10 @@ export default class RootMessage {
 
   getPoll(): { ... } {
     return this.message.poll;
+  }
+
+  debugObj(): mixed {
+    return { rootMessage: this.rootMessage, children: this.children };
   }
 }
 

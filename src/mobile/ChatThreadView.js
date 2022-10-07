@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+// @flow strict-local
+import * as React from "react";
+import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { Divider } from "react-native-elements";
 import { IconButton } from "react-native-paper";
@@ -20,12 +22,13 @@ import { Badge } from "react-native-elements";
 import { styles } from "./Styles";
 import Loading from "./Loading";
 import { SquareFacePile } from "../web/FacePile";
+import nullthrows from "nullthrows";
 
-export default function ChatThreadView({ chatId }) {
+export default function ChatThreadView({ chatId }: { chatId: string }): React.Node {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
   const userInfo = Data.getCurrentUser();
-  const chat = Data.getChat(chatId);
+  const chat = nullthrows(Data.getChat(chatId));
   const members = Data.getUsers(chat?.participants ?? []);
   const otherMembers = members.filter((u) => u.uid !== userInfo.uid);
   const unreadMessages = Data.getChatUserUnreadMessages(chat?.id);

@@ -38,7 +38,7 @@ import * as Debug from "../common/Debug";
 import * as Data from "../common/Data";
 import DebugText from "./DebugText";
 import * as Logger from "../common/Logger";
-import { RootMessage } from "../common/Message";
+import { RootMessage } from "../common/MessageData";
 
 export default function MessagePollModal({ messageId, scrollToEnd }) {
   Logger.log("MessagePollModal: " + messageId);

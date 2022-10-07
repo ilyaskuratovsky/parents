@@ -1,4 +1,6 @@
-import React from "react";
+// @flow strict-local
+
+import * as React from "react";
 import { Text, View } from "react-native";
 import TimeAgo from "react-timeago";
 import * as Globals from "./Globals";
@@ -10,8 +12,17 @@ import MessageTime from "./MessageTime";
 import * as Utils from "../common/Utils";
 import * as Debug from "../common/Debug";
 import DebugText from "./DebugText";
+import RootMessage from "../common/MessageData";
+import * as Data from "../common/Data";
 
-export default function CommentView({ item, user, onPress }) {
+export default function CommentView({
+  item,
+  onPress,
+}: {
+  item: RootMessage,
+  onPress: () => void,
+}): React.Node {
+  const user = Data.getCurrentUser();
   const debugMode = Debug.isDebugMode();
 
   const timeAgo = ({ children }) => {
@@ -38,15 +49,15 @@ export default function CommentView({ item, user, onPress }) {
           alignItems: "center",
         }}
       >
-        {UserInfo.tinyAvatarComponent(item.user)}
+        {UserInfo.tinyAvatarComponent(item.getUserInfo())}
         <Text style={{ color: "grey", marginLeft: 10, fontStyle: "italic", fontSize: 10 }}>
-          {UserInfo.chatDisplayName(item.user)} responded to the poll
+          {UserInfo.chatDisplayName(item.getUserInfo())} responded to the poll
         </Text>
       </View>
     );
   }
 
-  if (item.user.uid == user.uid) {
+  if (item.getUserInfo()?.uid == user.uid) {
     return (
       <View
         style={{
@@ -70,7 +81,7 @@ export default function CommentView({ item, user, onPress }) {
             backgroundColor: "white",
           }}
         >
-          {UserInfo.smallAvatarComponent(item.user)}
+          {UserInfo.smallAvatarComponent(item.getUserInfo())}
         </View>
 
         {/* user name + text */}
@@ -102,31 +113,18 @@ export default function CommentView({ item, user, onPress }) {
                 color: UIConstants.BLACK_TEXT_COLOR,
               }}
             >
-              {UserInfo.chatDisplayName(item.user)}
+              {UserInfo.chatDisplayName(item.getUserInfo())}
             </Text>
             <View
               style={{
                 flex: 1,
                 marginLeft: 10,
-                fontWeight: "normal",
-                fontSize: 14,
                 alignItems: "flex-end",
               }}
             >
-              {item.timestamp ? (
-                /*
-                <TimeAgo
-                  date={Date.toDate(item.timestamp)}
-                  style={{
-                    marginLeft: 5,
-                    fontWeight: "normal",
-                    fontSize: 14,
-                  }}
-                  component={timeAgo}
-                />
-                */
+              {item.getTimestamp() ? (
                 <MessageTime
-                  timestamp={item.timestamp?.toDate()}
+                  timestamp={item.getTimestamp()}
                   textStyle={{ fontSize: 11, color: UIConstants.BLACK_TEXT_COLOR }}
                 />
               ) : (
@@ -136,10 +134,10 @@ export default function CommentView({ item, user, onPress }) {
           </View>
           <View style={{ flex: 1, flexDirection: "column" }}>
             {item.eventResponse != null && <Text>{item.eventResponse}</Text>}
-            {!Utils.isEmptyString(item.text) && (
+            {!Utils.isEmptyString(item.getText()) && (
               <Autolink
                 // Required: the text to parse for links
-                text={item.text}
+                text={item.getText()}
                 // Optional: enable email linking
                 email
                 // Optional: enable hashtag linking to instagram
@@ -153,8 +151,8 @@ export default function CommentView({ item, user, onPress }) {
                 }}
               />
             )}
-            <DebugText text={item.id} />
-            <DebugText text={JSON.stringify(item, null, 2)} />
+            <DebugText text={item.getID()} />
+            <DebugText text={JSON.stringify(item.debugObj(), null, 2)} />
           </View>
         </View>
       </View>
@@ -182,7 +180,7 @@ export default function CommentView({ item, user, onPress }) {
             backgroundColor: "white",
           }}
         >
-          {UserInfo.smallAvatarComponent(item.user)}
+          {UserInfo.smallAvatarComponent(item.getUserInfo())}
         </View>
 
         {/* user name + text */}
@@ -214,19 +212,17 @@ export default function CommentView({ item, user, onPress }) {
                 color: UIConstants.BLACK_TEXT_COLOR,
               }}
             >
-              {UserInfo.chatDisplayName(item.user)}
+              {UserInfo.chatDisplayName(item.getUserInfo())}
             </Text>
             <View
               style={{
                 flex: 1,
                 marginLeft: 10,
-                fontWeight: "normal",
-                fontSize: 14,
                 alignItems: "flex-end",
                 //backgroundColor: "green",
               }}
             >
-              {item.timestamp ? (
+              {item.getTimestamp() ? (
                 /*
                 <TimeAgo
                   date={Date.toDate(item.timestamp)}
@@ -239,7 +235,7 @@ export default function CommentView({ item, user, onPress }) {
                 />
                 */
                 <MessageTime
-                  timestamp={item.timestamp?.toDate()}
+                  timestamp={item.getTimestamp()}
                   textStyle={{ fontSize: 11, color: UIConstants.BLACK_TEXT_COLOR }}
                 />
               ) : (
@@ -251,7 +247,7 @@ export default function CommentView({ item, user, onPress }) {
             {item.eventResponse != null && <Text>{item.eventResponse}</Text>}
             <Autolink
               // Required: the text to parse for links
-              text={item.text}
+              text={item.getText()}
               // Optional: enable email linking
               email
               // Optional: enable hashtag linking to instagram
@@ -265,10 +261,8 @@ export default function CommentView({ item, user, onPress }) {
               }}
             />
 
-            {debugMode && (
-              <Text style={{ fontSize: 8 }}>(not from parent message uid) {item.id}</Text>
-            )}
-            {debugMode && <Text style={{ fontSize: 8 }}>{JSON.stringify(item, null, 2)}</Text>}
+            <DebugText text={item.getID()} />
+            <DebugText text={JSON.stringify(item.debugObj(), null, 2)} />
           </View>
         </View>
       </View>

@@ -4,15 +4,13 @@ import * as RDB from "firebase/database";
 import { rdb } from "../../config/firebase";
 import * as Logger from "./Logger";
 import type { Org } from "./Database";
-import type { Group, UserMessage } from "./Database";
+import type { Group, GroupMembership, UserMessage } from "./Database";
 
 const observers = {};
 export type ObjectMap<T> = {
   id: string,
   object: T,
 };
-
-export type GroupMembership = { id: string, uid: string };
 
 export async function getAllOrgs(): Promise<Array<Org>> {
   /*real-time database */
@@ -156,7 +154,7 @@ function observeAllGroupMembershipChangesHelper(
   };
 }
 
-export function observeAllGroupMembershipChanges(callback: (Array<{ ... }>) => void) {
+export function observeAllGroupMembershipChanges(callback: (Array<GroupMembership>) => void) {
   let uid: ?string = null;
   let userCallback = null;
   if (observers["observeAllGroupChanges"] != null) {

@@ -36,7 +36,7 @@ import Autolink from "react-native-autolink";
 import { userInfo } from "../common/Actions";
 import * as Dates from "../common/Date";
 import * as Data from "../common/Data";
-import * as Message from "../common/Message";
+import * as Message from "../common/MessageData";
 import * as Debug from "../common/Debug";
 import * as Actions from "../common/Actions";
 import * as Logger from "../common/Logger";

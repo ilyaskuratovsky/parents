@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import * as React from "react";
-import RootMessage from "../common/Message";
+import RootMessage from "../common/MessageData";
 
 import {
   ScrollView,
@@ -33,7 +33,7 @@ import { IconButton } from "react-native-paper";
 import MessageViewContainer from "./MessageViewContainer";
 import DebugText from "./DebugText";
 import * as Logger from "../common/Logger";
-import * as Messages from "../common/Message";
+import * as Messages from "../common/MessageData";
 import nullthrows from "nullthrows";
 import type { Group } from "../common/Database";
 /* 
@@ -431,7 +431,7 @@ function MessagesSection({ groupId, user }) {
   const dispatch = useDispatch();
   const renderMessage = ({ item }: { item: RootMessage }) => {
     const onPress = () => {
-      dispatch(Actions.openModal({ modal: "MESSAGES", id: item.getID() }));
+      dispatch(Actions.openModal({ modal: "MESSAGES", messageId: item.getID() }));
     };
     return <MessageViewContainer key={item.getID()} user={user} item={item} onPress={onPress} />;
   };
@@ -444,7 +444,7 @@ function MessagesSection({ groupId, user }) {
     }
     const sortedMessages = [...(userRootMessages ?? [])] ?? [];
     sortedMessages.sort((m1, m2) => {
-      return m2.getLastUpdated() - m1.getLastUpdated();
+      return (m2.getLastUpdated()?.getTime() ?? 0) - (m1.getLastUpdated()?.getTime() ?? 0);
     });
     return sortedMessages;
   }, [userRootMessages]);

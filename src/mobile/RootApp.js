@@ -1,13 +1,14 @@
-// @flow
+// @flow strict-local
 
 import * as Notifications from "expo-notifications";
-import React, { useEffect, useRef } from "react";
+import * as React from "react";
+import { useEffect, useRef } from "react";
 import { Alert, View, Text, Modal, ScrollView } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as MyButtons from "./MyButtons";
 
 import * as Actions from "../common/Actions";
-import type { RootState } from "../common/Actions";
+import type { MainState, RootState } from "../common/Actions";
 import * as Controller from "../common/Controller";
 import DebugScreen from "./DebugScreen";
 import ErrorScreen from "./ErrorScreen";
@@ -78,7 +79,7 @@ Inside the groups you can
 
 */
 
-function RootApp(props: {}, state) {
+function RootApp(props: {}, state: RootState): React.Node {
   //const x = { a: "b" };
   //x.b.c = "z";
   const dispatch = useDispatch();

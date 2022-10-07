@@ -29,7 +29,7 @@ import { Divider, Icon } from "react-native-elements";
 import { IconButton } from "react-native-paper";
 import MessageViewContainer from "./MessageViewContainer";
 import * as Logger from "../common/Logger";
-import * as Messages from "../common/Message";
+import * as Messages from "../common/MessageData";
 
 export default function AdminScreen({}: {}): React.Node {
   const dispatch = useDispatch();

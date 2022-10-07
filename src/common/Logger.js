@@ -5,8 +5,9 @@ let filter = (str): boolean => true;
 //filter = (str): boolean => str.startsWith("logged");
 
 export const INFO = 1;
+export const DEBUG = 2;
 
-const LOG_LEVEL = INFO;
+const LOG_LEVEL = DEBUG;
 
 export function log(str: string, level?: number = 0) {
   if (filter != null) {

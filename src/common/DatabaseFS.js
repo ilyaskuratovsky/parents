@@ -16,6 +16,7 @@ import {
 import { db } from "../../config/firebase";
 import * as Logger from "./Logger";
 import type { ChatMessage, Message, UserInfo } from "./Database";
+import nullthrows from "nullthrows";
 
 //import Firebase from "firebase";
 /*
@@ -230,12 +231,14 @@ export function observeGroupMessages(
   return onSnapshot(ref, (snapshot) => {
     const list = snapshot.docs.map((doc) => {
       const data = doc.data();
+      Logger.log("Group messages snapshot: " + JSON.stringify(data, null, 2), Logger.DEBUG);
+      const timestamp = data.timestamp;
       const message: Message = {
         id: doc.id,
         title: data.title,
         text: data.text,
         uid: data.uid,
-        timestamp: data.timestamp.toDate().getTime(),
+        timestamp: data.timestamp,
         papaId: data.papaId,
         ...data,
       };
@@ -258,7 +261,7 @@ export function observeChatMessages(
         title: data.title,
         text: data.text,
         uid: data.uid,
-        timestamp: data.timestamp.toDate().getTime(),
+        timestamp: data.timestamp,
         papaId: data.papaId,
         ...data,
       };
@@ -268,7 +271,7 @@ export function observeChatMessages(
   });
 }
 
-export async function joinGroup(userInfo, groupId) {
+export async function joinGroup(userInfo: UserInfo, groupId: string) {
   const groupMembershipCollectionRef = collection(db, "group_memberships");
   const existingGroupMembershipQuery = query(
     groupMembershipCollectionRef,
@@ -285,12 +288,20 @@ export async function joinGroup(userInfo, groupId) {
   }
 }
 
-export async function createGroup(data) {
+export async function createGroup(data: mixed) {
   const groupsRef = collection(db, "groups");
   const group = await addDoc(groupsRef, data);
 }
 
-export async function sendMessage(groupId, uid, title, text, data, papaId, notificationInfo) {
+export async function sendMessage(
+  groupId: string,
+  uid: string,
+  title: string,
+  text: string,
+  data: mixed,
+  papaId: string,
+  notificationInfo: { ... }
+): Promise<string> {
   const message = {
     uid: uid,
     groupId,
@@ -298,7 +309,6 @@ export async function sendMessage(groupId, uid, title, text, data, papaId, notif
     text,
     ...data,
     papaId,
-    //timestamp: Timestamp.now().toDate(),
     timestamp: serverTimestamp(),
     notificationInfo,
   };
@@ -307,7 +317,14 @@ export async function sendMessage(groupId, uid, title, text, data, papaId, notif
 }
 
 //return DatabaseFS.sendChatMessage(chatId, uid, text, data, papaId, notificationInfo);
-export async function sendChatMessage(chatId, uid, text, data, papaId, notificationInfo) {
+export async function sendChatMessage(
+  chatId: string,
+  uid: string,
+  text: string,
+  data: mixed,
+  papaId: string,
+  notificationInfo: mixed
+): Promise<string> {
   const message = {
     uid: uid,
     chatId,
@@ -321,7 +338,7 @@ export async function sendChatMessage(chatId, uid, text, data, papaId, notificat
   return await addDoc(messagesRef, message);
 }
 
-export async function createInvite(fromUid, groupId, uid, email) {
+export async function createInvite(fromUid: string, groupId: string, uid: string, email: string) {
   Logger.log("creating invite");
   const invitesRef = collection(db, "invites");
   const timestamp = serverTimestamp();
@@ -335,7 +352,14 @@ export async function createInvite(fromUid, groupId, uid, email) {
   Logger.log("invite created: " + JSON.stringify(group));
 }
 
-export async function createEvent(uid, groupId, title, text, startDate, endDate) {
+export async function createEvent(
+  uid: string,
+  groupId: string,
+  title: string,
+  text: string,
+  startDate: string,
+  endDate: string
+) {
   Logger.log(
     "create event: " +
       uid +

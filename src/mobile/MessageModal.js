@@ -1,5 +1,7 @@
+// @flow strict-local
 import * as Calendar from "expo-calendar";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import * as React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Button,
@@ -36,18 +38,29 @@ import * as Actions from "../common/Actions";
 import * as Debug from "../common/Debug";
 import * as Data from "../common/Data";
 import DebugText from "./DebugText";
+import nullthrows from "nullthrows";
+import * as Messages from "../common/MessageData";
 
-export default function MessageModal({ messageId, scrollToEnd }) {
+export default function MessageModal({
+  messageId,
+  scrollToEnd,
+}: {
+  messageId: string,
+  scrollToEnd: boolean,
+}): React.Node {
   const debugMode = Debug.isDebugMode();
   const dispatch = useDispatch();
   const user = Data.getCurrentUser();
   const messageObj = Data.getMessage(messageId);
-  const message = Data.getRootMessageWithChildrenAndUserStatus(messageId);
-  const group = Data.getGroup(message.groupId);
-  const sortedChildMessages = [...message.children] ?? [];
+  const message = nullthrows(
+    Messages.getRootMessage(messageId),
+    "Message is null for id: " + messageId
+  );
+  const group = nullthrows(Data.getGroup(message.getGroupId()));
+
+  const sortedChildMessages = [...message.getChildren()] ?? [];
   sortedChildMessages.sort((m1, m2) => {
-    return m1.timestamp - m2.timestamp;
-    //return 0;
+    return m1.getTimestamp()?.getTime() ?? 0 - (m2.getTimestamp()?.getTime() ?? 0);
   });
 
   const childMessages = sortedChildMessages;
@@ -57,11 +70,11 @@ export default function MessageModal({ messageId, scrollToEnd }) {
     const groupName = group.name;
     const fromName = UserInfo.chatDisplayName(user);
     setText("");
-    await Controller.sendReply(dispatch, user, group.id, text, message.id, {
+    await Controller.sendReply(dispatch, user, group.id, text, message.getID(), {
       groupName,
       fromName,
     });
-    scrollViewRef.current.scrollToEnd({ animated: true });
+    scrollViewRef.current?.scrollToEnd({ animated: true });
   }, []);
 
   const [text, setText] = useState("");
@@ -69,21 +82,26 @@ export default function MessageModal({ messageId, scrollToEnd }) {
   const insets = useSafeAreaInsets();
   const topBarHeight = 40;
 
-  useEffect(async () => {
-    let markRead = [];
-    if (message.status != "read") {
-      markRead.push(message.id);
-    }
-    const unreadChildMessages = (message.children ?? []).filter((m) => m.status != "read");
-    markRead = markRead.concat(unreadChildMessages.map((m) => m.id));
-    Controller.markMessagesRead(user, markRead);
+  useEffect(() => {
+    const markRead = async () => {
+      let markRead = [];
+      if (message.getUserStatus()?.status != "read") {
+        markRead.push(message.getID());
+      }
+      const unreadChildMessages = (message.getChildren() ?? []).filter(
+        (m) => m.getUserStatus()?.status != "read"
+      );
+      markRead = markRead.concat(unreadChildMessages.map((m) => m.getID()));
+      Controller.markMessagesRead(user, markRead);
+    };
+    markRead();
   }, [message]);
 
   // if the the message id is a comment (e.g. this view was opened to a comment, scroll all the way down
   // fix this later to scroll to the specific message
-  useEffect(async () => {
+  useEffect(() => {
     if (scrollToEnd) {
-      scrollViewRef.current.scrollToEnd({ anmiated: true });
+      scrollViewRef.current?.scrollToEnd({ anmiated: true });
     }
   }, []);
 
@@ -149,7 +167,7 @@ export default function MessageModal({ messageId, scrollToEnd }) {
                   paddingBottom: 6,
                 }}
               >
-                {UserInfo.smallAvatarComponent(message.user)}
+                {UserInfo.smallAvatarComponent(message.getUserInfo())}
                 <View
                   style={{
                     flex: 1,
@@ -168,7 +186,7 @@ export default function MessageModal({ messageId, scrollToEnd }) {
                       color: UIConstants.BLACK_TEXT_COLOR,
                     }}
                   >
-                    {UserInfo.chatDisplayName(message.user)}
+                    {UserInfo.chatDisplayName(message.getUserInfo())}
                   </Text>
                 </View>
               </View>
@@ -188,12 +206,12 @@ export default function MessageModal({ messageId, scrollToEnd }) {
                     color: UIConstants.BLACK_TEXT_COLOR,
                   }}
                 >
-                  {message.title}
+                  {message.getTitle()}
                 </Text>
                 {/* the message text */}
                 <Autolink
                   // Required: the text to parse for links
-                  text={message.text}
+                  text={message.getText()}
                   // Optional: enable email linking
                   email
                   // Optional: enable hashtag linking to instagram
@@ -242,7 +260,8 @@ export default function MessageModal({ messageId, scrollToEnd }) {
               color={"blue"}
               size={32}
               onPress={() => {
-                sendEventReply(eventResponse, text);
+                //sendEventReply(eventResponse, text);
+                Alert.alert("MessageModal.js: sendEventReply not implemented");
               }}
             />
             <IconButton
@@ -251,7 +270,8 @@ export default function MessageModal({ messageId, scrollToEnd }) {
               backgroundColor="green"
               size={32}
               onPress={() => {
-                sendEventReply(eventResponse, text);
+                //sendEventReply(eventResponse, text);
+                Alert.alert("MessageModal.js: sendEventReply not implemented");
               }}
             />
 

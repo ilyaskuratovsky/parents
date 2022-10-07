@@ -81,6 +81,7 @@ export const screenSlice: {
 
 export type RootState = {
   main: MainState,
+  screen: ScreenState,
 };
 
 export type ScreenState = { screen: ?Screen, modalStack: Array<{ ... }>, ... };

@@ -81,8 +81,8 @@ export function smallAvatarComponent(
 }
 
 export function tinyAvatarComponent(
-  userInfo: UserInfo,
-  onPress: () => void,
+  userInfo: ?UserInfo,
+  onPress: ?() => void,
   border: ?string
 ): React.Node {
   return sizedAvatarComponent(userInfo, onPress, border, "tiny");

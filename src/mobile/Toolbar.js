@@ -8,7 +8,7 @@ import BottomBar from "./BottomBar";
 import * as UIConstants from "./UIConstants";
 import * as Logger from "../common/Logger";
 import * as Data from "../common/Data";
-import * as Messages from "../common/Message";
+import * as Messages from "../common/MessageData";
 
 const Toolbar = ({ selected }) => {
   const dispatch = useDispatch();

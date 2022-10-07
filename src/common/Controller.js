@@ -18,10 +18,9 @@ import { useSelector } from "react-redux";
 import { createGroup } from "./DatabaseRDB";
 import { data, loading } from "./RemoteData";
 import * as Data from "./Data";
-import * as Message from "./Message";
 import type { ChatMessage, Group, GroupMembershipRequest, UserInfo } from "./Database";
 import { useEffect } from "react";
-import * as Messages from "./Message";
+import * as Messages from "./MessageData";
 import type { ScreenState, Screen } from "./Actions";
 import nullthrows from "nullthrows";
 
