@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React from "react";
 import { Text, View } from "react-native";
 

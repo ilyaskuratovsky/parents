@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React, { useState } from "react";
 import { Modal, Text, View, TextInput, ScrollView, Alert } from "react-native";
 import { ToggleButton } from "react-native-paper";

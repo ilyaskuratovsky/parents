@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React, { useEffect, useState, useMemo } from "react";
 import {
   ScrollView,

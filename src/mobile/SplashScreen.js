@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React, { useEffect, useRef } from "react";
 import { Image, SafeAreaView, Text } from "react-native";
 import { useSelector } from "react-redux";

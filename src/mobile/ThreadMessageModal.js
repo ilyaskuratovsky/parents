@@ -1,3 +1,4 @@
+// @flow strict-local
 import React, { useState, useCallback } from "react";
 import {
   Image,

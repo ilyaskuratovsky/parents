@@ -1,3 +1,5 @@
+// @flow strict-local
+
 export function uniqueArray(array, keyFunc) {
   const ret = [];
   const keys = new Set();

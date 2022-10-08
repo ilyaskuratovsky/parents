@@ -234,18 +234,19 @@ export default class RootMessage {
     return null;
   }
 
-  getPollSummary(): { ... } {
+  getPollSummary(): ?{ ... } {
     /*
     "Option 1": {count: 2, total: 8, users: []}
     "Option 2": {}
     */
-    if (this.message.poll == null) {
+    if (this.rootMessage.poll == null) {
       return null;
     }
 
     const summary = {};
     let total = 0;
-    for (const pollOption of this.rootMessage.poll) {
+    const poll = this.rootMessage.poll ?? [];
+    for (const pollOption of poll) {
       const optionSummary = this.getPollOptionSummary(pollOption.name);
       summary[pollOption.name] = optionSummary;
       total += optionSummary.count;
@@ -257,7 +258,7 @@ export default class RootMessage {
     return summary;
   }
 
-  getPollOptionSummary(optionName: string): { ... } {
+  getPollOptionSummary(optionName: string): { count: number, ... } {
     /*
     {count: 2, total: 8, users: []}
     */
@@ -283,8 +284,8 @@ export default class RootMessage {
     return result;
   }
 
-  getPoll(): { ... } {
-    return this.message.poll;
+  getPoll(): ?Array<{ name: string, ... }> {
+    return this.rootMessage.poll;
   }
 
   debugObj(): mixed {

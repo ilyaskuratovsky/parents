@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React, { useState } from "react";
 import { SafeAreaView, Text, Linking, Button } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";

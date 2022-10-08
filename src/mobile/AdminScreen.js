@@ -46,7 +46,7 @@ export default function AdminScreen({}: {}): React.Node {
     >
       <Text>Admin Screen</Text>
       <View style={{ marginLeft: 5, flexDirection: "row" }}>
-        <View style={{ marginRight: 10, marginBottom: 12 }}>
+        <View key={"home"} style={{ marginRight: 10, marginBottom: 12 }}>
           <MyButtons.LinkButton
             text="Home"
             onPress={() => {
@@ -54,7 +54,7 @@ export default function AdminScreen({}: {}): React.Node {
             }}
           />
         </View>
-        <View style={{ marginRight: 10, marginBottom: 12 }}>
+        <View key={"groups"} style={{ marginRight: 10, marginBottom: 12 }}>
           <MyButtons.LinkButton
             text="Groups"
             onPress={() => {
@@ -62,7 +62,7 @@ export default function AdminScreen({}: {}): React.Node {
             }}
           />
         </View>
-        <View style={{ marginRight: 5 }}>
+        <View key={"users"} style={{ marginRight: 5 }}>
           <MyButtons.LinkButton
             text="Users"
             onPress={() => {
@@ -70,7 +70,7 @@ export default function AdminScreen({}: {}): React.Node {
             }}
           />
         </View>
-        <View style={{ marginRight: 5 }}>
+        <View key={"memberships"} style={{ marginRight: 5 }}>
           <MyButtons.LinkButton
             text="Memberships"
             onPress={() => {
@@ -91,7 +91,7 @@ export default function AdminScreen({}: {}): React.Node {
         </View>
       )}
       {/* Users */}
-      {(page == null || page === "users") && (
+      {page === "users" && (
         <View style={{ flexDirection: "column" }}>
           <Text>Users</Text>
           <ScrollView style={{ marginBottom: 200 }}>
@@ -103,7 +103,7 @@ export default function AdminScreen({}: {}): React.Node {
       )}
 
       {/* Group Memberships */}
-      {(page == null || page === "group_memberships") && (
+      {page === "group_memberships" && (
         <View style={{ flexDirection: "column" }}>
           <Text>Group Memberships</Text>
           <ScrollView style={{ marginBottom: 200 }}>
@@ -227,9 +227,6 @@ function UserView({ user }) {
       >
         <Text style={{ width: "100%", fontSize: 12, marginRight: 10 }}>
           {JSON.stringify(user, null, 2) ?? "<None>"}
-        </Text>
-        <Text style={{ width: "100%", fontSize: 12, marginRight: 10 }}>
-          Memberships: {JSON.stringify(userGroupMemberships, null, 2) ?? "<None>"}
         </Text>
       </View>
       <MyButtons.LinkButton

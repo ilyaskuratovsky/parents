@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import * as ImagePicker from "expo-image-picker";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useState, useCallback } from "react";

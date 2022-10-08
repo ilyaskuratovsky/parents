@@ -122,6 +122,13 @@ export type MainActions = {
   deviceType: (string) => void,
   groups: (Array<Group>) => void,
   orgsUpdated: (Array<Org>) => void,
+  groupMemberships: (Array<GroupMembership>) => void,
+  userGroupMemberships: (Array<GroupMembership>) => void,
+  groupMembershipRequests: (Array<GroupMembershipRequest>) => void,
+  userChatMemberships: (Array<ChatMembership>) => void,
+  chat: (Chat) => void,
+  userMessages: (Array<UserMessage>) => void,
+  userChatMessages: (Array<UserChatMessage>) => void,
   [key: string]: ({ ... }) => void,
 };
 export type MainReducer = { [key: string]: () => void };

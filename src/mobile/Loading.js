@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";

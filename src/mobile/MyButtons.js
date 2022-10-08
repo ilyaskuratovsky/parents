@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import * as Paper from "react-native-paper";

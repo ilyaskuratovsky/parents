@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import { StyleSheet } from "react-native";
 import * as UIConstants from "./UIConstants";
 

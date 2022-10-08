@@ -1,3 +1,4 @@
+// @flow strict-local
 import React, { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Divider } from "react-native-elements";
@@ -16,6 +17,7 @@ export default function TabView({ tabHeadings, tabs }) {
         {tabHeadings.map((heading, index) => {
           return (
             <TouchableOpacity
+              key={index}
               style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
               onPress={() => {
                 setVisibleTab(index);
@@ -24,7 +26,7 @@ export default function TabView({ tabHeadings, tabs }) {
               <Text
                 style={{
                   fontSize: 18,
-                  textDecorationLine: visibleTab == index ? "underline" : null,
+                  //textDecorationLine: visibleTab == index ? "underline" : "normal",
                 }}
               >
                 {heading}

@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, Button, Platform, ScrollView } from "react-native";
 import * as Calendar from "expo-calendar";

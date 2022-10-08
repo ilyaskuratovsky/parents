@@ -29,6 +29,8 @@ import * as Globals from "./Globals";
 import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
+// @flow strict-local
+
 import BookCalendarEventModal from "./BookCalendarEventModal";
 //import moment from "moment";
 import moment from "moment-timezone";

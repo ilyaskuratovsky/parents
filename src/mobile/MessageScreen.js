@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React, { useCallback, useState } from "react";
 import { ScrollView, Text, TextInput, useWindowDimensions, View } from "react-native";
 import { Divider } from "react-native-elements";

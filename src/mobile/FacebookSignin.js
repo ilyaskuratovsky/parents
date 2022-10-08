@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React, { Component } from "react";
 import { View, Button } from "react-native";
 //import { LoginButton, AccessToken } from "react-native-fbsdk-next";

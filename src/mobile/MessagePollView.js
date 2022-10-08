@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React, { useCallback, useState } from "react";
 import { Text, TouchableOpacity, View, Image } from "react-native";
 import { Badge } from "react-native-elements";

@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import firebase from "firebase/compat/database";
 
 import React, { useEffect } from "react";

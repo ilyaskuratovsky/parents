@@ -1,3 +1,4 @@
+// @flow  strict-local
 import React, { useState } from "react";
 import { Modal, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Divider } from "react-native-elements";
@@ -10,7 +11,6 @@ export default function ThreadMessageModal({ userInfo, group, visible, sendMessa
   const insets = useSafeAreaInsets();
   const [text, setText] = useState(null);
   const [title, setTitle] = useState(null);
-  const debugMode = Debug.isDebugMode();
   //<KeyboardAvoidingView behavior="padding" style={{ flex: 1, backgroundColor: "white" }}>
   //</KeyboardAvoidingView>
 

@@ -1,3 +1,5 @@
+// @flow strict-local
+
 export function uninitialized<T>(): RemoteData<T> {
   return new RemoteData(true, false, null);
 }
@@ -5,10 +7,10 @@ export function loading<T>(): RemoteData<T> {
   return new RemoteData(false, true, null);
 }
 export function isLoading(...remoteDatas: Array<RemoteData<any>>): boolean {
-  for(const d of remoteDatas) {
+  for (const d of remoteDatas) {
     if (d.loading || d.uninitialized) {
       return true;
-    } 
+    }
   }
   return false;
 }

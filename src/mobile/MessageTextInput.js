@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React, { useState } from "react";
 import { TextInput, View } from "react-native";
 import * as MyButtons from "./MyButtons";

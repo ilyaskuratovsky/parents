@@ -1,4 +1,5 @@
 // @flow strict-local
+import * as ReactType from "react";
 import React from "react";
 import { Badge } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,13 +10,14 @@ import * as UIConstants from "./UIConstants";
 import * as Logger from "../common/Logger";
 import * as Data from "../common/Data";
 import * as Messages from "../common/MessageData";
+import * as ChatMessages from "../common/ChatMessageData";
 
 const Toolbar = ({ selected }) => {
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
   const unreadMessageCount = Messages.getUserUnreadMessageCount();
   //const unreadMessageCount = 0;
-  const unreadChatMessageCount = Data.getUserUnreadChatMessageCount();
+  const unreadChatMessageCount = ChatMessages.getUserUnreadChatMessageCount();
   return (
     <BottomBar
       style={{ paddingLeft: 24, paddingRight: 24, backgroundColor: UIConstants.DEFAULT_BACKGROUND }}
@@ -155,4 +157,5 @@ const Toolbar = ({ selected }) => {
   );
 };
 
-export default React.memo(Toolbar);
+const component: mixed = React.memo(Toolbar);
+export default component;

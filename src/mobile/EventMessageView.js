@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import moment from "moment-timezone";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";

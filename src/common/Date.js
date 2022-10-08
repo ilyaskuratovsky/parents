@@ -1,3 +1,4 @@
+// @flow strict-local
 export function toMillis(obj) {
   const dt = toDate(obj);
   if (dt == null) {

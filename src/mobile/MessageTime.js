@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

@@ -1,7 +1,8 @@
-import { database } from "./firebase";
+// @flow strict-local
+
 import { ref, set } from "firebase/database";
 
-export function randomId() {
+export function randomId(): string {
   const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const length = 9;
   let result = "";
@@ -12,7 +13,7 @@ export function randomId() {
   return result;
 }
 
-export function randomColor() {
+export function randomColor(): string {
   const colors = ["cyan", "purple", "green", "aqua", "maroon"];
   return colors[Math.floor(Math.random() * colors.length)];
 }

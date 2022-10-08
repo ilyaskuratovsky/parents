@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React, { useState, useCallback, useEffect } from "react";
 import {
   Alert,

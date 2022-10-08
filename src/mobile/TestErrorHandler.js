@@ -1,12 +1,7 @@
+// @flow strict-local
+
 import React from "react";
-import {
-  FlatList,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Avatar, Divider } from "react-native-elements";
 
 export default function TestErrorHandler({ messages }) {

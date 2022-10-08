@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React, { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";

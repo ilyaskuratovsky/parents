@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React, { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View, Alert, TextInput } from "react-native";
 import { Divider, SearchBar } from "react-native-elements";

@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React, { useState } from "react";
 import { Text, View } from "react-native";
 import { Avatar, Divider } from "react-native-elements";

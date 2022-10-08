@@ -21,6 +21,7 @@ export type Group = {
   name: string,
   description: ?string,
   parentGroupId: ?string,
+  orgId: ?string,
   ...
 };
 
@@ -39,7 +40,8 @@ export type Message = {
   timestamp: number,
   papaId: string,
   uid: string,
-  //poll: { ... },
+  poll: ?Array<{ name: string }>,
+  poll_response: ?{ ... },
   ...
 };
 
@@ -77,6 +79,7 @@ export type UserChatMessage = {
 
 export type ChatMembership = {
   id: string,
+  chatId: string,
   ...
 };
 
@@ -185,11 +188,17 @@ export function observeGroupMembershipRequests(
   return DatabaseRDB.observeGroupMembershipRequests(groupId, callback);
 }
 
-export function observeUserChatMemberships(uid: string, callback: (Array<ChatMembership>) => void) {
+export function observeUserChatMemberships(
+  uid: string,
+  callback: (Array<ChatMembership>) => void
+): ?string {
   return DatabaseRDB.observeUserChatMemberships(uid, callback);
 }
 
-export function observeGroupMessages(groupId: string, callback: (Array<Message>) => void) {
+export function observeGroupMessages(
+  groupId: string,
+  callback: (Array<Message>) => void
+): () => void {
   return DatabaseFS.observeGroupMessages(groupId, callback);
 }
 
@@ -197,7 +206,7 @@ export function observeChatMessages(chatId: string, callback: (Array<ChatMessage
   DatabaseFS.observeChatMessages(chatId, callback);
 }
 
-export function observeChat(chatId: string, callback: (Array<Chat>) => void) {
+export function observeChat(chatId: string, callback: (Chat) => void) {
   DatabaseRDB.observeChat(chatId, callback);
 }
 
@@ -233,11 +242,14 @@ export async function joinChat(uid: string, chatId: string) {
   return DatabaseRDB.joinChat(uid, chatId);
 }
 
-/*
-export async function createGroup(data: Group) {
-  return DatabaseRDB.createGroup(data);
+export async function createGroup(
+  groupName: string,
+  groupDescription: string,
+  type: string,
+  orgId: ?string
+): Promise<string> {
+  return DatabaseRDB.createGroup(groupName, groupDescription, type, orgId);
 }
-*/
 
 export async function createChat(data) {
   return DatabaseRDB.createChat(data);

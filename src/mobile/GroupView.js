@@ -27,8 +27,8 @@ import nullthrows from "../common/nullthrows";
 
 export default function GroupView({ groupId }: { groupId: string }): React.Node {
   const dispatch = useDispatch();
-  const debugMode = Debug.isDebugMode();
-  const group = nullthrows(Data.getGroup(groupId), "Group for groupId: " + groupId + " is null");
+  //const group = nullthrows(Data.getGroup(groupId), "Group for groupId: " + groupId + " is null");
+  const group = Data.getGroup(groupId);
   const members = Data.getGroupMemberships(groupId) ?? [];
   const userGroupMembership = Data.getUserGroupMembership(groupId);
   const userInfo = Data.getCurrentUser();
@@ -36,17 +36,13 @@ export default function GroupView({ groupId }: { groupId: string }): React.Node 
   const unreadCount = unreadRootMessages.length;
 
   if (group == null) {
-    if (debugMode) {
-      return (
-        <DebugText
-          text={
-            "Group is null for group_memberships: " + JSON.stringify(userGroupMembership ?? "null")
-          }
-        />
-      );
-    } else {
-      return null;
-    }
+    return (
+      <DebugText
+        text={
+          "Group is null for group_memberships: " + JSON.stringify(userGroupMembership ?? "null")
+        }
+      />
+    );
   }
   return (
     <View
@@ -56,19 +52,19 @@ export default function GroupView({ groupId }: { groupId: string }): React.Node 
         //backgroundColor: "cyan",
       }}
     >
-      {debugMode && (
-        <Text key="debug" style={{ fontSize: 8 }}>
-          {JSON.stringify(
-            {
-              user_group_membership: userGroupMembership?.id,
-              group: group.id,
-              unreadRootMessages: JSON.stringify(unreadRootMessages.map((m) => m.getID())),
-            },
-            null,
-            2
-          )}
-        </Text>
-      )}
+      <DebugText
+        key={"debug1"}
+        text={JSON.stringify(
+          {
+            user_group_membership: userGroupMembership?.id,
+            group: group.id,
+            unreadRootMessages: JSON.stringify(unreadRootMessages.map((m) => m.getID())),
+          },
+          null,
+          2
+        )}
+      />
+      <DebugText key={"debug2"} text={JSON.stringify(group, null, 2)} />
       <TouchableOpacity
         key={group.id}
         style={{

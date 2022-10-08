@@ -210,7 +210,7 @@ export async function createGroup(
   orgId: string
 ): Promise<string> {
   const newReference = await RDB.push(RDB.ref(rdb, "/groups"));
-  await RDB.set(newReference, { groupName, groupDescription, type, orgId });
+  await RDB.set(newReference, { name: groupName, description: groupDescription, type, orgId });
   return newReference.key;
 }
 

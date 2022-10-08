@@ -7,7 +7,7 @@ import * as RD from "./RemoteData";
 import { RemoteData, uninitialized, loading, data, isLoading } from "./RemoteData";
 import type { MainState, RootState } from "./Actions";
 
-import { calculateUnreadChatMessages } from "./ChatMessage";
+import * as ChatMessages from "./ChatMessageData";
 
 import type {
   UserInfo,
@@ -21,7 +21,7 @@ import type {
 } from "./Database";
 import * as Dates from "../common/Date";
 import type { JsTypeString } from "react-native/ReactCommon/hermes/inspector/tools/msggen/src/Converters";
-import ChatMessageInfo from "./ChatMessage";
+import ChatMessageInfo from "./ChatMessageData";
 
 /*
 export type MessageInfo = {
@@ -284,46 +284,6 @@ export function getSuperPublicGroups(): Array<Group> {
     return [];
   }
   return groups.filter((group) => group.type === "super_public");
-}
-
-export function getUserUnreadChatMessageCount(): number {
-  const allChatMessages = getAllUserChatMessages();
-  const unreadMessages = calculateUnreadChatMessages(allChatMessages);
-  return unreadMessages.length;
-}
-
-export function getAllUserChatMessages(): Array<ChatMessageInfo> {
-  const user = getCurrentUser();
-  const { chatMessages, userChatMessagesMap, userMap } = useSelector((state: RootState) => {
-    return {
-      chatMessages: Object.keys(state.main.chatMessagesMap ?? {}).map(
-        (k: string) => state.main.chatMessagesMap?.[k]
-      ),
-      userChatMessagesMap: state.main.userChatMessagesMap,
-      userMap: state.main.userMap,
-    };
-  });
-
-  return useMemo(() => {
-    if (chatMessages != null) {
-      const userChatMessages = [];
-      chatMessages.forEach((message) => {
-        const userChatMessage = userChatMessagesMap[message.id];
-        userChatMessages.push({
-          ...message,
-          userStatus: {
-            status: userChatMessage?.status,
-          },
-          user: {
-            ...userMap[message.uid],
-          },
-        });
-      });
-      return userChatMessages;
-    } else {
-      return [];
-    }
-  }, [chatMessages, userChatMessagesMap, userMap]);
 }
 
 export function getUserGroupMemberships(): Array<GroupMembership> {

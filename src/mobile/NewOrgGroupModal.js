@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React, { useState } from "react";
 import { Modal, Text, View, TextInput } from "react-native";
 import { ToggleButton } from "react-native-paper";
@@ -5,24 +7,18 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Paper from "react-native-paper";
 import * as MyButtons from "./MyButtons";
 
-export default function NewOrgGroupModal({
-  orgId,
-  visible,
-  onCreateGroup,
-  closeModal,
-}) {
+export default function NewOrgGroupModal({ orgId, visible, onCreateGroup, closeModal }) {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
-  const { orgsList, orgsMap, groupList, groupMap, userGroupMemberships } =
-    useSelector((state) => {
-      return {
-        orgsList: state.main.orgsList,
-        orgsMap: state.main.orgsMap,
-        groupList: state.main.groupList,
-        groupMap: state.main.groupMap,
-        userGroupMemberships: state.main.userGroupMemberships,
-      };
-    });
+  const { orgsList, orgsMap, groupList, groupMap, userGroupMemberships } = useSelector((state) => {
+    return {
+      orgsList: state.main.orgsList,
+      orgsMap: state.main.orgsMap,
+      groupList: state.main.groupList,
+      groupMap: state.main.groupMap,
+      userGroupMemberships: state.main.userGroupMemberships,
+    };
+  });
   const [groupName, setGroupName] = useState(null);
   const [processing, setProcessing] = useState(false);
 

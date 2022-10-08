@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import * as Calendar from "expo-calendar";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {

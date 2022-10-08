@@ -15,6 +15,8 @@ export default function Login() {
   const dispatch = useDispatch();
   const isDebugMode = Debug.isDebugMode();
 
+  // @flow strict-local
+
   const [user, loading, error] = useAuthState(auth);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

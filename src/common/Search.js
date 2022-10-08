@@ -1,3 +1,5 @@
+// @flow strict-local
+
 export function buildSearchIndex(orgsMap, groupsMap) {
   const searchWordIndex = {};
   for (const orgId of Object.keys(orgsMap)) {

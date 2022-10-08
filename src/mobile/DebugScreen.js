@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React, { useState } from "react";
 import { SafeAreaView, Text, TextInput, View } from "react-native";
 import JSONTree from "react-native-json-tree";

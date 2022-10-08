@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import * as Actions from "./Actions";
 import { auth, database } from "../../config/firebase";
 import { collection, doc, setDoc, getDoc, onSnapshot } from "firebase/firestore";

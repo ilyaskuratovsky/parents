@@ -478,6 +478,7 @@ export async function createSchoolGroupAndJoin(
   grade: string,
   year: string
 ) {
+  /*
   const groupId = await Database.createGroup({
     name: groupName,
     orgId: schoolId,
@@ -485,6 +486,7 @@ export async function createSchoolGroupAndJoin(
     year,
   });
   await Database.joinGroup(userInfo.uid, groupId);
+  */
 }
 
 export async function createGroupAndJoin(
@@ -501,7 +503,7 @@ export async function createGroupAndJoin(
     type: type,
   };
   Logger.log("controller creating group: " + JSON.stringify(group) + ", type: " + type);
-  const groupId = await Database.createGroup(group);
+  const groupId = await Database.createGroup(groupName, groupDescription, type, null);
   await Database.joinGroup(userInfo.uid, groupId);
   Logger.log("controller created group: " + groupId);
   return groupId;
@@ -541,14 +543,7 @@ export async function createOrgGroup(
   orgType: string /* school or activity */
 ) {
   const orgId = await Database.createOrg(orgName, orgType);
-  const group = {
-    name: orgName,
-    description: orgName,
-    orgId: orgId,
-    type: "default_org_group",
-  };
-  Logger.log("controller creating group: " + JSON.stringify(group));
-  const groupId = await Database.createGroup(group);
+  const groupId = await Database.createGroup(orgName, orgName, "default_org_group", orgId);
 }
 
 export async function markMessageRead(userInfo: UserInfo, messageId: string): Promise<void> {
@@ -586,12 +581,7 @@ export async function createPrivateGroupAndJoin(
   groupName: string,
   groupDescription: string
 ): Promise<string> {
-  const groupId = await Database.createGroup({
-    name: groupName,
-    description: groupDescription,
-    orgId: null,
-    type: "private",
-  });
+  const groupId = await Database.createGroup(groupName, groupDescription, "private", null);
   await Database.joinGroup(userInfo.uid, groupId);
 
   /*
@@ -627,10 +617,7 @@ export async function createOrgGroupAndJoin(
   orgId: string,
   groupName: string
 ) {
-  const groupId = await Database.createGroup({
-    name: groupName,
-    orgId: orgId,
-  });
+  const groupId = await Database.createGroup(groupName, "", "", orgId);
   await Database.joinGroup(userInfo.uid, groupId);
 }
 

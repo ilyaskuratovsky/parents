@@ -1,3 +1,5 @@
+// @flow strict-local
+
 import React from "react";
 import { Text, View, Button, SafeAreaView, FlatList, Dimensions } from "react-native";
 import Actions from "./Actions";
