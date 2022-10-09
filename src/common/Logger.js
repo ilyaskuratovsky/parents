@@ -7,7 +7,7 @@ let filter = (str): boolean => true;
 export const INFO = 1;
 export const DEBUG = 2;
 
-const LOG_LEVEL = DEBUG;
+const LOG_LEVEL = INFO;
 
 export function log(str: string, level?: number = 0) {
   if (filter != null) {

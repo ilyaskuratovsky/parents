@@ -4,7 +4,22 @@ import * as RDB from "firebase/database";
 import { rdb } from "../../config/firebase";
 import * as Logger from "./Logger";
 import type { Org } from "./Database";
-import type { Group, GroupMembership, UserMessage } from "./Database";
+import type {
+  Chat,
+  ChatMembership,
+  ChatMessage,
+  Group,
+  GroupMembership,
+  GroupMembershipRequest,
+  GroupUpdate,
+  Message,
+  UserChatMessage,
+  UserChatMessageUpdate,
+  UserInfo,
+  UserInfoUpdate,
+  UserMessage,
+} from "./Database";
+import nullthrows from "nullthrows";
 
 const observers = {};
 export type ObjectMap<T> = {
@@ -40,31 +55,38 @@ export function observeUserMessages(uid: string, callback: (Array<UserMessage>) 
   });
 }
 
-export function observeUserChatMessages(uid, callback) {
+export function observeUserChatMessages(
+  uid: string,
+  callback: (Array<UserChatMessage>) => void
+): () => void {
   const userMessagesRef = RDB.ref(rdb, "user_chat_messages/" + uid);
-  RDB.onValue(userMessagesRef, (snapshot) => {
+  const unsubscribe = RDB.onValue(userMessagesRef, (snapshot) => {
     const data = snapshot.val();
     const ret = toArray(data);
     callback(ret);
   });
+  return unsubscribe;
 }
 
-export async function updateOrCreateUser(uid, data) {
+export async function updateOrCreateUser(uid: string, data: UserInfoUpdate): Promise<?string> {
   const dbRef = RDB.ref(rdb);
   const userRef = RDB.child(dbRef, "users/" + uid);
   const userSnapshot = await RDB.get(userRef);
   if (userSnapshot.exists()) {
     await RDB.update(userRef, data);
-    return { ...userSnapshot.val(), ...data };
+    const current: UserInfo = { ...userSnapshot.val() };
+    return current.uid;
   } else {
     await RDB.set(userRef, data);
-    return data;
+    return userRef.key;
   }
-  const userInfo = data;
-  return userInfo;
 }
 
-export async function updateUserAddToArrayField(uid, fieldName, value) {
+export async function updateUserAddToArrayField(
+  uid: string,
+  fieldName: string,
+  value: string
+): Promise<void> {
   const dbRef = RDB.ref(rdb);
   const userRef = RDB.child(dbRef, "users/" + uid);
   const userSnapshot = await RDB.get(userRef);
@@ -75,16 +97,17 @@ export async function updateUserAddToArrayField(uid, fieldName, value) {
   await RDB.update(userRef, update);
 }
 
-export function observeUserChanges(uid, callback) {
+export function observeUserChanges(uid: string, callback: (UserInfo) => void): () => void {
   //realtime-database
   const userRef = RDB.ref(rdb, "users/" + uid);
-  RDB.onValue(userRef, (snapshot) => {
+  const unsubscribe = RDB.onValue(userRef, (snapshot) => {
     const userInfo = snapshot.val();
     callback(userInfo);
   });
+  return unsubscribe;
 }
 
-export async function getAllGroups() {
+export async function getAllGroups(): Promise<Array<Group>> {
   /*real-time database */
   const dbRef = RDB.ref(rdb);
   const groups = await RDB.get(RDB.child(dbRef, "groups"));
@@ -103,7 +126,7 @@ export function observeAllGroupChanges(callback: (Array<Group>) => void) {
   });
 }
 
-export async function getAllUsers() {
+export async function getAllUsers(): Promise<Array<UserInfo>> {
   /*real-time database */
   const dbRef = RDB.ref(rdb);
   const users = await RDB.get(RDB.child(dbRef, "users"));
@@ -113,7 +136,7 @@ export async function getAllUsers() {
   return ret;
 }
 
-export function observeAllUserChanges(callback) {
+export function observeAllUserChanges(callback: (Array<UserInfo>) => void) {
   //rdb
   const usersRef = RDB.ref(rdb, "users");
   RDB.onValue(usersRef, (snapshot) => {
@@ -123,7 +146,7 @@ export function observeAllUserChanges(callback) {
   });
 }
 
-export async function getAllGroupMemberships(): Promise<Array<Object>> {
+export async function getAllGroupMemberships(): Promise<Array<GroupMembership>> {
   /*real-time database */
   const dbRef = RDB.ref(rdb);
   const snapshot = await RDB.get(RDB.child(dbRef, "group_memberships"));
@@ -132,14 +155,14 @@ export async function getAllGroupMemberships(): Promise<Array<Object>> {
 }
 
 function observeAllGroupMembershipChangesHelper(
-  callback: (result: Array<{ ... }>) => void,
   uid: string,
-  userCallback: (result: Array<{ ... }>) => void
-) {
+  callback: (Array<GroupMembership>) => void,
+  userCallback: (result: Array<GroupMembership>) => void
+): () => void {
   const ref = RDB.ref(rdb, "group_memberships");
   const unsubscribe = RDB.onValue(ref, (snapshot) => {
     const data = snapshot.val();
-    const ret = toArray(data);
+    const ret = toArray<GroupMembership>(data);
     callback(ret);
     if (uid != null) {
       const userGroupMemberships = ret.filter((groupMembership) => groupMembership.uid == uid);
@@ -152,49 +175,63 @@ function observeAllGroupMembershipChangesHelper(
     userCallback,
     unsubscribe,
   };
+
+  return unsubscribe;
 }
 
 export function observeAllGroupMembershipChanges(callback: (Array<GroupMembership>) => void) {
-  let uid: ?string = null;
+  let uid: string;
   let userCallback = null;
   if (observers["observeAllGroupChanges"] != null) {
-    uid = observers["observeAllGroupChanges"]["uid"];
-    userCallback = observers["observeAllGroupChanges"]["userCallback"];
+    uid = nullthrows(observers["observeAllGroupChanges"]?.["uid"]);
+    userCallback = nullthrows(observers["observeAllGroupChanges"]?.["userCallback"]);
+    observeAllGroupMembershipChangesHelper(uid, callback, userCallback);
   }
-  observeAllGroupMembershipChangesHelper(callback, uid, userCallback);
 }
 
-export function observeUserGroupMemberships(uid, userCallback) {
+export function observeUserGroupMemberships(
+  uid: string,
+  userCallback: (Array<GroupMembership>) => void
+): () => void {
   let callback = null;
-  if (observers["observeAllGroupChanges"] != null) {
-    callback = observers["observeAllGroupChanges"]["callback"];
-  }
-  observeAllGroupMembershipChangesHelper(callback, uid, userCallback);
+  callback = nullthrows(
+    observers["observeAllGroupChanges"]?.["callback"],
+    'DatabaseRDB.js: observers["observeAllGroupChanges"] is null'
+  );
+  return observeAllGroupMembershipChangesHelper(uid, callback, userCallback);
 }
 
-export function observeUserChatMemberships(uid, callback) {
+export function observeUserChatMemberships(
+  uid: string,
+  callback: (Array<ChatMembership>) => void
+): () => void {
   const ref = RDB.ref(rdb, "chat_memberships/" + uid);
   const unsubscribe = RDB.onValue(ref, (snapshot) => {
     const data = snapshot.val();
     const ret = toArray(data);
     callback(ret);
   });
+  return unsubscribe;
 }
 
-export function observeGroupMembershipRequests(groupId, callback) {
+export function observeGroupMembershipRequests(
+  groupId: string,
+  callback: (Array<GroupMembershipRequest>) => void
+): () => void {
   const ref = RDB.ref(rdb, "group_membership_requests/" + groupId);
   const unsubscribe = RDB.onValue(ref, (snapshot) => {
     const data = snapshot.val();
     const ret = toArray(data);
     callback(ret);
   });
+  return unsubscribe;
 }
 
-export function observeGroupMessages(groupId, callback) {}
+export function observeGroupMessages(groupId: string, callback: (Array<Message>) => void) {}
 
-export function observeChatMessages(chatId, callback) {}
+export function observeChatMessages(chatId: string, callback: (Array<ChatMessage>) => void) {}
 
-export function observeChat(chatId, callback) {
+export function observeChat(chatId: string, callback: (Chat) => void) {
   //realtime-database
   const chatRef = RDB.ref(rdb, "chats/" + chatId);
   RDB.onValue(chatRef, (snapshot) => {
@@ -207,7 +244,7 @@ export async function createGroup(
   groupName: string,
   groupDescription: string,
   type: string,
-  orgId: string
+  orgId: ?string
 ): Promise<string> {
   const newReference = await RDB.push(RDB.ref(rdb, "/groups"));
   await RDB.set(newReference, { name: groupName, description: groupDescription, type, orgId });
@@ -220,13 +257,20 @@ export async function joinGroup(uid: string, groupId: string): Promise<string> {
   return newReference.key;
 }
 
-export async function createGroupMembershipRequest(userInfo, groupId) {
+export async function createGroupMembershipRequest(
+  userInfo: UserInfo,
+  groupId: string
+): Promise<?string> {
   const newReference = await RDB.push(RDB.ref(rdb, "/group_membership_requests/" + groupId));
   await RDB.set(newReference, { uid: userInfo.uid, groupId });
   return newReference.key;
 }
 
-export async function deleteGroupMembershipRequest(userInfo, groupId, groupMembershipRequestId) {
+export async function deleteGroupMembershipRequest(
+  userInfo: UserInfo,
+  groupId: string,
+  groupMembershipRequestId: string
+): Promise<void> {
   const docRef = RDB.ref(
     rdb,
     "/group_membership_requests/" + groupId + "/" + groupMembershipRequestId
@@ -234,79 +278,90 @@ export async function deleteGroupMembershipRequest(userInfo, groupId, groupMembe
   await RDB.remove(docRef);
 }
 
-export async function updateGroupMembershipRequest(groupId, groupMembershipRequestId, update) {
+export async function updateGroupMembershipRequest(
+  groupId: string,
+  groupMembershipRequestId: string,
+  update: { ... }
+): Promise<void> {
   const docRef = RDB.ref(
     rdb,
     "/group_membership_requests/" + groupId + "/" + groupMembershipRequestId
   );
   await RDB.update(docRef, update);
 }
-export async function joinOrg(userInfo, orgId) {
+export async function joinOrg(userInfo: UserInfo, orgId: string): Promise<string> {
   const newReference = await RDB.push(RDB.ref(rdb, "/org_memberships"));
   await RDB.set(newReference, { uid: userInfo.uid, orgId });
   return newReference.key;
 }
 
-export async function createChat(data) {
+export async function createChat(data: {
+  organizerUid: string,
+  participantIds: Array<string>,
+}): Promise<string> {
   const newReference = await RDB.push(RDB.ref(rdb, "/chats"));
   await RDB.set(newReference, data);
   return newReference.key;
 }
 
-export async function joinChat(uid, chatId) {
+export async function joinChat(uid: string, chatId: string): Promise<?string> {
   const newReference = await RDB.push(RDB.ref(rdb, "/chat_memberships/" + uid));
   await RDB.set(newReference, { uid: uid, chatId });
   return newReference.key;
 }
 
-export async function createOrg(name, type) {
+export async function createOrg(name: string, type: string): Promise<string> {
   const newReference = await RDB.push(RDB.ref(rdb, "/orgs"));
   await RDB.set(newReference, { name, type });
   return newReference.key;
 }
 
-export async function updateUserGroupMembership(userGroupMembershipId, updateObj) {
+export async function updateUserGroupMembership(userGroupMembershipId: string, updateObj) {
   const docRef = RDB.ref(rdb, "/group_memberships/" + userGroupMembershipId);
   await RDB.update(docRef, updateObj);
 }
 
-export async function updateUserMessage(uid, messageId, update) {
+export async function updateUserMessage(uid, messageId: string, update: { ... }): Promise<void> {
   const docRef = RDB.ref(rdb, "/user_messages/" + uid + "/" + messageId);
   await RDB.update(docRef, update);
 }
 
-export async function updateUserChatMessage(uid, chatMessageId, update) {
+export async function updateUserChatMessage(
+  uid: string,
+  chatMessageId: string,
+  update: UserChatMessageUpdate
+) {
   const docRef = RDB.ref(rdb, "/user_chat_messages/" + uid + "/" + chatMessageId);
   await RDB.update(docRef, update);
 }
 
-export async function updateGroup(groupId, update) {
+export async function updateGroup(groupId: string, update: GroupUpdate) {
   const docRef = RDB.ref(rdb, "/groups/" + groupId);
   await RDB.update(docRef, update);
 }
 
-export async function updateUser(uid, update) {
+export async function updateUser(uid: string, update: { ... }) {
   const docRef = RDB.ref(rdb, "/users/" + uid);
   await RDB.update(docRef, update);
 }
 
-export async function deleteGroupMembership(groupMembershipId) {
+export async function deleteGroupMembership(groupMembershipId: string): Promise<void> {
   Logger.log("deleting group membership: " + groupMembershipId);
   const docRef = RDB.ref(rdb, "/group_memberships/" + groupMembershipId);
   await RDB.remove(docRef);
 }
 
-export async function deleteGroup(groupId) {
+export async function deleteGroup(groupId: string): Promise<void> {
   const docRef = RDB.ref(rdb, "/groups/" + groupId);
   await RDB.remove(docRef);
 }
 
-export async function deleteUser(uid) {
+export async function deleteUser(uid: string): Promise<void> {
   const docRef = RDB.ref(rdb, "/users/" + uid);
   await RDB.remove(docRef);
 }
 
-export async function logError(error, info) {
+export async function logError(error: { stack: string }, info: string): Promise<?string> {
   Logger.log("loggin error to rdb: " + JSON.stringify(error));
   const newReference = await RDB.push(RDB.ref(rdb, "/errors"));
   await RDB.set(newReference, { error: error.toString(), stack: error.stack });

@@ -1,5 +1,13 @@
 // @flow strict-local
-export function toMillis(obj) {
+import moment from "moment";
+
+export type AnyDateType =
+  | {
+      toMillis: () => number,
+    }
+  | number;
+//| Date;
+export function toMillis(obj: AnyDateType): ?number {
   const dt = toDate(obj);
   if (dt == null) {
     return null;
@@ -7,7 +15,7 @@ export function toMillis(obj) {
   return dt.getTime();
 }
 
-export function compare(obj1, obj2) {
+export function compare(obj1: AnyDateType, obj2: AnyDateType): number {
   if (obj1 == null && obj2 == null) {
     return 0;
   } else if (obj2 == null) {
@@ -19,15 +27,15 @@ export function compare(obj1, obj2) {
   const dt1 = toDate(obj1);
   const dt2 = toDate(obj2);
 
-  if (dt1.getTime() > dt2.getTime()) {
+  if ((dt1?.getTime() ?? 0) > (dt2?.getTime() ?? 0)) {
     return 1;
-  } else if (dt2.getTime() > dt1.getTime()) {
+  } else if ((dt2?.getTime() ?? 0) > (dt1?.getTime() ?? 0)) {
     return -1;
   } else {
     return 0;
   }
 }
-export function toDate(obj) {
+export function toDate(obj: AnyDateType): ?Date {
   if (obj == null) {
     return null;
   }
@@ -36,6 +44,7 @@ export function toDate(obj) {
   }
 
   if (typeof obj.toMillis === "function") {
+    /* $FlowExpectedError */
     const millis = obj.toMillis();
     return new Date(millis);
   }
@@ -46,10 +55,10 @@ export function toDate(obj) {
       return m.toDate();
     }
   } catch (e) {}
-  throw "not able to parse date: " + JSON.stringify(obj);
+  throw "not able to parse date " + JSON.stringify(obj);
 }
 
-export function roundToNearest(date, nearest = 15) {
+export function roundToNearest(date: Date, nearest: number = 15): Date {
   const ms = 1000 * 60 * nearest;
 
   return new Date(Math.ceil(date.getTime() / ms) * ms);

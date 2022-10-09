@@ -1,6 +1,7 @@
 // @flow strict-local
 
-import React, { useState } from "react";
+import * as React from "react";
+import { useState } from "react";
 import {
   Modal,
   SafeAreaView,
@@ -24,23 +25,32 @@ import * as Data from "../common/Data";
 import Portal from "./Portal";
 import TabView from "./TabView";
 import * as Controller from "../common/Controller";
+import nullthrows from "nullthrows";
 
-export default function NewGroupModal({ scheme, parentGroupId }) {
+type Props = {
+  parentGroupId: string,
+};
+export default function NewGroupModal({ parentGroupId }: Props): React.Node {
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
-  let parentGroup = Data.getGroup(parentGroupId);
+  let parentGroup = nullthrows(
+    Data.getGroup(parentGroupId),
+    `NewGroupModal.js: group is null for parentGroupId: $parentGroupId`
+  );
   const rootGroup = Data.getRootGroup();
-
   if (parentGroupId == null) {
-    parentGroup = rootGroup;
+    parentGroup = nullthrows(rootGroup, `NewGroupModal.js: Root group is null`);
   }
 
-  const org = parentGroup != null ? Data.getOrg(parentGroup.orgId) : null;
+  const org = nullthrows(
+    Data.getOrg(parentGroup.orgId ?? ""),
+    `NewGroupModal.js: Org is null for orgId: $parentGroup.orgId`
+  );
   const orgId = org?.id;
   const debugMode = Debug.isDebugMode();
 
   const [groupType, setGroupType] = useState();
-  const [selectedScheme, setSelectedScheme] = useState(scheme);
+  const [selectedScheme, setSelectedScheme] = useState(null);
   const [groupOrgId, setGroupOrgId] = useState(orgId);
   const [groupName, setGroupName] = useState(null);
   const [groupDescription, setGroupDescription] = useState(null);
@@ -783,7 +793,7 @@ function Email() {
     <View
       style={{
         flex: 1,
-        flexDirection: "columns",
+        flexDirection: "column",
         marginTop: 20,
         paddingLeft: 10,
         paddingRight: 10,

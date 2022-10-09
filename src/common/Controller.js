@@ -32,9 +32,9 @@ const chatSubscriptions = {};
 let loggedInUnsubscribe;
 
 export async function initializeApp(
-  dispatch: (?mixed) => void,
-  notificationListener: ({ ... }) => void,
-  responseListener: ({ ... }) => void
+  dispatch: (?mixed) => void
+  //notificationListener: ({ ... }) => void,
+  //responseListener: ({ ... }) => void
 ): Promise<{ ... }> {
   Logger.log("initializing App");
   const orgs = await Database.getAllOrgs();

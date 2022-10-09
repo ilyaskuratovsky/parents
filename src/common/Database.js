@@ -2,6 +2,7 @@
 
 import * as DatabaseRDB from "./DatabaseRDB";
 import * as DatabaseFS from "./DatabaseFS";
+import type { AnyDateType } from "./Date";
 
 export type UserInfo = {
   uid: string,
@@ -15,6 +16,18 @@ export type UserInfo = {
   ...
 };
 
+export type UserInfoUpdate = {
+  uid?: string,
+  displayName?: ?string,
+  firstName?: ?string,
+  lastName?: ?string,
+  email?: ?string,
+  image?: ?string,
+  superUser?: ?boolean,
+  profileInitialized?: ?boolean,
+  ...
+};
+
 export type Group = {
   id: string,
   type: string,
@@ -22,6 +35,15 @@ export type Group = {
   description: ?string,
   parentGroupId: ?string,
   orgId: ?string,
+  ...
+};
+
+export type GroupUpdate = {
+  type?: string,
+  name?: string,
+  description?: ?string,
+  parentGroupId?: ?string,
+  orgId?: ?string,
   ...
 };
 
@@ -40,9 +62,15 @@ export type Message = {
   timestamp: number,
   papaId: string,
   uid: string,
+  event: ?MessageEvent,
   poll: ?Array<{ name: string }>,
   poll_response: ?{ ... },
   ...
+};
+
+export type MessageEvent = {
+  start: AnyDateType,
+  end: AnyDateType,
 };
 
 export type UserMessage = {
@@ -51,10 +79,23 @@ export type UserMessage = {
   ...
 };
 
+export type UserMessageUpdate = {
+  status?: string,
+  ...
+};
+
 export type GroupMembership = {
   id: string,
   uid: string,
   groupId: string,
+  lastViewedMessageTimestamp: number,
+  ...
+};
+
+export type GroupMembershipUpdate = {
+  uid?: string,
+  groupId?: string,
+  lastViewedMessageTimestamp?: number,
   ...
 };
 
@@ -77,6 +118,14 @@ export type UserChatMessage = {
   ...
 };
 
+export type UserChatMessageUpdate = {
+  id: string,
+  userStatus?: {
+    status: string,
+  },
+  ...
+};
+
 export type ChatMembership = {
   id: string,
   chatId: string,
@@ -85,6 +134,12 @@ export type ChatMembership = {
 
 export type UserInvite = {
   id: string,
+  status: ?string,
+  ...
+};
+
+export type UserInviteUpdate = {
+  status?: ?string,
   ...
 };
 
@@ -130,11 +185,11 @@ export function observeUserMessages(
 export function observeUserChatMessages(
   uid: string,
   callback: (snapshot: Array<UserChatMessage>) => void
-): void {
+): () => void {
   return DatabaseRDB.observeUserChatMessages(uid, callback);
 }
 
-export async function updateOrCreateUser(uid: string, data: { ... }): Promise<UserInfo> {
+export async function updateOrCreateUser(uid: string, data: UserInfoUpdate): Promise<?string> {
   return DatabaseRDB.updateOrCreateUser(uid, data);
 }
 
@@ -146,7 +201,7 @@ export async function updateUserAddToArrayField(
   return DatabaseRDB.updateUserAddToArrayField(uid, fieldName, value);
 }
 
-export function observeUserChanges(uid: string, callback: (UserInfo) => void): void {
+export function observeUserChanges(uid: string, callback: (UserInfo) => void): () => void {
   return DatabaseRDB.observeUserChanges(uid, callback);
 }
 
@@ -177,21 +232,21 @@ export function observeAllGroupMembershipChanges(callback: (Array<GroupMembershi
 export function observeUserGroupMemberships(
   uid: string,
   callback: (Array<GroupMembership>) => void
-) {
+): () => void {
   return DatabaseRDB.observeUserGroupMemberships(uid, callback);
 }
 
 export function observeGroupMembershipRequests(
   groupId: string,
   callback: (Array<GroupMembershipRequest>) => void
-) {
+): () => void {
   return DatabaseRDB.observeGroupMembershipRequests(groupId, callback);
 }
 
 export function observeUserChatMemberships(
   uid: string,
   callback: (Array<ChatMembership>) => void
-): ?string {
+): () => void {
   return DatabaseRDB.observeUserChatMemberships(uid, callback);
 }
 
@@ -214,7 +269,10 @@ export async function joinGroup(uid: string, groupId: string): Promise<string> {
   return DatabaseRDB.joinGroup(uid, groupId);
 }
 
-export async function createGroupMembershipRequest(userInfo: UserInfo, groupId: string) {
+export async function createGroupMembershipRequest(
+  userInfo: UserInfo,
+  groupId: string
+): Promise<?string> {
   return DatabaseRDB.createGroupMembershipRequest(userInfo, groupId);
 }
 
@@ -222,7 +280,7 @@ export async function deleteGroupMembershipRequest(
   userInfo: UserInfo,
   groupId: string,
   groupMembershipRequestId: string
-) {
+): Promise<void> {
   return DatabaseRDB.deleteGroupMembershipRequest(userInfo, groupId, groupMembershipRequestId);
 }
 
@@ -230,15 +288,15 @@ export async function updateGroupMembershipRequest(
   groupId: string,
   groupMembershipRequestId: string,
   update: { ... }
-) {
+): Promise<void> {
   return DatabaseRDB.updateGroupMembershipRequest(groupId, groupMembershipRequestId, update);
 }
 
-export async function joinOrg(userInfo: UserInfo, orgId: string) {
+export async function joinOrg(userInfo: UserInfo, orgId: string): Promise<string> {
   return DatabaseRDB.joinOrg(userInfo, orgId);
 }
 
-export async function joinChat(uid: string, chatId: string) {
+export async function joinChat(uid: string, chatId: string): Promise<?string> {
   return DatabaseRDB.joinChat(uid, chatId);
 }
 
@@ -251,75 +309,125 @@ export async function createGroup(
   return DatabaseRDB.createGroup(groupName, groupDescription, type, orgId);
 }
 
-export async function createChat(data) {
+export async function createChat(data: {
+  organizerUid: string,
+  participantIds: Array<string>,
+}): Promise<string> {
   return DatabaseRDB.createChat(data);
 }
 
-export async function updateGroup(groupId, data) {
+export async function updateGroup(groupId: string, data: GroupUpdate): Promise<void> {
   return DatabaseRDB.updateGroup(groupId, data);
 }
 
-export async function sendMessage(groupId, uid, title, text, data, papaId, notificationInfo) {
+export async function sendMessage(
+  groupId: string,
+  uid: string,
+  title: string,
+  text: string,
+  data: { ... },
+  papaId: string,
+  notificationInfo: {
+    groupName: string,
+    fromName: string,
+  }
+): Promise<string> {
   return DatabaseFS.sendMessage(groupId, uid, title, text, data, papaId, notificationInfo);
 }
 
-export async function sendChatMessage(chatId, uid, text, data, papaId, notificationInfo) {
+export async function sendChatMessage(
+  chatId: string,
+  uid: string,
+  text: string,
+  data: { ... },
+  papaId: string,
+  notificationInfo: {
+    groupName: string,
+    fromName: string,
+  }
+): Promise<string> {
   return DatabaseFS.sendChatMessage(chatId, uid, text, data, papaId, notificationInfo);
 }
 
-export async function createOrg(name, type) {
+export async function createOrg(name: string, type: string): Promise<string> {
   return DatabaseRDB.createOrg(name, type);
 }
 
-export async function createInvite(fromUid, groupId, uid, email) {
+export async function createInvite(
+  fromUid: string,
+  groupId: string,
+  uid: string,
+  email: string
+): Promise<void> {
   return DatabaseFS.createInvite(fromUid, groupId, uid, email);
 }
 
-export async function createEvent(uid, groupId, title, text, startDate, endDate) {
+export async function createEvent(
+  uid: string,
+  groupId: string,
+  title: string,
+  text: string,
+  startDate: string,
+  endDate: string
+): Promise<string> {
   return DatabaseFS.createEvent(uid, groupId, title, text, startDate, endDate);
 }
 
-export function observeToUserInvites(toUid, toEmail, callback) {
+export function observeToUserInvites(
+  toUid: string,
+  toEmail: string,
+  callback: (UserInvite) => void
+): () => void {
   return DatabaseFS.observeToUserInvites(toUid, toEmail, callback);
 }
 
-export async function observeFromUserInvites(toUid, callback) {
+export function observeFromUserInvites(
+  toUid: string,
+  callback: (Array<UserInvite>) => void
+): () => void {
   return DatabaseFS.observeFromUserInvites(toUid, callback);
 }
 
-export async function updateInvite(inviteId, update) {
+export async function updateInvite(inviteId: string, update: UserInviteUpdate): Promise<void> {
   DatabaseFS.updateInvite(inviteId, update);
 }
 
-export async function updateUserGroupMembership(userGroupMembershipId, update) {
+export async function updateUserGroupMembership(
+  userGroupMembershipId: string,
+  update: GroupMembershipUpdate
+): Promise<void> {
   DatabaseRDB.updateUserGroupMembership(userGroupMembershipId, update);
 }
 
-export async function updateUserMessage(uid, messageId, update) {
+export async function updateUserMessage(uid: string, messageId: string, update: UserMessageUpdate) {
   DatabaseRDB.updateUserMessage(uid, messageId, update);
 }
 
-export async function updateUserChatMessage(uid, chatMessageId, update) {
+export async function updateUserChatMessage(
+  uid: string,
+  chatMessageId: string,
+  update: UserChatMessageUpdate
+) {
   DatabaseRDB.updateUserChatMessage(uid, chatMessageId, update);
 }
 
-export async function updateUser(userId, update) {
+export async function updateUser(userId: string, update: UserInfoUpdate): Promise<void> {
   DatabaseRDB.updateUser(userId, update);
 }
 
-export async function deleteGroupMembership(groupMembershipId) {
+export async function deleteGroupMembership(groupMembershipId: string): Promise<void> {
   DatabaseRDB.deleteGroupMembership(groupMembershipId);
 }
 
-export async function deleteUser(uid) {
+export async function deleteUser(uid: string) {
   DatabaseRDB.deleteUser(uid);
 }
 
-export async function deleteGroup(groupId) {
+export async function deleteGroup(groupId: string) {
   DatabaseRDB.deleteGroup(groupId);
 }
 
-export async function logError(error, info) {
+export async function logError(error: { stack: string }, info: string): Promise<void> {
   DatabaseRDB.logError(error, info);
 }
 

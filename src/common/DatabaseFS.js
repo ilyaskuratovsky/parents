@@ -15,7 +15,15 @@ import {
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import * as Logger from "./Logger";
-import type { ChatMessage, Message, UserInfo } from "./Database";
+import type {
+  ChatMessage,
+  Group,
+  GroupMembership,
+  Message,
+  UserInfo,
+  UserInvite,
+  UserInviteUpdate,
+} from "./Database";
 import nullthrows from "nullthrows";
 
 //import Firebase from "firebase";
@@ -75,15 +83,27 @@ export async function updateOrCreateUser(uid: string, data: UserInfo): Promise<U
   return userInfo;
 }
 
-export function observeUserChanges(uid: string, callback) {
+export function observeUserChanges(uid: string, callback: (UserInfo) => void) {
   //firebase
   const userDocRef = doc(db, "users", uid);
   onSnapshot(
     userDocRef,
     (doc) => {
       const data = doc.data();
-      userInfo = { id: doc.id, ...data };
-      callback(userInfo);
+      const user = {
+        id: doc.id,
+        uid: doc.uid,
+        displayName: doc.displayName,
+        firstName: doc.firstName,
+        lastName: doc.lastName,
+        email: doc.email,
+        image: doc.image,
+        superUser: doc.superUser,
+        profileInitialized: doc.profileInitialized,
+
+        ...data,
+      };
+      callback(user);
     },
     (err) => {
       Logger.log("encountered error");
@@ -91,7 +111,7 @@ export function observeUserChanges(uid: string, callback) {
   );
 }
 
-export async function getAllGroups() {
+export async function getAllGroups(): Promise<Group> {
   const groupsSnapshot = await getDocs(collection(db, "groups"));
   const groups = [];
   groupsSnapshot.forEach((doc) => {
@@ -100,7 +120,7 @@ export async function getAllGroups() {
   return groups;
 }
 
-export function observeAllGroupChanges(callback) {
+export function observeAllGroupChanges(callback: (Array<Group>) => void) {
   //rdb
   const groupsCollectionRef = collection(db, "groups");
   onSnapshot(groupsCollectionRef, (groupsSnapshot) => {
@@ -110,6 +130,7 @@ export function observeAllGroupChanges(callback) {
       groupDocs.push({
         id: group.id,
         name: data.name,
+        description: data.description,
         schoolId: data.schoolId,
       });
     });
@@ -117,16 +138,29 @@ export function observeAllGroupChanges(callback) {
   });
 }
 
-export async function getAllUsers() {
+export async function getAllUsers(): Promise<Array<UserInfo>> {
   const usersSnapshot = await getDocs(collection(db, "users"));
   const users = [];
-  usersSnapshot.forEach((doc) => {
-    users.push({ id: doc.id, ...doc.data() });
+  usersSnapshot.forEach((data) => {
+    const user = {
+      id: doc.id,
+      uid: doc.uid,
+      displayName: doc.displayName,
+      firstName: doc.firstName,
+      lastName: doc.lastName,
+      email: doc.email,
+      image: doc.image,
+      superUser: doc.superUser,
+      profileInitialized: doc.profileInitialized,
+
+      ...data,
+    };
+    users.push(user);
   });
-  return groups;
+  return users;
 }
 
-export function observeAllUserChanges(callback) {
+export function observeAllUserChanges(callback: (Array<UserInfo>) => void) {
   //rdb
   const usersRef = collection(db, "users");
   onSnapshot(usersRef, (usersSnapshot) => {
@@ -142,7 +176,7 @@ export function observeAllUserChanges(callback) {
   });
 }
 
-export async function getAllGroupMemberships() {
+export async function getAllGroupMemberships(): Array<GroupMembership> {
   const groupMembershipsSnapshot = await getDocs(collection(db, "group_memberships"));
   const group_memberships = [];
   groupMembershipsSnapshot.forEach((doc) => {
@@ -151,7 +185,7 @@ export async function getAllGroupMemberships() {
   return group_memberships;
 }
 
-export function observeAllGroupMembershipChanges(callback) {
+export function observeAllGroupMembershipChanges(callback: (Array<GroupMembership>) => void) {
   //rdb
   const ref = collection(db, "group_memberships");
   onSnapshot(usersRef, (snapshot) => {
@@ -205,7 +239,10 @@ export function observeToUserInvites(toUid, toEmail, callback) {
   return unsubscribe;
 }
 
-export function observeFromUserInvites(fromUid, callback) {
+export function observeFromUserInvites(
+  fromUid: string,
+  callback: (Array<UserInvite>) => void
+): () => void {
   const snapshotQuery = query(
     collection(db, "invites"),
     where("fromUid", "==", fromUid),
@@ -338,7 +375,12 @@ export async function sendChatMessage(
   return await addDoc(messagesRef, message);
 }
 
-export async function createInvite(fromUid: string, groupId: string, uid: string, email: string) {
+export async function createInvite(
+  fromUid: string,
+  groupId: string,
+  uid: string,
+  email: string
+): Promise<void> {
   Logger.log("creating invite");
   const invitesRef = collection(db, "invites");
   const timestamp = serverTimestamp();
@@ -359,7 +401,7 @@ export async function createEvent(
   text: string,
   startDate: string,
   endDate: string
-) {
+): Promise<string> {
   Logger.log(
     "create event: " +
       uid +
@@ -385,7 +427,7 @@ export async function createEvent(
   return event.id;
 }
 
-export async function updateInvite(inviteId, update) {
+export async function updateInvite(inviteId: string, update: UserInviteUpdate) {
   const docRef = doc(collection(db, "invites"), inviteId);
   await setDoc(docRef, update, { merge: true });
 }

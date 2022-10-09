@@ -3,7 +3,7 @@
 import { useSelector } from "react-redux";
 import * as Logger from "./Logger";
 import * as Dates from "./Date";
-import type { Group, Message, UserInfo, UserMessage, ChatMessage } from "./Database";
+import type { Group, Message, UserInfo, UserMessage, ChatMessage, MessageEvent } from "./Database";
 import * as Data from "./Data";
 import type { MainState, RootState } from "./Actions";
 
@@ -172,7 +172,7 @@ export default class RootMessage {
     if (this.rootMessage.timestamp == null) {
       return null;
     }
-    return new Dates.toDate(this.rootMessage.timestamp);
+    return Dates.toDate(this.rootMessage.timestamp);
   }
 
   getLastUpdated(): ?Date {
@@ -232,6 +232,18 @@ export default class RootMessage {
     }
     //return poll_response;
     return null;
+  }
+
+  getEvent(): ?MessageEvent {
+    return this.rootMessage.event;
+  }
+
+  getEventSummary(): ?{ acceptedCount: number, declinedCount: number, notRespondedCount: number } {
+    return {
+      acceptedCount: 0,
+      declinedCount: 0,
+      notRespondedCount: 0,
+    };
   }
 
   getPollSummary(): ?{ ... } {

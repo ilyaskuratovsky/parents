@@ -92,7 +92,8 @@ function RootApp(props: {}, state: RootState): React.Node {
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        await Controller.initializeApp(dispatch, notificationListener, responseListener);
+        //await Controller.initializeApp(dispatch, notificationListener, responseListener);
+        await Controller.initializeApp(dispatch);
       } catch (error) {
         dispatch(Actions.goToScreen({ screen: "ERROR", error }));
       }
@@ -195,7 +196,7 @@ function RootApp(props: {}, state: RootState): React.Node {
 
   Logger.log(
     "root app rendering: modal: " +
-      modal +
+      (modal ?? "null") +
       "(" +
       JSON.stringify(modalWithParams, null, 2) +
       "), stack: " +
@@ -224,7 +225,7 @@ function RootApp(props: {}, state: RootState): React.Node {
       {modal === "GROUP_SETTINGS" && <GroupSettingsModal {...modalWithParams} />}
       {modal === "NEW_GROUP" && <NewGroupModal {...modalWithParams} />}
       {(modal === "GROUP" || modal == "SCHOOL_GROUP") && (
-        <GroupScreenContainer key={modalWithParams["groupId"]} {...modalWithParams} />
+        <GroupScreenContainer key={modalWithParams?.["groupId"]} {...modalWithParams} />
       )}
       {modal === "MESSAGES" && <MessageModal {...modalWithParams} />}
       {modal === "MESSAGE_POLL" && <MessagePollModal {...modalWithParams} />}
