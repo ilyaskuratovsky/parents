@@ -42,63 +42,52 @@ import * as Message from "../common/MessageData";
 import * as Debug from "../common/Debug";
 import * as Actions from "../common/Actions";
 import * as Logger from "../common/Logger";
+import * as MessageData from "../common/MessageData";
+import nullthrows from "nullthrows";
 
-export default function EventModalContainer({ messageId }) {
-  const [loading, message] = Data.getRootMessageWithChildrenAndUserStatus(messageId);
-  if (loading) {
-    return <Loading />;
-  }
+type Props = {
+  messageId: string,
+};
+export default function EventModalContainer({ messageId }: Props) {
+  const message = nullthrows(
+    MessageData.getRootMessage(messageId),
+    "EventModalContainer.js: message is null for id: " + messageId
+  );
   return <EventModal message={message} />;
 }
 
 function EventModal({ message }) {
   const dispatch = useDispatch();
-  const group = Data.getGroup(message.groupId);
+  const group = nullthrows(Data.getGroup(message.getGroupId()));
   const user = Data.getCurrentUser();
-  Logger.log("EventModal - messageId: " + messageId);
 
-  const sortedChildMessages = [...message.children] ?? [];
+  const sortedChildMessages = [...message.getChildren()] ?? [];
   sortedChildMessages.sort((m1, m2) => {
-    return m1.timestamp - m2.timestamp;
+    return (m1.getTimestamp()?.getTime() ?? 0) - (m2.getTimestamp()?.getTime() ?? 0);
     //return 0;
   });
 
-  const event = message.event;
-  const eventStart = moment(event.start).toDate();
-  const eventEnd = moment(event.end).toDate();
+  const event = message.getEvent();
+  const eventStart = Dates.toDate(event?.start);
+  const eventEnd = Dates.toDate(event?.end);
 
   const childMessages = sortedChildMessages;
   let currentUserStatus = null;
   const currentUserStatusArr = childMessages.filter((m) => {
-    Logger.log(
-      "userInfo.uid: " +
-        user.uid +
-        ", m.uid: " +
-        m.uid +
-        ", m.event.eventResponse: " +
-        m.event?.eventResponse
-    );
-    return m.uid == user.uid && !Utils.isEmptyString(m.event?.eventResponse);
+    return m.getUserInfo()?.uid == user.uid && !Utils.isEmptyString(m.getEventResponse());
   });
-  Logger.log(
-    "currentUserSTatusArr: " +
-      JSON.stringify(currentUserStatusArr) +
-      ", childMessages: " +
-      JSON.stringify(childMessages)
-  );
   if (currentUserStatusArr.length > 0) {
-    currentUserStatus = currentUserStatusArr[currentUserStatusArr.length - 1].event?.eventResponse;
+    currentUserStatus = currentUserStatusArr[currentUserStatusArr.length - 1].getEventResponse();
   }
-  Logger.log("currentUserStatus: " + currentUserStatus);
 
   const sendEventReply = useCallback(async (eventResponse, text) => {
-    const groupName = group.name;
+    const groupName = group?.name;
     const fromName = UserInfo.chatDisplayName(user);
     setText("");
     await Controller.sendMessage(
       dispatch,
       user,
-      group.id,
+      group?.id,
       null, //title
       text,
       { eventResponse },

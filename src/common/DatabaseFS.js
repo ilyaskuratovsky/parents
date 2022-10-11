@@ -20,6 +20,7 @@ import type {
   Group,
   GroupMembership,
   Message,
+  NotificationInfo,
   UserInfo,
   UserInvite,
   UserInviteUpdate,
@@ -111,7 +112,7 @@ export function observeUserChanges(uid: string, callback: (UserInfo) => void) {
   );
 }
 
-export async function getAllGroups(): Promise<Group> {
+export async function getAllGroups(): Promise<Array<Group>> {
   const groupsSnapshot = await getDocs(collection(db, "groups"));
   const groups = [];
   groupsSnapshot.forEach((doc) => {
@@ -129,9 +130,12 @@ export function observeAllGroupChanges(callback: (Array<Group>) => void) {
       const data = group.data();
       groupDocs.push({
         id: group.id,
+        type: data.type,
         name: data.name,
         description: data.description,
         schoolId: data.schoolId,
+        orgId: data.orgId,
+        parentGroupId: data.parentGroupId,
       });
     });
     callback(groupDocs);
@@ -175,7 +179,7 @@ export function observeAllUserChanges(callback: (Array<UserInfo>) => void) {
     callback(users);
   });
 }
-
+/*
 export async function getAllGroupMemberships(): Array<GroupMembership> {
   const groupMembershipsSnapshot = await getDocs(collection(db, "group_memberships"));
   const group_memberships = [];
@@ -184,7 +188,9 @@ export async function getAllGroupMemberships(): Array<GroupMembership> {
   });
   return group_memberships;
 }
+*/
 
+/*
 export function observeAllGroupMembershipChanges(callback: (Array<GroupMembership>) => void) {
   //rdb
   const ref = collection(db, "group_memberships");
@@ -200,7 +206,9 @@ export function observeAllGroupMembershipChanges(callback: (Array<GroupMembershi
     callback(arr);
   });
 }
+*/
 
+/*
 export function observeUserGroupMemberships(uid, callback) {
   const snapshotQuery = query(collection(db, "group_memberships"), where("uid", "==", uid));
 
@@ -211,8 +219,13 @@ export function observeUserGroupMemberships(uid, callback) {
     callback(list);
   });
 }
+*/
 
-export function observeToUserInvites(toUid, toEmail, callback) {
+export function observeToUserInvites(
+  toUid: string,
+  toEmail: string,
+  callback: (Array<UserInvite>) => void
+): () => void {
   const snapshotQuery = query(
     collection(db, "invites"),
     where("toUid", "in", ["_uid_" + toUid, "_email_" + toEmail]),
@@ -226,7 +239,12 @@ export function observeToUserInvites(toUid, toEmail, callback) {
         const toUidStr = data.toUid;
         const filter = toUidStr == "_uid_" + toUid || toUidStr == "_email_" + toEmail;
         Logger.log(
-          "userinvite snapshot: " + toUid + ", toUidStr: " + toUidStr + ", filter: " + filter
+          "userinvite snapshot: " +
+            toUid +
+            ", toUidStr: " +
+            toUidStr +
+            ", filter: " +
+            (filter ? "true" : "false")
         );
         return filter;
       })
@@ -333,11 +351,11 @@ export async function createGroup(data: mixed) {
 export async function sendMessage(
   groupId: string,
   uid: string,
-  title: string,
+  title: ?string,
   text: string,
   data: mixed,
-  papaId: string,
-  notificationInfo: { ... }
+  papaId: ?string,
+  notificationInfo: ?NotificationInfo
 ): Promise<string> {
   const message = {
     uid: uid,
@@ -359,7 +377,7 @@ export async function sendChatMessage(
   uid: string,
   text: string,
   data: mixed,
-  papaId: string,
+  papaId: ?string,
   notificationInfo: mixed
 ): Promise<string> {
   const message = {
@@ -378,8 +396,8 @@ export async function sendChatMessage(
 export async function createInvite(
   fromUid: string,
   groupId: string,
-  uid: string,
-  email: string
+  uid: ?string,
+  email: ?string
 ): Promise<void> {
   Logger.log("creating invite");
   const invitesRef = collection(db, "invites");
@@ -387,7 +405,7 @@ export async function createInvite(
   const group = await addDoc(invitesRef, {
     fromUid,
     groupId,
-    toUid: uid != null ? "_uid_" + uid : "_email_" + email,
+    toUid: uid != null ? "_uid_" + uid : "_email_" + (email ?? "null"),
     status: "new",
     created: timestamp,
   });

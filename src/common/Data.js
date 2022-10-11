@@ -3,8 +3,6 @@
 import { useSelector } from "react-redux";
 import { useEffect, useMemo } from "react";
 import { ROOT_GROUP_ID } from "../../config/firebase";
-import * as RD from "./RemoteData";
-import { RemoteData, uninitialized, loading, data, isLoading } from "./RemoteData";
 import type { MainState, RootState } from "./Actions";
 
 import * as ChatMessages from "./ChatMessageData";

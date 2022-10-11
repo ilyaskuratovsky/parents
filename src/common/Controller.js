@@ -16,9 +16,15 @@ import { storage } from "../../config/firebase";
 import { getDownloadURL, ref, uploadBytes, uploadString } from "firebase/storage";
 import { useSelector } from "react-redux";
 import { createGroup } from "./DatabaseRDB";
-import { data, loading } from "./RemoteData";
 import * as Data from "./Data";
-import type { ChatMessage, Group, GroupMembershipRequest, UserInfo } from "./Database";
+import type {
+  ChatMessage,
+  Group,
+  GroupMembershipRequest,
+  GroupUpdate,
+  NotificationInfo,
+  UserInfo,
+} from "./Database";
 import { useEffect } from "react";
 import * as Messages from "./MessageData";
 import type { ScreenState, Screen } from "./Actions";
@@ -201,13 +207,7 @@ export async function loggedIn(
   Logger.log("Logged In: " + JSON.stringify(authenticatedUser), Logger.INFO);
   const uid = authenticatedUser.uid;
 
-  let userData: {
-    uid: string,
-    displayName: string,
-    photoURL: string,
-    email: string,
-    pushToken: ?string,
-  } = {
+  let userData = {
     uid,
     displayName: authenticatedUser.displayName,
     photoURL: authenticatedUser.photoURL,
@@ -218,7 +218,8 @@ export async function loggedIn(
     userData = { pushToken, ...userData };
   }
 
-  const userInfo = await Database.updateOrCreateUser(uid, userData);
+  await Database.updateOrCreateUser(uid, userData);
+  const userInfo = nullthrows(await Data.getUser(uid));
   //observe user changes
   Database.observeUserChanges(uid, (userInfo) => {
     Logger.log("OBSERVE: UserChanges: ", Logger.INFO);
@@ -303,15 +304,18 @@ export async function loggedIn(
   });
 
   // observe invites
-  const userInvitesUnsubscribe = Database.observeToUserInvites(
-    userInfo.uid,
-    userInfo.email,
-    (invites) => {
-      Logger.log("OBSERVE: ToUserInvites: " + invites.length, Logger.INFO);
-      dispatch(Actions.toUserInvites(invites));
-      Logger.log("observe_callback[end]: observeToUserInvites");
-    }
-  );
+  let userInvitesUnsubscribe: ?() => void = null;
+  if (userInfo.email != null) {
+    userInvitesUnsubscribe = Database.observeToUserInvites(
+      userInfo.uid,
+      userInfo.email,
+      (invites) => {
+        Logger.log("OBSERVE: ToUserInvites: " + invites.length, Logger.INFO);
+        dispatch(Actions.toUserInvites(invites));
+        Logger.log("observe_callback[end]: observeToUserInvites");
+      }
+    );
+  }
 
   Database.observeFromUserInvites(userInfo.uid, (invites) => {
     Logger.log("OBSERVE: FromUserInvites: " + invites.length, Logger.INFO);
@@ -328,7 +332,9 @@ export async function loggedIn(
 
   Logger.log("Logged in complete");
   const unsubscribe = () => {
-    userInvitesUnsubscribe();
+    if (userInvitesUnsubscribe != null) {
+      userInvitesUnsubscribe();
+    }
   };
   return unsubscribe;
 }
@@ -627,19 +633,19 @@ export async function sendMessage(
   dispatch: (?{ ... }) => void,
   userInfo: UserInfo,
   groupId: string,
-  title: string,
+  title: ?string,
   text: string,
   data: ?{ ... },
   papaId: ?string,
-  notificationInfo: ?{ ... }
+  notificationInfo: ?NotificationInfo
 ): Promise<string> {
   return await Database.sendMessage(
     groupId,
     userInfo.uid,
-    title == undefined ? null : title,
+    title,
     text,
     data,
-    papaId == undefined ? null : papaId,
+    papaId,
     notificationInfo
   );
 }
@@ -650,7 +656,7 @@ export async function sendReply(
   groupId: string,
   text: string,
   papaId: ?string,
-  notificationInfo: ?{ ... }
+  notificationInfo: ?NotificationInfo
 ): Promise<string> {
   return await Database.sendMessage(
     groupId,
@@ -669,17 +675,10 @@ export async function sendChatMessage(
   chatId: string,
   text: string,
   papaId: ?string,
-  notificationInfo: ?{ ... }
+  notificationInfo: ?NotificationInfo
 ): Promise<string> {
   //export async function sendChatMessage(chatId, uid, text, data, papaId, notificationInfo) {
-  return await Database.sendChatMessage(
-    chatId,
-    userInfo.uid,
-    text,
-    null,
-    papaId == undefined ? null : papaId,
-    notificationInfo
-  );
+  return await Database.sendChatMessage(chatId, userInfo.uid, text, null, papaId, notificationInfo);
 }
 
 export async function sendEventReply(
@@ -689,7 +688,7 @@ export async function sendEventReply(
   eventResponse: ?{ ... },
   text: string,
   papaId: ?string,
-  notificationInfo: ?{ ... }
+  notificationInfo: ?NotificationInfo
 ): Promise<string> {
   return await Database.sendMessage(
     groupId,
@@ -861,7 +860,7 @@ export async function saveProfile(
   });
 }
 
-export async function updateGroup(userInfo: UserInfo, groupId: string, update: { ... }) {
+export async function updateGroup(userInfo: UserInfo, groupId: string, update: GroupUpdate) {
   await Database.updateGroup(groupId, update);
 }
 

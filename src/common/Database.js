@@ -112,17 +112,12 @@ export type ChatMessage = {
 
 export type UserChatMessage = {
   id: string,
-  userStatus: {
-    status: string,
-  },
+  status: string,
   ...
 };
 
 export type UserChatMessageUpdate = {
-  id: string,
-  userStatus?: {
-    status: string,
-  },
+  status?: string,
   ...
 };
 
@@ -148,6 +143,11 @@ export type GroupMembershipRequest = {
   uid: string,
   groupId: string,
   ...
+};
+
+export type NotificationInfo = {
+  groupName: ?string,
+  fromName: ?string,
 };
 
 export async function getAllOrgs(): Promise<Array<Org>> {
@@ -323,14 +323,11 @@ export async function updateGroup(groupId: string, data: GroupUpdate): Promise<v
 export async function sendMessage(
   groupId: string,
   uid: string,
-  title: string,
+  title: ?string,
   text: string,
-  data: { ... },
-  papaId: string,
-  notificationInfo: {
-    groupName: string,
-    fromName: string,
-  }
+  data: ?{ ... },
+  papaId: ?string,
+  notificationInfo: ?NotificationInfo
 ): Promise<string> {
   return DatabaseFS.sendMessage(groupId, uid, title, text, data, papaId, notificationInfo);
 }
@@ -339,12 +336,9 @@ export async function sendChatMessage(
   chatId: string,
   uid: string,
   text: string,
-  data: { ... },
-  papaId: string,
-  notificationInfo: {
-    groupName: string,
-    fromName: string,
-  }
+  data: ?{ ... },
+  papaId: ?string,
+  notificationInfo: ?NotificationInfo
 ): Promise<string> {
   return DatabaseFS.sendChatMessage(chatId, uid, text, data, papaId, notificationInfo);
 }
@@ -356,8 +350,8 @@ export async function createOrg(name: string, type: string): Promise<string> {
 export async function createInvite(
   fromUid: string,
   groupId: string,
-  uid: string,
-  email: string
+  uid: ?string,
+  email: ?string
 ): Promise<void> {
   return DatabaseFS.createInvite(fromUid, groupId, uid, email);
 }
@@ -376,7 +370,7 @@ export async function createEvent(
 export function observeToUserInvites(
   toUid: string,
   toEmail: string,
-  callback: (UserInvite) => void
+  callback: (Array<UserInvite>) => void
 ): () => void {
   return DatabaseFS.observeToUserInvites(toUid, toEmail, callback);
 }

@@ -11,6 +11,7 @@ import type {
   Group,
   GroupMembership,
   GroupMembershipRequest,
+  GroupMembershipUpdate,
   GroupUpdate,
   Message,
   UserChatMessage,
@@ -50,7 +51,7 @@ export function observeUserMessages(uid: string, callback: (Array<UserMessage>) 
   const userMessagesRef = RDB.ref(rdb, "user_messages/" + uid);
   RDB.onValue(userMessagesRef, (snapshot) => {
     const data = snapshot.val();
-    const ret = toArray(data);
+    const ret = toUserMessageArray(data);
     callback(ret);
   });
 }
@@ -62,7 +63,7 @@ export function observeUserChatMessages(
   const userMessagesRef = RDB.ref(rdb, "user_chat_messages/" + uid);
   const unsubscribe = RDB.onValue(userMessagesRef, (snapshot) => {
     const data = snapshot.val();
-    const ret = toArray(data);
+    const ret = toUserChatMessageArray(data);
     callback(ret);
   });
   return unsubscribe;
@@ -112,7 +113,7 @@ export async function getAllGroups(): Promise<Array<Group>> {
   const dbRef = RDB.ref(rdb);
   const groups = await RDB.get(RDB.child(dbRef, "groups"));
 
-  const ret = toArray(groups.val());
+  const ret = toGroupArray(groups.val());
   return ret;
 }
 
@@ -121,7 +122,7 @@ export function observeAllGroupChanges(callback: (Array<Group>) => void) {
   const groupsRef = RDB.ref(rdb, "groups");
   const unsubscribe = RDB.onValue(groupsRef, (snapshot) => {
     const data = snapshot.val();
-    const ret = toArray(data);
+    const ret = toGroupArray(data);
     callback(ret);
   });
 }
@@ -131,7 +132,7 @@ export async function getAllUsers(): Promise<Array<UserInfo>> {
   const dbRef = RDB.ref(rdb);
   const users = await RDB.get(RDB.child(dbRef, "users"));
 
-  const ret = toArray(users.val() ?? []);
+  const ret = toUserArray(users.val() ?? []);
   //const ret = toArray(null);
   return ret;
 }
@@ -141,7 +142,7 @@ export function observeAllUserChanges(callback: (Array<UserInfo>) => void) {
   const usersRef = RDB.ref(rdb, "users");
   RDB.onValue(usersRef, (snapshot) => {
     const data = snapshot.val();
-    const ret = toArray(data);
+    const ret = toUserArray(data);
     callback(ret);
   });
 }
@@ -150,7 +151,7 @@ export async function getAllGroupMemberships(): Promise<Array<GroupMembership>> 
   /*real-time database */
   const dbRef = RDB.ref(rdb);
   const snapshot = await RDB.get(RDB.child(dbRef, "group_memberships"));
-  const ret = toArray(snapshot.val());
+  const ret = toGroupMembershipArray(snapshot.val());
   return ret;
 }
 
@@ -162,8 +163,10 @@ function observeAllGroupMembershipChangesHelper(
   const ref = RDB.ref(rdb, "group_memberships");
   const unsubscribe = RDB.onValue(ref, (snapshot) => {
     const data = snapshot.val();
-    const ret = toArray<GroupMembership>(data);
-    callback(ret);
+    const ret = toGroupMembershipArray(data);
+    if (callback != null) {
+      callback(ret);
+    }
     if (uid != null) {
       const userGroupMemberships = ret.filter((groupMembership) => groupMembership.uid == uid);
       userCallback(userGroupMemberships);
@@ -194,10 +197,7 @@ export function observeUserGroupMemberships(
   userCallback: (Array<GroupMembership>) => void
 ): () => void {
   let callback = null;
-  callback = nullthrows(
-    observers["observeAllGroupChanges"]?.["callback"],
-    'DatabaseRDB.js: observers["observeAllGroupChanges"] is null'
-  );
+  callback = observers["observeAllGroupChanges"]?.["callback"];
   return observeAllGroupMembershipChangesHelper(uid, callback, userCallback);
 }
 
@@ -208,7 +208,7 @@ export function observeUserChatMemberships(
   const ref = RDB.ref(rdb, "chat_memberships/" + uid);
   const unsubscribe = RDB.onValue(ref, (snapshot) => {
     const data = snapshot.val();
-    const ret = toArray(data);
+    const ret = toChatMembershipArray(data);
     callback(ret);
   });
   return unsubscribe;
@@ -221,7 +221,7 @@ export function observeGroupMembershipRequests(
   const ref = RDB.ref(rdb, "group_membership_requests/" + groupId);
   const unsubscribe = RDB.onValue(ref, (snapshot) => {
     const data = snapshot.val();
-    const ret = toArray(data);
+    const ret = toGroupMembershipRequestArray(data);
     callback(ret);
   });
   return unsubscribe;
@@ -316,12 +316,19 @@ export async function createOrg(name: string, type: string): Promise<string> {
   return newReference.key;
 }
 
-export async function updateUserGroupMembership(userGroupMembershipId: string, updateObj) {
+export async function updateUserGroupMembership(
+  userGroupMembershipId: string,
+  updateObj: GroupMembershipUpdate
+) {
   const docRef = RDB.ref(rdb, "/group_memberships/" + userGroupMembershipId);
   await RDB.update(docRef, updateObj);
 }
 
-export async function updateUserMessage(uid, messageId: string, update: { ... }): Promise<void> {
+export async function updateUserMessage(
+  uid: string,
+  messageId: string,
+  update: { ... }
+): Promise<void> {
   const docRef = RDB.ref(rdb, "/user_messages/" + uid + "/" + messageId);
   await RDB.update(docRef, update);
 }
@@ -369,25 +376,212 @@ export async function logError(error: { stack: string }, info: string): Promise<
   return newReference.key;
 }
 
-function toArray<T>(idMap: { [key: string]: { ... } }): Array<T> {
+/*
+function toArray<T: $ReadOnly<{ [string]: ?string }>>(
+  idMap: $ReadOnly<{ [string]: {} }>
+): Array<T> {
   const array: Array<T> = [];
   if (idMap == null) {
     return array;
   }
-  for (const [key, value] of Object.entries(idMap)) {
-    const castValue = (value: T);
+  for (const key of Object.keys(idMap)) {
+    const value = idMap[key];
     array.push({ id: key, ...value });
   }
   return array;
 }
+*/
 
-function toOrgArray(idMap: { [key: string]: { ... } }): Array<Org> {
-  const array: Array<Org> = [];
+function toGroupArray(
+  idMap: $ReadOnly<{
+    [string]: {
+      type: string,
+      name: string,
+      description: ?string,
+      parentGroupId: ?string,
+      orgId: ?string,
+    },
+  }>
+): Array<Group> {
+  const array = [];
   if (idMap == null) {
     return array;
   }
-  for (const [key, value] of Object.entries(idMap)) {
-    array.push({ id: key, ...value });
+  for (const key of Object.keys(idMap)) {
+    const value = idMap[key];
+    array.push({
+      id: key,
+      type: value.type,
+      name: value.name,
+      description: value.description,
+      parentGroupId: value.parentGroupId,
+      orgId: value.orgId,
+    });
+  }
+  return array;
+}
+
+function toUserArray(
+  idMap: $ReadOnly<{
+    [string]: {
+      displayName: ?string,
+      firstName: ?string,
+      lastName: ?string,
+      email: ?string,
+      image: ?string,
+      superUser: ?boolean,
+      profileInitialized: ?boolean,
+    },
+  }>
+): Array<UserInfo> {
+  const array = [];
+  if (idMap == null) {
+    return array;
+  }
+  for (const key of Object.keys(idMap)) {
+    const value = idMap[key];
+    array.push({
+      uid: key,
+      displayName: value.displayName,
+      firstName: value.firstName,
+      lastName: value.lastName,
+      email: value.email,
+      image: value.image,
+      superUser: value.superUser,
+      profileInitialized: value.profileInitialized,
+    });
+  }
+  return array;
+}
+
+function toGroupMembershipArray(
+  idMap: $ReadOnly<{
+    [string]: {
+      uid: string,
+      groupId: string,
+      lastViewedMessageTimestamp: number,
+    },
+  }>
+): Array<GroupMembership> {
+  const array = [];
+  if (idMap == null) {
+    return array;
+  }
+  for (const key of Object.keys(idMap)) {
+    const value = idMap[key];
+    array.push({
+      id: key,
+      uid: value.uid,
+      groupId: value.groupId,
+      lastViewedMessageTimestamp: value.lastViewedMessageTimestamp,
+    });
+  }
+  return array;
+}
+
+function toGroupMembershipRequestArray(
+  idMap: $ReadOnly<{
+    [string]: {
+      uid: string,
+      groupId: string,
+    },
+  }>
+): Array<GroupMembershipRequest> {
+  const array = [];
+  if (idMap == null) {
+    return array;
+  }
+  for (const key of Object.keys(idMap)) {
+    const value = idMap[key];
+    array.push({
+      id: key,
+      uid: value.uid,
+      groupId: value.groupId,
+    });
+  }
+  return array;
+}
+
+function toChatMembershipArray(
+  idMap: $ReadOnly<{
+    [string]: {
+      chatId: string,
+    },
+  }>
+): Array<ChatMembership> {
+  const array = [];
+  if (idMap == null) {
+    return array;
+  }
+  for (const key of Object.keys(idMap)) {
+    const value = idMap[key];
+    array.push({
+      id: key,
+      chatId: value.chatId,
+    });
+  }
+  return array;
+}
+
+function toUserMessageArray(
+  idMap: $ReadOnly<{
+    [string]: {
+      status: string,
+    },
+  }>
+): Array<UserMessage> {
+  const array = [];
+  if (idMap == null) {
+    return array;
+  }
+  for (const key of Object.keys(idMap)) {
+    const value = idMap[key];
+    array.push({
+      id: key,
+      status: value.status,
+    });
+  }
+  return array;
+}
+
+function toUserChatMessageArray(
+  idMap: $ReadOnly<{
+    [string]: {
+      status: string,
+    },
+  }>
+): Array<UserChatMessage> {
+  const array = [];
+  if (idMap == null) {
+    return array;
+  }
+  for (const key of Object.keys(idMap)) {
+    const value = idMap[key];
+    array.push({
+      id: key,
+      status: value.status,
+    });
+  }
+  return array;
+}
+
+function toOrgArray(
+  idMap: $ReadOnly<{
+    [string]: {
+      name: string,
+    },
+  }>
+): Array<Org> {
+  const array = [];
+  if (idMap == null) {
+    return array;
+  }
+  for (const key of Object.keys(idMap)) {
+    const value = idMap[key];
+    array.push({
+      id: key,
+      name: value.name,
+    });
   }
   return array;
 }

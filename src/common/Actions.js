@@ -7,7 +7,6 @@ import {
   //} from "firebase/firestore/lite";
 } from "firebase/firestore";
 import * as Logger from "./Logger";
-import { RemoteData, loading, data } from "./RemoteData";
 import type {
   UserInfo,
   Org,
@@ -129,6 +128,8 @@ export type MainActions = {
   chat: (Chat) => void,
   userMessages: (Array<UserMessage>) => void,
   userChatMessages: (Array<UserChatMessage>) => void,
+  toUserInvites: (Array<UserInvite>) => void,
+  fromUserInvites: (Array<UserInvite>) => void,
   [key: string]: ({ ... }) => void,
 };
 export type MainReducer = { [key: string]: () => void };

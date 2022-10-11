@@ -238,6 +238,7 @@ export default class RootMessage {
     return this.rootMessage.event;
   }
 
+  getEventResponse() {}
   getEventSummary(): ?{ acceptedCount: number, declinedCount: number, notRespondedCount: number } {
     return {
       acceptedCount: 0,

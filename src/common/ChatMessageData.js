@@ -27,7 +27,7 @@ export default class ChatMessageInfo {
   getUserStatus(): { status: ?string } {
     const userMessage = this.userChatMessagesMap?.[this.getID()];
     if (userMessage != null) {
-      return { status: userMessage.userStatus.status };
+      return { status: userMessage.status };
     } else {
       return { status: null };
     }

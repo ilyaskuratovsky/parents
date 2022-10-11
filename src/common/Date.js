@@ -35,7 +35,7 @@ export function compare(obj1: AnyDateType, obj2: AnyDateType): number {
     return 0;
   }
 }
-export function toDate(obj: AnyDateType): ?Date {
+export function toDate(obj: ?AnyDateType): ?Date {
   if (obj == null) {
     return null;
   }
