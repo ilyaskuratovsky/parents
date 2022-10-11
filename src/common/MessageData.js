@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import * as Logger from "./Logger";
 import * as Dates from "./Date";
 import type { Group, Message, UserInfo, UserMessage, ChatMessage, MessageEvent } from "./Database";
-import * as Data from "./Data";
 import type { MainState, RootState } from "./Actions";
 
 export function getAllRootMessages(): Array<RootMessage> {
@@ -159,12 +158,10 @@ export default class RootMessage {
   }
 
   getGroup(): ?Group {
-    //return Data.getGroup(this.rootMessage.groupId);
     return this.state.groupMap?.[this.rootMessage.groupId];
   }
 
   getUserInfo(): ?UserInfo {
-    //return Data.getUser(this.rootMessage.uid);
     return this.state.userMap?.[this.rootMessage.uid];
   }
 

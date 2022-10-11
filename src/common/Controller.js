@@ -218,8 +218,7 @@ export async function loggedIn(
     userData = { pushToken, ...userData };
   }
 
-  await Database.updateOrCreateUser(uid, userData);
-  const userInfo = nullthrows(await Data.getUser(uid));
+  const userInfo = await Database.updateOrCreateUser(uid, userData);
   //observe user changes
   Database.observeUserChanges(uid, (userInfo) => {
     Logger.log("OBSERVE: UserChanges: ", Logger.INFO);

@@ -3,7 +3,6 @@
 import * as Logger from "./Logger";
 import * as Dates from "./Date";
 import type { ChatMessage, UserChatMessage } from "./Database";
-import * as Data from "./Data";
 import { useSelector } from "react-redux";
 import { useEffect, useMemo } from "react";
 import type { RootState } from "./Actions";
@@ -35,7 +34,8 @@ export default class ChatMessageInfo {
 }
 
 export function getAllUserChatMessages(): Array<ChatMessageInfo> {
-  const user = Data.getCurrentUser();
+  const user = useSelector((state: RootState) => state.main.userInfo);
+
   const { chatMessages, userChatMessagesMap, userMap } = useSelector((state: RootState) => {
     return {
       chatMessages: Object.keys(state.main.chatMessagesMap ?? {}).map(

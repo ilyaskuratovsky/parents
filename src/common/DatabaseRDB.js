@@ -69,18 +69,20 @@ export function observeUserChatMessages(
   return unsubscribe;
 }
 
-export async function updateOrCreateUser(uid: string, data: UserInfoUpdate): Promise<?string> {
+export async function updateOrCreateUser(uid: string, data: UserInfoUpdate): Promise<UserInfo> {
   const dbRef = RDB.ref(rdb);
   const userRef = RDB.child(dbRef, "users/" + uid);
   const userSnapshot = await RDB.get(userRef);
   if (userSnapshot.exists()) {
     await RDB.update(userRef, data);
     const current: UserInfo = { ...userSnapshot.val() };
-    return current.uid;
+    //return current.uid;
   } else {
     await RDB.set(userRef, data);
-    return userRef.key;
+    //return userRef.key;
   }
+  const newUserSnapshot: UserInfo = await RDB.get(userRef);
+  return newUserSnapshot;
 }
 
 export async function updateUserAddToArrayField(

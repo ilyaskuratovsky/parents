@@ -189,7 +189,7 @@ export function observeUserChatMessages(
   return DatabaseRDB.observeUserChatMessages(uid, callback);
 }
 
-export async function updateOrCreateUser(uid: string, data: UserInfoUpdate): Promise<?string> {
+export async function updateOrCreateUser(uid: string, data: UserInfoUpdate): Promise<UserInfo> {
   return DatabaseRDB.updateOrCreateUser(uid, data);
 }
 
