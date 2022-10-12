@@ -81,8 +81,8 @@ export async function updateOrCreateUser(uid: string, data: UserInfoUpdate): Pro
     await RDB.set(userRef, data);
     //return userRef.key;
   }
-  const newUserSnapshot: UserInfo = await RDB.get(userRef);
-  return newUserSnapshot;
+  const newUser: UserInfo = { ...userSnapshot, ...data };
+  return newUser;
 }
 
 export async function updateUserAddToArrayField(
@@ -128,6 +128,16 @@ export function observeAllGroupChanges(callback: (Array<Group>) => void) {
     callback(ret);
   });
 }
+
+// export async function getUser(uid:string): Promise<UserInfo> {
+//   /*real-time database */
+//   const dbRef = RDB.ref(rdb);
+//   const users = await RDB.get(RDB.child(dbRef, "users"));
+
+//   const ret = toUserArray(users.val() ?? []);
+//   //const ret = toArray(null);
+//   return ret;
+// }
 
 export async function getAllUsers(): Promise<Array<UserInfo>> {
   /*real-time database */

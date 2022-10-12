@@ -200,7 +200,8 @@ function RootApp(props: {}, state: RootState): React.Node {
       "(" +
       JSON.stringify(modalWithParams, null, 2) +
       "), stack: " +
-      JSON.stringify(modalStack, null, 2)
+      JSON.stringify(modalStack, null, 2),
+    Logger.DEBUG
   );
   return (
     <View style={{ flex: 1 }}>
