@@ -81,7 +81,7 @@ export async function updateOrCreateUser(uid: string, data: UserInfoUpdate): Pro
     await RDB.set(userRef, data);
     //return userRef.key;
   }
-  const newUser: UserInfo = { ...userSnapshot, ...data };
+  const newUser: UserInfo = { ...userSnapshot.val(), ...data };
   return newUser;
 }
 

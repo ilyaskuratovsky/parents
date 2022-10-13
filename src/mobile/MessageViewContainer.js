@@ -1,6 +1,6 @@
 // @flow strict-local
 
-import React from "react";
+import * as React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Badge } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -22,18 +22,27 @@ type Props = {
   showGroup?: boolean,
 };
 
-export default function MessageViewContainer({ user, item, onPress, showGroup = false }: Props) {
+export default function MessageViewContainer({
+  user,
+  item,
+  onPress,
+  showGroup = false,
+}: Props): React.Node {
   if (item.getEvent() != null) {
     return <EventMessageView item={item} />;
-  } else if (item.event_poll != null) {
-    if (item.user.uid != user.uid) {
+  }
+  /*
+  else if (item.getEventPoll() != null) {
+    if (item.getUserInfo()?.uid != user.uid) {
       return <EventPollMessageView item={item} />;
     } else {
       return <EventPollMessageCreatorView message={item} />;
     }
-  } else if (item.poll != null) {
+  } else if (item.getPoll() != null) {
     return <MessagePollView message={item} onPress={onPress} showGroup={showGroup} />;
   } else {
     return <MessageView item={item} onPress={onPress} showGroup={showGroup} />;
   }
+  */
+  return <MessageView item={item} onPress={onPress} showGroup={showGroup} />;
 }

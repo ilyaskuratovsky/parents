@@ -3,7 +3,15 @@
 import { useSelector } from "react-redux";
 import * as Logger from "./Logger";
 import * as Dates from "./Date";
-import type { Group, Message, UserInfo, UserMessage, ChatMessage, MessageEvent } from "./Database";
+import type {
+  Group,
+  Message,
+  UserInfo,
+  UserMessage,
+  ChatMessage,
+  MessageEvent,
+  MessageEventPoll,
+} from "./Database";
 import type { MainState, RootState } from "./Actions";
 
 export function getAllRootMessages(): Array<RootMessage> {
@@ -233,6 +241,10 @@ export default class RootMessage {
 
   getEvent(): ?MessageEvent {
     return this.rootMessage.event;
+  }
+
+  getEventPoll(): ?MessageEventPoll {
+    return this.rootMessage.event_poll;
   }
 
   getEventResponse() {}

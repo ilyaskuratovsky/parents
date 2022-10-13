@@ -12,6 +12,7 @@ import { Badge } from "react-native-elements";
 import RootMessage from "../common/MessageData";
 import * as Dates from "../common/Date.js";
 import nullthrows from "nullthrows";
+import DebugText from "./DebugText";
 
 type Props = {
   item: RootMessage,
@@ -19,7 +20,6 @@ type Props = {
 };
 export default function EventMessageView({ item, showGroup = false }: Props): React.Node {
   const dispatch = useDispatch();
-  const debugMode = Debug.isDebugMode();
   const timestamp = item.getTimestamp();
   const event = nullthrows(
     item.getEvent(),
@@ -31,10 +31,8 @@ export default function EventMessageView({ item, showGroup = false }: Props): Re
 
   return (
     <View style={{ flex: 1 }}>
-      {debugMode ? <Text style={{ fontSize: 10 }}>{item.getID()}</Text> : null}
-      {debugMode ? (
-        <Text style={{ fontSize: 10 }}>{JSON.stringify({ ...item, children: null }, null, 2)}</Text>
-      ) : null}
+      <DebugText text={item.getID()} />
+      <DebugText text={JSON.stringify({ ...item.rootMessage }, null, 2)} />
       <TouchableOpacity
         style={{ flex: 1, padding: 20, backgroundColor: "rgba(204, 255, 255, 0.5)" }}
         onPress={() => {

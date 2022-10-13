@@ -1,6 +1,7 @@
 // @flow strict-local
 
-import React, { useCallback, useState } from "react";
+import * as React from "react";
+import { useCallback, useState } from "react";
 import { Text, TouchableOpacity, View, Image } from "react-native";
 import { Badge } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -18,17 +19,21 @@ import Checkbox from "./Checkbox";
 import * as Data from "../common/Data";
 import * as Controller from "../common/Controller";
 import * as Logger from "../common/Logger";
-import { RootMessage } from "../common/MessageData";
+import RootMessage from "../common/MessageData";
 import FacePile from "./FacePile";
 
-export default function MessagePollView({ message, showGroup = false }) {
+type Props = {
+  message: RootMessage,
+  showGroup?: boolean,
+};
+
+export default function MessagePollView({ message, showGroup = false }: Props): React.Node {
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
-  const timestamp = message.timestamp?.toDate();
-  const pollOptions = message.poll;
+  const timestamp = message.getTimestamp();
+  const pollOptions = message.getPoll();
 
-  const pollMessage = new RootMessage(message);
-  const pollSummary = pollMessage.getPollSummary();
+  const pollSummary = message.getPollSummary();
   /*
     "Option 1": {count: 2, total: 8, users: []}
     "Option 2": {}
