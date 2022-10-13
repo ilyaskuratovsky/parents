@@ -248,11 +248,30 @@ export default class RootMessage {
   }
 
   getEventResponse() {}
-  getEventSummary(): ?{ acceptedCount: number, declinedCount: number, notRespondedCount: number } {
+  getEventSummary(): ?{
+    acceptedCount: number,
+    acceptedResponses: Array<RootMessage>,
+    declinedCount: number,
+    declinedResponses: Array<RootMessage>,
+    maybeCount: number,
+    maybeResponses: Array<RootMessage>,
+    notRespondedCount: number,
+  } {
+    const acceptedResponses =
+      this.children?.filter((response) => response.event_response == "Going") ?? [];
+    const declinedResponses =
+      this.children?.filter((response) => response.event_response == "Declined") ?? [];
+    const maybeResponses =
+      this.children?.filter((response) => response.event_response == "Maybe") ?? [];
+
     return {
-      acceptedCount: 0,
-      declinedCount: 0,
-      notRespondedCount: 0,
+      acceptedResponses: acceptedResponses.map((m) => new RootMessage(m, [], this.state)),
+      acceptedCount: acceptedResponses.length,
+      declinedResponses: declinedResponses.map((m) => new RootMessage(m, [], this.state)),
+      declinedCount: declinedResponses.length,
+      maybeResponses: maybeResponses.map((m) => new RootMessage(m, [], this.state)),
+      maybeCount: maybeResponses.length,
+      notRespondedCount: 0, // TODO:
     };
   }
 

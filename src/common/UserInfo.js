@@ -89,10 +89,10 @@ export function tinyAvatarComponent(
 }
 
 export function tinyAvatarComponentWithName(
-  userInfo: UserInfo,
-  onPress: () => void,
-  border: ?string,
-  containerStyle: mixed
+  userInfo: ?UserInfo,
+  onPress?: () => void,
+  border?: ?string,
+  containerStyle?: mixed
 ): React.Node {
   return (
     <View style={{ flex: 1, flexDirection: "row", ...containerStyle }}>
@@ -122,10 +122,10 @@ export function tinyAvatarComponentWithName(
 }
 
 export function smallAvatarComponentWithName(
-  userInfo: UserInfo,
-  onPress: () => void,
-  border: ?string,
-  containerStyle: mixed
+  userInfo: ?UserInfo,
+  onPress?: () => void,
+  border?: ?string,
+  containerStyle?: mixed
 ): React.Node {
   return (
     <View style={{ flex: 1, flexDirection: "row", ...containerStyle }}>

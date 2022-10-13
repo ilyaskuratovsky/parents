@@ -1,7 +1,8 @@
 // @flow strict-local
 
 import * as Calendar from "expo-calendar";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import * as React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Button,
@@ -44,11 +45,13 @@ import * as Actions from "../common/Actions";
 import * as Logger from "../common/Logger";
 import * as MessageData from "../common/MessageData";
 import nullthrows from "nullthrows";
+import RootMessage from "../common/MessageData";
+import DebugText from "./DebugText";
 
 type Props = {
   messageId: string,
 };
-export default function EventModalContainer({ messageId }: Props) {
+export default function EventModalContainer({ messageId }: Props): React.Node {
   const message = nullthrows(
     MessageData.getRootMessage(messageId),
     "EventModalContainer.js: message is null for id: " + messageId
@@ -56,7 +59,7 @@ export default function EventModalContainer({ messageId }: Props) {
   return <EventModal message={message} />;
 }
 
-function EventModal({ message }) {
+function EventModal({ message }: { message: RootMessage }) {
   const dispatch = useDispatch();
   const group = nullthrows(Data.getGroup(message.getGroupId()));
   const user = Data.getCurrentUser();
@@ -67,13 +70,13 @@ function EventModal({ message }) {
     //return 0;
   });
 
-  const event = message.getEvent();
+  const event = nullthrows(message.getEvent());
   const eventStart = Dates.toDate(event?.start);
   const eventEnd = Dates.toDate(event?.end);
 
   const childMessages = sortedChildMessages;
   let currentUserStatus = null;
-  const currentUserStatusArr = childMessages.filter((m) => {
+  const currentUserStatusArr: Array<RootMessage> = childMessages.filter((m) => {
     return m.getUserInfo()?.uid == user.uid && !Utils.isEmptyString(m.getEventResponse());
   });
   if (currentUserStatusArr.length > 0) {
@@ -91,7 +94,7 @@ function EventModal({ message }) {
       null, //title
       text,
       { eventResponse },
-      message.id,
+      message.getID(),
       {
         groupName,
         fromName,
@@ -123,16 +126,16 @@ function EventModal({ message }) {
   const topBarHeight = 64;
   const replyBarHeight = 80;
 
-  Controller.useMarkRead(message);
+  Controller.useMarkRead(message.getID());
 
-  Logger.log("event response is empty string: " + Utils.isEmptyString(eventResponse));
+  Logger.log(
+    "event response is empty string: " + (Utils.isEmptyString(eventResponse) ? "true" : "false")
+  );
   const canSend =
     (text != null && text.length > 0) ||
     (!Utils.isEmptyString(eventResponse) && eventResponse != currentUserStatus);
 
-  const goingResponses = event.responses.filter((response) => response.status == "Going");
-  const notGoingResponses = event.responses.filter((response) => response.status == "Not Going");
-  const maybeResponses = event.responses.filter((response) => response.status == "Maybe");
+  const eventSummary = message.getEventSummary();
   return (
     <Modal visible={true} animationType={"slide"}>
       <Portal>
@@ -152,6 +155,14 @@ function EventModal({ message }) {
           }
           center={<Text>Event Details</Text>}
           right={null}
+        />
+        <DebugText text="EventModal.js" />
+        <DebugText
+          text={JSON.stringify(
+            { rootMessage: message.rootMessage, children: message.children },
+            null,
+            2
+          )}
         />
 
         {/* main content */}
@@ -194,7 +205,7 @@ function EventModal({ message }) {
                 }}
               >
                 <Text style={{ fontSize: 10, color: "grey" }}>Event Title</Text>
-                <Text style={{ fontSize: 20, color: "black" }}>{message.title}</Text>
+                <Text style={{ fontSize: 20, color: "black" }}>{message.getTitle()}</Text>
               </View>
               <View
                 style={{
@@ -263,7 +274,7 @@ function EventModal({ message }) {
                         alignItems: "center",
                       }}
                     >
-                      {event.start != null ? moment(event.start).format("dddd, MMMM Do YYYY") : ""}
+                      {event?.start != null ? moment(event.start).format("dddd, MMMM Do YYYY") : ""}
                     </Text>
                   </View>
                 </View>
@@ -318,7 +329,7 @@ function EventModal({ message }) {
                         alignItems: "center",
                       }}
                     >
-                      {event.start != null ? moment(event.start).format("LT") : ""}
+                      {event?.start != null ? moment(event.start).format("LT") : ""}
                     </Text>
                   </View>
                 </View>
@@ -382,7 +393,7 @@ function EventModal({ message }) {
                 <Text style={{ fontSize: 10, color: "grey" }}>Event Details</Text>
                 <Autolink
                   // Required: the text to parse for links
-                  text={message.text}
+                  text={message.getText()}
                   // Optional: enable email linking
                   email
                   // Optional: enable hashtag linking to instagram
@@ -409,7 +420,7 @@ function EventModal({ message }) {
                 }}
               >
                 <Text style={{ fontSize: 10, color: "grey" }}>Created by</Text>
-                {UserInfo.tinyAvatarComponentWithName(message.user)}
+                {UserInfo.tinyAvatarComponentWithName(message.getUserInfo())}
               </View>
               <View
                 style={{
@@ -419,7 +430,7 @@ function EventModal({ message }) {
                 }}
               >
                 {Globals.dev && <Text>EventMessageModal</Text>}
-                {Globals.dev && <Text>{message.id}</Text>}
+                {Globals.dev && <Text>{message.getID()}</Text>}
                 {Globals.dev && (
                   <ScrollView style={{ height: 200 }}>
                     {/*
@@ -555,29 +566,29 @@ function EventModal({ message }) {
             <Divider style={{}} width={1} color="darkgrey" />
             {/* Other user responses */}
             <Text style={{ fontSize: 10, color: "grey" }}>Going</Text>
-            {goingResponses.map((response) => {
+            {eventSummary?.acceptedResponses.map((response) => {
               return (
                 <View style={{ flexDirection: "column" }}>
-                  {UserInfo.smallAvatarComponentWithName(message.user)}
-                  <Text>{response.text}</Text>
+                  {UserInfo.smallAvatarComponentWithName(message.getUserInfo())}
+                  <Text>{response.getText()}</Text>
                 </View>
               );
             })}
             <Text style={{ fontSize: 10, color: "grey" }}>Not Going</Text>
-            {notGoingResponses.map((response) => {
+            {eventSummary?.declinedResponses.map((response) => {
               return (
                 <View style={{ flexDirection: "column" }}>
-                  {UserInfo.smallAvatarComponentWithName(message.user)}
-                  <Text>{response.text}</Text>
+                  {UserInfo.smallAvatarComponentWithName(message.getUserInfo())}
+                  <Text>{response.getText()}</Text>
                 </View>
               );
             })}
             <Text style={{ fontSize: 10, color: "grey" }}>Maybe</Text>
-            {maybeResponses.map((response) => {
+            {eventSummary?.maybeResponses.map((response) => {
               return (
                 <View style={{ flexDirection: "column" }}>
-                  {UserInfo.smallAvatarComponentWithName(message.user)}
-                  <Text>{response.text}</Text>
+                  {UserInfo.smallAvatarComponentWithName(message.getUserInfo())}
+                  <Text>{response.getText()}</Text>
                 </View>
               );
             })}
@@ -606,7 +617,7 @@ function EventModal({ message }) {
       {showCalendarSelection && (
         <BookCalendarEventModal
           key="BookCalendarEventModal"
-          title={message.title}
+          title={message.getTitle()}
           startDate={eventStart}
           endDate={eventEnd}
           onComplete={() => {
