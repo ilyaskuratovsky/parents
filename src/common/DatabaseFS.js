@@ -352,7 +352,7 @@ export async function sendMessage(
   groupId: string,
   uid: string,
   title: ?string,
-  text: string,
+  text: ?string,
   data: mixed,
   papaId: ?string,
   notificationInfo: ?NotificationInfo

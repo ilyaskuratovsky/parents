@@ -30,9 +30,7 @@ export default function MessageViewContainer({
 }: Props): React.Node {
   if (item.getEvent() != null) {
     return <EventMessageView item={item} />;
-  }
-  /*
-  else if (item.getEventPoll() != null) {
+  } else if (item.getEventPoll() != null) {
     if (item.getUserInfo()?.uid != user.uid) {
       return <EventPollMessageView item={item} />;
     } else {
@@ -43,6 +41,4 @@ export default function MessageViewContainer({
   } else {
     return <MessageView item={item} onPress={onPress} showGroup={showGroup} />;
   }
-  */
-  return <MessageView item={item} onPress={onPress} showGroup={showGroup} />;
 }

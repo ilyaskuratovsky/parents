@@ -21,6 +21,7 @@ import * as Controller from "../common/Controller";
 import * as Logger from "../common/Logger";
 import RootMessage from "../common/MessageData";
 import FacePile from "./FacePile";
+import nullthrows from "nullthrows";
 
 type Props = {
   message: RootMessage,
@@ -33,7 +34,7 @@ export default function MessagePollView({ message, showGroup = false }: Props): 
   const timestamp = message.getTimestamp();
   const pollOptions = message.getPoll();
 
-  const pollSummary = message.getPollSummary();
+  const pollSummary = nullthrows(message.getPollSummary());
   /*
     "Option 1": {count: 2, total: 8, users: []}
     "Option 2": {}
@@ -76,7 +77,7 @@ export default function MessagePollView({ message, showGroup = false }: Props): 
   return (
     <TouchableOpacity
       onPress={() => {
-        dispatch(Actions.openModal({ modal: "MESSAGE_POLL", messageId: message.id }));
+        dispatch(Actions.openModal({ modal: "MESSAGE_POLL", messageId: message.getID() }));
       }}
     >
       <DebugText key="debug1" text="MessagePollView.js" />
@@ -93,7 +94,7 @@ export default function MessagePollView({ message, showGroup = false }: Props): 
             //backgroundColor: "cyan",
           }}
         >
-          {message.userStatus?.status != "read" && (
+          {message.getUserStatus()?.status != "read" && (
             <Badge status="primary" value={""} containerStyle={{ width: 12, height: 12 }} />
           )}
         </View>
@@ -130,7 +131,7 @@ export default function MessagePollView({ message, showGroup = false }: Props): 
                   //backgroundColor: "cyan",
                 }}
               >
-                {UserInfo.smallAvatarComponent(message.user)}
+                {UserInfo.smallAvatarComponent(message.getUserInfo())}
                 <View
                   style={{
                     flex: 1,
@@ -143,7 +144,7 @@ export default function MessagePollView({ message, showGroup = false }: Props): 
                 >
                   <View style={{ flex: 1, flexDirection: "column", marginLeft: 6 }}>
                     <Text key="group_name" style={{ fontWeight: "bold", fontSize: 14 }}>
-                      {message.group?.name ?? "No group name"}
+                      {message.getGroup()?.name ?? "No group name"}
                     </Text>
                     <Text
                       key="user_name"
@@ -153,14 +154,12 @@ export default function MessagePollView({ message, showGroup = false }: Props): 
                         fontSize: 12,
                       }}
                     >
-                      {UserInfo.chatDisplayName(message.user)} {/*item._id*/}
+                      {UserInfo.chatDisplayName(message.getUserInfo())} {/*item._id*/}
                     </Text>
                   </View>
                   <View
                     style={{
                       marginLeft: 5,
-                      fontWeight: "normal",
-                      fontSize: 14,
                     }}
                   >
                     <MessageTime
@@ -185,7 +184,7 @@ export default function MessagePollView({ message, showGroup = false }: Props): 
                   //backgroundColor: "cyan",
                 }}
               >
-                {UserInfo.smallAvatarComponent(message.user)}
+                {UserInfo.smallAvatarComponent(message.getUserInfo())}
                 <View
                   style={{
                     flex: 1,
@@ -205,14 +204,12 @@ export default function MessagePollView({ message, showGroup = false }: Props): 
                       fontSize: 16,
                     }}
                   >
-                    {UserInfo.chatDisplayName(message.user)} {/*item._id*/}
+                    {UserInfo.chatDisplayName(message.getUserInfo())} {/*item._id*/}
                   </Text>
                   <View
                     key="message_time"
                     style={{
                       marginLeft: 5,
-                      fontWeight: "normal",
-                      fontSize: 14,
                     }}
                   >
                     <MessageTime
@@ -241,7 +238,7 @@ export default function MessagePollView({ message, showGroup = false }: Props): 
                     color: UIConstants.BLACK_TEXT_COLOR,
                   }}
                 >
-                  {message.title ?? "[No Title]"}
+                  {message.getTitle() ?? "[No Title]"}
                 </Text>
               </View>
             </View>
@@ -258,7 +255,7 @@ export default function MessagePollView({ message, showGroup = false }: Props): 
                 //backgroundColor: "cyan",
               }}
             >
-              {pollOptions.map((pollOption, index) => {
+              {pollOptions?.map((pollOption, index) => {
                 return (
                   <View
                     key={"poll_option_" + index}
@@ -279,7 +276,7 @@ export default function MessagePollView({ message, showGroup = false }: Props): 
                           justifyContent: "center",
                         }}
                       >
-                        <FacePile userIds={pollSummary[pollOption.name].users} border />
+                        <FacePile userIds={pollSummary?.[pollOption.name].users} border />
                       </View>
                     </View>
                     <View
@@ -296,7 +293,7 @@ export default function MessagePollView({ message, showGroup = false }: Props): 
                         style={{
                           width:
                             "" +
-                            (100 * pollSummary[pollOption.name].count) /
+                            (100 * pollSummary?.[pollOption.name]?.count) /
                               pollSummary[pollOption.name].total +
                             "%",
                           backgroundColor: "red",
@@ -328,7 +325,7 @@ export default function MessagePollView({ message, showGroup = false }: Props): 
                   //backgroundColor: "yellow",
                 }}
               >
-                {!Utils.isEmptyString(message.text) && (
+                {!Utils.isEmptyString(message.getText()) && (
                   <Text
                     key="text"
                     numberOfLines={1}
@@ -339,10 +336,10 @@ export default function MessagePollView({ message, showGroup = false }: Props): 
                       flexGrow: 1,
                     }}
                   >
-                    {(message.text ?? "").replace(/(\r\n|\n|\r)/gm, " ")}
+                    {(message.getText() ?? "").replace(/(\r\n|\n|\r)/gm, " ")}
                   </Text>
                 )}
-                {(message.attachments ?? []).map((attachment) => {
+                {(message.getAttachments() ?? []).map((attachment) => {
                   return (
                     <Image
                       key="image"
@@ -376,7 +373,7 @@ export default function MessagePollView({ message, showGroup = false }: Props): 
                       //backgroundColor: "green",
                       paddingLeft: 0,
                       fontSize: 14,
-                      fontWeight: message.unreadChildCount > 0 ? "bold" : "normal",
+                      fontWeight: message.getUnreadChildCount() > 0 ? "bold" : "normal",
                       color: UIConstants.BLACK_TEXT_COLOR,
                     }}
                   >

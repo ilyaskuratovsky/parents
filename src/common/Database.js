@@ -65,7 +65,7 @@ export type Message = {
   event: ?MessageEvent,
   event_response: ?string,
   event_poll: ?MessageEventPoll,
-  poll: ?Array<{ name: string }>,
+  poll: ?Array<{ name: string, message: string }>,
   poll_response: ?{ ... },
   ...
 };
@@ -332,7 +332,7 @@ export async function sendMessage(
   groupId: string,
   uid: string,
   title: ?string,
-  text: string,
+  text: ?string,
   data: ?{ ... },
   papaId: ?string,
   notificationInfo: ?NotificationInfo

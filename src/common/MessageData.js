@@ -325,7 +325,7 @@ export default class RootMessage {
     return result;
   }
 
-  getPoll(): ?Array<{ name: string, ... }> {
+  getPoll(): ?Array<{ name: string, message: string, ... }> {
     return this.rootMessage.poll;
   }
 

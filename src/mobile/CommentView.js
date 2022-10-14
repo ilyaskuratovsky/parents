@@ -20,7 +20,7 @@ export default function CommentView({
   onPress,
 }: {
   item: RootMessage,
-  onPress: () => void,
+  onPress?: () => void,
 }): React.Node {
   const user = Data.getCurrentUser();
   const debugMode = Debug.isDebugMode();

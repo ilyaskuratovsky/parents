@@ -1,7 +1,8 @@
 // @flow strict-local
 
 import * as Calendar from "expo-calendar";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import * as React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Button,
@@ -40,37 +41,43 @@ import * as Debug from "../common/Debug";
 import * as Data from "../common/Data";
 import DebugText from "./DebugText";
 import * as Logger from "../common/Logger";
-import { RootMessage } from "../common/MessageData";
+import RootMessage from "../common/MessageData";
+import * as MessageData from "../common/MessageData";
+import nullthrows from "nullthrows";
 
-export default function MessagePollModal({ messageId, scrollToEnd }) {
+type Props = {
+  messageId: string,
+  scrollToEnd?: ?boolean,
+};
+export default function MessagePollModal({ messageId, scrollToEnd }: Props): React.Node {
   Logger.log("MessagePollModal: " + messageId);
   const debugMode = Debug.isDebugMode();
   const dispatch = useDispatch();
   const user = Data.getCurrentUser();
-  const messageObj = Data.getMessage(messageId);
-  const message = Data.getRootMessageWithChildrenAndUserStatus(messageId);
-  const pollMessage = new RootMessage(message);
-  const pollSummary = pollMessage.getPollSummary();
-  const pollOptions = message.poll;
-  const group = Data.getGroup(message.groupId);
-  const sortedChildMessages = [...message.children] ?? [];
+  const pollMessage = nullthrows(MessageData.getRootMessage(messageId));
+  //const message = Data.getRootMessageWithChildrenAndUserStatus(messageId);
+  //const pollMessage = new RootMessage(message);
+  const pollSummary = nullthrows(pollMessage.getPollSummary());
+  const pollOptions = nullthrows(pollMessage.getPoll());
+  const group = nullthrows(pollMessage.getGroup());
+  const sortedChildMessages = [...pollMessage.getChildren()] ?? [];
   sortedChildMessages.sort((m1, m2) => {
-    return m1.timestamp - m2.timestamp;
+    return (m1.getTimestamp()?.getTime() ?? 0) - (m2.getTimestamp()?.getTime() ?? 0);
     //return 0;
   });
 
   const childMessages = sortedChildMessages;
 
   // send message callback function
-  const sendMessage = useCallback(async (text) => {
-    const groupName = group.name;
+  const sendMessage = useCallback(async (text: string) => {
+    const groupName = group?.name;
     const fromName = UserInfo.chatDisplayName(user);
     setText("");
-    await Controller.sendReply(dispatch, user, group.id, text, message.id, {
+    await Controller.sendReply(dispatch, user, group?.id, text, pollMessage.getID(), {
       groupName,
       fromName,
     });
-    scrollViewRef.current.scrollToEnd({ animated: true });
+    scrollViewRef.current?.scrollToEnd({ animated: true });
   }, []);
 
   const [text, setText] = useState("");
@@ -78,22 +85,30 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
   const insets = useSafeAreaInsets();
   const topBarHeight = 40;
 
-  useEffect(async () => {
-    let markRead = [];
-    if (message.status != "read") {
-      markRead.push(message.id);
-    }
-    const unreadChildMessages = (message.children ?? []).filter((m) => m.status != "read");
-    markRead = markRead.concat(unreadChildMessages.map((m) => m.id));
-    Controller.markMessagesRead(user, markRead);
-  }, [message]);
+  useEffect(() => {
+    const markMessagesRead = async (): Promise<void> => {
+      let markRead = [];
+      if (pollMessage.getUserStatus().status != "read") {
+        markRead.push(pollMessage.getID());
+      }
+      const unreadChildMessages = (pollMessage.getChildren() ?? []).filter(
+        (m) => m.getUserStatus().status != "read"
+      );
+      markRead = markRead.concat(unreadChildMessages.map((m) => m.getID()));
+      Controller.markMessagesRead(user, markRead);
+    };
+    markMessagesRead();
+  }, [pollMessage]);
 
   // if the the message id is a comment (e.g. this view was opened to a comment, scroll all the way down
   // fix this later to scroll to the specific message
-  useEffect(async () => {
-    if (scrollToEnd) {
-      scrollViewRef.current.scrollToEnd({ anmiated: true });
-    }
+  useEffect(() => {
+    const scrollToEnd = async (): Promise<void> => {
+      if (scrollToEnd) {
+        scrollViewRef?.current?.scrollToEnd({ anmiated: true });
+      }
+    };
+    scrollToEnd();
   }, []);
 
   return (
@@ -131,7 +146,7 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
           keyboardVerticalOffset={40}
           enabled
         >
-          <DebugText key="debug1" text={JSON.stringify(messageObj, null, 2)} />
+          <DebugText key="debug1" text={JSON.stringify(pollMessage.rootMessage, null, 2)} />
           <ScrollView
             key="scroll"
             ref={scrollViewRef}
@@ -161,7 +176,7 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
                   paddingBottom: 6,
                 }}
               >
-                {UserInfo.smallAvatarComponent(message.user)}
+                {UserInfo.smallAvatarComponent(pollMessage.getUserInfo())}
                 <View
                   style={{
                     flex: 1,
@@ -180,7 +195,7 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
                       color: UIConstants.BLACK_TEXT_COLOR,
                     }}
                   >
-                    {UserInfo.chatDisplayName(message.user)}
+                    {UserInfo.chatDisplayName(pollMessage.getUserInfo())}
                   </Text>
                 </View>
               </View>
@@ -201,13 +216,13 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
                     color: UIConstants.BLACK_TEXT_COLOR,
                   }}
                 >
-                  {message.title}
+                  {pollMessage.getTitle()}
                 </Text>
 
                 {/* the message text */}
                 <Autolink
                   // Required: the text to parse for links
-                  text={message.text}
+                  text={pollMessage.getText()}
                   // Optional: enable email linking
                   email
                   // Optional: enable hashtag linking to instagram
@@ -266,12 +281,15 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
                     style={{ width: 100, fontSize: 10 }}
                     onPress={() => {
                       dispatch(
-                        Actions.openModal({ modal: "MESSAGE_POLL_VOTE", messageId: message.id })
+                        Actions.openModal({
+                          modal: "MESSAGE_POLL_VOTE",
+                          messageId: pollMessage.getID(),
+                        })
                       );
                     }}
                   />
                 </View>
-                <DebugText text={JSON.stringify(message, null, 2)} />
+                <DebugText text={JSON.stringify(pollMessage.rootMessage, null, 2)} />
               </View>
             </View>
             <Divider key="divider" style={{}} width={1} color="darkgrey" />
@@ -300,24 +318,14 @@ export default function MessagePollModal({ messageId, scrollToEnd }) {
               alignItems: "center",
             }}
           >
-            <IconButton
-              key="camera"
-              icon="camera"
-              color={"blue"}
-              size={32}
-              onPress={() => {
-                sendEventReply(eventResponse, text);
-              }}
-            />
+            <IconButton key="camera" icon="camera" color={"blue"} size={32} onPress={() => {}} />
             <IconButton
               key="button"
               icon="image"
               color={"blue"}
               backgroundColor="green"
               size={32}
-              onPress={() => {
-                sendEventReply(eventResponse, text);
-              }}
+              onPress={() => {}}
             />
 
             <TextInput

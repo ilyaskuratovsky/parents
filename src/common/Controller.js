@@ -633,7 +633,7 @@ export async function sendMessage(
   userInfo: UserInfo,
   groupId: string,
   title: ?string,
-  text: string,
+  text: ?string,
   data: ?{ ... },
   papaId: ?string,
   notificationInfo: ?NotificationInfo

@@ -1,7 +1,8 @@
 // @flow strict-local
 
 import * as Calendar from "expo-calendar";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import * as React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Button,
@@ -40,14 +41,19 @@ import * as Debug from "../common/Debug";
 import * as Data from "../common/Data";
 import DebugText from "./DebugText";
 import * as Logger from "../common/Logger";
-import { RootMessage } from "../common/MessageData";
+import RootMessage from "../common/MessageData";
+import * as MessageData from "../common/MessageData";
+import nullthrows from "nullthrows";
 
-export default function MessagePollVoteModal({ messageId }) {
+type Props = {
+  messageId: string,
+};
+export default function MessagePollVoteModal({ messageId }: Props): React.Node {
   Logger.log("MessagePollVoteModal: " + messageId);
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
-  const message = new RootMessage(Data.getRootMessageWithChildrenAndUserStatus(messageId));
-  const pollOptions = message.getPoll();
+  const message = nullthrows(MessageData.getRootMessage(messageId));
+  const pollOptions = nullthrows(message.getPoll());
   const [pollSelection, setPollSelection] = useState(message.getUserPollResponses(userInfo.uid));
 
   return (
@@ -77,11 +83,11 @@ export default function MessagePollVoteModal({ messageId }) {
               >
                 <View style={{ width: "80%" }}>
                   <Checkbox
-                    checked={pollSelection[pollOption.name]}
+                    checked={pollSelection?.[pollOption.name]}
                     onPress={async () => {
                       setPollSelection({
                         ...pollSelection,
-                        [pollOption.name]: !pollSelection[pollOption.name],
+                        [pollOption.name]: !pollSelection?.[pollOption.name],
                       });
                     }}
                     text={<Text key={index}>{pollOption.message}</Text>}
@@ -115,11 +121,11 @@ export default function MessagePollVoteModal({ messageId }) {
               await Controller.sendMessage(
                 dispatch,
                 userInfo,
-                message.groupId,
+                message.getGroupId(),
                 null,
                 null,
                 { poll_response: pollSelection },
-                message.id,
+                message.getID(),
                 null
               );
               dispatch(Actions.closeModal());
