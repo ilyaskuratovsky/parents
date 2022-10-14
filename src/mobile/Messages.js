@@ -1,6 +1,6 @@
 // @flow strict-local
 
-import React from "react";
+import * as React from "react";
 import { Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,7 +10,7 @@ import * as Globals from "./Globals";
 import * as Debug from "../common/Debug";
 import * as UserInfo from "../common/UserInfo";
 
-export default function Messages(props) {
+export default function Messages(): React.Node {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
   const userInfo = useSelector((state) => state.main.userInfo);
@@ -189,7 +189,7 @@ export default function Messages(props) {
                   style={{ width: 100 }}
                   text="Dismiss"
                   onPress={async () => {
-                    await Controller.dismissGroupMembershipRequest(dispatch, userInfo, invite.id);
+                    await Controller.dismissGroupMembershipRequest(userInfo, request);
                   }}
                 />
               </View>

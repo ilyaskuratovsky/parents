@@ -1,7 +1,8 @@
 // @flow strict-local
 
 import * as Calendar from "expo-calendar";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import * as React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import moment from "moment-timezone";
 import * as Debug from "../common/Debug";
 import {
@@ -33,35 +34,52 @@ import * as UserInfo from "../common/UserInfo";
 import * as Logger from "../common/Logger";
 import * as Actions from "../common/Actions";
 
-export default function BookCalendarEventModal({ title, notes, startDate, endDate, timezone }) {
+type Props = {
+  title: string,
+  notes: string,
+  startDate: mixed,
+  endDate: mixed,
+  timezone: mixed,
+};
+export default function BookCalendarEventModal({
+  title,
+  notes,
+  startDate,
+  endDate,
+  timezone,
+}: Props): React.Node {
   const dispatch = useDispatch();
   const [calendars, setCalendars] = useState(null);
   const [calendarMap, setCalendarMap] = useState(null);
   const visible = true;
 
-  useEffect(async () => {
-    if (visible) {
-      Logger.log("requesting calendar permission");
-      const { status } = await Calendar.requestCalendarPermissionsAsync();
-      if (status === "granted") {
-        Logger.log("requesting calendar permission: granted");
-        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-        const calendarMap = calendars
-          .filter((cal) => {
-            return cal.allowsModifications === true;
-          })
-          .reduce((map, cal) => {
-            const source = cal.source.name;
-            if (map[source] == null) {
-              map[source] = [];
-            }
-            map[source].push(cal);
-            return map;
-          }, {});
-        setCalendars(calendars);
-        setCalendarMap(calendarMap);
+  useEffect(() => {
+    const book = async () => {
+      if (visible) {
+        Logger.log("requesting calendar permission");
+        const { status } = await Calendar.requestCalendarPermissionsAsync();
+        if (status === "granted") {
+          Logger.log("requesting calendar permission: granted");
+          const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+          const calendarMap = calendars
+            .filter((cal) => {
+              return cal.allowsModifications === true;
+            })
+            .reduce((map, cal) => {
+              const source = cal.source.name;
+              if (map[source] == null) {
+                map[source] = [];
+              }
+              map[source].push(cal);
+              return map;
+            }, {});
+          setCalendars(calendars);
+          setCalendarMap(calendarMap);
+        }
       }
-    }
+    };
+
+    book();
   }, [visible]);
 
   return (

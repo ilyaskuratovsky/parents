@@ -158,6 +158,7 @@ export default function MessageView({
                   >
                     {UserInfo.chatDisplayName(item.getUserInfo())} {/*item._id*/}
                   </Text>
+                  <DebugText text={"UserInfo: " + JSON.stringify(item.getUserInfo() ?? "null")} />
                   <View
                     key="message_time"
                     style={{

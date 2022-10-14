@@ -433,7 +433,6 @@ export async function acceptGroupMembershipRequest(
 }
 export async function rejectGroupMembershipRequest(
   userInfo: UserInfo,
-  groupId: string,
   groupMembershipRequest: GroupMembershipRequest
 ) {
   //get the latest group membership request then update it indicating this particular user dismissed it

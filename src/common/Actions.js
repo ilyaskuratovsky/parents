@@ -213,7 +213,7 @@ export const mainSlice: {
       const userMap = {};
       for (const user of users) {
         userList.push(user);
-        userMap[user.id] = user;
+        userMap[user.uid] = user;
       }
 
       //groups
