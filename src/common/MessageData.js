@@ -16,7 +16,7 @@ import type { MainState, RootState } from "./Actions";
 
 export function getAllRootMessages(): Array<RootMessage> {
   const rootMessagesMap = getAllRootMessagesMap();
-  return Object.keys(rootMessagesMap).map((k) => rootMessagesMap[k]);
+  return sortMessages(Object.keys(rootMessagesMap).map((k) => rootMessagesMap[k]));
 }
 
 export function getGroupUserRootUnreadMessages(groupId: string): Array<RootMessage> {
@@ -117,6 +117,13 @@ export function getGroupUserRootMessages(groupId: string): Array<RootMessage> {
   return Object.keys(all)
     .map((k) => all[k])
     .filter((rootMessage) => rootMessage.getGroupId() === groupId);
+}
+
+function sortMessages(messages: Array<RootMessage>) {
+  messages.sort((m1, m2) => {
+    return (m2.getTimestamp()?.getTime() ?? 0) - (m1.getTimestamp()?.getTime() ?? 0);
+  });
+  return messages;
 }
 
 export default class RootMessage {

@@ -134,19 +134,6 @@ export default function FeedScreen(): React.Node {
         </View>
       </View>
       <Toolbar key="toolbar" />
-
-      {/* MODALS */}
-      {/*messagesModalVisible != null && (
-        <MessageModalContainer
-          groupId={messagesModalVisible.groupId}
-          messageId={messagesModalVisible.messageId}
-          visible={messagesModalVisible != null}
-          closeModal={() => {
-            setMessagesModalVisible(null);
-          }}
-          containerStyle={{ paddingLeft: 24 }}
-        />
-        )*/}
     </Portal>
   );
 }

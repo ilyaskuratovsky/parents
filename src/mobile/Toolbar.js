@@ -1,6 +1,7 @@
 // @flow strict-local
 import * as ReactType from "react";
-import React from "react";
+import * as React from "react";
+import { useMemo } from "react";
 import { Badge } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
 import * as MyButtons from "./MyButtons";
@@ -12,7 +13,10 @@ import * as Data from "../common/Data";
 import * as Messages from "../common/MessageData";
 import * as ChatMessages from "../common/ChatMessageData";
 
-const Toolbar = ({ selected }) => {
+type Props = {
+  selected?: ?string,
+};
+export default function Toolbar({ selected }: Props): React.Node {
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
   const unreadMessageCount = Messages.getUserUnreadMessageCount();
@@ -155,7 +159,9 @@ const Toolbar = ({ selected }) => {
       */}
     </BottomBar>
   );
-};
+}
 
-const component: mixed = React.memo(Toolbar);
-export default component;
+// const component = ({ selected }: Props): React.Node => {
+//   return useMemo(() => Toolbar({ selected }), [selected]);
+// };
+// export default component;
