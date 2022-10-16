@@ -29,7 +29,7 @@ export function chatDisplayName(userInfo: ?UserInfo): ?string {
 
 export function avatarColor(userInfo: ?UserInfo): string {
   var hash = 0;
-  if (userInfo.email != null) {
+  if (userInfo?.email != null) {
     for (var i = 0; i < userInfo.email.length; i++) {
       hash = userInfo.email.charCodeAt(i) + ((hash << 5) - hash);
     }
@@ -74,18 +74,26 @@ export function avatarComponent(userInfo: UserInfo, onPress?: ?() => void): Reac
 
 export function smallAvatarComponent(
   userInfo: ?UserInfo,
-  onPress: ?() => void,
-  border: ?string
+  onPress?: ?() => void,
+  border?: ?boolean
 ): React.Node {
-  return sizedAvatarComponent(userInfo, onPress, border, "small");
+  if (userInfo != null) {
+    return sizedAvatarComponent(userInfo, onPress, border, "small");
+  } else {
+    return null;
+  }
 }
 
 export function tinyAvatarComponent(
   userInfo: ?UserInfo,
-  onPress: ?() => void,
-  border: ?string
+  onPress?: ?() => void,
+  border?: ?boolean
 ): React.Node {
-  return sizedAvatarComponent(userInfo, onPress, border, "tiny");
+  if (userInfo != null) {
+    return sizedAvatarComponent(userInfo, onPress, border, "tiny");
+  } else {
+    return null;
+  }
 }
 
 export function tinyAvatarComponentWithName(
@@ -154,7 +162,12 @@ export function smallAvatarComponentWithName(
   );
 }
 
-function sizedAvatarComponent(userInfo, onPress, border, size) {
+function sizedAvatarComponent(
+  userInfo: UserInfo,
+  onPress?: ?() => void,
+  border?: ?boolean,
+  size?: ?string
+) {
   let imageHeight = 30;
   if (size == "small") {
     imageHeight = 30;

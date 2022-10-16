@@ -59,6 +59,7 @@ export default function GroupView({ groupId }: { groupId: string }): React.Node 
             user_group_membership: userGroupMembership?.id,
             group: group.id,
             unreadRootMessages: JSON.stringify(unreadRootMessages.map((m) => m.getID())),
+            members,
           },
           null,
           2
@@ -120,9 +121,9 @@ export default function GroupView({ groupId }: { groupId: string }): React.Node 
               userIds={
                 /*[userInfo.uid]*/ [].concat(
                   members
-                    .filter((groupMembership) => {
-                      return userInfo.uid != groupMembership.uid;
-                    })
+                    // .filter((groupMembership) => {
+                    //   return userInfo.uid != groupMembership.uid;
+                    // })
                     .map((groupMembership) => groupMembership.uid)
                 )
               }

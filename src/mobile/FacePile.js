@@ -4,8 +4,11 @@ import * as React from "react";
 import { View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as UserInfo from "../common/UserInfo";
+import DebugText from "./DebugText";
 
-type Props = {};
+type Props = {
+  userIds: Array<string>,
+};
 
 export default function FacePile({ userIds }: Props): React.Node {
   const dispatch = useDispatch();
@@ -24,5 +27,10 @@ export default function FacePile({ userIds }: Props): React.Node {
     );
   });
 
-  return <View style={{ flexDirection: "row" }}>{components}</View>;
+  return (
+    <View style={{ flex: 1, flexDirection: "column" }}>
+      <DebugText text={JSON.stringify(userIds)} />
+      <View style={{ flex: 1, flexDirection: "row" }}>{components}</View>
+    </View>
+  );
 }

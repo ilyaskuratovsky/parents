@@ -23,6 +23,7 @@ import * as Data from "../common/Data";
 import { Badge } from "react-native-elements";
 import GroupView from "./GroupView";
 import { styles } from "./Styles";
+import DebugText from "./DebugText";
 
 export default function GroupsScreen(): React.Node {
   const dispatch = useDispatch();
@@ -143,7 +144,6 @@ export default function GroupsScreen(): React.Node {
                 {"My Groups"}
               </Text>
             </View>
-            {debugMode && <Text style={{ fontSize: 8 }}>GroupsScreen.js</Text>}
           </View>
         }
         center={<Text>{""}</Text>}
@@ -157,6 +157,7 @@ export default function GroupsScreen(): React.Node {
           />
         }
       />
+      <DebugText text="GroupsScreen.js" />
       <View key="main_content" style={{ flex: 1, backgroundColor: "white", paddingTop: 20 }}>
         <ScrollView key="messages">
           {groupsComponents}
