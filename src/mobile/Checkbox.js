@@ -1,13 +1,15 @@
 // @flow strict-local
 
-import React from "react";
+import * as React from "react";
 import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Avatar, Divider } from "react-native-elements";
 import { IconButton } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-const Checkbox = ({ size, checked, onPress, style, containerStyle, text }) => {
+type Props = {};
+
+const Checkbox = ({ size, checked, onPress, style, containerStyle, text }: Props): React.Node => {
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={{ flexDirection: "row", alignItems: "center", ...containerStyle }}>

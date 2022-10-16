@@ -1,6 +1,7 @@
 // @flow strict-local
 
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
+import * as React from "react";
 import { ScrollView, Text, TextInput, useWindowDimensions, View } from "react-native";
 import { Divider } from "react-native-elements";
 import { IconButton } from "react-native-paper";
@@ -11,8 +12,15 @@ import * as MyButtons from "./MyButtons";
 import Portal from "./Portal";
 import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as UserInfo from "../common/UserInfo";
-
-export default function MessageScreen({ groupId, messageId, onBack }) {
+import * as Data from "../common/Data";
+import * as MessageData from "../common/MessageData";
+import nullthrows from "nullthrows";
+type Props = {
+  groupId: string,
+  messageId: string,
+  onBack: () => void,
+};
+export default function MessageScreen({ groupId, messageId, onBack }: Props): React.Node {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
 
@@ -21,45 +29,53 @@ export default function MessageScreen({ groupId, messageId, onBack }) {
       userMap: state.main.userMap,
     };
   });
-  const group = Data.getGroup();
+  const group = Data.getGroup(groupId);
   const { height, width } = useWindowDimensions();
   const windowWidth = width ?? 0;
   const [membersModalVisible, setMembersModalVisible] = useState(false);
-  const message = Data.getMessage(messageId);
-  const user = Data.getUser(message.uid);
+  const message = nullthrows(MessageData.getRootMessage(messageId));
+  const user = nullthrows(message.getUserInfo());
 
-  const sortedChildMessages = [...message.children] ?? [];
-  sortedChildMessages.sort((m1, m2) => {
-    return m1.timestamp - m2.timestamp;
-    //return 0;
-  });
+  const sortedChildMessages = message.getChildren();
 
   const childMessages = sortedChildMessages.map((message) => {
-    const user = userMap[message.uid];
+    const user = message.getUserInfo();
     return {
-      _id: message.id,
-      text: message.text,
-      createdAt: new Date(message.timestamp),
+      _id: message.getID(),
+      text: message.getText(),
+      createdAt: message.getTimestamp(),
       user: {
-        _id: message.uid,
+        _id: message.getUserInfo()?.uid,
         name: UserInfo.chatDisplayName(user),
-        avatarColor: UserInfo.avatarColor(user),
+        avatarColor: user != null ? UserInfo.avatarColor(user) : "",
       },
     };
   });
 
   // send message callback function
   const sendMessage = useCallback(async (text) => {
-    const groupName = group.name;
+    const groupName = group?.name;
     const fromName = UserInfo.chatDisplayName(userInfo);
     setText("");
+
+    /*
+      dispatch: (?{ ... }) => void,
+  userInfo: UserInfo,
+  groupId: string,
+  title: ?string,
+  text: ?string,
+  data: ?{ ... },
+  papaId: ?string,
+  notificationInfo: ?NotificationInfo
+    */
     return await Controller.sendMessage(
       dispatch,
       userInfo,
       groupId,
+      null,
       text,
       null /* data */,
-      message.id,
+      message.getID(),
       {
         groupName,
         fromName,
@@ -164,7 +180,7 @@ export default function MessageScreen({ groupId, messageId, onBack }) {
               width: width - 20,
             }}
           >
-            {message.text}
+            {message.getText()}
           </Text>
         </View>
         <Divider style={{}} width={1} color="darkgrey" />

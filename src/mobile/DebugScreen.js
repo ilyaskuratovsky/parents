@@ -1,6 +1,8 @@
 // @flow strict-local
 
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
+
 import { SafeAreaView, Text, TextInput, View } from "react-native";
 import JSONTree from "react-native-json-tree";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,8 +11,9 @@ import * as MyButtons from "./MyButtons";
 import Toolbar from "./Toolbar";
 import * as Globals from "./Globals";
 import * as Debug from "../common/Debug";
+type Props = {};
 
-export default function DebugScreen({ backAction }) {
+export default function DebugScreen({ backAction }: Props): React.Node {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
   const { schoolList, schoolMap, groupList, groupMap, orgsList, userGroupMemberships } =

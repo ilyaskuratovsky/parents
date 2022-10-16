@@ -63,7 +63,7 @@ export type Message = {
   papaId: string,
   uid: string,
   event: ?MessageEvent,
-  event_response: ?string,
+  eventResponse: ?string,
   event_poll: ?MessageEventPoll,
   poll: ?Array<{ name: string, message: string }>,
   poll_response: ?{ ... },

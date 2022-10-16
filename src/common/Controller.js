@@ -583,20 +583,18 @@ export async function markChatMessagesRead(
 export async function createPrivateGroupAndJoin(
   userInfo: UserInfo,
   groupName: string,
-  groupDescription: string
+  groupDescription: string,
+  invitees: Array<string>,
+  emailInvitees: Array<string>
 ): Promise<string> {
   const groupId = await Database.createGroup(groupName, groupDescription, "private", null);
   await Database.joinGroup(userInfo.uid, groupId);
 
-  /*
   for (const inviteeUid of invitees) {
     sendGroupInviteToUser(userInfo, groupId, inviteeUid);
   }
 
-  for (const inviteeEmail of emailInvitees) {
-    sendGroupInviteToEmail(userInfo, groupId, inviteeEmail);
-  }
-  */
+  sendGroupInviteToEmails(userInfo, groupId, emailInvitees);
 
   return groupId;
 }

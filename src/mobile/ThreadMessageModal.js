@@ -1,5 +1,7 @@
 // @flow strict-local
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
+import * as React from "react";
+
 import {
   Image,
   Modal,

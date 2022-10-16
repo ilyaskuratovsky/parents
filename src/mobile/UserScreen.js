@@ -1,6 +1,6 @@
 // @flow strict-local
 
-import React from "react";
+import * as React from "react";
 import { Text } from "react-native";
 import { useSelector } from "react-redux";
 import DebugScreen from "./DebugScreen";

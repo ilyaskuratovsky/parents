@@ -1,11 +1,15 @@
 // @flow strict-local
 
-import React from "react";
+import * as React from "react";
 import { Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "../common/Actions";
 
-export default function LoggedInScreenRouter({ groupId, navigation }) {
+type Props = {
+  groupId: string,
+};
+
+export default function LoggedInScreenRouter({ groupId }: Props): React.Node {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
   const { schoolList, schoolMap, groupList, groupMap, userGroupMemberships } = useSelector(

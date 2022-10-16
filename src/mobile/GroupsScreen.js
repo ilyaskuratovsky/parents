@@ -1,6 +1,7 @@
 // @flow strict-local
 
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { Divider } from "react-native-elements";
 import { IconButton } from "react-native-paper";
@@ -23,7 +24,7 @@ import { Badge } from "react-native-elements";
 import GroupView from "./GroupView";
 import { styles } from "./Styles";
 
-export default function GroupsScreen({}) {
+export default function GroupsScreen(): React.Node {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
   // const x = null;

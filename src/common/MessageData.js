@@ -13,6 +13,7 @@ import type {
   MessageEventPoll,
 } from "./Database";
 import type { MainState, RootState } from "./Actions";
+import * as Utils from "./Utils";
 
 export function getAllRootMessages(): Array<RootMessage> {
   const rootMessagesMap = getAllRootMessagesMap();
@@ -255,6 +256,26 @@ export default class RootMessage {
   }
 
   getEventResponse() {}
+
+  getUserEventResponse(uid: string): ?string {
+    const responses = this.children?.filter((m) => {
+      return m.uid == uid && !Utils.isEmptyString(m.eventResponse);
+    });
+    const response = responses?.[0];
+    return response?.eventResponse;
+  }
+
+  getEventResponses(): Array<RootMessage> {
+    const userResponseMap =
+      this.children?.reduce((map, message) => {
+        const uid = message.uid;
+        map[uid] = new RootMessage(message, [], this.state);
+        return map;
+      }, {}) ?? {};
+
+    return Object.keys(userResponseMap).map((uid) => userResponseMap[uid]);
+  }
+
   getEventSummary(): ?{
     acceptedCount: number,
     acceptedResponses: Array<RootMessage>,
@@ -265,11 +286,11 @@ export default class RootMessage {
     notRespondedCount: number,
   } {
     const acceptedResponses =
-      this.children?.filter((response) => response.event_response == "Going") ?? [];
+      this.children?.filter((response) => response.eventResponse == "Going") ?? [];
     const declinedResponses =
-      this.children?.filter((response) => response.event_response == "Declined") ?? [];
+      this.children?.filter((response) => response.eventResponse == "Declined") ?? [];
     const maybeResponses =
-      this.children?.filter((response) => response.event_response == "Maybe") ?? [];
+      this.children?.filter((response) => response.eventResponse == "Maybe") ?? [];
 
     return {
       acceptedResponses: acceptedResponses.map((m) => new RootMessage(m, [], this.state)),

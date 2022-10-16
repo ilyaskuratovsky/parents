@@ -1,6 +1,8 @@
 // @flow strict-local
 
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
+import * as React from "react";
+
 import {
   ScrollView,
   Text,

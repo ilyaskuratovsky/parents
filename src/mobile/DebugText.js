@@ -1,6 +1,7 @@
 // @flow strict-local
 
-import React, { useState, useRef } from "react";
+import * as React from "react";
+import { useState, useRef } from "react";
 import { Alert, SafeAreaView, Text, TextInput, View, Modal, ScrollView } from "react-native";
 import JSONTree from "react-native-json-tree";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,7 +14,7 @@ import * as Debug from "../common/Debug";
 import * as Actions from "../common/Actions";
 import { Clipboard } from "react-native";
 
-export default function DebugText({ text }) {
+export default function DebugText({ text }: { text: string }): React.Node {
   //const lines = (children.match(/\n/g) || "").length + 1;
   const debugMode = Debug.isDebugMode();
   let displayText = text;
@@ -85,7 +86,7 @@ export default function DebugText({ text }) {
   );
 }
 
-export function DebugTextModal({ text }) {
+export function DebugTextModal({ text }: { text: string }): React.Node {
   const dispatch = useDispatch();
   const [textState, setTextState] = useState(text);
   return (

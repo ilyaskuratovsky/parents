@@ -1,6 +1,7 @@
 // @flow strict-local
 
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import { Modal, Text, View, TextInput, SafeAreaView } from "react-native";
 import { ToggleButton } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";

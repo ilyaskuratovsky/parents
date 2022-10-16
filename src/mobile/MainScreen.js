@@ -1,6 +1,6 @@
 // @flow strict-local
 
-import React from "react";
+import * as React from "react";
 import { StyleSheet, Text } from "react-native";
 import * as Paper from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,7 +8,8 @@ import Portal from "./Portal";
 import TopBar from "./TopBar";
 import * as UIConstants from "./UIConstants";
 
-function PlaybooksListScreen(props) {
+type Props = {};
+function PlaybooksListScreen(): React.Node {
   const myGroups = useSelector((state) => state.main.groupSubscriptions);
   const dispatch = useDispatch();
   return (

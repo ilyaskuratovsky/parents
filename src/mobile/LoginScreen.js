@@ -1,5 +1,6 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { ActivityIndicator, Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { useDispatch } from "react-redux";

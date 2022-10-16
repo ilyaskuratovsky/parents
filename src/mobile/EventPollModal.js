@@ -1,7 +1,8 @@
 // @flow strict-local
 
 import * as Calendar from "expo-calendar";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import * as React from "react";
 import {
   Alert,
   Button,
@@ -41,8 +42,13 @@ import * as Date from "../common/Date";
 import * as Data from "../common/Data";
 import * as Actions from "../common/Actions";
 import * as Debug from "../common/Debug";
+import * as MessageData from "../common/MessageData";
 
-export default function EventPollModal({ messageId }) {
+type Props = {
+  messageId: string,
+};
+
+export default function EventPollModal({ messageId }: Props): React.Node {
   const dispatch = useDispatch();
   const message = Data.getRootMessageWithChildrenAndUserStatus(messageId);
   const group = Data.getGroup(message.groupId);

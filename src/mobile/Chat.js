@@ -1,6 +1,8 @@
 // @flow strict-local
 
-import React, { useState, useEffect, useLayoutEffect, useCallback } from "react";
+import { useState, useEffect, useLayoutEffect, useCallback } from "react";
+import * as React from "react";
+
 import { TouchableOpacity, Text } from "react-native";
 import { GiftedChat } from "react-native-gifted-chat";
 import * as Logger from "../common/Logger";
@@ -18,6 +20,8 @@ import * as Firestore from "firebase/firestore";
 import { signOut } from "firebase/auth";
 
 import { auth, database } from "../../config/firebase";
+
+type Props = {};
 export default function Chat({ navigation }) {
   const [messages, setMessages] = useState([]);
 

@@ -1,10 +1,12 @@
 // @flow strict-local
 
-import React, { Component } from "react";
+import { Component } from "react";
+import * as React from "react";
 import { View, Button } from "react-native";
 //import { LoginButton, AccessToken } from "react-native-fbsdk-next";
 import { getAuth, signInWithPopup, FacebookAuthProvider, signInWithRedirect } from "firebase/auth";
 import * as Logger from "../common/Logger";
+type Props = {};
 
 export default class FacebookSignin extends Component {
   render() {

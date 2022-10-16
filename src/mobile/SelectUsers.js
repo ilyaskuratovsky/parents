@@ -1,6 +1,7 @@
 // @flow strict-local
 
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import { Modal, SafeAreaView, ScrollView, Text, TextInput, View } from "react-native";
 import { CheckBox } from "react-native-elements";
 import { useSelector } from "react-redux";

@@ -1,7 +1,8 @@
 // @flow strict-local
 
 import * as Calendar from "expo-calendar";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import * as React from "react";
 import {
   Alert,
   Button,
@@ -39,16 +40,29 @@ import MessageModal from "./MessageModal";
 import EventMessageModal from "./EventMessageModal";
 import EventPollMessageModal from "./EventPollMessageModal";
 import * as Logger from "../common/Logger";
+import * as MessageData from "../common/MessageData";
+import nullthrows from "nullthrows";
 
-export default function MessagesContainer({ groupId, messageId, visible, closeModal }) {
+type Props = {
+  groupId: string,
+  messageId: string,
+  visible: boolean,
+  closeModal: () => void,
+};
+export default function MessagesContainer({
+  groupId,
+  messageId,
+  visible,
+  closeModal,
+}: Props): React.Node {
   const user = useSelector((state) => state.main.userInfo);
 
   // if message has a parent, render the parent message
-  const message = Data.getRootMessageWithChildrenAndUserStatus(messageId);
-  const group = Data.getGroup(grouId);
+  const message = nullthrows(MessageData.getRootMessage(messageId));
+  const group = nullthrows(Data.getGroup(groupId));
   Logger.log("built message with children: " + message.id);
 
-  if (message.event != null) {
+  if (message.getEvent() != null) {
     return (
       <EventMessageModal
         user={user}
@@ -56,7 +70,6 @@ export default function MessagesContainer({ groupId, messageId, visible, closeMo
         message={message}
         visible={visible}
         closeModal={closeModal}
-        userMap={userMap}
       />
     );
   } else if (message.event_poll != null) {

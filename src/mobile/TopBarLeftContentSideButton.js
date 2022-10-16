@@ -1,6 +1,6 @@
 // @flow strict-local
 
-import React from "react";
+import * as React from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Avatar, Divider } from "react-native-elements";

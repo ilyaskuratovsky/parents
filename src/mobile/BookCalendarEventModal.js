@@ -36,10 +36,10 @@ import * as Actions from "../common/Actions";
 
 type Props = {
   title: string,
-  notes: string,
+  notes?: ?string,
   startDate: mixed,
   endDate: mixed,
-  timezone: mixed,
+  timezone?: ?mixed,
 };
 export default function BookCalendarEventModal({
   title,

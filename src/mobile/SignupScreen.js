@@ -1,7 +1,8 @@
 // @flow strict-local
 
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { useDispatch } from "react-redux";
 import { auth } from "../../config/firebase";

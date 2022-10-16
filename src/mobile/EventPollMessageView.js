@@ -1,7 +1,7 @@
 // @flow strict-local
 
 import moment from "moment-timezone";
-import React from "react";
+import * as React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import * as Globals from "./Globals";
 import * as UIConstants from "./UIConstants";
@@ -9,8 +9,15 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Actions from "../common/Actions";
 import * as Debug from "../common/Debug";
 import { Badge } from "react-native-elements";
+import RootMessage from "../common/MessageData";
+import DebugText from "./DebugText";
 
-export default function EventPollMessageView({ item, showGroup = false }) {
+type Props = {
+  item: RootMessage,
+  showGroup?: boolean,
+};
+
+export default function EventPollMessageView({ item, showGroup = false }: Props): React.Node {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
 
@@ -21,17 +28,14 @@ export default function EventPollMessageView({ item, showGroup = false }) {
         //backgroundColor: "purple"
       }}
     >
-      {debugMode ? <Text style={{ fontSize: 10 }}>{item.id}</Text> : null}
-      {debugMode ? (
-        <Text style={{ fontSize: 10 }}>{JSON.stringify({ ...item, children: null }, null, 2)}</Text>
-      ) : null}
+      <DebugText text={JSON.stringify({ ...item.rootMessage, children: item.children }, null, 2)} />
       <TouchableOpacity
         style={{ flex: 1, padding: 0, backgroundColor: "rgba(204, 255, 255, 0.5)" }}
         onPress={() => {
           dispatch(
             Actions.openModal({
               modal: "EVENT_POLL",
-              messageId: item.id,
+              messageId: item.getID(),
             })
           );
         }}
@@ -47,7 +51,7 @@ export default function EventPollMessageView({ item, showGroup = false }) {
               //backgroundColor: "cyan",
             }}
           >
-            {item.userStatus?.status != "read" && (
+            {item.getUserStatus()?.status != "read" && (
               <Badge status="primary" value={""} containerStyle={{ width: 12, height: 12 }} />
             )}
           </View>
@@ -62,7 +66,7 @@ export default function EventPollMessageView({ item, showGroup = false }) {
               <Text style={{ fontWeight: "bold", fontSize: 12 }}>Poll</Text>
             </View>
             <View style={{ height: 30 }}>
-              <Text style={{ fontWeight: "bold", fontSize: 20 }}>{item.title}</Text>
+              <Text style={{ fontWeight: "bold", fontSize: 20 }}>{item.getTitle()}</Text>
             </View>
 
             <View
@@ -80,7 +84,7 @@ export default function EventPollMessageView({ item, showGroup = false }) {
                   flexGrow: 1,
                 }}
               >
-                {(item.text ?? "").replace(/(\r\n|\n|\r)/gm, " ")}
+                {(item.getText() ?? "").replace(/(\r\n|\n|\r)/gm, " ")}
               </Text>
             </View>
           </View>
@@ -103,7 +107,7 @@ export default function EventPollMessageView({ item, showGroup = false }) {
             dispatch(
               Actions.openModal({
                 modal: "EVENT_POLL",
-                messageId: item.id,
+                messageId: item.getID(),
               })
             );
           }}

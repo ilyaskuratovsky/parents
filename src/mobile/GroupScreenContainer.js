@@ -1,6 +1,7 @@
 // @flow strict-local
 
-import React, { useCallback, useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
+import * as React from "react";
 import {
   Alert,
   Dimensions,
@@ -38,7 +39,12 @@ import * as Data from "../common/Data";
 import SchoolScreen from "./SchoolScreen";
 import GroupScreen from "./GroupScreen";
 
-export default function GroupScreenContainer({ groupId, messageId }) {
+type Props = {
+  groupId: string,
+  messageId: string,
+};
+
+export default function GroupScreenContainer({ groupId, messageId }: Props): React.Node {
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
   const group = Data.getGroup(groupId);

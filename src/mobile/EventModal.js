@@ -15,6 +15,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import * as Utils from "../common/Utils";
@@ -47,6 +48,8 @@ import * as MessageData from "../common/MessageData";
 import nullthrows from "nullthrows";
 import RootMessage from "../common/MessageData";
 import DebugText from "./DebugText";
+import BottomModal from "./BottomModal";
+import FacePile from "./FacePile";
 
 type Props = {
   messageId: string,
@@ -63,25 +66,11 @@ function EventModal({ message }: { message: RootMessage }) {
   const dispatch = useDispatch();
   const group = nullthrows(Data.getGroup(message.getGroupId()));
   const user = Data.getCurrentUser();
-
-  const sortedChildMessages = [...message.getChildren()] ?? [];
-  sortedChildMessages.sort((m1, m2) => {
-    return (m1.getTimestamp()?.getTime() ?? 0) - (m2.getTimestamp()?.getTime() ?? 0);
-    //return 0;
-  });
-
   const event = nullthrows(message.getEvent());
   const eventStart = Dates.toDate(event?.start);
   const eventEnd = Dates.toDate(event?.end);
-
-  const childMessages = sortedChildMessages;
-  let currentUserStatus = null;
-  const currentUserStatusArr: Array<RootMessage> = childMessages.filter((m) => {
-    return m.getUserInfo()?.uid == user.uid && !Utils.isEmptyString(m.getEventResponse());
-  });
-  if (currentUserStatusArr.length > 0) {
-    currentUserStatus = currentUserStatusArr[currentUserStatusArr.length - 1].getEventResponse();
-  }
+  const childMessages = message.getChildren();
+  const currentUserStatus = message.getUserEventResponse(user.uid);
 
   const sendEventReply = useCallback(async (eventResponse, text) => {
     const groupName = group?.name;
@@ -100,7 +89,7 @@ function EventModal({ message }: { message: RootMessage }) {
         fromName,
       }
     );
-    scrollViewRef.current.scrollToEnd({ animated: true });
+    scrollViewRef.current?.scrollToEnd({ animated: true });
 
     if (eventResponse === "Going" && currentUserStatus != "Going") {
       Alert.alert("Book in Calendar?", null, [
@@ -125,12 +114,10 @@ function EventModal({ message }: { message: RootMessage }) {
   const scrollViewRef = useRef();
   const topBarHeight = 64;
   const replyBarHeight = 80;
+  const [rsvpVisible, setRsvpVisible] = useState(false);
 
   Controller.useMarkRead(message.getID());
 
-  Logger.log(
-    "event response is empty string: " + (Utils.isEmptyString(eventResponse) ? "true" : "false")
-  );
   const canSend =
     (text != null && text.length > 0) ||
     (!Utils.isEmptyString(eventResponse) && eventResponse != currentUserStatus);
@@ -177,7 +164,10 @@ function EventModal({ message }: { message: RootMessage }) {
         >
           <ScrollView
             ref={scrollViewRef}
-            style={{ flex: 1 }}
+            style={{
+              flex: 1,
+              //backgroundColor: "yellow"
+            }}
             //onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
           >
             {/* Event Container */}
@@ -191,6 +181,20 @@ function EventModal({ message }: { message: RootMessage }) {
                 //backgroundColor: "purple",
               }}
             >
+              <View
+                style={{
+                  paddingLeft: 0,
+                  paddingRight: 10,
+                  justifyContent: "flex-start",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  paddingBottom: 0,
+                  //backgroundColor: "yellow",
+                }}
+              >
+                <Text style={{ fontSize: 10, color: "grey" }}>Created by</Text>
+                {UserInfo.tinyAvatarComponentWithName(message.getUserInfo())}
+              </View>
               {/* Event Title */}
               <View
                 style={{
@@ -419,179 +423,72 @@ function EventModal({ message }: { message: RootMessage }) {
                   //backgroundColor: "yellow",
                 }}
               >
-                <Text style={{ fontSize: 10, color: "grey" }}>Created by</Text>
-                {UserInfo.tinyAvatarComponentWithName(message.getUserInfo())}
-              </View>
-              <View
-                style={{
-                  paddingLeft: 0,
-                  paddingTop: 0,
-                  borderRadius: 0,
-                }}
-              >
-                {Globals.dev && <Text>EventMessageModal</Text>}
-                {Globals.dev && <Text>{message.getID()}</Text>}
-                {Globals.dev && (
-                  <ScrollView style={{ height: 200 }}>
-                    {/*
-                    <JSONTree
-                      data={message}
-                      labelRenderer={(raw) => (
-                        <Text style={{ fontSize: 8, fontWeight: "bold" }}>{raw}</Text>
-                      )}
-                      valueRenderer={(raw) => (
-                        <Text style={{ fontSize: 8, fontWeight: "bold" }}>{raw}</Text>
-                      )}
-                    />
-                      */}
-
-                    <Text style={{ fontSize: 8 }}>{JSON.stringify(message, null, 2)}</Text>
-                  </ScrollView>
-                )}
+                <Text style={{ fontSize: 10, color: "grey" }}>Going</Text>
+                <FacePile
+                  userIds={message
+                    .getEventResponses()
+                    .map((response) => response.getUserInfo()?.uid)}
+                  border
+                />
               </View>
             </View>
-            <Divider style={{}} width={1} color="darkgrey" />
             {/* reply section */}
             <View
               style={{
-                flex: 1,
-                paddingLeft: 10,
-                paddingRight: 10,
-                //backgroundColor: "cyan"
+                height: 50,
+                alignItems: "center",
+                //backgroundColor: "cyan",
+                flexDirection: "row",
+                justifyContent: "center",
               }}
             >
-              <View>
-                <Text>RSVP</Text>
-              </View>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "space-evenly",
-                  //backgroundColor: "yellow",
+              <MyButtons.FormButton
+                text="RSVP"
+                onPress={() => {
+                  //await sendEventReply(eventResponse, text);
+                  console.log("rsvp pressed");
+                  setRsvpVisible(true);
                 }}
-              >
-                <Checkbox
-                  checked={eventResponse === "Going"}
-                  onPress={async () => {
-                    setEventResponse("Going");
-                  }}
-                  text={
-                    <Text style={{ fontWeight: "normal", fontSize: 12, color: "grey" }}>Going</Text>
-                  }
-                />
-                <Checkbox
-                  checked={eventResponse === "Not Going"}
-                  onPress={async () => {
-                    setEventResponse("Not Going");
-                  }}
-                  text={
-                    <Text style={{ fontWeight: "normal", fontSize: 12, color: "grey" }}>
-                      Not Going
-                    </Text>
-                  }
-                />
-                <Checkbox
-                  checked={eventResponse === "Maybe"}
-                  onPress={async () => {
-                    setEventResponse("Maybe");
-                  }}
-                  text={
-                    <Text style={{ fontWeight: "normal", fontSize: 12, color: "grey" }}>Maybe</Text>
-                  }
-                />
-              </View>
-              <View
-                style={{
-                  height: replyBarHeight,
-                  alignItems: "flex-start",
-                  justifyContent: "flex-start",
-                  paddingLeft: 0,
-                  paddingRight: 0,
-                  paddingBottom: 0,
-                  flexDirection: "column",
-                  //backgroundColor: "cyan",
-                }}
-              >
-                <Text style={{ fontSize: 10, color: "grey" }}>Comments</Text>
-                <TextInput
-                  value={text}
-                  style={{
-                    flex: 1,
-                    backgroundColor: "blue",
-                    margin: 0,
-                    //paddingLeft: 10,
-                    textAlign: "left",
-                    fontSize: 16,
-                    width: "100%",
-                    backgroundColor: "white",
-                    borderRadius: 15,
-                    borderWidth: 1,
-                    borderColor: "grey",
-                  }}
-                  placeholder={""}
-                  multiline={true}
-                  autoFocus={false}
-                  onChangeText={(text) => {
-                    setText(text);
-                  }}
-                />
-              </View>
+              />
             </View>
-            {/* button */}
+
+            {/* Other user responses */}
+            {/*
             <View
               style={{
-                //backgroundColor: "cyan",
-                height: 60,
-                width: "100%",
-                alignItems: "flex-end",
-                paddingTop: 10,
-                paddingRight: 10,
+                height: 80,
+                alignItems: "center",
               }}
             >
-              <View
-                style={{
-                  width: 180,
-                  alignItems: "flex-end",
-                }}
-              >
-                <MyButtons.FormButton
-                  text="Confirm"
-                  onPress={async () => {
-                    await sendEventReply(eventResponse, text);
-                  }}
-                />
-              </View>
+              <Text style={{ fontSize: 10, color: "grey" }}>Going</Text>
+              {eventSummary?.acceptedResponses.map((response) => {
+                return (
+                  <View style={{ flexDirection: "column" }}>
+                    {UserInfo.smallAvatarComponentWithName(message.getUserInfo())}
+                    <Text>{response.getText()}</Text>
+                  </View>
+                );
+              })}
+              <Text style={{ fontSize: 10, color: "grey" }}>Not Going</Text>
+              {eventSummary?.declinedResponses.map((response) => {
+                return (
+                  <View style={{ flexDirection: "column" }}>
+                    {UserInfo.smallAvatarComponentWithName(message.getUserInfo())}
+                    <Text>{response.getText()}</Text>
+                  </View>
+                );
+              })}
+              <Text style={{ fontSize: 10, color: "grey" }}>Maybe</Text>
+              {eventSummary?.maybeResponses.map((response) => {
+                return (
+                  <View style={{ flexDirection: "column" }}>
+                    {UserInfo.smallAvatarComponentWithName(message.getUserInfo())}
+                    <Text>{response.getText()}</Text>
+                  </View>
+                );
+              })}
             </View>
-            <Divider style={{}} width={1} color="darkgrey" />
-            {/* Other user responses */}
-            <Text style={{ fontSize: 10, color: "grey" }}>Going</Text>
-            {eventSummary?.acceptedResponses.map((response) => {
-              return (
-                <View style={{ flexDirection: "column" }}>
-                  {UserInfo.smallAvatarComponentWithName(message.getUserInfo())}
-                  <Text>{response.getText()}</Text>
-                </View>
-              );
-            })}
-            <Text style={{ fontSize: 10, color: "grey" }}>Not Going</Text>
-            {eventSummary?.declinedResponses.map((response) => {
-              return (
-                <View style={{ flexDirection: "column" }}>
-                  {UserInfo.smallAvatarComponentWithName(message.getUserInfo())}
-                  <Text>{response.getText()}</Text>
-                </View>
-              );
-            })}
-            <Text style={{ fontSize: 10, color: "grey" }}>Maybe</Text>
-            {eventSummary?.maybeResponses.map((response) => {
-              return (
-                <View style={{ flexDirection: "column" }}>
-                  {UserInfo.smallAvatarComponentWithName(message.getUserInfo())}
-                  <Text>{response.getText()}</Text>
-                </View>
-              );
-            })}
+            */}
 
             {/* comments section */}
             {/*
@@ -617,7 +514,7 @@ function EventModal({ message }: { message: RootMessage }) {
       {showCalendarSelection && (
         <BookCalendarEventModal
           key="BookCalendarEventModal"
-          title={message.getTitle()}
+          title={message.getTitle() ?? ""}
           startDate={eventStart}
           endDate={eventEnd}
           onComplete={() => {
@@ -629,6 +526,149 @@ function EventModal({ message }: { message: RootMessage }) {
           }}
         />
       )}
+      <RSVPModal
+        visible={rsvpVisible}
+        close={() => {
+          setRsvpVisible(false);
+        }}
+        onSubmit={async (eventResponse, text): Promise<void> => {
+          await sendEventReply(eventResponse, text);
+        }}
+      />
     </Modal>
   );
 }
+
+const RSVPModal = ({
+  visible,
+  close,
+  onSubmit,
+}: {
+  visible: boolean,
+  close: () => void,
+  onSubmit: (response: string, comments: ?string) => Promise<void>,
+}) => {
+  const [response, setResponse] = useState();
+  const [comments, setComments] = useState();
+  return (
+    <BottomModal
+      animation="slide"
+      visible={visible}
+      mode="overFullScreen"
+      boxBackgroundColor="lightblue"
+      transparentContainer={true}
+      bottomHalf={true}
+      outsideClick={() => {
+        close();
+      }}
+    >
+      <View
+        style={{
+          flex: 1,
+          paddingLeft: 10,
+          paddingRight: 10,
+          //backgroundColor: "cyan"
+        }}
+      >
+        <View>
+          <Text>RSVP</Text>
+        </View>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "space-evenly",
+            //backgroundColor: "yellow",
+          }}
+        >
+          <Checkbox
+            checked={response === "Going"}
+            onPress={async () => {
+              setResponse("Going");
+            }}
+            text={<Text style={{ fontWeight: "normal", fontSize: 12, color: "grey" }}>Going</Text>}
+          />
+          <Checkbox
+            checked={response === "Not Going"}
+            onPress={async () => {
+              setResponse("Not Going");
+            }}
+            text={
+              <Text style={{ fontWeight: "normal", fontSize: 12, color: "grey" }}>Not Going</Text>
+            }
+          />
+          <Checkbox
+            checked={response === "Maybe"}
+            onPress={async () => {
+              setResponse("Maybe");
+            }}
+            text={<Text style={{ fontWeight: "normal", fontSize: 12, color: "grey" }}>Maybe</Text>}
+          />
+        </View>
+        <View
+          style={{
+            height: 80,
+            alignItems: "flex-start",
+            justifyContent: "flex-start",
+            paddingLeft: 0,
+            paddingRight: 0,
+            paddingBottom: 0,
+            flexDirection: "column",
+            //backgroundColor: "cyan",
+          }}
+        >
+          <Text style={{ fontSize: 10, color: "grey" }}>Comments</Text>
+          <TextInput
+            value={comments}
+            style={{
+              flex: 1,
+              backgroundColor: "blue",
+              margin: 0,
+              //paddingLeft: 10,
+              textAlign: "left",
+              fontSize: 16,
+              width: "100%",
+              backgroundColor: "white",
+              borderRadius: 15,
+              borderWidth: 1,
+              borderColor: "grey",
+            }}
+            placeholder={""}
+            multiline={true}
+            autoFocus={false}
+            onChangeText={(text) => {
+              setComments(text);
+            }}
+          />
+        </View>
+      </View>
+      {/* button */}
+      <View
+        style={{
+          //backgroundColor: "cyan",
+          height: 60,
+          width: "100%",
+          alignItems: "flex-end",
+          paddingTop: 10,
+          paddingRight: 10,
+        }}
+      >
+        <View
+          style={{
+            width: 180,
+            alignItems: "flex-end",
+          }}
+        >
+          <MyButtons.FormButton
+            text="Confirm"
+            disabled={response === null}
+            onPress={async () => {
+              await onSubmit(nullthrows(response), comments);
+              close();
+            }}
+          />
+        </View>
+      </View>
+    </BottomModal>
+  );
+};

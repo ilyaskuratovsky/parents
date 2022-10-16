@@ -1,7 +1,8 @@
 // @flow strict-local
 
 import * as Calendar from "expo-calendar";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import * as React from "react";
 import {
   Alert,
   Button,
@@ -28,7 +29,7 @@ import Portal from "./Portal";
 import * as Globals from "./Globals";
 import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
 import * as UIConstants from "./UIConstants";
-import * as UserInfo from "../common/UserInfo";
+import * as User from "../common/UserInfo";
 import BookCalendarEventModal from "./BookCalendarEventModal";
 //import moment from "moment";
 import moment from "moment-timezone";
@@ -39,8 +40,23 @@ import * as Dates from "../common/Date";
 import * as Debug from "../common/Debug";
 import { useMarkMessageRead } from "../common/Data";
 import * as Logger from "../common/Logger";
+import type { Group, UserInfo } from "../common/Database";
+import RootMessage from "../common/MessageData";
+type Props = {
+  group: Group,
+  message: RootMessage,
+  user: UserInfo,
+  visible: boolean,
+  closeModal: () => void,
+};
 
-export default function EventMessageModal({ group, message, user, visible, closeModal }) {
+export default function EventMessageModal({
+  group,
+  message,
+  user,
+  visible,
+  closeModal,
+}: Props): React.Node {
   const dispatch = useDispatch();
   const sortedChildMessages = [...message.children] ?? [];
   sortedChildMessages.sort((m1, m2) => {
@@ -78,7 +94,7 @@ export default function EventMessageModal({ group, message, user, visible, close
 
   const sendEventReply = useCallback(async (eventResponse, text) => {
     const groupName = group.name;
-    const fromName = UserInfo.chatDisplayName(user);
+    const fromName = User.chatDisplayName(user);
     setText("");
     await Controller.sendMessage(
       dispatch,

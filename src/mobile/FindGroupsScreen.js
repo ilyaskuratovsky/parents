@@ -1,6 +1,7 @@
 // @flow strict-local
 
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import { ScrollView, Text, TouchableOpacity, View, Alert, TextInput } from "react-native";
 import { Divider, SearchBar } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,7 +17,7 @@ import * as Data from "../common/Data";
 import * as Debug from "../common/Debug";
 import * as Logger from "../common/Logger";
 
-export default function FindGroupsScreens() {
+export default function FindGroupsScreens(): React.Node {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
   const userInfo = Data.getCurrentUser();

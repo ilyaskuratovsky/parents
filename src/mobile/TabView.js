@@ -1,5 +1,6 @@
 // @flow strict-local
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Divider } from "react-native-elements";
 

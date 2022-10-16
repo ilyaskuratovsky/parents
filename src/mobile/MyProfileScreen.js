@@ -1,6 +1,7 @@
 // @flow strict-local
 
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import { Text, View } from "react-native";
 import { Avatar, Divider } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";

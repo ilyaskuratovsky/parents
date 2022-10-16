@@ -1,6 +1,7 @@
 // @flow strict-local
 
-import React, { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
+import * as React from "react";
 import {
   Alert,
   KeyboardAvoidingView,

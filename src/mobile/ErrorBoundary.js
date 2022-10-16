@@ -1,14 +1,17 @@
 // @flow strict-local
 
-import React from "react";
+import * as React from "react";
+
 import { Text, View, TextInput, KeyboardAvoidingView, ScrollView } from "react-native";
 import * as Logger from "../common/Logger";
 import Toolbar from "./Toolbar";
 
 import * as Database from "../common/Database";
 
+type Props = {};
+
 export default class ErrorBoundary extends React.Component {
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.state = { hasError: false };
   }

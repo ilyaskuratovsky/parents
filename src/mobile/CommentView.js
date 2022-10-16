@@ -15,13 +15,11 @@ import DebugText from "./DebugText";
 import RootMessage from "../common/MessageData";
 import * as Data from "../common/Data";
 
-export default function CommentView({
-  item,
-  onPress,
-}: {
+type Props = {
   item: RootMessage,
-  onPress?: () => void,
-}): React.Node {
+  onPress: () => void,
+};
+export default function CommentView({ item, onPress }: Props): React.Node {
   const user = Data.getCurrentUser();
   const debugMode = Debug.isDebugMode();
 

@@ -1,6 +1,7 @@
 // @flow strict-local
 
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import { Modal, Text, View, TextInput, ScrollView, Alert } from "react-native";
 import { ToggleButton } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,7 +19,11 @@ import * as Utils from "../common/Utils";
 
 import * as UserInfo from "../common/UserInfo";
 
-export default function GroupInviteModal({ groupId }) {
+type Props = {
+  groupId: string,
+};
+
+export default function GroupInviteModal({ groupId }: Props): React.Node {
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();
   const [processing, setProcessing] = useState(false);

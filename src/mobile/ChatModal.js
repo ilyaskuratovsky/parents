@@ -1,7 +1,9 @@
 // @flow strict-local
 
 import * as Calendar from "expo-calendar";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import * as React from "react";
+
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Button,
@@ -42,7 +44,9 @@ import TopBar from "./TopBar";
 import { styles } from "./Styles";
 import { SquareFacePile } from "../web/FacePile";
 
-export default function ChatModal({ chatId, scrollToEnd = true }) {
+type Props = {};
+
+export default function ChatModal({ chatId, scrollToEnd = true }: Props): React.Node {
   const debugMode = Debug.isDebugMode();
   const dispatch = useDispatch();
   const user = Data.getCurrentUser();

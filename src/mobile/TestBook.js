@@ -1,6 +1,7 @@
 // @flow strict-local
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import * as React from "react";
 import { StyleSheet, View, Text, Button, Platform, ScrollView } from "react-native";
 import * as Calendar from "expo-calendar";
 import { SafeAreaView } from "react-native-safe-area-context";

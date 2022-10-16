@@ -27,7 +27,7 @@ export function chatDisplayName(userInfo: ?UserInfo): ?string {
   }
 }
 
-export function avatarColor(userInfo: UserInfo): string {
+export function avatarColor(userInfo: ?UserInfo): string {
   var hash = 0;
   if (userInfo.email != null) {
     for (var i = 0; i < userInfo.email.length; i++) {
@@ -38,7 +38,7 @@ export function avatarColor(userInfo: UserInfo): string {
   return "hsl(" + h + ", " + "50" + "%, " + "65" + "%)";
 }
 
-export function avatarComponent(userInfo: UserInfo, onPress: () => void): React.Node {
+export function avatarComponent(userInfo: UserInfo, onPress?: ?() => void): React.Node {
   const displayName = chatDisplayName(userInfo);
   let avatar = null;
   if (userInfo.image != null) {

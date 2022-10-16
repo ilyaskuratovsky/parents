@@ -1,12 +1,12 @@
 // @flow strict-local
 
-import React from "react";
+import * as React from "react";
 import { Text, View, Button, SafeAreaView, FlatList, Dimensions } from "react-native";
-import Actions from "./Actions";
+import * as Actions from "../common/Actions";
 import Portal from "./Portal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-function FlexTest({}) {
+function FlexTest(): React.Node {
   const insets = useSafeAreaInsets();
   const windowHeight = Dimensions.get("window").height - insets.top - insets.bottom;
 

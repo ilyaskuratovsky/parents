@@ -1,11 +1,13 @@
 // @flow strict-local
 
-import React from "react";
+import * as React from "react";
 import { View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as UserInfo from "../common/UserInfo";
 
-export default function FacePile({ userIds }) {
+type Props = {};
+
+export default function FacePile({ userIds }: Props): React.Node {
   const dispatch = useDispatch();
   const { userMap } = useSelector((state) => {
     return {

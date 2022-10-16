@@ -1,6 +1,7 @@
 // @flow strict-local
 
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import { Button, ScrollView, Text, View } from "react-native";
 import { CheckBox } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,7 +10,10 @@ import Portal from "./Portal";
 import * as UIConstants from "./UIConstants";
 import * as Logger from "../common/Logger";
 
-export default function InitialChooseSchoolsWizard({ navigation }) {
+type Props = {
+  navigation: mixed,
+};
+export default function InitialChooseSchoolsWizard({ navigation }: Props): React.Node {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
   const { schoolList, schoolMap } = useSelector((state) => {

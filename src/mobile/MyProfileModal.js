@@ -2,7 +2,8 @@
 
 import * as ImagePicker from "expo-image-picker";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
+import React from "react";
 //import * as Permissions from "expo-permissions";
 import {
   ActivityIndicator,

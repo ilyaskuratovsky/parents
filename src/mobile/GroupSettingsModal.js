@@ -1,6 +1,7 @@
 // @flow strict-local
 
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import {
   Alert,
   Modal,
@@ -25,8 +26,13 @@ import * as Logger from "../common/Logger";
 import * as Debug from "../common/Debug";
 import * as Data from "../common/Data";
 import TabView from "./TabView";
+import nullthrows from "nullthrows";
 
-export default function GroupSettingsModal({ groupId }) {
+type Props = {
+  groupId: string,
+};
+
+export default function GroupSettingsModal({ groupId }: Props): React.Node {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
   const userInfo = Data.getCurrentUser();
@@ -54,7 +60,7 @@ export default function GroupSettingsModal({ groupId }) {
   });
 
   const [processing, setProcessing] = useState(false);
-  const group = Data.getGroup(groupId);
+  const group = nullthrows(Data.getGroup(groupId));
   if (userInfo == null) {
     return <Text>Loading Data...</Text>;
   }

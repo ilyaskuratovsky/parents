@@ -1,6 +1,7 @@
 // @flow strict-local
 
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import { ScrollView, Text, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,7 +14,8 @@ import BottomBar from "./BottomBar";
 import TopBar from "./TopBar";
 import * as UIConstants from "./UIConstants";
 
-export default function InitialJoinSchoolGroupsScreen() {
+type Props = {};
+export default function InitialJoinSchoolGroupsScreen(): React.Node {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
 

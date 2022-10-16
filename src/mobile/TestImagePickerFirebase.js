@@ -3,7 +3,7 @@
 import * as Clipboard from "expo-clipboard";
 import * as ImagePicker from "expo-image-picker";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import React from "react";
+import * as React from "react";
 import {
   ActivityIndicator,
   Button,

@@ -1,7 +1,7 @@
 // @flow strict-local
 
 import moment from "moment-timezone";
-import React from "react";
+import * as React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import * as Globals from "./Globals";
 import * as UIConstants from "./UIConstants";
@@ -11,8 +11,17 @@ import FacePile from "./FacePile";
 import * as Date from "../common/Date";
 import * as Debug from "../common/Debug";
 import DebugText from "./DebugText";
+import RootMessage from "../common/MessageData";
 
-export default function EventPollMessageCreatorView({ message, showGroup = false }) {
+type Props = {
+  message: RootMessage,
+  showGroup?: ?boolean,
+};
+
+export default function EventPollMessageCreatorView({
+  message,
+  showGroup = false,
+}: Props): React.Node {
   const dispatch = useDispatch();
   const debugMode = Debug.isDebugMode();
 

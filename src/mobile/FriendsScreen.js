@@ -1,6 +1,7 @@
 // @flow strict-local
 
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import { ScrollView, Text, TouchableOpacity, View, Alert } from "react-native";
 import { Divider } from "react-native-elements";
 import { IconButton } from "react-native-paper";
@@ -21,7 +22,7 @@ import * as Debug from "../common/Debug";
 import { styles } from "./Styles";
 import * as Logger from "../common/Logger";
 
-export default function FriendsScreen({}) {
+export default function FriendsScreen(): React.Node {
   const debugMode = Debug.isDebugMode();
   const dispatch = useDispatch();
   const userInfo = Data.getCurrentUser();

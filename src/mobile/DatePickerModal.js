@@ -1,6 +1,8 @@
 // @flow strict-local
 
-import React, { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
+import * as React from "react";
+
 import {
   Alert,
   KeyboardAvoidingView,
@@ -29,7 +31,14 @@ import Checkbox from "./Checkbox";
 import * as Debug from "../common/Debug";
 import * as Logger from "../common/Logger";
 
-export default function DatePickerModal({ value, visible, onChange, closeModal }) {
+type Props = {};
+
+export default function DatePickerModal({
+  value,
+  visible,
+  onChange,
+  closeModal,
+}: Props): React.Node {
   Logger.log("DatePickerModal, value: " + value);
   const [date, setDate] = useState(value);
   useEffect(() => {

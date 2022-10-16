@@ -59,6 +59,7 @@ import MessagePollModal from "./MessagePollModal";
 import MessagePollVoteModal from "./MessagePollVoteModal";
 import { DebugTextModal } from "./DebugText";
 import * as Logger from "../common/Logger";
+import TestModal from "./TestModal";
 
 /*
 App vision:  The local social network for parents.
@@ -82,6 +83,8 @@ Inside the groups you can
 function RootApp(props: {}, state: RootState): React.Node {
   //const x = { a: "b" };
   //x.b.c = "z";
+  //return <TestModal />;
+
   const dispatch = useDispatch();
   const notificationListener = useRef();
   const responseListener = useRef();

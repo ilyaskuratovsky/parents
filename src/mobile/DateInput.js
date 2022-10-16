@@ -1,6 +1,8 @@
 // @flow strict-local
 
-import React, { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
+import * as React from "react";
+
 import {
   Alert,
   KeyboardAvoidingView,
@@ -30,7 +32,9 @@ import * as Debug from "../common/Debug";
 import TimePickerModal from "./TimePickerModal";
 import DatePickerModal from "./DatePickerModal";
 
-export default function DateInput({ date, onChange }) {
+type Props = {};
+
+export default function DateInput({ date, onChange }: Props): React.Node {
   const [showDatePicker, setShowDatePicker] = useState(null);
 
   return (
