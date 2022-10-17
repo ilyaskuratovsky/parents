@@ -17,117 +17,48 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import * as Utils from "../common/Utils";
+import * as Utils from "../../common/Utils";
 import { Divider, CheckBox } from "react-native-elements";
 import { IconButton } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
-import CommentView from "./CommentView";
-import * as Controller from "../common/Controller";
-import * as MyButtons from "./MyButtons";
-import Portal from "./Portal";
-import * as Globals from "./Globals";
-import TopBarMiddleContentSideButtons from "./TopBarMiddleContentSideButtons";
-import * as UIConstants from "./UIConstants";
-import * as UserInfo from "../common/UserInfo";
-import BookCalendarEventModal from "./BookCalendarEventModal";
+import CommentView from "../CommentView";
+import * as Controller from "../../common/Controller";
+import * as MyButtons from "../MyButtons";
+import Portal from "../Portal";
+import * as Globals from "../Globals";
+import TopBarMiddleContentSideButtons from "../TopBarMiddleContentSideButtons";
+import * as UIConstants from "../UIConstants";
+import * as UserInfo from "../../common/UserInfo";
+import BookCalendarEventModal from "../BookCalendarEventModal";
 //import moment from "moment";
 import moment from "moment-timezone";
 import JSONTree from "react-native-json-tree";
 import Autolink from "react-native-autolink";
-import * as Actions from "../common/Actions";
-import * as Debug from "../common/Debug";
-import * as Data from "../common/Data";
-import DebugText from "./DebugText";
+import * as Actions from "../../common/Actions";
+import * as Debug from "../../common/Debug";
+import * as Data from "../../common/Data";
+import DebugText from "../DebugText";
 import nullthrows from "nullthrows";
-import * as Messages from "../common/MessageData";
+import * as Messages from "../../common/MessageData";
 
-type Props = {
-  messageId: string,
-  scrollToEnd: boolean,
-};
-export default function MessageModal({ messageId, scrollToEnd }: Props): React.Node {
+type Props = {};
+export default function MessageTest({}: Props): React.Node {
   const windowWidth = Dimensions.get("window").width;
   const [text, setText] = useState();
   const [textInputHeightChanged, setTextInputHeightChanged] = useState(0);
-  const debugMode = Debug.isDebugMode();
-  const dispatch = useDispatch();
-  const user = Data.getCurrentUser();
-  const messageObj = Data.getMessage(messageId);
-  const message = nullthrows(
-    Messages.getRootMessage(messageId),
-    "Message is null for id: " + messageId
-  );
-  const group = nullthrows(Data.getGroup(message.getGroupId()));
-
-  const sortedChildMessages = [...message.getChildren()] ?? [];
-  sortedChildMessages.sort((m1, m2) => {
-    return m1.getTimestamp()?.getTime() ?? 0 - (m2.getTimestamp()?.getTime() ?? 0);
-  });
-
-  const childMessages = sortedChildMessages;
-
-  // send message callback function
-  const sendMessage = useCallback(async (text) => {
-    const groupName = group.name;
-    const fromName = UserInfo.chatDisplayName(user);
-    setText("");
-    await Controller.sendReply(dispatch, user, group.id, text, message.getID(), {
-      groupName,
-      fromName,
-    });
-    scrollViewRef.current?.scrollToEnd({ animated: true });
-  }, []);
-
-  //const [text, setText] = useState("");
-  const scrollViewRef = useRef();
-  const insets = useSafeAreaInsets();
-  const topBarHeight = 40;
-
-  useEffect(() => {
-    const markRead = async () => {
-      let markRead = [];
-      if (message.getUserStatus()?.status != "read") {
-        markRead.push(message.getID());
-      }
-      const unreadChildMessages = (message.getChildren() ?? []).filter(
-        (m) => m.getUserStatus()?.status != "read"
-      );
-      markRead = markRead.concat(unreadChildMessages.map((m) => m.getID()));
-      Controller.markMessagesRead(user, markRead);
-    };
-    markRead();
-  }, [message]);
-
-  // if the the message id is a comment (e.g. this view was opened to a comment, scroll all the way down
-  // fix this later to scroll to the specific message
-  useEffect(() => {
-    if (scrollToEnd) {
-      scrollViewRef.current?.scrollToEnd({ anmiated: true });
-    }
-  }, []);
-
   return (
     <Modal visible={true} animationType={"slide"}>
       <Portal
         backgroundColor={UIConstants.DEFAULT_BACKGROUND}
         //backgroundColor="green"
       >
-        <DebugText text="MessageModal.js" />
-
         {/* top bar */}
         <TopBarMiddleContentSideButtons
           backgroundColor={UIConstants.DEFAULT_BACKGROUND}
           height={100}
           left={
-            <MyButtons.MenuButton
-              icon="arrow-left"
-              text="Back"
-              onPress={() => {
-                dispatch(Actions.closeModal());
-              }}
-              color="black"
-            />
+            <MyButtons.MenuButton icon="arrow-left" text="Back" onPress={() => {}} color="black" />
           }
           center={null}
           right={null}
@@ -143,14 +74,7 @@ export default function MessageModal({ messageId, scrollToEnd }: Props): React.N
           keyboardVerticalOffset={40}
           enabled
         >
-          <DebugText text={JSON.stringify(messageObj, null, 2)} />
-          <ScrollView
-            ref={scrollViewRef}
-            style={{ flex: 1 }}
-            onContentSizeChange={() => {
-              //scrollViewRef.current.scrollToEnd({ animated: true });
-            }}
-          >
+          <ScrollView style={{ flex: 1 }} onContentSizeChange={() => {}}>
             {/* parent message */}
             <View
               style={{
@@ -170,7 +94,6 @@ export default function MessageModal({ messageId, scrollToEnd }: Props): React.N
                   paddingBottom: 6,
                 }}
               >
-                {UserInfo.smallAvatarComponent(message.getUserInfo())}
                 <View
                   style={{
                     flex: 1,
@@ -188,7 +111,7 @@ export default function MessageModal({ messageId, scrollToEnd }: Props): React.N
                       color: UIConstants.BLACK_TEXT_COLOR,
                     }}
                   >
-                    {UserInfo.chatDisplayName(message.getUserInfo())}
+                    User Name
                   </Text>
                 </View>
               </View>
@@ -208,12 +131,12 @@ export default function MessageModal({ messageId, scrollToEnd }: Props): React.N
                     color: UIConstants.BLACK_TEXT_COLOR,
                   }}
                 >
-                  {message.getTitle()}
+                  Message title
                 </Text>
                 {/* the message text */}
                 <Autolink
                   // Required: the text to parse for links
-                  text={message.getText()}
+                  text={"message text"}
                   // Optional: enable email linking
                   email
                   // Optional: enable hashtag linking to instagram
@@ -227,19 +150,12 @@ export default function MessageModal({ messageId, scrollToEnd }: Props): React.N
                     color: UIConstants.BLACK_TEXT_COLOR,
                   }}
                 />
-                <DebugText text={JSON.stringify(message, null, 2)} />
               </View>
             </View>
             <Divider style={{}} width={1} color="darkgrey" />
             {/* comments section */}
             <View style={{ paddingTop: 10, flex: 1 }}>
-              {childMessages.map((message, index) => {
-                return (
-                  <View key={index} style={{ paddingBottom: 10 }}>
-                    <CommentView item={message} user={user} />
-                  </View>
-                );
-              })}
+              <Text> comments section</Text>
             </View>
           </ScrollView>
           {/* reply text input section */}
@@ -343,11 +259,7 @@ export default function MessageModal({ messageId, scrollToEnd }: Props): React.N
                   alignItems: "center",
                 }}
               >
-                <TouchableOpacity
-                  onPress={() => {
-                    sendMessage(text);
-                  }}
-                >
+                <TouchableOpacity onPress={() => {}}>
                   <Icon name="arrow-up-circle" size={36} color="blue" />
                 </TouchableOpacity>
               </View>

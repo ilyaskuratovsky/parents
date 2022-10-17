@@ -117,7 +117,8 @@ export function getGroupUserRootMessages(groupId: string): Array<RootMessage> {
   const all = getAllRootMessagesMap();
   return Object.keys(all)
     .map((k) => all[k])
-    .filter((rootMessage) => rootMessage.getGroupId() === groupId);
+    .filter((rootMessage) => rootMessage.getGroupId() === groupId)
+    .sort((m1, m2) => (m2.getTimestamp()?.getTime() ?? 0) - (m1.getTimestamp()?.getTime() ?? 0));
 }
 
 function sortMessages(messages: Array<RootMessage>) {

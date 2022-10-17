@@ -29,7 +29,6 @@ export default function FacePile({ userIds }: Props): React.Node {
 
   return (
     <View style={{ flex: 1, flexDirection: "column" }}>
-      <DebugText text={JSON.stringify(userIds)} />
       <View style={{ flex: 1, flexDirection: "row" }}>{components}</View>
     </View>
   );

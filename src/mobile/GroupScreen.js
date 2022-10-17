@@ -107,6 +107,7 @@ export default function GroupScreen({ groupId }: { groupId: string }): React.Nod
                 flexDirection: "row",
                 alignItems: "flex-start",
                 justifyContent: "center",
+                height: 70,
                 //backgroundColor: "cyan",
               },
             ]}
@@ -118,7 +119,6 @@ export default function GroupScreen({ groupId }: { groupId: string }): React.Nod
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "flex-start",
-                //backgroundColor: "cyan",
               }}
             >
               <View
@@ -157,10 +157,6 @@ export default function GroupScreen({ groupId }: { groupId: string }): React.Nod
                     >
                       {group.name}
                     </Text>
-                    {Debug.isDebugMode() ? <Text style={{ fontSize: 10 }}>{group.id}</Text> : null}
-                    {/*org != null && (
-                    <Text style={{ fontWeight: "normal", fontSize: 14 }}>{org.name}</Text>
-                  )*/}
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={{ paddingBottom: 4 }}
@@ -192,26 +188,21 @@ export default function GroupScreen({ groupId }: { groupId: string }): React.Nod
             <MyButtons.FormButton
               text={"Follow"}
               titleStyle={{ fontSize: 14 }}
-              style={{ width: 120, fontSize: 10 }}
-              onPress={async () => {
-                await Controller.joinGroup(userInfo.uid, group.id);
+              style={{ width: 120 }}
+              onPress={() => {
+                const press = async () => {
+                  await Controller.joinGroup(userInfo.uid, group.id);
+                };
+                press();
               }}
             />
           ) : (
             <Text>Following</Text>
           )}
           <MyButtons.FormButton
-            titleStyle={{ fontSize: 14 }}
-            style={{ width: 100, fontSize: 10 }}
-            text={"Invite"}
-            onPress={() => {
-              dispatch(Actions.openModal({ modal: "GROUP_INVITE", groupId: group.id }));
-            }}
-          />
-          <MyButtons.FormButton
             text={"Create Groupy"}
             titleStyle={{ fontSize: 14 }}
-            style={{ width: 120, fontSize: 10 }}
+            style={{ width: 120 }}
             onPress={() => {
               dispatch(Actions.openModal({ modal: "NEW_GROUP", parentGroupId: group.id }));
             }}
@@ -228,6 +219,7 @@ export default function GroupScreen({ groupId }: { groupId: string }): React.Nod
             //backgroundColor: "orange"
           }}
         >
+          {/*
           <ScrollView
             key="scroll_view"
             style={{
@@ -236,14 +228,14 @@ export default function GroupScreen({ groupId }: { groupId: string }): React.Nod
               paddingLeft: 8,
               paddingRight: 8,
               flexDirection: "column",
-              //backgroundColor: "cyan",
             }}
           >
             {subGroups.map((group) => {
               return <GroupView group={group} setLoading={null} />;
             })}
-            <MessagesSection groupId={group.id} user={userInfo} />
           </ScrollView>
+          */}
+          <MessagesSection groupId={group.id} user={userInfo} />
         </View>
         {/* messages section */}
         <Divider style={{}} width={1} color="darkgrey" />
@@ -366,28 +358,16 @@ function GroupView({ group, setLoading }: { group: Group, setLoading: ?() => voi
                 .map((groupMembership) => groupMembership.uid)}
               border
             />
-          </View>
-          {debugMode && <Text style={{ fontSize: 10 }}>{JSON.stringify(group, null, 2)}</Text>}
-          {debugMode && userInfo.superUser && (
             <MyButtons.LinkButton
-              text="(Admin) Delete Group"
-              onPress={async () => {
-                Alert.alert("Delete Group?", null, [
-                  {
-                    text: "Yes",
-                    onPress: async () => {
-                      await Controller.deleteGroup(group.id);
-                    },
-                  },
-                  {
-                    text: "No",
-                    onPress: () => Logger.log("Cancel Pressed"),
-                    style: "cancel",
-                  },
-                ]);
+              titleStyle={{ fontSize: 14 }}
+              style={{ width: 100 }}
+              text={"Invite"}
+              onPress={() => {
+                dispatch(Actions.openModal({ modal: "GROUP_INVITE", groupId: group.id }));
               }}
             />
-          )}
+          </View>
+          <DebugText text={JSON.stringify(group, null, 2)} />
         </View>
         {/*
         <View
@@ -437,18 +417,7 @@ function MessagesSection({ groupId, user }) {
   };
 
   const userRootMessages = Messages.getGroupUserRootMessages(groupId);
-
-  const sortedMessages = useMemo(() => {
-    if (userRootMessages == null) {
-      return null;
-    }
-    const sortedMessages = [...(userRootMessages ?? [])] ?? [];
-    sortedMessages.sort((m1, m2) => {
-      return (m2.getLastUpdated()?.getTime() ?? 0) - (m1.getLastUpdated()?.getTime() ?? 0);
-    });
-    return sortedMessages;
-  }, [userRootMessages]);
-
+  const sortedMessages = userRootMessages;
   if (sortedMessages == null) {
     return <Text>Loading...</Text>;
   }
@@ -467,8 +436,8 @@ function MessagesSection({ groupId, user }) {
       </View>
     );
   }
-  return (
-    <View
+  /*
+    <ScrollView
       style={{
         flexGrow: 1,
         flexDirection: "column",
@@ -488,7 +457,19 @@ function MessagesSection({ groupId, user }) {
           })}
         </View>
       </View>
-    </View>
+    </ScrollView>
+        */
+  return (
+    <FlatList
+      style={{
+        flex: 1,
+        //backgroundColor: "orange"
+      }}
+      data={sortedMessages}
+      renderItem={renderMessage}
+      keyExtractor={(item) => item.getID()}
+      ItemSeparatorComponent={FlatListItemSeparator}
+    />
   );
 }
 

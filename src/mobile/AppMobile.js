@@ -13,6 +13,7 @@ import ErrorScreen from "./ErrorScreen";
 import * as Database from "../common/Database";
 import * as Logger from "../common/Logger";
 import * as Device from "expo-device";
+import MessageTest from "./test/MessageTest";
 /*
 setNativeExceptionHandler((errorString) => {
   //You can do something like call an api to report to dev team here
@@ -50,6 +51,7 @@ export default function App(): React.Node {
       <Provider store={store}>
         {/*<ErrorBoundary>*/}
         <RootApp />
+        {/*<MessageTest />*/}
         {/*</ErrorBoundary>*/}
       </Provider>
     </SafeAreaProvider>
