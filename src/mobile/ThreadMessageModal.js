@@ -30,7 +30,10 @@ import * as Controller from "../common/Controller";
 import * as Debug from "../common/Debug";
 import DebugText from "./DebugText";
 
-export default function ThreadMessageModal({ groupId }) {
+type Props = {
+  groupId: string,
+};
+export default function ThreadMessageModal({ groupId }: Props): React.Node {
   const dispatch = useDispatch();
   const isDebugMode = Debug.isDebugMode();
   const insets = useSafeAreaInsets();

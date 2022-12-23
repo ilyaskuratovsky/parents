@@ -1,12 +1,17 @@
 // @flow strict-local
 
+import type { AbstractComponent, ElementProps } from "react";
+import type { ViewProps } from "react-native-web/dist/exports/View";
+import type { ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheet";
+import type { PropsType } from "react-native/ReactCommon/hermes/inspector/tools/msggen/src/Type";
+
 import * as React from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type Props = {
-  style: mixed,
-  children: mixed,
+  style: ViewStyle,
+  children: ?$ReadOnlyArray<?React$Node>,
 };
 
 const BottomBar = ({ style, children }: Props): React.Node => {
@@ -25,7 +30,7 @@ const BottomBar = ({ style, children }: Props): React.Node => {
         },
       ]}
     >
-      {children.map((child, index) => {
+      {children?.map((child, index) => {
         return <View key={index}>{child}</View>;
       })}
     </View>
@@ -39,4 +44,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default React.memo(BottomBar);
+const component: AbstractComponent<Props> = React.memo(BottomBar);
+export default component;

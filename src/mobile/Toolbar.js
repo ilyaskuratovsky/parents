@@ -121,7 +121,7 @@ export default function Toolbar({ selected }: Props): React.Node {
           ) : null
         }
       />
-      {userInfo.superUser && (
+      {userInfo.superUser === true ? (
         <MyButtons.MenuButton
           icon="flower-poppy"
           text="Admin"
@@ -133,7 +133,7 @@ export default function Toolbar({ selected }: Props): React.Node {
             );
           }}
         />
-      )}
+      ) : null}
       {/*
       <MyButtons.MenuButton
         icon="logout"

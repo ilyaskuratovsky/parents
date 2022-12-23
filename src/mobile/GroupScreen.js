@@ -82,144 +82,143 @@ export default function GroupScreen({ groupId }: { groupId: string }): React.Nod
   }, []);
 
   return (
-    <Modal visible={true} animationType={"slide"}>
-      <Portal
-        backgroundColor={UIConstants.DEFAULT_BACKGROUND}
-        //backgroundColor="green"
+    <Portal
+      backgroundColor={UIConstants.DEFAULT_BACKGROUND}
+      //backgroundColor="green"
+    >
+      <DebugText key="debug1" text="GroupScreen_prod.js" />
+      {/* top bar section */}
+      <View
+        key="top_bar"
+        style={{
+          //backgroundColor: "whitesmoke",
+          flexDirection: "column",
+        }}
       >
-        <DebugText key="debug1" text="GroupScreen_prod.js" />
-        {/* top bar section */}
+        {/* group name and members row */}
         <View
-          key="top_bar"
-          style={{
-            //backgroundColor: "whitesmoke",
-            flexDirection: "column",
-          }}
+          style={[
+            {
+              paddingLeft: 4,
+              paddingRight: 4,
+              paddingTop: 8,
+              paddingBottom: 0,
+              flexDirection: "row",
+              alignItems: "flex-start",
+              justifyContent: "center",
+              height: 70,
+              //backgroundColor: "cyan",
+            },
+          ]}
         >
-          {/* group name and members row */}
+          {/* group name */}
           <View
-            style={[
-              {
-                paddingLeft: 4,
-                paddingRight: 4,
-                paddingTop: 8,
-                paddingBottom: 0,
-                flexDirection: "row",
-                alignItems: "flex-start",
-                justifyContent: "center",
-                height: 70,
-                //backgroundColor: "cyan",
-              },
-            ]}
+            style={{
+              flexGrow: 1,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "flex-start",
+            }}
           >
-            {/* group name */}
             <View
               style={{
-                flexGrow: 1,
                 flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "flex-start",
+                //backgroundColor: "yellow",
+                alignItems: "flex-start",
               }}
             >
+              <TouchableOpacity
+                onPress={() => {
+                  dispatch(Actions.closeModal());
+                }}
+              >
+                <Icon name="chevron-left" />
+              </TouchableOpacity>
               <View
                 style={{
-                  flexDirection: "row",
-                  //backgroundColor: "yellow",
-                  alignItems: "flex-start",
+                  flexDirection: "column",
+                  //backgroundColor: "yellow"
                 }}
               >
                 <TouchableOpacity
                   onPress={() => {
-                    dispatch(Actions.closeModal());
+                    //setGroupSettingsModalVisible(true);
+                    dispatch(Actions.openModal({ modal: "GROUP_SETTINGS", groupId: group.id }));
                   }}
                 >
-                  <Icon name="chevron-left" />
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: 20,
+                      color: UIConstants.BLACK_TEXT_COLOR,
+                      //backgroundColor: "cyan",
+                    }}
+                  >
+                    {group.name}
+                  </Text>
                 </TouchableOpacity>
-                <View
-                  style={{
-                    flexDirection: "column",
-                    //backgroundColor: "yellow"
+                <TouchableOpacity
+                  style={{ paddingBottom: 4 }}
+                  onPress={() => {
+                    dispatch(Actions.openModal({ modal: "GROUP_SETTINGS", groupId: group.id }));
                   }}
                 >
-                  <TouchableOpacity
-                    onPress={() => {
-                      //setGroupSettingsModalVisible(true);
-                      dispatch(Actions.openModal({ modal: "GROUP_SETTINGS", groupId: group.id }));
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontWeight: "bold",
-                        fontSize: 20,
-                        color: UIConstants.BLACK_TEXT_COLOR,
-                        //backgroundColor: "cyan",
-                      }}
-                    >
-                      {group.name}
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={{ paddingBottom: 4 }}
-                    onPress={() => {
-                      dispatch(Actions.openModal({ modal: "GROUP_SETTINGS", groupId: group.id }));
-                    }}
-                  >
-                    <FacePile
-                      userIds={[userInfo.uid].concat(
-                        members
-                          .filter((groupMembership) => {
-                            return userInfo.uid != groupMembership.uid;
-                          })
-                          .map((groupMembership) => groupMembership.uid)
-                      )}
-                      border
-                    />
-                  </TouchableOpacity>
-                </View>
+                  <FacePile
+                    userIds={[userInfo.uid].concat(
+                      members
+                        .filter((groupMembership) => {
+                          return userInfo.uid != groupMembership.uid;
+                        })
+                        .map((groupMembership) => groupMembership.uid)
+                    )}
+                    border
+                  />
+                </TouchableOpacity>
               </View>
             </View>
           </View>
         </View>
-        <Divider key="divider" style={{}} width={1} color="lightgrey" />
+      </View>
+      <Divider key="divider" style={{}} width={1} color="lightgrey" />
 
-        {/* second top bar */}
-        <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
-          {!isMember ? (
-            <MyButtons.FormButton
-              text={"Follow"}
-              titleStyle={{ fontSize: 14 }}
-              style={{ width: 120 }}
-              onPress={() => {
-                const press = async () => {
-                  await Controller.joinGroup(userInfo.uid, group.id);
-                };
-                press();
-              }}
-            />
-          ) : (
-            <Text>Following</Text>
-          )}
+      {/* second top bar */}
+      <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
+        {!isMember ? (
           <MyButtons.FormButton
-            text={"Create Groupy"}
+            text={"Follow"}
             titleStyle={{ fontSize: 14 }}
             style={{ width: 120 }}
             onPress={() => {
-              dispatch(Actions.openModal({ modal: "NEW_GROUP", parentGroupId: group.id }));
+              const press = async () => {
+                await Controller.joinGroup(userInfo.uid, group.id);
+              };
+              press();
             }}
           />
-        </View>
-
-        {/* default group */}
-        <DebugText key={"debug2"} text={"Group: " + JSON.stringify(group)} />
-
-        {/* sub-groups section */}
-        <View
-          style={{
-            flexGrow: 1,
-            //backgroundColor: "orange"
+        ) : (
+          <Text>Following</Text>
+        )}
+        <MyButtons.FormButton
+          text={"Create Groupy"}
+          titleStyle={{ fontSize: 14 }}
+          style={{ width: 120 }}
+          onPress={() => {
+            dispatch(Actions.openModal({ modal: "NEW_GROUP", parentGroupId: group.id }));
           }}
-        >
-          {/*
+        />
+      </View>
+
+      {/* default group */}
+      <DebugText key={"debug2"} text={"Group: " + JSON.stringify(group)} />
+
+      {/* sub-groups section */}
+      <View
+        style={{
+          flexGrow: 1,
+          //backgroundColor: "orange"
+        }}
+      >
+        {/*
           <ScrollView
             key="scroll_view"
             style={{
@@ -235,48 +234,47 @@ export default function GroupScreen({ groupId }: { groupId: string }): React.Nod
             })}
           </ScrollView>
           */}
-          <MessagesSection groupId={group.id} user={userInfo} />
-        </View>
-        {/* messages section */}
-        <Divider style={{}} width={1} color="darkgrey" />
+        <MessagesSection groupId={group.id} user={userInfo} />
+      </View>
+      {/* messages section */}
+      <Divider style={{}} width={1} color="darkgrey" />
 
-        {/* toolbar section */}
-        <View
-          style={{
-            //backgroundColor: "purple",
-            alignItems: "flex-end",
-            justifyContent: "center",
-            flexDirection: "row",
-            height: 40,
+      {/* toolbar section */}
+      <View
+        style={{
+          //backgroundColor: "purple",
+          alignItems: "flex-end",
+          justifyContent: "center",
+          flexDirection: "row",
+          height: 40,
+        }}
+      >
+        <MyButtons.MenuButton
+          icon="plus"
+          text="Post"
+          onPress={() => {
+            dispatch(Actions.openModal({ modal: "NEW_POST", groupId: group.id }));
           }}
-        >
-          <MyButtons.MenuButton
-            icon="plus"
-            text="Post"
-            onPress={() => {
-              dispatch(Actions.openModal({ modal: "NEW_POST", groupId: group.id }));
-            }}
-            containerStyle={{ paddingRight: 24 }}
-          />
-          <MyButtons.MenuButton
-            icon="calendar-plus"
-            text="Event"
-            onPress={() => {
-              //setShowNewEventModal(true);
-              dispatch(Actions.openModal({ modal: "NEW_EVENT", groupId: group.id }));
-            }}
-          />
-          <MyButtons.MenuButton
-            icon="poll"
-            text="Poll"
-            onPress={() => {
-              //setShowNewEventModal(true);
-              dispatch(Actions.openModal({ modal: "NEW_POLL", groupId: group.id }));
-            }}
-          />
-        </View>
-      </Portal>
-    </Modal>
+          containerStyle={{ paddingRight: 24 }}
+        />
+        <MyButtons.MenuButton
+          icon="calendar-plus"
+          text="Event"
+          onPress={() => {
+            //setShowNewEventModal(true);
+            dispatch(Actions.openModal({ modal: "NEW_EVENT", groupId: group.id }));
+          }}
+        />
+        <MyButtons.MenuButton
+          icon="poll"
+          text="Poll"
+          onPress={() => {
+            //setShowNewEventModal(true);
+            dispatch(Actions.openModal({ modal: "NEW_POLL", groupId: group.id }));
+          }}
+        />
+      </View>
+    </Portal>
   );
 }
 

@@ -27,6 +27,7 @@ import * as Debug from "../common/Debug";
 import * as Data from "../common/Data";
 import TabView from "./TabView";
 import nullthrows from "nullthrows";
+import DebugText from "./DebugText";
 
 type Props = {
   groupId: string,
@@ -34,7 +35,6 @@ type Props = {
 
 export default function GroupSettingsModal({ groupId }: Props): React.Node {
   const dispatch = useDispatch();
-  const debugMode = Debug.isDebugMode();
   const userInfo = Data.getCurrentUser();
   const {
     userMap,
@@ -92,6 +92,7 @@ export default function GroupSettingsModal({ groupId }: Props): React.Node {
           center={<Text style={{ fontWeight: "bold", fontSize: 16 }}>{group.name}</Text>}
           right={null}
         />
+        <DebugText text="GroupSettingsModal.js" />
         <TabView
           tabHeadings={["Members", "Settings"]}
           tabs={[
@@ -116,7 +117,6 @@ export default function GroupSettingsModal({ groupId }: Props): React.Node {
 }
 
 function GroupSettings({ userInfo, group, closeModal }) {
-  const isDebugMode = Debug.isDebugMode();
   const dispatch = useDispatch();
   const [groupName, setGroupName] = useState(group.name);
   const [groupDescription, setGroupDescription] = useState(group.description);
@@ -232,7 +232,6 @@ function GroupSettings({ userInfo, group, closeModal }) {
 
 function GroupMembers({ groupId, members, userMap, fromUserInvites }) {
   const [inviteModalVisible, setInviteModalVisible] = useState(false);
-  const debugMode = Debug.isDebugMode();
 
   const memberComponents = members.map((groupMembership) => {
     const user = userMap[groupMembership.uid];
@@ -240,7 +239,7 @@ function GroupMembers({ groupId, members, userMap, fromUserInvites }) {
       <View
         key={user.uid ?? groupMembership.uid}
         style={{
-          flexDirection: "row",
+          flexDirection: "column",
           height: 60,
           justifyContent: "flex-start",
           alignItems: "flex-start",
@@ -267,7 +266,6 @@ function GroupMembers({ groupId, members, userMap, fromUserInvites }) {
           >
             {UserInfo.chatDisplayName(user)}
           </Text>
-          {debugMode && <Text style={{ fontSize: 10 }}>gm: {groupMembership.id}</Text>}
         </View>
       </View>
     );
@@ -311,7 +309,7 @@ function GroupMembers({ groupId, members, userMap, fromUserInvites }) {
             return (
               <View style={{ flex: 1, padding: 10 }}>
                 {component}
-                {debugMode && <Text style={{ fontSize: 8 }}>{invite.id}</Text>}
+                <DebugText text={invite.id} />
               </View>
             );
           })}

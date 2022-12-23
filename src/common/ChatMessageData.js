@@ -6,6 +6,7 @@ import type { ChatMessage, UserChatMessage } from "./Database";
 import { useSelector } from "react-redux";
 import { useEffect, useMemo } from "react";
 import type { RootState } from "./Actions";
+import filter_nulls from "./filter_nulls";
 
 export default class ChatMessageInfo {
   rootChatMessage: ChatMessage;
@@ -31,6 +32,28 @@ export default class ChatMessageInfo {
       return { status: null };
     }
   }
+}
+
+export function getChat(chatId: string): Array<ChatMessage> {
+  const user = useSelector((state: RootState) => state.main.userInfo);
+
+  const { chatMessages } = useSelector((state: RootState) => {
+    return {
+      chatMessages: filter_nulls(
+        Object.keys(state.main.chatMessagesMap ?? {}).map((k: string) => {
+          const chat = state.main.chatMessagesMap?.[k];
+          return chat;
+        })
+      ),
+    };
+  });
+
+  const sortedChildMessages = chatMessages ?? [];
+  sortedChildMessages.sort((m1, m2) => {
+    return m1.timestamp - m2.timestamp;
+    //return 0;
+  });
+  return sortedChildMessages;
 }
 
 export function getAllUserChatMessages(): Array<ChatMessageInfo> {

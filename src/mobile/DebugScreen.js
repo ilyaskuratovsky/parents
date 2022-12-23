@@ -11,7 +11,9 @@ import * as MyButtons from "./MyButtons";
 import Toolbar from "./Toolbar";
 import * as Globals from "./Globals";
 import * as Debug from "../common/Debug";
-type Props = {};
+type Props = {
+  backAction: () => void,
+};
 
 export default function DebugScreen({ backAction }: Props): React.Node {
   const dispatch = useDispatch();
@@ -28,19 +30,17 @@ export default function DebugScreen({ backAction }: Props): React.Node {
       };
     });
 
-  const [addSchoolDisabled, setAddSchoolDisabled] = useState(false);
+  const [addSchoolDisabled, setAddSchoolDisabled] = useState<boolean>(false);
   const [newSchoolName, setNewSchoolName] = useState("");
 
   return (
     <SafeAreaView>
-      <View style={{ grow: 1 }}>
+      <View style={{ flexGrow: 1 }}>
         <MyButtons.FormButton
           text="Debug Mode Toggle"
           disabled={false}
-          style={{ width: 100, fontSize: 10 }}
-          onPress={async () => {
-            Globals.dev = !Globals.dev;
-          }}
+          style={{ width: 100 }}
+          onPress={() => {}}
         />
         <View
           style={{
@@ -57,12 +57,15 @@ export default function DebugScreen({ backAction }: Props): React.Node {
           />
           <MyButtons.FormButton
             text="Add"
-            disabled={setAddSchoolDisabled}
-            style={{ width: 100, fontSize: 10 }}
-            onPress={async () => {
-              setAddSchoolDisabled(true);
-              await Database.createOrg(newSchoolName, "school");
-              setAddSchoolDisabled(false);
+            disabled={addSchoolDisabled}
+            style={{ width: 100 }}
+            onPress={() => {
+              const addSchool = async () => {
+                setAddSchoolDisabled(true);
+                await Database.createOrg(newSchoolName, "school");
+                setAddSchoolDisabled(false);
+              };
+              addSchool();
             }}
           />
         </View>

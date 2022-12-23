@@ -49,11 +49,18 @@ export const screenSlice: {
       };
       return newState;
     },
-    openModal: (state: ScreenState, modal: { payload: string }) => {
-      Logger.log("Actions.openModal: " + JSON.stringify(modal), Logger.INFO);
+    openModal: (
+      state: ScreenState,
+      obj: { payload: { modal: string, animationType?: string } }
+    ) => {
+      Logger.log("Actions.openModal: " + JSON.stringify(obj), Logger.INFO);
+      const { modal, animationType, ...params } = obj.payload;
       const newState = {
         ...state,
-        modalStack: [...state.modalStack, modal.payload],
+        modalStack: [
+          ...state.modalStack,
+          { modal: modal, animationType: animationType, payload: params },
+        ],
       };
       return newState;
     },
@@ -83,7 +90,10 @@ export type RootState = {
   screen: ScreenState,
 };
 
-export type ScreenState = { screen: ?Screen, modalStack: Array<{ ... }>, ... };
+export type ScreenState = {
+  screen: ?Screen,
+  modalStack: Array<{ modal: string, payload: { ... }, animationType: string }>,
+};
 export type Screen = { screen: string, postLoginScreen?: ?Screen, ... };
 export type MainState = {|
   appInitialized: boolean,
@@ -134,7 +144,7 @@ export type MainActions = {
 };
 export type MainReducer = { [key: string]: () => void };
 export type ScreenActions = {
-  openModal: ({ modal: string, ... }) => void,
+  openModal: ({ modal: string, animationType?: string, ... }) => void,
   goToScreen: ({ screen: string, ... }) => void,
   closeModal: () => void,
 };

@@ -124,9 +124,12 @@ function RootApp(props: {}, state: RootState): React.Node {
   const modalStack = useSelector((state: RootState) => {
     return state.screen?.modalStack;
   });
-  const modalWithParams = modalStack.length > 0 ? modalStack[modalStack.length - 1] : null;
-  let modal = modalWithParams?.modal;
-  Logger.log("modalWithParams: " + JSON.stringify(modalWithParams));
+  const modalObj = modalStack?.length > 0 ? modalStack?.[modalStack.length - 1] : null;
+  let modal = modalObj?.modal;
+  let modalWithParams = modalObj?.payload ?? {};
+  let animationType = modalWithParams?.animationType;
+
+  //Logger.log("modalWithParams: " + JSON.stringify(modalWithParams));
   const debugMode = Debug.isDebugMode();
   Logger.log("RootApp.js:appInitialized: " + appState.main.appInitialized);
   if (!appState.main.appInitialized) {
@@ -184,7 +187,6 @@ function RootApp(props: {}, state: RootState): React.Node {
       <MessageScreen
         groupId={screenWithParams["groupId"]}
         messageId={screenWithParams["messageId"]}
-        onBack={null}
       />
     );
   } else if (screen == "DEBUG") {
@@ -195,6 +197,64 @@ function RootApp(props: {}, state: RootState): React.Node {
     render = <ErrorScreen error={screenWithParams["error"]} />;
   } else {
     render = <ErrorScreen error={{ message: "No screen" }} />;
+  }
+
+  let modalScreen = null;
+  if (modal === "MY_PROFILE") {
+    modalScreen = <MyProfileModal forceComplete={modalWithParams?.["forceComplete"]} />;
+  } else if (modal === "EVENT") {
+    modalScreen = <EventModal visible={true} messageId={modalWithParams?.["messageId"]} />;
+  } else if (modal === "EVENT_POLL") {
+    modalScreen = <EventPollModal visible={true} messageId={modalWithParams?.["messageId"]} />;
+  } else if (modal === "NEW_EVENT_FROM_POLL") {
+    modalScreen = <NewEventFromPollModal />;
+  } else if (modal === "NEW_EVENT") {
+    modalScreen = <NewEventModal visible={true} />;
+  } else if (modal === "NEW_POLL") {
+    modalScreen = <NewPollModal visible={true} />;
+  } else if (modal === "BOOK_IN_CALENDAR") {
+    modalScreen = (
+      <BookCalendarEventModal
+        visible={true}
+        title={modalWithParams?.["title"]}
+        startDate={modalWithParams?.["startDate"]}
+        endDate={modalWithParams?.["endDate"]}
+      />
+    );
+  } else if (modal === "NEW_CHAT") {
+    modalScreen = <NewChatModal visible={true} {...modalWithParams} />;
+  } else if (modal === "CHAT") {
+    modalScreen = <ChatModal chatId={modalWithParams?.["chatId"]} />;
+  } else if (modal === "TEST_IMAGE_PICKER") {
+    modalScreen = <TestImagePickerFirebase {...modalWithParams} />;
+  } else if (modal === "NEW_POST") {
+    modalScreen = <ThreadMessageModal groupId={modalWithParams?.["groupId"]} />;
+  } else if (modal === "GROUP_INVITE") {
+    modalScreen = <GroupInviteModal groupId={modalWithParams?.["groupId"]} />;
+  } else if (modal === "GROUP_SETTINGS") {
+    modalScreen = <GroupSettingsModal groupId={modalWithParams?.["groupId"]} />;
+  } else if (modal === "NEW_GROUP") {
+    modalScreen = <NewGroupModal parentGroupId={modalWithParams?.["parentGroupId"]} />;
+  } else if (modal === "GROUP" || modal == "SCHOOL_GROUP") {
+    modalScreen = (
+      <GroupScreenContainer
+        groupId={modalWithParams?.["groupId"]}
+        messageId={modalWithParams?.["messageId"]}
+      />
+    );
+  } else if (modal === "MESSAGES") {
+    modalScreen = (
+      <MessageModal
+        messageId={modalWithParams?.["messageId"]}
+        scrollToEnd={modalWithParams?.["scrollToEnd"]}
+      />
+    );
+  } else if (modal === "MESSAGE_POLL") {
+    modalScreen = <MessagePollModal messageId={modalWithParams?.["messageId"]} />;
+  } else if (modal === "MESSAGE_POLL_VOTE") {
+    modalScreen = <MessagePollVoteModal messageId={modalWithParams?.["messageId"]} />;
+  } else if (modal === "DEBUG_TEXT") {
+    modalScreen = <DebugTextModal text={modalWithParams?.["text"]} />;
   }
 
   Logger.log(
@@ -208,34 +268,13 @@ function RootApp(props: {}, state: RootState): React.Node {
   );
   return (
     <View style={{ flex: 1 }}>
-      {render}
+      {modalScreen === null && render}
+      {modalScreen !== null && (
+        <Modal visible={true} animationType={animationType}>
+          {modalScreen}
+        </Modal>
+      )}
       <Messages key="messages" />
-      {modal === "MY_PROFILE" && appState.main.userInfo != null && (
-        <MyProfileModal visible={true} {...modalWithParams} />
-      )}
-      {modal === "EVENT" && <EventModal visible={true} {...modalWithParams} />}
-      {modal === "EVENT_POLL" && <EventPollModal visible={true} {...modalWithParams} />}
-      {modal === "NEW_EVENT_FROM_POLL" && <NewEventFromPollModal {...modalWithParams} />}
-      {modal === "NEW_EVENT" && <NewEventModal visible={true} {...modalWithParams} />}
-      {modal === "NEW_POLL" && <NewPollModal visible={true} {...modalWithParams} />}
-      {modal === "BOOK_IN_CALENDAR" && (
-        <BookCalendarEventModal visible={true} {...modalWithParams} />
-      )}
-      {modal === "NEW_CHAT" && <NewChatModal visible={true} {...modalWithParams} />}
-      {modal === "CHAT" && <ChatModal {...modalWithParams} />}
-      {modal === "TEST_IMAGE_PICKER" && <TestImagePickerFirebase {...modalWithParams} />}
-      {modal === "NEW_POST" && <ThreadMessageModal {...modalWithParams} />}
-      {modal === "GROUP_INVITE" && <GroupInviteModal {...modalWithParams} />}
-      {modal === "GROUP_SETTINGS" && <GroupSettingsModal {...modalWithParams} />}
-      {modal === "NEW_GROUP" && <NewGroupModal {...modalWithParams} />}
-      {(modal === "GROUP" || modal == "SCHOOL_GROUP") && (
-        <GroupScreenContainer key={modalWithParams?.["groupId"]} {...modalWithParams} />
-      )}
-      {modal === "MESSAGES" && <MessageModal {...modalWithParams} />}
-      {modal === "MESSAGE_POLL" && <MessagePollModal {...modalWithParams} />}
-      {modal === "MESSAGE_POLL_VOTE" && <MessagePollVoteModal {...modalWithParams} />}
-      {modal === "DEBUG_TEXT" && <DebugTextModal {...modalWithParams} />}
-      {/*modal === "SCHOOL_GROUP" && <SchoolGroup {...modalWithParams} />*/}
       <View style={{ position: "absolute", bottom: 400, right: 0 }}>
         {/*React.memo<{text: string, onPress:()=>void, icon:string, style: string, color: string, badge: string, containerStyle: Object}>*/}
         <MyButtons.MenuButton
@@ -244,7 +283,6 @@ function RootApp(props: {}, state: RootState): React.Node {
           text=""
           onPress={() => {
             dispatch(Actions.toggleDebugMode());
-            //dispatch(Actions.openModal({ modal: "TEST_IMAGE_PICKER" }));
           }}
         />
       </View>

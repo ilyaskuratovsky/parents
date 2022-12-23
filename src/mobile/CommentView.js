@@ -37,7 +37,7 @@ export default function CommentView({ item, onPress }: Props): React.Node {
     );
   };
 
-  if (item.event_poll_response != null) {
+  if (item.getEventPoll() != null) {
     return (
       <View
         style={{
@@ -131,7 +131,7 @@ export default function CommentView({ item, onPress }: Props): React.Node {
             </View>
           </View>
           <View style={{ flex: 1, flexDirection: "column" }}>
-            {item.eventResponse != null && <Text>{item.eventResponse}</Text>}
+            {item.getEventResponse() != null && <Text>{item.getEventResponse()}</Text>}
             {!Utils.isEmptyString(item.getText()) && (
               <Autolink
                 // Required: the text to parse for links
@@ -150,7 +150,7 @@ export default function CommentView({ item, onPress }: Props): React.Node {
               />
             )}
             <DebugText text={item.getID()} />
-            <DebugText text={JSON.stringify(item.debugObj(), null, 2)} />
+            <DebugText text={JSON.stringify(item, null, 2)} />
           </View>
         </View>
       </View>
@@ -237,12 +237,12 @@ export default function CommentView({ item, onPress }: Props): React.Node {
                   textStyle={{ fontSize: 11, color: UIConstants.BLACK_TEXT_COLOR }}
                 />
               ) : (
-                <Text>Fix needed: {JSON.stringify(item.createdAt)}</Text>
+                <Text>Fix needed: {JSON.stringify(item.getTimestamp())}</Text>
               )}
             </View>
           </View>
           <View style={{ flex: 1, flexDirection: "column" }}>
-            {item.eventResponse != null && <Text>{item.eventResponse}</Text>}
+            {item.getEventResponse() != null && <Text>{item.getEventResponse()}</Text>}
             <Autolink
               // Required: the text to parse for links
               text={item.getText()}
@@ -260,7 +260,7 @@ export default function CommentView({ item, onPress }: Props): React.Node {
             />
 
             <DebugText text={item.getID()} />
-            <DebugText text={JSON.stringify(item.debugObj(), null, 2)} />
+            <DebugText text={JSON.stringify(item, null, 2)} />
           </View>
         </View>
       </View>

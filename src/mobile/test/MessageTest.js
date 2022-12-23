@@ -240,7 +240,6 @@ export default function MessageTest({}: Props): React.Node {
                   setText(text);
                 }}
                 onLayout={(event) => {
-                  console.log("onlayout call: " + event.nativeEvent.height);
                   setTextInputHeightChanged((prev) => prev + 1);
                 }}
               />

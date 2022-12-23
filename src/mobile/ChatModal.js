@@ -43,8 +43,11 @@ import * as Actions from "../common/Actions";
 import TopBar from "./TopBar";
 import { styles } from "./Styles";
 import { SquareFacePile } from "../web/FacePile";
-
-type Props = {};
+import * as ChatMessageData from "../common/ChatMessageData";
+type Props = {
+  chatId: string,
+  scrollToEnd?: boolean,
+};
 
 export default function ChatModal({ chatId, scrollToEnd = true }: Props): React.Node {
   const debugMode = Debug.isDebugMode();
@@ -53,15 +56,7 @@ export default function ChatModal({ chatId, scrollToEnd = true }: Props): React.
   const chat = Data.getChat(chatId);
   const members = Data.getUsers(chat?.participants ?? []);
   const otherMembers = members.filter((u) => u.uid !== user.uid);
-  const messages = Data.getChatUserMessages(chatId);
-
-  const sortedChildMessages = messages ?? [];
-  sortedChildMessages.sort((m1, m2) => {
-    return m1.timestamp - m2.timestamp;
-    //return 0;
-  });
-
-  const childMessages = sortedChildMessages;
+  const messages = ChatMessageData.getChat(chatId);
 
   // send message callback function
   const sendMessage = useCallback(async (text) => {
@@ -70,8 +65,10 @@ export default function ChatModal({ chatId, scrollToEnd = true }: Props): React.
     //export async function sendChatMessage(dispatch, userInfo, chatId, text, papaId, notificationInfo) {
     await Controller.sendChatMessage(dispatch, user, chatId, text, null, {
       fromName,
+      groupName: null,
+      notifactionInfo: null,
     });
-    scrollViewRef.current.scrollToEnd({ animated: true });
+    scrollViewRef.current?.scrollToEnd({ animated: true });
   }, []);
 
   const [text, setText] = useState("");
@@ -86,7 +83,7 @@ export default function ChatModal({ chatId, scrollToEnd = true }: Props): React.
   // fix this later to scroll to the specific message
   useEffect(async () => {
     if (scrollToEnd) {
-      scrollViewRef.current.scrollToEnd({ anmiated: true });
+      scrollViewRef.current?.scrollToEnd({ anmiated: true });
     }
   }, []);
 

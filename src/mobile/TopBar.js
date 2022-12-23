@@ -4,8 +4,17 @@ import * as React from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Avatar, Divider } from "react-native-elements";
+import type { AbstractComponent } from "react";
+import type { ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheet";
 
-const TopBar = ({ left, center, right, style, leftWidth }) => {
+type Props = {
+  left: React$Node,
+  center: React$Node,
+  right: React$Node,
+  style: ViewStyle,
+  leftWidth: number,
+};
+const TopBar = ({ left, center, right, style, leftWidth }: Props) => {
   return (
     <View
       style={{
@@ -75,7 +84,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export default React.memo(TopBar);
+const component: AbstractComponent<Props> = React.memo(TopBar);
+export default component;
 
 /*
 Group View

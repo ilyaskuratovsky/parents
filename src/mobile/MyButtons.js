@@ -22,7 +22,7 @@ export function MenuButton({
   text: string,
   onPress: () => void,
   color?: string,
-  badge?: ?string,
+  badge?: ?React$Node,
   containerStyle?: ViewStyleProp,
 }): React.Node {
   return (
@@ -124,8 +124,8 @@ export function FormButton({
   text: string,
   icon?: string,
   onPress: () => void,
-  style: ViewStyleProp,
-  titleStyle: TextStyleProp,
+  style?: ViewStyleProp,
+  titleStyle?: TextStyleProp,
   disabled?: boolean,
 }): React.Node {
   return (

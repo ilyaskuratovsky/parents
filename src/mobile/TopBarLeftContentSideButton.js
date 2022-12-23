@@ -4,7 +4,15 @@ import * as React from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Avatar, Divider } from "react-native-elements";
+import type { ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheet";
+import type { AbstractComponent } from "react";
 
+type Props = {
+  left: React$Node,
+  right: React$Node,
+  style: ViewStyle,
+  leftWidth: number,
+};
 const TopBarLeftContentSideButton = ({ left, right, style, leftWidth }) => {
   return (
     <View
@@ -60,4 +68,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default React.memo(TopBarLeftContentSideButton);
+const component: AbstractComponent<Props> = React.memo(TopBarLeftContentSideButton);
+export default component;

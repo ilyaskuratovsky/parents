@@ -33,6 +33,7 @@ import * as UIConstants from "./UIConstants";
 import * as UserInfo from "../common/UserInfo";
 import * as Logger from "../common/Logger";
 import * as Actions from "../common/Actions";
+import DebugText from "./DebugText";
 
 type Props = {
   title: string,
@@ -104,24 +105,14 @@ export default function BookCalendarEventModal({
           right={null}
         />
         <SafeAreaView style={{ flex: 1, flexDirection: "column", backgroundColor: "white" }}>
-          {Globals.dev && (
-            <>
-              <Text>BookCalendarEventModal.js</Text>
-              <Text>
-                title: {title}, notes: {notes}, startDate: {moment(startDate).format("LLLL")},
-                endDate:
-                {moment(endDate).format("LLLL")}
-                onDismiss: {onDismiss == null ? "null" : "not null"}
-              </Text>
-            </>
-          )}
+          <DebugText text="BookCalendarEventModal.js" />
           {calendarMap == null && <Text>Loading...</Text>}
 
           <ScrollView style={{ height: 200, backgroundColor: "lightgrey", padding: 20 }}>
             {(calendarMap != null ? Object.keys(calendarMap) : [])
               .sort((source1, source2) => source1.localeCompare(source2))
               .map((source, i) => {
-                const calendars = calendarMap[source];
+                const calendars = calendarMap?.[source];
                 return (
                   <View
                     key={source}
@@ -142,7 +133,7 @@ export default function BookCalendarEventModal({
                         justifyContent: "center",
                       }}
                     >
-                      {calendars.map((calendar, i) => {
+                      {calendars?.map((calendar, i) => {
                         Logger.log("color: " + JSON.stringify(calendar.color));
                         return (
                           <TouchableOpacity
@@ -151,7 +142,7 @@ export default function BookCalendarEventModal({
                             onPress={() => {
                               createEvent(calendar, title, notes, startDate, endDate)
                                 .then((eventId) => {
-                                  onComplete();
+                                  //onComplete();
                                   Alert.alert("Added to Calendar", null, [
                                     {
                                       text: "OK",

@@ -31,7 +31,12 @@ import Checkbox from "./Checkbox";
 import * as Debug from "../common/Debug";
 import * as Logger from "../common/Logger";
 
-type Props = {};
+type Props = {
+  value: ?Date,
+  visible: boolean,
+  onChange: ?(?Date) => void,
+  closeModal: () => void,
+};
 
 export default function DatePickerModal({
   value,
@@ -39,12 +44,11 @@ export default function DatePickerModal({
   onChange,
   closeModal,
 }: Props): React.Node {
-  Logger.log("DatePickerModal, value: " + value);
-  const [date, setDate] = useState(value);
+  const [date, setDate] = useState<?Date>(value ?? null);
   useEffect(() => {
     setDate(value);
   }, [value]);
-  Logger.log("Time picker modal visible: " + visible);
+  Logger.log("Time picker modal visible: " + (visible ? "true" : "false"));
   return (
     <Modal visible={visible} animationType={"slide"}>
       <Portal
@@ -69,7 +73,9 @@ export default function DatePickerModal({
             <MyButtons.FormButton
               text="Done"
               onPress={() => {
-                onChange(date);
+                if (onChange != null) {
+                  onChange(date);
+                }
                 setDate(null);
                 closeModal();
               }}

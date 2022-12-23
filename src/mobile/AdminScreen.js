@@ -141,7 +141,7 @@ function GroupView({ group }) {
         }}
       >
         <MyButtons.LinkButton
-          style={{ width: 150, fontWeight: "bold", fontSize: 10 }}
+          style={{ width: 150 }}
           text={group.name}
           onPress={() => {
             dispatch(Actions.openModal({ modal: "GROUP", groupId: group.id }));
@@ -183,20 +183,23 @@ function GroupView({ group }) {
       <MyButtons.LinkButton
         style={{ marginTop: 4, marginBottom: 4 }}
         text="Delete"
-        onPress={async () => {
-          Alert.alert("Delete Group?", null, [
-            {
-              text: "Yes",
-              onPress: async () => {
-                await Controller.deleteGroup(group.id);
+        onPress={() => {
+          const deleteGroup = async () => {
+            Alert.alert("Delete Group?", null, [
+              {
+                text: "Yes",
+                onPress: async () => {
+                  await Controller.deleteGroup(group.id);
+                },
               },
-            },
-            {
-              text: "No",
-              onPress: () => Logger.log("Cancel Pressed"),
-              style: "cancel",
-            },
-          ]);
+              {
+                text: "No",
+                onPress: () => Logger.log("Cancel Pressed"),
+                style: "cancel",
+              },
+            ]);
+          };
+          deleteGroup();
         }}
       />
     </View>
@@ -232,20 +235,23 @@ function UserView({ user }) {
       <MyButtons.LinkButton
         style={{ marginTop: 4, marginBottom: 4 }}
         text="Delete"
-        onPress={async () => {
-          Alert.alert("Delete User?", null, [
-            {
-              text: "Yes",
-              onPress: async () => {
-                await Controller.deleteUser(user.uid);
+        onPress={() => {
+          const deleteUser = async () => {
+            Alert.alert("Delete User?", null, [
+              {
+                text: "Yes",
+                onPress: async () => {
+                  await Controller.deleteUser(user.uid);
+                },
               },
-            },
-            {
-              text: "No",
-              onPress: () => Logger.log("Cancel Pressed"),
-              style: "cancel",
-            },
-          ]);
+              {
+                text: "No",
+                onPress: () => Logger.log("Cancel Pressed"),
+                style: "cancel",
+              },
+            ]);
+          };
+          deleteUser();
         }}
       />
     </View>
@@ -284,20 +290,23 @@ function GroupMembershipView({ groupMembership }) {
       <MyButtons.LinkButton
         style={{ marginTop: 4, marginBottom: 4 }}
         text="Delete"
-        onPress={async () => {
-          Alert.alert("Delete Group Membership " + groupMembership.id + "?", null, [
-            {
-              text: "Yes",
-              onPress: async () => {
-                await Controller.deleteGroupMembership(groupMembership.id);
+        onPress={() => {
+          const deleteGroupMembership = async () => {
+            Alert.alert("Delete Group Membership " + groupMembership.id + "?", null, [
+              {
+                text: "Yes",
+                onPress: async () => {
+                  await Controller.deleteGroupMembership(groupMembership.id);
+                },
               },
-            },
-            {
-              text: "No",
-              onPress: () => Logger.log("Cancel Pressed"),
-              style: "cancel",
-            },
-          ]);
+              {
+                text: "No",
+                onPress: () => Logger.log("Cancel Pressed"),
+                style: "cancel",
+              },
+            ]);
+          };
+          deleteGroupMembership();
         }}
       />
     </View>

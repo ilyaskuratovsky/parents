@@ -50,6 +50,7 @@ export type GroupUpdate = {
 export type Org = {
   id: string,
   name: string,
+  type: ?string,
   ...
 };
 

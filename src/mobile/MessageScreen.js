@@ -18,7 +18,7 @@ import nullthrows from "nullthrows";
 type Props = {
   groupId: string,
   messageId: string,
-  onBack: () => void,
+  onBack?: ?() => void,
 };
 export default function MessageScreen({ groupId, messageId, onBack }: Props): React.Node {
   const dispatch = useDispatch();

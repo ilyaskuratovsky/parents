@@ -3,7 +3,7 @@
 import * as ImagePicker from "expo-image-picker";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useState, useCallback } from "react";
-import React from "react";
+import * as React from "react";
 //import * as Permissions from "expo-permissions";
 import {
   ActivityIndicator,
@@ -31,8 +31,13 @@ import Portal from "./Portal";
 import { profileIncomplete } from "../common/UserInfo";
 import * as Debug from "../common/Debug";
 import * as Logger from "../common/Logger";
+import * as Data from "../common/Data";
+import type { UserInfo } from "../common/Database";
 
-export default function MyProfileModal({ forceComplete }) {
+type Props = {
+  forceComplete: boolean,
+};
+export default function MyProfileModal({ forceComplete }: Props): React.Node {
   Logger.log("Showing MyProfileModal");
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.main.userInfo);
@@ -47,6 +52,7 @@ export default function MyProfileModal({ forceComplete }) {
 
 function ModalContainer({ userInfo, forceComplete }) {
   const dispatch = useDispatch();
+  //const userInfo = Data.getCurrentUser();
   const [firstName, setFirstName] = useState(userInfo.firstName ?? "");
   const [lastName, setLastName] = useState(userInfo.lastName ?? "");
   const [editingImage, setEditingImage] = useState(true);
@@ -66,7 +72,7 @@ function ModalContainer({ userInfo, forceComplete }) {
       setUploading(true);
 
       if (!pickerResult.cancelled) {
-        const uploadUrl = await uploadImageAsync(pickerResult.uri);
+        const uploadUrl = await uploadImageAsync(pickerResult.uri, userInfo);
         setImage(uploadUrl);
       }
     } catch (e) {
@@ -83,7 +89,7 @@ function ModalContainer({ userInfo, forceComplete }) {
       aspect: [4, 3],
     });
 
-    Logger.log({ pickerResult });
+    Logger.log(JSON.stringify(pickerResult));
 
     _handleImagePicked(pickerResult);
   };
@@ -117,12 +123,8 @@ function ModalContainer({ userInfo, forceComplete }) {
           <MyButtons.LinkButton
             text="Cancel"
             disabled={forceComplete}
-            onPress={async () => {
-              dispatch(
-                Actions.closeModal({
-                  modal: "MY_PROFILE",
-                })
-              );
+            onPress={() => {
+              dispatch(Actions.closeModal());
             }}
           />
         }
@@ -131,13 +133,12 @@ function ModalContainer({ userInfo, forceComplete }) {
           <MyButtons.LinkButton
             text="Save"
             disabled={!isProfileComplete()}
-            onPress={async () => {
-              await Controller.saveProfile(userInfo.uid, firstName, lastName, image);
-              dispatch(
-                Actions.closeModal({
-                  modal: "MY_PROFILE",
-                })
-              );
+            onPress={() => {
+              const saveProfile = async () => {
+                await Controller.saveProfile(userInfo.uid, firstName, lastName, image);
+                dispatch(Actions.closeModal());
+              };
+              saveProfile();
             }}
           />
         }
@@ -212,13 +213,12 @@ function ModalContainer({ userInfo, forceComplete }) {
         <View style={{ height: 100, justifyContent: "center", alignItems: "center" }}>
           <MyButtons.LinkButton
             text="Log Out"
-            onPress={async () => {
-              await Controller.logout(dispatch);
-              dispatch(
-                Actions.closeModal({
-                  modal: "MY_PROFILE",
-                })
-              );
+            onPress={() => {
+              const logout = async () => {
+                await Controller.logout(dispatch);
+                dispatch(Actions.closeModal());
+              };
+              logout();
             }}
           />
         </View>
@@ -228,7 +228,7 @@ function ModalContainer({ userInfo, forceComplete }) {
   );
 }
 
-async function uploadImageAsync(uri) {
+async function uploadImageAsync(uri: string, userInfo: UserInfo) {
   // Why are we using XMLHttpRequest? See:
   // https://github.com/expo/expo/issues/2402#issuecomment-443726662
   const blob = await new Promise((resolve, reject) => {
@@ -237,7 +237,7 @@ async function uploadImageAsync(uri) {
       resolve(xhr.response);
     };
     xhr.onerror = function (e) {
-      Logger.log(e);
+      Logger.log(JSON.stringify(e));
       reject(new TypeError("Network request failed"));
     };
     xhr.responseType = "blob";

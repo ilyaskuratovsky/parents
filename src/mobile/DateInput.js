@@ -32,7 +32,10 @@ import * as Debug from "../common/Debug";
 import TimePickerModal from "./TimePickerModal";
 import DatePickerModal from "./DatePickerModal";
 
-type Props = {};
+type Props = {
+  date: Date,
+  onChange: (value: Date) => void,
+};
 
 export default function DateInput({ date, onChange }: Props): React.Node {
   const [showDatePicker, setShowDatePicker] = useState(null);
